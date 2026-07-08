@@ -1137,6 +1137,9 @@ async def get_and_cache_all_types_dict(
             **custom_flat,
             **extension_components,
         }
+        from lfx.interface.earthflow_components import apply_earthflow_component_policy
+
+        component_cache.all_types_dict = apply_earthflow_component_policy(component_cache.all_types_dict)
         component_count = sum(len(comps) for comps in component_cache.all_types_dict.values())
         await logger.adebug(f"Loaded {component_count} components")
 
