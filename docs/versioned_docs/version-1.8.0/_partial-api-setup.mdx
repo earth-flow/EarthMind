@@ -1,0 +1,57 @@
+## Prerequisites
+
+Before using the API, you need:
+
+* [Install and start EarthMind](/get-started-installation) with the developer API enabled
+
+    The Workflows API endpoints require the `developer_api_enabled` setting to be enabled. If this setting is disabled, these endpoints will return a 404 Not Found error.
+
+    To enable the developer API endpoint, do the following:
+    1. In the EarthMind `.env` file, set the environment variable to `true`:
+       ```
+       EARTHMIND_DEVELOPER_API_ENABLED=true
+       ```
+    2. Start your EarthMind server with the `.env` file enabled:
+       ```
+       uv run earthmind run --env-file .env
+       ```
+
+    For more information about configuring environment variables, see [Environment variables](/environment-variables).
+* [Create a EarthMind API key](/api-keys-and-authentication)
+* [Create a flow](/concepts-flows) that you want to execute
+* [Get the flow ID](/concepts-publish#api-access) or endpoint name of the flow you want to execute
+
+### Set environment variables
+
+All code examples in this documentation assume you have set the following environment variables:
+
+**Python:**
+```python
+import os
+
+EARTHMIND_SERVER_URL = os.getenv("EARTHMIND_SERVER_URL")
+EARTHMIND_API_KEY = os.getenv("EARTHMIND_API_KEY")
+```
+
+**TypeScript/JavaScript:**
+```typescript
+const EARTHMIND_SERVER_URL = process.env.EARTHMIND_SERVER_URL;
+const EARTHMIND_API_KEY = process.env.EARTHMIND_API_KEY;
+```
+
+Set these environment variables before running the examples, or replace the variable references in the code examples with your actual EarthMind server URL and API key.
+
+The default `EARTHMIND_SERVER_URL` for a local EarthMind deployment is `http://localhost:7860`.
+For remote deployments, the domain is set by your hosting service, such as `https://UUID.ngrok.app`.
+
+### Authentication and headers
+
+All Workflows API requests require authentication using a EarthMind API key. The API key is passed in the `x-api-key` header.
+
+For more information, see [Create a EarthMind API key](/api-keys-and-authentication).
+
+| Header | Description | Example |
+|--------|-------------|---------|
+| `Content-Type` | Specifies the JSON format. | `application/json` |
+| `x-api-key` | Your EarthMind API key. | `sk-...` |
+| `accept` | Optional. Specifies the response format. | `application/json` |

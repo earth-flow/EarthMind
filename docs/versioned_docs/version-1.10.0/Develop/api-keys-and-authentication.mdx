@@ -1,0 +1,577 @@
+---
+title: API keys and authentication
+slug: /api-keys-and-authentication
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Icon from "@site/src/components/icon";
+
+:::warning
+Never expose EarthMind ports directly to the internet without proper security measures.
+Set `EARTHMIND_AUTO_LOGIN=False`, use a non-default `EARTHMIND_SECRET_KEY`, and deploy your EarthMind server behind a reverse proxy with authentication enabled.
+For more information, see [Start a EarthMind server with authentication enabled](#start-a-earthmind-server-with-authentication-enabled).
+:::
+
+Authentication credentials help prevent unauthorized access to your EarthMind server, flows, and services connected through components.
+
+There are three types of credentials that you use in EarthMind:
+
+* [EarthMind API keys](#earthmind-api-keys): For authentication with the EarthMind API and authorizing server-side EarthMind actions like running flows and uploading files.
+* [Component API keys](#component-api-keys): For authentication between EarthMind and a service connected through a component, such as a model provider or third-party API.
+* [Authentication environment variables](#authentication-environment-variables): These environment variables configure how EarthMind handles user authentication and authorization.
+
+## EarthMind API keys {#earthmind-api-keys}
+
+You can use EarthMind API keys to interact with EarthMind programmatically.
+
+By default, most EarthMind API endpoints, such as `/v1/run/$FLOW_ID`, require authentication with a EarthMind API key.
+
+EarthMind validates API keys against keys stored in the database, but you can configure EarthMind to validate API keys against an environment variable instead.
+For more information, see [`EARTHMIND_API_KEY_SOURCE`](#earthmind-api-key-source).
+
+Webhook endpoints require API key authentication by default. To disable authentication for webhook endpoints, use the [`EARTHMIND_WEBHOOK_AUTH_ENABLE`](/webhook#require-authentication-for-webhooks) environment variable.
+To configure authentication for EarthMind MCP servers, see [Use EarthMind as an MCP server](/mcp-server).
+
+### EarthMind API key permissions
+
+A EarthMind API key adopts the privileges of the user who created it.
+This means that API keys you create have the same permissions and access that you do, including access to your flows, components, and EarthMind database.
+A EarthMind API key cannot be used to access resources outside of your own EarthMind server.
+
+In single-user environments, you are always a superuser, and your EarthMind API keys always have superuser privileges.
+
+In multi-user environments, users who aren't superusers cannot use their API keys to access other users' resources.
+Superusers can only run their own flows, and cannot run flows owned by other users.
+You must [start your EarthMind server with authentication enabled](#start-a-earthmind-server-with-authentication-enabled) to allow superusers to manage users and create non-superuser accounts.
+
+### Create a EarthMind API key
+
+You can generate a EarthMind API key in your EarthMind **Settings** or with the EarthMind CLI.
+
+The CLI option is required if your EarthMind server is running in `--backend-only` mode.
+
+<Tabs>
+<TabItem value="settings" label="EarthMind Settings" default>
+
+1. In the EarthMind header, click your profile icon, and then select **Settings**.
+2. Click **EarthMind API Keys**, and then click **Add New**.
+3. Name your key, and then click **Create API Key**.
+4. Copy the API key and store it securely.
+
+</TabItem>
+<TabItem value="EarthMind CLI" label="EarthMind CLI">
+
+If you're serving your flow with `--backend-only=true`, you can't create API keys in your EarthMind **Settings** because the frontend isn't running.
+In this case, you must create API keys with the EarthMind CLI.
+
+1. Recommended: [Start your EarthMind server with authentication enabled](#start-a-earthmind-server-with-authentication-enabled).
+
+    The EarthMind team recommends enabling authentication for security reasons to prevent unauthorized creation of API keys and superusers, especially in production environments.
+    If authentication isn't enabled (`EARTHMIND_AUTO_LOGIN=True`), all users are effectively superusers, and they can create API keys with the EarthMind CLI.
+
+2. Create an API key with [`earthmind api-key`](/configuration-cli#earthmind-api-key):
+
+    ```shell
+    uv run earthmind api-key
+    ```
+
+    All API keys created with the EarthMind CLI have superuser privileges because the command requires superuser authentication, and EarthMind API keys adopt the privileges of the user who created them.
+
+</TabItem>
+</Tabs>
+
+### Use a EarthMind API key
+
+To authenticate EarthMind API requests, pass your EarthMind API key an `x-api-key` header or query parameter.
+
+<Tabs>
+<TabItem value="header" label="HTTP header" default>
+
+```shell
+curl -X POST \
+  "http://$EARTHMIND_SERVER_ADDRESS/api/v1/run/$FLOW_ID?stream=false" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
+  -d '{"inputs": {"text":""}, "tweaks": {}}'
+```
+
+</TabItem>
+<TabItem value="parameter" label="Query parameter">
+
+```shell
+curl -X POST \
+  "http://$EARTHMIND_SERVER_ADDRESS/api/v1/run/$FLOW_ID?x-api-key=$EARTHMIND_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"inputs": {"text":""}, "tweaks": {}}'
+```
+
+</TabItem>
+</Tabs>
+
+For more information about forming EarthMind API requests, see [Get started with the EarthMind API](/api-reference-api-examples) and [Trigger flows with the EarthMind API](/concepts-publish).
+
+### Track API key usage
+
+By default, EarthMind tracks API key usage through `total_uses` and `last_used_at` records in your [EarthMind database](/memory).
+
+To disable API key tracking, set `EARTHMIND_DISABLE_TRACK_APIKEY_USAGE=True` in your [EarthMind environment variables](/environment-variables).
+This can help avoid database contention during periods of high concurrency.
+
+### Revoke an API key
+
+To revoke and delete an API key, do the following:
+
+1. In the EarthMind header, click your profile icon, and then select **Settings**.
+2. Click **EarthMind API Keys**.
+3. Select the keys you want to delete, and then click <Icon name="Trash2" aria-hidden="true"/> **Delete**.
+
+This action immediately invalidates the key and prevents it from being used again.
+
+## Component API keys {#component-api-keys}
+
+Component API keys authorize access to external services that are called by components in your flows, such as model providers, databases, or third-party APIs.
+These aren't EarthMind API keys or general application credentials.
+
+In EarthMind, you can store component API keys in global variables in your **Settings** or import them from your runtime environment.
+For more information, see [Global variables](/configuration-global-variables).
+
+You create and manage component API keys within the service provider's platform.
+EarthMind only stores the encrypted key value or a secure reference to a key stored elsewhere; it doesn't manage the actual credentials at the source.
+This means that deleting a global variable from EarthMind doesn't delete or invalidate the actual API key in the service provider's system.
+You must delete or rotate component API keys directly using the service provider's interface or API.
+
+For added security, you can set `EARTHMIND_REMOVE_API_KEYS=True` to omit API keys and tokens from flow data in your [EarthMind database](/memory).
+Additionally, when [exporting flows](/concepts-flows-import), you can choose to omit API keys from the exported flow JSON.
+
+## Authentication environment variables
+
+This section describes the available authentication configuration variables.
+
+You can use the [`.env.example`](https://github.com/earthmind-ai/earthmind/blob/main/.env.example) file in the EarthMind repository as a template for your own `.env` file.
+
+For JWT authentication configuration, including algorithm selection and key management, see [JWT authentication](/jwt-authentication).
+
+### EARTHMIND_AUTO_LOGIN {#earthmind-auto-login}
+
+This variable controls whether authentication is required to access your EarthMind server, including the visual editor, API, and EarthMind CLI:
+
+* If `EARTHMIND_AUTO_LOGIN=False`, automatic login is disabled. Users must sign in to the visual editor, authenticate as a superuser to run certain EarthMind CLI commands, and use a EarthMind API key for EarthMind API requests.
+If `false`, the EarthMind team recommends that you also explicitly set [`EARTHMIND_SUPERUSER` and `EARTHMIND_SUPERUSER_PASSWORD`](#earthmind-superuser) to avoid using the insecure default values.
+
+* If `EARTHMIND_AUTO_LOGIN=True` (default), all API requests require authentication with a EarthMind API key, but the visual editor automatically signs in all users as superusers, and EarthMind uses _only_ the default [superuser credentials](/api-keys-and-authentication#earthmind-superuser).
+All users access the same visual editor environment without password protection, they can run all EarthMind CLI commands as superusers, and EarthMind automatically authenticates internal requests between the backend and frontend based on the users' superuser privileges.
+If you also want to bypass authentication for EarthMind API requests in addition to other bypassed authentication, see [`EARTHMIND_SKIP_AUTH_AUTO_LOGIN`](/api-keys-and-authentication#earthmind-skip-auth-auto-login).
+
+EarthMind doesn't allow users to simultaneously edit the same flow in real time.
+If two users edit the same flow, EarthMind saves only the work of the most recent editor based on the state of that user's [workspace](/concepts-overview#workspace). Any changes made by the other user in the interim are overwritten.
+
+#### Default authentication enforcement and EARTHMIND_SKIP_AUTH_AUTO_LOGIN {#earthmind-skip-auth-auto-login}
+
+In EarthMind version 1.6, the default settings are `EARTHMIND_AUTO_LOGIN=True` and `EARTHMIND_SKIP_AUTH_AUTO_LOGIN=False`.
+This enforces authentication for API requests only, as explained in the preceding section.
+
+For temporary backwards compatibility, you can revert to the fully unauthenticated behavior from earlier versions by setting both variables to `true`.
+However, a future release will set `EARTHMIND_AUTO_LOGIN=False` and remove `EARTHMIND_SKIP_AUTH_AUTO_LOGIN`.
+At that point, EarthMind will strictly enforce API key authentication for API requests, and you can manually disable authentication for some features, like the visual editor, by setting `EARTHMIND_AUTO_LOGIN=True`.
+
+<details>
+<summary>Authentication enforcement in earlier versions</summary>
+
+EarthMind version 1.5 was the first version that could enforce authentication for EarthMind API requests, regardless of the value of `EARTHMIND_AUTO_LOGIN`.
+As a temporary bypass for backwards compatibility, this version added the `EARTHMIND_SKIP_AUTH_AUTO_LOGIN` environment variable and set both variables to `true` by default to preserve the fully unauthenticated behavior from earlier versions.
+This allowed users to upgrade to version 1.5 with no change in the authentication behavior.
+
+In EarthMind versions earlier than 1.5, EarthMind API requests didn't require authentication.
+Additionally, the default setting of `EARTHMIND_AUTO_LOGIN=True` automatically granted all users superuser privileges in the visual editor, and it allowed all users to run all EarthMind CLI commands as superusers.
+</details>
+
+### EARTHMIND_ENABLE_SUPERUSER_CLI {#earthmind-enable-superuser-cli}
+
+Controls the availability of the `earthmind superuser` command in the EarthMind CLI.
+The default is `true`, but `false` is recommended to prevent unrestricted superuser creation.
+For more information, see [`earthmind superuser`](/configuration-cli#earthmind-superuser).
+
+### EARTHMIND_SUPERUSER and EARTHMIND_SUPERUSER_PASSWORD {#earthmind-superuser}
+
+These variables specify the username and password for the EarthMind server's superuser.
+
+```text
+EARTHMIND_SUPERUSER=administrator
+EARTHMIND_SUPERUSER_PASSWORD=securepassword
+```
+
+They are required if `EARTHMIND_AUTO_LOGIN=False`.
+Otherwise, they aren't relevant.
+
+When you [start a EarthMind server with authentication enabled](#start-a-earthmind-server-with-authentication-enabled), if these variables are required but _not_ set, then EarthMind uses the default values of `earthmind` and `earthmind`.
+These defaults don't apply when using the EarthMind CLI command [`earthmind superuser`](/configuration-cli#earthmind-superuser).
+
+### EARTHMIND_SECRET_KEY {#earthmind-secret-key}
+
+This environment variable stores a secret key used for encrypting sensitive data like API keys and for JWT signing when using the HS256 algorithm.
+EarthMind uses the [Fernet](https://pypi.org/project/cryptography/) library for secret key encryption.
+For JWT-specific configuration, see [JWT authentication](/jwt-authentication).
+
+If no secret key is provided, EarthMind automatically generates one.
+
+However, you should generate and explicitly set your own key in production environments.
+This is particularly important for multi-instance deployments like Kubernetes to ensure consistent encryption across instances.
+
+To generate a secret encryption key for `EARTHMIND_SECRET_KEY`, do the following:
+
+1. Run the command to generate and copy a secret to the clipboard.
+
+    <Tabs>
+    <TabItem value="unix" label="macOS or Linux">
+
+    * **macOS**: Generate a secret key and copy it to the clipboard:
+
+        ```bash
+        python3 -c "from secrets import token_urlsafe; print(f'EARTHMIND_SECRET_KEY={token_urlsafe(32)}')" | pbcopy
+        ```
+
+    * **Linux**: Generate a secret key and copy it to the clipboard:
+
+        ```bash
+        python3 -c "from secrets import token_urlsafe; print(f'EARTHMIND_SECRET_KEY={token_urlsafe(32)}')" | xclip -selection clipboard
+        ```
+
+    * **Unix**: Generate a secret key and print it to the terminal to manually copy it:
+
+        ```bash
+        python3 -c "from secrets import token_urlsafe; print(f'EARTHMIND_SECRET_KEY={token_urlsafe(32)}')"
+        ```
+
+    </TabItem>
+    <TabItem value="windows" label="Windows">
+
+    * Generate a secret key and copy it to the clipboard:
+
+        ```bash
+        python -c "from secrets import token_urlsafe; print(f'EARTHMIND_SECRET_KEY={token_urlsafe(32)}')"
+        ```
+
+    * Generate a secret key and print it to the terminal to manually copy it:
+
+        ```bash
+
+        # Or just print
+        python -c "from secrets import token_urlsafe; print(f'EARTHMIND_SECRET_KEY={token_urlsafe(32)}')"
+        ```
+
+    </TabItem>
+    </Tabs>
+
+2. Paste the value into your `.env` file:
+
+    ```text
+    EARTHMIND_SECRET_KEY=dBuu...2kM2_fb
+    ```
+
+    If you're running EarthMind on Docker, reference the `EARTHMIND_SECRET_KEY` from your `.env` file in the `docker-compose.yml` file like this:
+
+        ```yaml
+        environment:
+          - EARTHMIND_SECRET_KEY=${EARTHMIND_SECRET_KEY}
+        ```
+
+#### Rotate the secret key {#rotating-the-secret-key}
+
+Rotate `EARTHMIND_SECRET_KEY` if the key might have been compromised and as part of your routine credential management practices.
+EarthMind provides a migration script that re-encrypts stored credentials and other sensitive data with a new key so you can rotate without losing access.
+
+For more information, see [Secret Key Rotation](https://github.com/earthmind-ai/earthmind/blob/main/SECURITY.md#secret-key-rotation) in the EarthMind Security Policy.
+
+### EARTHMIND_NEW_USER_IS_ACTIVE {#earthmind-new-user-is-active}
+
+When `EARTHMIND_NEW_USER_IS_ACTIVE=False` (default), accounts created by superusers are inactive by default and must be explicitly activated before users can sign in to the visual editor.
+The superuser can also deactivate a user's account as needed.
+
+When `EARTHMIND_NEW_USER_IS_ACTIVE=True`, accounts created by superusers are automatically activated.
+
+```text
+EARTHMIND_NEW_USER_IS_ACTIVE=False
+```
+
+Only superusers can manage user accounts for a EarthMind server, but user management only matters if your server has authentication enabled.
+For more information, see [Start a EarthMind server with authentication enabled](#start-a-earthmind-server-with-authentication-enabled).
+
+### EARTHMIND_API_KEY_SOURCE {#earthmind-api-key-source}
+
+This variable controls how EarthMind validates API keys.
+
+| Value | Description |
+|-------|-------------|
+| `db` (default) | Validates API keys against [EarthMind API keys](#earthmind-api-keys) stored in the database. This is the standard behavior where users create and manage API keys through the EarthMind UI or CLI. |
+| `env` | Validates API keys against the `EARTHMIND_API_KEY` environment variable. Useful for Kubernetes deployments, CI/CD pipelines, or any environment where you want to inject a pre-defined API key without database configuration. |
+
+By default, EarthMind validates the `x-api-key` header against the EarthMind database with `EARTHMIND_API_KEY_SOURCE=db`.
+When using database-based validation, you can create multiple keys with per-user permissions, track usage, and manage keys through the EarthMind UI or CLI.
+
+When `EARTHMIND_API_KEY_SOURCE=env`, EarthMind validates the `x-api-key` header against the value of the `EARTHMIND_API_KEY` environment variable.
+This means EarthMind runs securely in stateless environments, such as with LFX or Kubernetes secrets.
+
+When `EARTHMIND_API_KEY_SOURCE=env`, only a single API key can be used for the deployment. All authenticated requests use the same API key, and successful authentication grants superuser privileges.
+This mode is designed for single-tenant deployments or automated systems, not multi-user environments where different users need different access levels. To rotate your keys, update the environment variable and restart the EarthMind server.
+
+To enable environment-based API key validation:
+
+1. In the EarthMind `.env` file, set the API key source to `env`:
+
+    ```text
+    EARTHMIND_API_KEY_SOURCE=env
+    ```
+
+2. In the EarthMind `.env` file, set the API key value:
+
+    ```text
+    EARTHMIND_API_KEY=your-secure-api-key
+    ```
+
+3. Use the API key in your requests:
+
+    ```shell
+    curl -X POST \
+      "http://EARTHMIND_SERVER_ADDRESS/api/v1/run/FLOW_ID?stream=false" \
+      -H "Content-Type: application/json" \
+      -H "x-api-key: EARTHMIND_API_KEY" \
+      -d '{"inputs": {"text":""}, "tweaks": {}}'
+    ```
+
+    Replace `EARTHMIND_SERVER_ADDRESS`, `FLOW_ID`, and `EARTHMIND_API_KEY` with the values from your deployment.
+
+<details>
+<summary>Kubernetes deployment example</summary>
+
+To configure an environment-based API key in a Kubernetes Secret, do the following:
+
+1. Create a Kubernetes Secret with your API key:
+
+    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: earthmind-api-key
+    type: Opaque
+    stringData:
+      api-key: "YOUR_API_KEY"
+    ```
+
+    Replace `YOUR_API_KEY` with the `EARTHMIND_API_KEY` value from the EarthMind `.env` file.
+
+2. Reference the `earthmind-api-key` Secret in your Kubernetes deployment:
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: earthmind
+    spec:
+      template:
+        spec:
+          containers:
+          - name: earthmind
+            image: earthmindai/earthmind:latest
+            env:
+            - name: EARTHMIND_API_KEY_SOURCE
+              value: "env"
+            - name: EARTHMIND_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: earthmind-api-key
+                  key: api-key
+    ```
+
+</details>
+
+<details>
+<summary>Docker Compose example</summary>
+
+To configure an environment-based API key in Docker Compose, do the following:
+
+1. Set the API key in your EarthMind `.env` file.
+
+    ```text
+    EARTHMIND_API_KEY=your-secure-api-key
+    ```
+
+    Replace `YOUR_API_KEY` with your actual EarthMind API key value.
+
+2. Create or update your `docker-compose.yml` file to set `EARTHMIND_API_KEY_SOURCE=env` and reference the `EARTHMIND_API_KEY`.
+
+    ```yaml
+    services:
+      earthmind:
+        image: earthmindai/earthmind:latest
+        environment:
+          - EARTHMIND_API_KEY_SOURCE=env
+          - EARTHMIND_API_KEY=${EARTHMIND_API_KEY}
+        ports:
+          - "7860:7860"
+    ```
+
+</details>
+
+### EARTHMIND_CORS_* {#cors-configuration-for-authentication}
+
+Cross-Origin Resource Sharing (CORS) configuration controls how authentication credentials are handled when your EarthMind frontend and backend are served from different origins.
+The following `EARTHMIND_CORS_*` environment variables are available:
+
+| Variable | Format | Default | Description |
+|----------|--------|---------|-------------|
+| `EARTHMIND_CORS_ALLOW_CREDENTIALS` | Boolean | `True` | Whether to allow credentials, such as cookies and authorization headers, in CORS requests. |
+| `EARTHMIND_CORS_ALLOW_HEADERS` | List[String] or String | `*` | The allowed headers for CORS requests. Provide a comma-separated list of headers or use `*` to allow all headers. |
+| `EARTHMIND_CORS_ALLOW_METHODS` | List[String] or String | `*` | The allowed HTTP methods for CORS requests. Provide a comma-separated list of methods or use `*` to allow all methods. |
+| `EARTHMIND_CORS_ORIGINS` | String | `*` | The allowed CORS origins. Provide a comma-separated list of origins or use `*` for all origins. |
+
+The default configuration enables CORS credentials and uses wildcards (`*`) to allow all origins, headers, and methods:
+
+```text
+EARTHMIND_CORS_ORIGINS=*
+EARTHMIND_CORS_ALLOW_CREDENTIALS=True
+EARTHMIND_CORS_ALLOW_HEADERS=*
+EARTHMIND_CORS_ALLOW_METHODS=*
+```
+
+:::danger
+EarthMind's default CORS settings can be a security risk in production environments because any website can make requests to your EarthMind API, and any website can include credentials in cross-origin requests, including authentication cookies and authorization headers.
+
+In production deployments, specify exact origins in `EARTHMIND_CORS_ORIGINS`.
+You can also specify allowed headers and methods, if needed.
+For example:
+
+```text
+EARTHMIND_CORS_ORIGINS=["https://yourdomain.com","https://app.yourdomain.com"]
+EARTHMIND_CORS_ALLOW_CREDENTIALS=True
+EARTHMIND_CORS_ALLOW_HEADERS=["Content-Type","Authorization"]
+EARTHMIND_CORS_ALLOW_METHODS=["GET","POST","PUT"]
+```
+:::
+
+### SSRF protection {#ssrf-protection}
+
+The following environment variables configure Server-Side Request Forgery (SSRF) protection for the [**API Request** component](/api-request).
+SSRF protection prevents requests to internal or private network resources, such as private IP ranges, loopback addresses, and cloud metadata endpoints.
+
+| Variable | Format | Default | Description |
+|----------|--------|---------|-------------|
+| `EARTHMIND_SSRF_PROTECTION_ENABLED` | Boolean | `False` | Enable SSRF protection for the **API Request** component. When enabled, the component blocks requests to private IP addresses. When disabled, requests are not blocked. |
+| `EARTHMIND_SSRF_ALLOWED_HOSTS` | List[String] | Not set | A comma-separated list of allowed hosts, IP addresses, or CIDR ranges that can bypass SSRF protection checks. For example: `192.168.1.0/24,10.0.0.5,*.internal.company.local`.|
+
+### Login rate limiting {#login-rate-limiting}
+
+The following environment variables configure IP-based rate limiting on the `/login` endpoint to protect against brute-force attacks.
+When the limit is exceeded, EarthMind returns HTTP 429 with a `Retry-After: 60` header.
+
+| Variable | Format | Default | Description |
+|----------|--------|---------|-------------|
+| `EARTHMIND_RATE_LIMIT_PER_MINUTE` | Integer | `5` | Maximum number of login attempts allowed per minute from a single IP address. |
+| `EARTHMIND_RATE_LIMIT_STORAGE_URI` | String | `memory://` | Storage backend for rate limit counters. Use `memory://` for single-server deployments or `redis://host:port` for multi-server deployments where the limit should be shared across instances. |
+| `EARTHMIND_RATE_LIMIT_TRUST_PROXY` | Boolean | `False` | When `true`, EarthMind reads the client IP from the rightmost `X-Forwarded-For` header entry instead of the direct connection IP. Enable only when EarthMind is behind a trusted reverse proxy or load balancer. Do not enable if users can reach EarthMind directly, as this allows header spoofing. |
+
+### EARTHMIND_WEBHOOK_AUTH_ENABLE {#earthmind-webhook-auth-enable}
+
+This variable controls whether API key authentication is required for webhook endpoints.
+
+| Variable | Format | Default | Description |
+|----------|--------|---------|-------------|
+| `EARTHMIND_WEBHOOK_AUTH_ENABLE` | Boolean | `True` | When `True`, webhook endpoints require API key authentication and validate that the authenticated user owns the flow being executed. When `False`, no EarthMind API key is required and all requests to the webhook endpoint are treated as being sent by the flow owner. |
+
+By default, webhooks require API key authentication with `EARTHMIND_WEBHOOK_AUTH_ENABLE=True`.
+
+To allow webhooks to run without authentication (not recommended; use only in trusted environments), in your EarthMind `.env` file, set `EARTHMIND_WEBHOOK_AUTH_ENABLE=False`.
+
+When webhook authentication is enabled, you must provide a EarthMind API key with each webhook request as an HTTP header or query parameter. For more information, see [Require authentication for webhooks](/webhook#require-authentication-for-webhooks).
+
+## Start a EarthMind server with authentication enabled
+
+This section shows you how to use the [authentication environment variables](/api-keys-and-authentication#authentication-environment-variables) to deploy a EarthMind server with authentication enabled.
+This involves disabling automatic login, setting superuser credentials, generating a secret encryption key, and enabling user management.
+
+This configuration is recommended for any deployment where EarthMind is exposed to a shared or public network, or where multiple users access the same EarthMind server.
+
+With authentication enabled, all users must sign in to the visual editor with valid credentials, and API requests require authentication with a EarthMind API key.
+Additionally, you must sign in as a superuser to manage users and [create a EarthMind API key](#create-a-earthmind-api-key) with superuser privileges.
+
+### Start the EarthMind server
+
+1. Create a `.env` file with the following variables:
+
+    ```text
+    EARTHMIND_AUTO_LOGIN=False
+    EARTHMIND_SUPERUSER=
+    EARTHMIND_SUPERUSER_PASSWORD=
+    EARTHMIND_SECRET_KEY=
+    EARTHMIND_NEW_USER_IS_ACTIVE=False
+    EARTHMIND_ENABLE_SUPERUSER_CLI=False
+    ```
+
+    Your `.env` file can have other environment variables.
+    This example focuses on authentication variables.
+
+2. Set `EARTHMIND_SUPERUSER` and `EARTHMIND_SUPERUSER_PASSWORD` to your desired superuser credentials.
+
+    For a one-time test, you can use basic credentials like `administrator` and `password`.
+    Strong, securely-stored credentials are recommended in genuine development and production environments.
+
+3. Recommended: Generate and set a `EARTHMIND_SECRET_KEY` for encrypting sensitive data.
+
+    If you don't set a secret key, EarthMind generates one automatically, but this isn't recommended for production environments.
+
+    For instructions on generating and setting a secret key, see [`EARTHMIND_SECRET_KEY`](#earthmind-secret-key).
+
+4. Save your `.env` file with the populated variables. For example:
+
+    ```text
+    EARTHMIND_AUTO_LOGIN=False
+    EARTHMIND_SUPERUSER=administrator
+    EARTHMIND_SUPERUSER_PASSWORD=securepassword
+    EARTHMIND_SECRET_KEY=dBuu...2kM2_fb
+    EARTHMIND_NEW_USER_IS_ACTIVE=False
+    EARTHMIND_ENABLE_SUPERUSER_CLI=False
+    ```
+
+5. Start EarthMind with the configuration from your `.env` file:
+
+    ```text
+    uv run earthmind run --env-file .env
+    ```
+
+    Starting EarthMind with a `.env` file automatically authenticates you as the superuser set in `EARTHMIND_SUPERUSER` and `EARTHMIND_SUPERUSER_PASSWORD`.
+    If you don't explicitly set these variables, the default values are `earthmind` and `earthmind` for system auto-login.
+
+6. Verify the server is running. The default location is `http://localhost:7860`.
+
+Next, you can add users to your EarthMind server to collaborate with others on flows.
+
+### Manage users as an administrator
+
+1. To complete your first-time login as a superuser, go to `http://localhost:7860/login`.
+
+    If you aren't using the default location, replace `localhost:7860` with your server's address.
+
+2. Log in with the superuser credentials you set in your `.env` (`EARTHMIND_SUPERUSER` and `EARTHMIND_SUPERUSER_PASSWORD`).
+
+3. To manage users on your server, navigate to `/admin`, such as `http://localhost:7860/admin`, click your profile icon, and then click **Admin Page**.
+
+    As a superuser, you can add users, set permissions, reset passwords, and delete accounts.
+
+4. To add a user, click **New User**, and then complete the user account form:
+
+    1. Enter a username and password.
+    2. To activate the account immediately, select **Active**. Inactive users cannot sign in or access flows they created before becoming inactive.
+    3. Deselect **Superuser** if you don't want the user to have full administrative privileges.
+    4. Click **Save**. The new user appears in the **Admin Page**.
+
+5. Send the credentials to the user so they can sign in to EarthMind. The superuser sets the initial password when creating the account, so users must receive their login credentials from the superuser.
+
+6. To test the new user's access, sign out of EarthMind, and then sign in with the new user's credentials.
+
+    Try to access the `/admin` page.
+    You are redirected to the `/flows` page if the new user isn't a superuser.
+
+## See also
+
+* [EarthMind environment variables](/environment-variables)
+* [EarthMind Security Policy](https://github.com/earthmind-ai/earthmind/blob/main/SECURITY.md) — reporting vulnerabilities, security configuration, and [secret key rotation](https://github.com/earthmind-ai/earthmind/blob/main/SECURITY.md#secret-key-rotation)

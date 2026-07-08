@@ -1,0 +1,42 @@
+networks:
+  dev-earthmind:
+
+services:
+  earthmind:
+    build:
+      context: ..
+      dockerfile: docker/dev.Dockerfile
+    image: dev-earthmind
+    container_name: dev-earthmind
+    restart: always
+    ports:
+      - "7860:7860"
+      - "3000:3000"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - EARTHMIND_DATABASE_URL=postgresql://earthmind:earthmind@postgres:5432/earthmind
+      - EARTHMIND_SUPERUSER=earthmind
+      - EARTHMIND_SUPERUSER_PASSWORD=earthmind
+      - EARTHMIND_CONFIG_DIR=/var/lib/earthmind
+    env_file:
+      - ../.env
+    volumes:
+      - ../:/app
+    depends_on:
+      - postgres
+    networks:
+      -  dev-earthmind
+
+
+  postgres:
+    container_name: postgres
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: earthmind
+      POSTGRES_PASSWORD: earthmind
+      POSTGRES_DB: earthmind
+    ports:
+      - "5432:5432"
+    networks:
+      -  dev-earthmind
+

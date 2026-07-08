@@ -1,0 +1,531 @@
+name: EarthMind Nightly Build
+run-name: EarthMind Nightly Release by @${{ github.actor }}
+
+on:
+  workflow_call:
+    inputs:
+      build_docker_base:
+        description: "Build Docker Image for EarthMind Nightly Base"
+        required: true
+        type: boolean
+        default: false
+      build_docker_main:
+        description: "Build Docker Image for EarthMind Nightly"
+        required: true
+        type: boolean
+        default: false
+      build_docker_ep:
+        description: "Build Docker Image for EarthMind Nightly with Entrypoint"
+        required: false
+        type: boolean
+        default: false
+      build_lfx:
+        description: "Build and release LFX package"
+        required: false
+        type: boolean
+        default: false
+      nightly_tag_release:
+        description: "Tag for the nightly main build"
+        required: true
+        type: string
+      nightly_tag_base:
+        description: "Tag for the nightly base build"
+        required: true
+        type: string
+      nightly_tag_lfx:
+        description: "Tag for the nightly LFX build"
+        required: false
+        type: string
+      nightly_tag_sdk:
+        description: "Tag for the nightly SDK build"
+        required: false
+        type: string
+      push_to_registry:
+        description: "Whether to push images to registries. Set to false for testing builds without publishing."
+        required: true
+        type: boolean
+        default: false
+
+env:
+  POETRY_VERSION: "1.8.3"
+  PYTHON_VERSION: "3.13"
+
+jobs:
+  build-nightly-lfx:
+    name: Build LFX Nightly
+    if: ${{ inputs.build_lfx }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.verify.outputs.version }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the code at a specific ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.nightly_tag_release }}
+          persist-credentials: true
+      - name: "Setup Environment"
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: ${{ env.PYTHON_VERSION }}
+          prune-cache: false
+      - name: Install LFX dependencies
+        run: cd src/lfx && uv sync
+
+      - name: Verify SDK Nightly Name and Version
+        if: ${{ inputs.build_lfx }}
+        run: |
+          name=$(grep '^name = "' src/sdk/pyproject.toml | head -n 1 | sed 's/.*"\(.*\)".*/\1/')
+          version=$(grep '^version = "' src/sdk/pyproject.toml | head -n 1 | sed 's/.*"\(.*\)".*/\1/')
+          if [ "$name" != "earthmind-sdk" ]; then
+            echo "Name $name does not match earthmind-sdk. Exiting the workflow."
+            exit 1
+          fi
+          if [ "v$version" != "${{ inputs.nightly_tag_sdk }}" ]; then
+            echo "Version v$version does not match nightly tag ${{ inputs.nightly_tag_sdk }}. Exiting the workflow."
+            exit 1
+          fi
+
+      - name: Verify Nightly Name and Version
+        id: verify
+        run: |
+          cd src/lfx
+          # Root the tree at lfx; a bare `grep lfx` matches bundles like `lfx-ibm` first.
+          name=$(uv tree --package lfx | head -n 1 | awk '{print $1}')
+          version=$(uv tree --package lfx | head -n 1 | awk '{print $2}')
+          if [ "$name" != "lfx" ]; then
+            echo "Name $name does not match lfx. Exiting the workflow."
+            exit 1
+          fi
+          if [ "$version" != "${{ inputs.nightly_tag_lfx }}" ]; then
+            echo "Version $version does not match nightly tag ${{ inputs.nightly_tag_lfx }}. Exiting the workflow."
+            exit 1
+          fi
+          # Strip the leading `v` from the version
+          version=$(echo $version | sed 's/^v//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Build earthmind-sdk for distribution
+        run: |
+          make sdk_build args="--wheel"
+
+      - name: Build LFX for distribution
+        run: |
+          cd src/lfx
+          rm -rf dist/
+          uv build --wheel --out-dir dist
+
+      - name: Test LFX CLI
+        run: |
+          cd src/lfx
+          # Use a clean venv and install both wheels together so uv can resolve
+          # the local SDK dependency without falling back to PyPI.
+          uv venv test-env --seed
+          uv pip install --python ./test-env/bin/python --force-reinstall ../sdk/dist/*.whl dist/*.whl
+          ./test-env/bin/lfx --help
+          echo "LFX CLI test completed successfully"
+
+      # PyPI publishing moved to after cross-platform testing
+
+      - name: Upload earthmind-sdk Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist-nightly-sdk
+          path: src/sdk/dist
+
+      - name: Upload LFX Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist-nightly-lfx
+          path: src/lfx/dist
+
+  build-nightly-base:
+    name: Build EarthMind Nightly Base
+    needs: [build-nightly-lfx]
+    if: ${{ always() && (needs.build-nightly-lfx.result == 'success' || inputs.build_lfx == false) }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      version: ${{ steps.verify.outputs.version }}
+      skipped: ${{ steps.verify.outputs.skipped }}
+    steps:
+      - name: Check out the code at a specific ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.nightly_tag_release }}
+          persist-credentials: true
+      - name: "Setup Environment"
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: ${{ env.PYTHON_VERSION }}
+          prune-cache: false
+
+      - name: Download LFX artifact
+        if: inputs.build_lfx
+        uses: actions/download-artifact@v7
+        with:
+          name: dist-nightly-lfx
+          path: lfx-dist
+
+      - name: Install the project
+        run: uv sync
+
+      - name: Force reinstall LFX from built wheel
+        if: inputs.build_lfx
+        run: |
+          echo "Installing LFX from built wheel to test the actual distribution package..."
+          # While workspace resolution installs from source, we want to test the exact
+          # wheel that will be published to PyPI to catch any packaging issues
+          uv pip install --force-reinstall --no-deps lfx-dist/*.whl
+
+      - name: Verify Nightly Name and Version
+        id: verify
+        run: |
+          # Root the tree at earthmind-base; it prints as a top-level `earthmind-base v<ver>` line,
+          # so a bare `grep earthmind-base` would read the version into $name and leave $version empty.
+          name=$(uv tree --package earthmind-base | head -n 1 | awk '{print $1}')
+          version=$(uv tree --package earthmind-base | head -n 1 | awk '{print $2}')
+          # Strip extras from package name (e.g., "earthmind-base[complete]" -> "earthmind-base")
+          name_without_extras=$(echo $name | sed 's/\[.*\]//')
+          if [ "$name_without_extras" != "earthmind-base" ]; then
+            echo "Name $name_without_extras does not match earthmind-base. Exiting the workflow."
+            echo "skipped=true" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          if [ "$version" != "${{ inputs.nightly_tag_base }}" ]; then
+            echo "Version $version does not match nightly tag ${{ inputs.nightly_tag_base }}. Exiting the workflow."
+            echo "skipped=true" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          # Strip the leading `v` from the version
+          version=$(echo $version | sed 's/^v//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "skipped=false" >> $GITHUB_OUTPUT
+
+      - name: Build EarthMind Base for distribution
+        run: |
+          rm -rf src/backend/base/dist
+          rm -rf dist
+          make build base=true args="--no-sources --wheel"
+
+      - name: Test EarthMind Base CLI
+        run: |
+          # TODO: Unsure why the whl is not built in src/backend/base/dist
+          mkdir src/backend/base/dist
+          mv dist/*.whl src/backend/base/dist/
+          # Install with [complete] extra to test all optional dependencies
+          WHEEL_FILE=$(ls src/backend/base/dist/*.whl)
+          uv pip install "${WHEEL_FILE}[complete]"
+          uv run python -m earthmind run --host localhost --port 7860 --backend-only &
+          SERVER_PID=$!
+          # Wait for the server to start
+          timeout 120 bash -c 'until curl -f http://localhost:7860/api/v1/auto_login; do sleep 2; done' || (echo "Server did not start in time" && kill $SERVER_PID && exit 1)
+          # Terminate the server
+          kill $SERVER_PID || (echo "Failed to terminate the server" && exit 1)
+          sleep 20 # give the server some time to terminate
+          # Check if the server is still running
+          if kill -0 $SERVER_PID 2>/dev/null; then
+            echo "Failed to terminate the server"
+            exit 0
+          else
+            echo "Server terminated successfully"
+          fi
+
+      # PyPI publishing moved to after cross-platform testing
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist-nightly-base
+          path: src/backend/base/dist
+
+  build-nightly-main:
+    name: Build EarthMind Nightly Main
+    needs: [build-nightly-base]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.verify.outputs.version }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the code at a specific ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.nightly_tag_release}}
+          persist-credentials: true
+      - name: "Setup Environment"
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: ${{ env.PYTHON_VERSION }}
+          prune-cache: false
+
+      - name: Download LFX artifact
+        if: inputs.build_lfx
+        uses: actions/download-artifact@v7
+        with:
+          name: dist-nightly-lfx
+          path: lfx-dist
+
+      - name: Download base artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: dist-nightly-base
+          path: base-dist
+
+      - name: Install the project
+        run: uv sync
+
+      - name: Force reinstall packages from built wheels
+        run: |
+          # While workspace resolution installs from source, we want to test the exact
+          # wheels that will be published to PyPI to catch any packaging issues
+          if [ "${{ inputs.build_lfx }}" == "true" ]; then
+            echo "Installing LFX from built wheel..."
+            uv pip install --force-reinstall --no-deps lfx-dist/*.whl
+          fi
+          echo "Installing earthmind-base from built wheel..."
+          uv pip install --force-reinstall --no-deps base-dist/*.whl
+
+      - name: Verify Nightly Name and Version
+        id: verify
+        run: |
+          name=$(uv tree | grep -E '^earthmind[[:space:]]' | awk '{print $1}')
+          version=$(uv tree | grep -E '^earthmind[[:space:]]' | awk '{print $2}')
+          if [ "$name" != "earthmind" ]; then
+            echo "Name $name does not match earthmind. Exiting the workflow."
+            exit 1
+          fi
+          if [ "$version" != "${{ inputs.nightly_tag_release }}" ]; then
+            echo "Version $version does not match nightly tag ${{ inputs.nightly_tag_release }}. Exiting the workflow."
+            exit 1
+          fi
+          # Strip the leading `v` from the version
+          version=$(echo $version | sed 's/^v//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Wait for PyPI Propagation
+        if: needs.build-nightly-base.outputs.skipped == 'false'
+        run: sleep 300 # wait for 5 minutes to ensure PyPI propagation of base
+
+      - name: Build EarthMind Main for distribution
+        run: make build main=true args="--no-sources --wheel"
+      - name: Test EarthMind Main CLI
+        run: |
+          uv pip install dist/*.whl
+          uv run python -m earthmind run --host localhost --port 7860 --backend-only &
+          SERVER_PID=$!
+          # Wait for the server to start
+          timeout 120 bash -c 'until curl -f http://localhost:7860/health_check; do sleep 2; done' || (echo "Server did not start in time" && kill $SERVER_PID && exit 1)
+          # Terminate the server
+          kill $SERVER_PID || (echo "Failed to terminate the server" && exit 1)
+          sleep 20 # give the server some time to terminate
+          # Check if the server is still running
+          if kill -0 $SERVER_PID 2>/dev/null; then
+            echo "Failed to terminate the server"
+            exit 0
+          else
+            echo "Server terminated successfully"
+          fi
+
+      - name: Prepare EarthMind Main artifact
+        run: |
+          shopt -s nullglob
+          MAIN_WHEELS=(dist/earthmind-*.whl)
+          if [ ${#MAIN_WHEELS[@]} -ne 1 ]; then
+            echo "Expected exactly one earthmind wheel in dist/, found ${#MAIN_WHEELS[@]}"
+            ls -la dist/
+            exit 1
+          fi
+          rm -rf main-dist
+          mkdir -p main-dist
+          cp "${MAIN_WHEELS[0]}" main-dist/
+
+      # Bundles are NOT rebuilt/republished for nightly. The stable `lfx-*` bundles on
+      # PyPI work as-is against the canonical `lfx` pre-release (see src/bundles/NIGHTLY.md). The
+      # cross-platform test self-builds the bundles from src/bundles for install coverage.
+
+      # PyPI publishing moved to after cross-platform testing
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist-nightly-main
+          path: main-dist
+
+  test-cross-platform:
+    name: Test Cross-Platform Installation
+    needs: [build-nightly-lfx, build-nightly-base, build-nightly-main]
+    uses: ./.github/workflows/cross-platform-test.yml
+    with:
+      base-artifact-name: "dist-nightly-base"
+      main-artifact-name: "dist-nightly-main"
+      lfx-artifact-name: "dist-nightly-lfx"
+      sdk-artifact-name: "dist-nightly-sdk"
+
+  publish-nightly-lfx:
+    name: Publish LFX Nightly to PyPI
+    needs: [build-nightly-lfx, test-cross-platform, publish-nightly-sdk]
+    if: ${{ inputs.build_lfx }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.nightly_tag_release }}
+          persist-credentials: true
+      - name: Download LFX artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: dist-nightly-lfx
+          path: src/lfx/dist
+      - name: Setup Environment
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+          python-version: "3.13"
+      - name: Publish LFX to PyPI
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          make lfx_publish
+
+  publish-nightly-sdk:
+    name: Publish SDK Nightly to PyPI
+    needs: [build-nightly-lfx, test-cross-platform]
+    if: ${{ inputs.build_lfx }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.nightly_tag_release }}
+          persist-credentials: true
+      - name: Download earthmind-sdk artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: dist-nightly-sdk
+          path: src/sdk/dist
+      - name: Setup Environment
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+          python-version: "3.13"
+      - name: Publish SDK to PyPI
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          make sdk_publish
+
+  publish-nightly-base:
+    name: Publish EarthMind Base Nightly to PyPI
+    needs: [build-nightly-base, test-cross-platform, publish-nightly-lfx]
+    if: ${{ always() && needs.build-nightly-base.result == 'success' && needs.test-cross-platform.result == 'success' && (needs.publish-nightly-lfx.result == 'success' || inputs.build_lfx == false) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.nightly_tag_release }}
+          persist-credentials: true
+      - name: Download base artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: dist-nightly-base
+          path: src/backend/base/dist
+      - name: Setup Environment
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+          python-version: "3.13"
+      - name: Publish base to PyPI
+        if: needs.build-nightly-base.outputs.skipped == 'false'
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          make publish base=true
+
+  publish-nightly-main:
+    name: Publish EarthMind Main Nightly to PyPI
+    needs: [build-nightly-main, test-cross-platform, publish-nightly-base]
+    if: ${{ always() && needs.build-nightly-main.result == 'success' && needs.test-cross-platform.result == 'success' && needs.publish-nightly-base.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.nightly_tag_release }}
+          persist-credentials: true
+      - name: Download main artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: dist-nightly-main
+          path: dist
+      - name: Setup Environment
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+          python-version: "3.13"
+      - name: Publish to PyPI
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          make publish main=true
+
+  call_docker_build_base:
+    name: Call Docker Build Workflow for EarthMind Base
+    if: ${{ always() && inputs.build_docker_base }}
+    needs: [build-nightly-base, build-nightly-main]
+    uses: ./.github/workflows/docker-nightly-build.yml
+    with:
+      ref: ${{ inputs.nightly_tag_release }}
+      release_type: nightly-base
+      push_to_registry: ${{ inputs.push_to_registry }}
+    secrets: inherit
+
+  call_docker_build_main:
+    name: Call Docker Build Workflow for EarthMind
+    if: ${{ always() && inputs.build_docker_main }}
+    needs: [build-nightly-main, call_docker_build_base]
+    uses: ./.github/workflows/docker-nightly-build.yml
+    with:
+      ref: ${{ inputs.nightly_tag_release }}
+      release_type: nightly-main
+      push_to_registry: ${{ inputs.push_to_registry }}
+    secrets: inherit
+
+  # TODO: Uncomment this when our runner can fit the builds that contain pytorch (and other large dependencies)
+  # call_docker_build_main_all:
+  #   name: Call Docker Build Workflow for earthmind-all
+  #   if: always() && ${{ inputs.build_docker_main == 'true' }}
+  #   needs: [build-nightly-main]
+  #   uses: ./.github/workflows/docker-nightly-build.yml
+  #   with:
+  #     ref: ${{ inputs.nightly_tag_release }}
+  #     release_type: nightly-main-all
+  #     main_version: ${{ inputs.nightly_tag_release }}
+  #   secrets: inherit
+
+  # call_docker_build_main_ep:
+  #   name: Call Docker Build Workflow for EarthMind with Entrypoint
+  #   if: ${{ always() && inputs.build_docker_ep }}
+  #   needs: [build-nightly-main, call_docker_build_main]
+  #   uses: ./.github/workflows/docker-build-v2.yml
+  #   with:
+  #     ref: ${{ inputs.nightly_tag_release }}
+  #     release_type: main-ep
+  #     push_to_registry: ${{ inputs.push_to_registry }}
+  #   secrets: inherit

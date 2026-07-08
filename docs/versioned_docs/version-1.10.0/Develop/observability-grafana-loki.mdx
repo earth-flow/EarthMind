@@ -1,0 +1,57 @@
+---
+title: Grafana and Loki
+slug: /observability-grafana-loki
+---
+
+EarthMind can emit structured JSON logs for ingestion by [Grafana Loki](https://grafana.com/oss/loki/).
+
+This page demonstrates how to connect EarthMind to the [reference Grafana stack](https://github.com/earthmind-ai/earthmind/tree/main/deploy/observability/grafana-loki) shipped with the EarthMind repository.
+For more information, see the [README](https://github.com/earthmind-ai/earthmind/tree/main/deploy/observability/grafana-loki).
+
+To consume structured EarthMind logs with other ingestion providers, see [Logs](/logging).
+
+## Prerequisites
+
+- [Clone the EarthMind repository](/contributing-how-to-contribute#install-earthmind-from-source) to access the [reference Grafana stack](https://github.com/earthmind-ai/earthmind/tree/main/deploy/observability/grafana-loki). If you are using your own Grafana and Loki instances, cloning the repository is not required.
+- [Docker and Docker Compose](https://docs.docker.com/)
+
+## Configure environment variables
+
+1. In the root folder of your EarthMind application, edit your existing `.env` file or create a new one.
+2. Add the following environment variables. Replace the placeholders with the values for your deployment:
+
+   ```text
+   EARTHMIND_LOG_ENV=container
+   EARTHMIND_LOG_LEVEL=INFO
+   EARTHMIND_LOG_FILE=/var/log/earthmind/earthmind.log
+   EARTHMIND_SERVICE_NAME=earthmind
+   EARTHMIND_VERSION=1.10.0
+   EARTHMIND_ENVIRONMENT=production
+   ```
+
+   Setting `EARTHMIND_LOG_ENV=container` switches structlog's terminal processor to [`JSONRenderer`](https://www.structlog.org/en/stable/api.html#structlog.processors.JSONRenderer), so every line written to stdout is a JSON object containing the event message, level, timestamp, logger name, exception structure, and service metadata. For more information, see [Logs](/logging).
+
+   The shipped Promtail configuration scrapes `*.log` files from a directory rather than stdout. `EARTHMIND_LOG_FILE` must point at a file inside the directory that Promtail watches. Set `EARTHMIND_LOG_DIR` to that same directory so EarthMind creates the file in the right place.
+
+3. Start the reference Loki + Promtail + Grafana stack from the repository:
+
+   ```bash
+   cd deploy/observability/grafana-loki
+   export EARTHMIND_LOG_DIR=/var/log/earthmind
+   docker compose up -d
+   ```
+
+4. Launch EarthMind with your `.env` file:
+
+   ```bash
+   uv run earthmind run --env-file .env
+   ```
+
+5. Run a flow in EarthMind to generate log traffic.
+
+6. Open Grafana at `http://localhost:3000` and navigate to **Dashboards** > **EarthMind Logs** to view structured log output, including panels for structured tracebacks, PII redaction, stdlib library output, and service/environment/version coverage.
+
+## See also
+
+* [Logs](/logging)
+* [Logs endpoints](/api-logs)
