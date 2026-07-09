@@ -35,6 +35,7 @@ interface KnowledgeGraphPanelProps {
   maxEdges?: number;
   hideLegend?: boolean;
   fitProfile?: KnowledgeGraphFitProfile;
+  nodeSizeScale?: number;
   autoRefreshOnMount?: boolean;
   floatingNodeDetails?: boolean;
   compact?: boolean;
@@ -46,8 +47,7 @@ interface KnowledgeGraphPanelProps {
 }
 
 // ── Entity type -> color mapping (matches backend _categorize_entity) ────────
-// Backend assigns type: technology | method | organization | metric | dataset | event | other
-// Frontend adds "core" for the single most important node.
+// Backend assigns type: technology | method | organization | metric | dataset | event | document | other
 interface CatDef {
   color: string; // main color (used for node fill + edge color)
   dark: string; // darker shade for gradient end
@@ -55,22 +55,16 @@ interface CatDef {
   label: string; // legend label
 }
 const TYPE_ORDER = [
-  "core",
   "technology",
   "method",
   "organization",
   "metric",
   "dataset",
   "event",
+  "document",
   "other",
 ] as const;
 const CATEGORY_DEFS: Record<string, CatDef> = {
-  core: {
-    color: "#5b7cfa",
-    dark: "#283ca4",
-    glow: "rgba(91,124,250,0.38)",
-    label: "Core",
-  },
   technology: {
     color: "#2f80ed",
     dark: "#1455b8",
@@ -107,6 +101,12 @@ const CATEGORY_DEFS: Record<string, CatDef> = {
     glow: "rgba(249,115,22,0.32)",
     label: "Event",
   },
+  document: {
+    color: "#06b6d4",
+    dark: "#155e75",
+    glow: "rgba(6,182,212,0.30)",
+    label: "Document",
+  },
   other: {
     color: "#64748b",
     dark: "#334155",
@@ -115,9 +115,9 @@ const CATEGORY_DEFS: Record<string, CatDef> = {
   },
 };
 
-const GRAPH_BACKGROUND = "#F7F9FC";
-const GRAPH_LINK_COLOR = "rgba(148,163,184,0.48)";
-const GRAPH_LINK_SHADOW = "rgba(15,23,42,0.08)";
+const GRAPH_BACKGROUND = "#F4F8FF";
+const GRAPH_LINK_COLOR = "rgba(99,132,186,0.42)";
+const GRAPH_LINK_SHADOW = "rgba(61,106,173,0.12)";
 
 type KnowledgeGraphFitProfile = "drawer" | "chunks" | "default";
 
@@ -126,6 +126,7 @@ interface FitProfileConfig {
   viewportRatioY: number;
   minZoom: number;
   maxZoom: number;
+  initialZoom: number;
   paddingX: number;
   paddingY: number;
   repulsion: number;
@@ -152,6 +153,7 @@ const getFitProfileConfig = (
       viewportRatioY: 0.56,
       minZoom: 0.12,
       maxZoom: 0.78,
+      initialZoom: 0.34,
       paddingX: 64,
       paddingY: 68,
       repulsion: Math.round(460 * densityBoost),
@@ -168,6 +170,7 @@ const getFitProfileConfig = (
       viewportRatioY: 0.7,
       minZoom: 0.14,
       maxZoom: 0.92,
+      initialZoom: 0.7,
       paddingX: 56,
       paddingY: 62,
       repulsion: Math.round(390 * densityBoost),
@@ -183,6 +186,7 @@ const getFitProfileConfig = (
     viewportRatioY: 0.8,
     minZoom: 0.22,
     maxZoom: 1.08,
+    initialZoom: 0.58,
     paddingX: 34,
     paddingY: 46,
     repulsion: Math.round(270 * densityBoost),
@@ -208,54 +212,6 @@ const rgbaFromHex = (hex: string, alpha: number) => {
   return `rgba(${r},${g},${b},${alpha})`;
 };
 
-const svgToEChartsImage = (svg: string) =>
-  `image://data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-
-const CORE_ICON_GLYPHS: Record<string, string> = {
-  core: '<path d="M48 26v44M28 48h40M34 34l28 28M62 34L34 62" />',
-  technology: '<path d="M30 36h36v24H30z" /><path d="M39 70h18M48 60v10" />',
-  method:
-    '<path d="M30 52c8-18 28-18 36 0" /><path d="M35 60h26" /><path d="M40 42l8-12 8 12" />',
-  organization:
-    '<path d="M31 63h34" /><path d="M36 63V43l12-8 12 8v20" /><path d="M48 35V25" />',
-  metric: '<path d="M30 61l11-12 9 7 16-22" /><path d="M30 68h36" />',
-  dataset:
-    '<path d="M32 36c0-6 32-6 32 0v24c0 6-32 6-32 0z" /><path d="M32 48c0 6 32 6 32 0" />',
-  event:
-    '<path d="M34 36h28v28H34z" /><path d="M40 29v10M56 29v10M34 45h28" />',
-  other: '<path d="M48 30l18 10v16L48 66 30 56V40z" />',
-};
-
-const coreSymbolCache = new Map<string, string>();
-
-const getCoreNodeSymbol = (type: string, cat: CatDef) => {
-  const cacheKey = `${type}:${cat.color}:${cat.dark}`;
-  const cached = coreSymbolCache.get(cacheKey);
-  if (cached) return cached;
-
-  const glyph = CORE_ICON_GLYPHS[type] ?? CORE_ICON_GLYPHS.other;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-    <defs>
-      <radialGradient id="glass" cx="34%" cy="26%" r="76%">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="22%" stop-color="#ffffff" stop-opacity="0.96"/>
-        <stop offset="58%" stop-color="${cat.color}" stop-opacity="0.92"/>
-        <stop offset="100%" stop-color="${cat.dark}" stop-opacity="1"/>
-      </radialGradient>
-      <linearGradient id="shine" x1="22" y1="14" x2="64" y2="58" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.82"/>
-        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <circle cx="48" cy="48" r="41" fill="url(#glass)" stroke="#ffffff" stroke-width="7"/>
-    <path d="M26 32c9-14 32-18 46-3-16-7-32-5-46 3z" fill="url(#shine)"/>
-    <g fill="none" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.96">${glyph}</g>
-  </svg>`;
-  const symbol = svgToEChartsImage(svg);
-  coreSymbolCache.set(cacheKey, symbol);
-  return symbol;
-};
-
 // ── Data formatting ──────────────────────────────────────────────────────────
 interface EChartsNode {
   id: string;
@@ -276,6 +232,7 @@ interface EChartsNode {
   chunkIds: string[];
   mentions: number;
   filesCount: number;
+  fileLabels: string[];
   degree: number;
   importance: number;
 }
@@ -298,7 +255,6 @@ interface FormattedGraph {
   nodes: EChartsNode[];
   links: EChartsLink[];
   categories: { name: string }[];
-  coreNodeId: string;
 }
 
 interface EChartsFormatterParams<TData> {
@@ -335,9 +291,10 @@ function formatGraphData(
   edges: KnowledgeGraphEdge[],
   maxNodes: number,
   maxEdges: number,
+  nodeSizeScale = 1,
 ): FormattedGraph {
   if (!nodes || nodes.length === 0) {
-    return { nodes: [], links: [], categories: [], coreNodeId: "" };
+    return { nodes: [], links: [], categories: [] };
   }
 
   // Sort all nodes by importance score (descending) - scans ALL chunks' entities
@@ -360,38 +317,8 @@ function formatGraphData(
     )
     .slice(0, maxEdges);
 
-  const coreId = limitedNodes[0].id;
-  const adjacency = new Map<string, Set<string>>();
-  limitedNodes.forEach((n) => adjacency.set(n.id, new Set()));
-  candidateEdges.forEach((e) => {
-    adjacency.get(e.source)?.add(e.target);
-    adjacency.get(e.target)?.add(e.source);
-  });
-
-  // BFS: only keep nodes connected to any core node
-  const coreNodeIds = limitedNodes
-    .filter((n) => Boolean(n.metadata?.is_core))
-    .map((n) => n.id);
-  const bfsStartIds = coreNodeIds.length > 0 ? coreNodeIds : [coreId];
-  const connectedSet = new Set<string>(bfsStartIds);
-  const queue = [...bfsStartIds];
-  while (queue.length > 0) {
-    const cur = queue.shift()!;
-    const neighbors = adjacency.get(cur);
-    if (neighbors) {
-      for (const neighbor of Array.from(neighbors)) {
-        if (!connectedSet.has(neighbor)) {
-          connectedSet.add(neighbor);
-          queue.push(neighbor);
-        }
-      }
-    }
-  }
-
-  const connectedNodes = limitedNodes.filter((n) => connectedSet.has(n.id));
-  const connectedEdges = candidateEdges.filter(
-    (e) => connectedSet.has(e.source) && connectedSet.has(e.target),
-  );
+  const connectedNodes = limitedNodes;
+  const connectedEdges = candidateEdges;
 
   const importances = connectedNodes.map((n) =>
     toNumber(n.metadata?.importance_score, n.weight),
@@ -421,31 +348,43 @@ function formatGraphData(
 
   // Build a lookup: nodeId -> category color (for edge coloring)
   const nodeColorMap = new Map<string, string>();
+  const defaultVisibleLabelCount = clamp(
+    Math.round(Math.sqrt(connectedNodes.length) + 2),
+    5,
+    8,
+  );
+  const defaultVisibleLabelIds = new Set(
+    connectedNodes
+      .slice(0, defaultVisibleLabelCount)
+      .map((node) => node.id),
+  );
 
   const echartsNodes: EChartsNode[] = connectedNodes.map((node) => {
     const importance = toNumber(node.metadata?.importance_score, node.weight);
     const normalized = (importance - minImp) / impSpan;
 
-    // Use backend-assigned is_core flag (based on degree centrality across all chunks)
-    const isCore = Boolean(node.metadata?.is_core);
-
-    // Use backend-assigned type; core nodes get "core" type for visual styling
-    const entityType = isCore ? "core" : node.type || "other";
+    const entityType = node.type || "other";
     const catIdx = typeToIndex[entityType] ?? typeToIndex["other"];
     const cat = CATEGORY_DEFS[entityType] ?? CATEGORY_DEFS.other;
 
-    const symbolSize = isCore
-      ? clamp(52 + normalized * 22, 52, 74)
-      : clamp(20 + normalized * 26, 18, 46);
+    const symbolSize = clamp(
+      (24 + normalized * 11) * nodeSizeScale,
+      24 * nodeSizeScale,
+      35 * nodeSizeScale,
+    );
 
     const mentions = toNumber(node.metadata?.mentions, node.weight);
     const filesCount = toNumber(node.metadata?.files_count, 0);
+    const fileLabels = Array.isArray(node.metadata?.file_labels)
+      ? node.metadata.file_labels
+          .map((label) => String(label).trim())
+          .filter(Boolean)
+          .slice(0, 6)
+      : [];
     const degree = degreeMap.get(node.id) ?? toNumber(node.metadata?.degree, 0);
 
-    const nodeGlow = rgbaFromHex(cat.color, isCore ? 0.38 : 0.24);
-    const nodeShadow = isCore
-      ? rgbaFromHex(cat.color, 0.32)
-      : "rgba(46,58,89,0.18)";
+    const nodeGlow = rgbaFromHex(cat.color, 0.28);
+    const nodeShadow = "rgba(46,58,89,0.16)";
 
     // Glass bead fill: high white specular highlight with a saturated lower rim.
     const fillColor = new echarts.graphic.RadialGradient(0.32, 0.24, 1, [
@@ -463,32 +402,32 @@ function formatGraphData(
       category: catIdx,
       value: importance,
       symbolSize,
-      symbol: isCore ? getCoreNodeSymbol(entityType, cat) : "circle",
+      symbol: "circle",
       itemStyle: {
-        color: isCore ? "transparent" : fillColor,
-        borderWidth: isCore ? 0 : 1.5,
-        borderColor: "rgba(255,255,255,0.96)",
-        shadowBlur: isCore ? 46 : 26,
+        color: fillColor,
+        borderWidth: 1.4,
+        borderColor: "rgba(255,255,255,0.98)",
+        shadowBlur: 28,
         shadowColor: nodeShadow,
-        shadowOffsetY: isCore ? 16 : 11,
+        shadowOffsetY: 10,
         shadowOffsetX: 0,
         opacity: 0.98,
       },
       label: {
-        show: symbolSize >= 28 || isCore,
+        show: defaultVisibleLabelIds.has(node.id),
         position: "bottom",
-        distance: isCore ? 8 : 6,
-        fontSize: isCore ? 12 : 10,
-        color: "#172033",
-        fontWeight: isCore ? 750 : 560,
-        backgroundColor: "rgba(255,255,255,0.74)",
-        padding: [3, 7],
-        borderRadius: 6,
-        borderColor: "rgba(255,255,255,0.92)",
+        distance: 8,
+        fontSize: 10,
+        color: "#122033",
+        fontWeight: 600,
+        backgroundColor: "rgba(255,255,255,0.66)",
+        padding: [3, 8],
+        borderRadius: 999,
+        borderColor: rgbaFromHex(cat.color, 0.18),
         borderWidth: 1,
-        shadowBlur: 10,
-        shadowColor: "rgba(15,23,42,0.08)",
-        shadowOffsetY: 3,
+        shadowBlur: 14,
+        shadowColor: rgbaFromHex(cat.color, 0.12),
+        shadowOffsetY: 4,
         formatter: (params: EChartsFormatterParams<EChartsNode>) => {
           const name = params.data?.rawLabel ?? params.data?.name ?? "";
           const chars = Array.from(String(name));
@@ -498,10 +437,10 @@ function formatGraphData(
       emphasis: {
         itemStyle: {
           borderColor: "#ffffff",
-          borderWidth: isCore ? 0 : 2.5,
-          shadowBlur: isCore ? 64 : 44,
+          borderWidth: 2.4,
+          shadowBlur: 42,
           shadowColor: nodeGlow,
-          shadowOffsetY: isCore ? 18 : 12,
+          shadowOffsetY: 12,
           opacity: 1,
         },
         label: {
@@ -511,13 +450,13 @@ function formatGraphData(
           backgroundColor: "rgba(255,255,255,0.9)",
         },
       },
-      ...(isCore ? { fixed: true, x: 0, y: 0 } : {}),
       rawLabel: node.label,
       type: entityType,
       weight: node.weight,
       chunkIds: node.chunk_ids ?? [],
       mentions,
       filesCount,
+      fileLabels,
       degree,
       importance,
     };
@@ -543,11 +482,15 @@ function formatGraphData(
         borderWidth: 1,
       },
       lineStyle: {
-        width: clamp(0.5 + Math.log2(weight + 1) * 0.22, 0.55, 1.28),
-        color: GRAPH_LINK_COLOR,
-        opacity: 0.56,
-        curveness: clamp(0.12 + weight * 0.012, 0.12, 0.28),
-        shadowBlur: 2,
+        width: clamp(0.65 + Math.log2(weight + 1) * 0.26, 0.7, 1.55),
+        color: new echarts.graphic.LinearGradient(0, 0, 1, 1, [
+          { offset: 0, color: rgbaFromHex(sourceColor, 0.18) },
+          { offset: 0.5, color: rgbaFromHex(sourceColor, 0.42) },
+          { offset: 1, color: "rgba(148,163,184,0.22)" },
+        ]),
+        opacity: 0.72,
+        curveness: clamp(0.16 + weight * 0.013, 0.16, 0.32),
+        shadowBlur: 6,
         shadowColor: GRAPH_LINK_SHADOW,
       },
       emphasis: {
@@ -579,7 +522,6 @@ function formatGraphData(
     nodes: echartsNodes,
     links: echartsLinks,
     categories,
-    coreNodeId: coreId,
   };
 }
 
@@ -606,8 +548,7 @@ function buildEChartsOption(
         ...node,
         itemStyle: {
           ...node.itemStyle,
-          borderWidth:
-            isHi && node.type !== "core" ? 3 : node.itemStyle.borderWidth,
+          borderWidth: isHi ? 3 : node.itemStyle.borderWidth,
           borderColor: isHi ? "#ffffff" : node.itemStyle.borderColor,
           shadowBlur: isHi ? 56 : node.itemStyle.shadowBlur,
           shadowColor: isHi ? cat.glow : node.itemStyle.shadowColor,
@@ -634,6 +575,56 @@ function buildEChartsOption(
 
   return {
     backgroundColor: GRAPH_BACKGROUND,
+    graphic: [
+      {
+        type: "rect",
+        left: 0,
+        top: 0,
+        shape: { width: "100%", height: "100%" },
+        silent: true,
+        z: -12,
+        style: {
+          fill: new echarts.graphic.LinearGradient(0, 0, 1, 1, [
+            { offset: 0, color: "rgba(247,250,255,0.98)" },
+            { offset: 0.5, color: "rgba(240,247,255,0.98)" },
+            { offset: 1, color: "rgba(235,244,255,0.98)" },
+          ]),
+        },
+      },
+      {
+        type: "circle",
+        left: "12%",
+        top: "10%",
+        shape: { r: 180 },
+        silent: true,
+        z: -11,
+        style: { fill: "rgba(59,130,246,0.06)" },
+      },
+      {
+        type: "circle",
+        right: "10%",
+        bottom: "12%",
+        shape: { r: 160 },
+        silent: true,
+        z: -11,
+        style: { fill: "rgba(16,185,129,0.05)" },
+      },
+      {
+        type: "rect",
+        left: 0,
+        top: 0,
+        shape: { width: "100%", height: "100%" },
+        silent: true,
+        z: -10,
+        style: {
+          fill: {
+            image: `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><path d="M0 0H120V120H0Z" fill="none"/><path d="M0 0H120M0 30H120M0 60H120M0 90H120M0 120H120M0 0V120M30 0V120M60 0V120M90 0V120M120 0V120" stroke="rgba(99,132,186,0.08)" stroke-width="1"/></svg>`)}`,
+            repeat: "repeat",
+          },
+          opacity: 1,
+        },
+      },
+    ],
     tooltip: {
       renderMode: "html",
       confine: true,
@@ -644,38 +635,51 @@ function buildEChartsOption(
         if (params.dataType === "node") {
           const node = params.data as EChartsNode;
           const cat = CATEGORY_DEFS[node.type] ?? CATEGORY_DEFS.other;
-          return `<div style="min-width:220px;max-width:300px;font-size:12px;line-height:1.6;color:#334155">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="width:10px;height:10px;border-radius:999px;background:${cat.color};box-shadow:0 0 18px ${cat.glow};display:inline-block"></span>
-              <div style="font-weight:800;font-size:13px;color:#0f172a;letter-spacing:0">${escapeHtml(node.rawLabel)}</div>
+          const fileSources =
+            node.fileLabels.length > 0
+              ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(148,163,184,0.16)">
+                  <div style="margin-bottom:4px;font-size:10px;color:#64748b">Sources</div>
+                  <div style="display:flex;flex-direction:column;gap:3px">${node.fileLabels
+                    .map(
+                      (label) =>
+                        `<div style="color:#334155;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(label)}</div>`,
+                    )
+                    .join("")}</div>
+                </div>`
+              : "";
+          return `<div style="min-width:180px;max-width:240px;font-size:11px;line-height:1.45;color:#334155">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+              <span style="width:9px;height:9px;border-radius:999px;background:${cat.color};box-shadow:0 0 14px ${cat.glow};display:inline-block"></span>
+              <div style="font-weight:800;font-size:12px;color:#0f172a;letter-spacing:0">${escapeHtml(node.rawLabel)}</div>
             </div>
-            <div style="display:grid;grid-template-columns:auto auto;gap:4px 14px;color:#64748b">
+            <div style="display:grid;grid-template-columns:auto auto;gap:3px 10px;color:#64748b">
               <span>Type</span><b style="color:#334155;font-weight:700">${escapeHtml(cat.label)}</b>
-              <span>Importance</span><b style="color:#334155;font-weight:700">${node.importance.toFixed(1)}</b>
               <span>Mentions</span><b style="color:#334155;font-weight:700">${node.mentions}</b>
               <span>Relations</span><b style="color:#334155;font-weight:700">${node.degree}</b>
+              <span>Files</span><b style="color:#334155;font-weight:700">${node.filesCount}</b>
             </div>
+            ${fileSources}
           </div>`;
         }
         if (params.dataType === "edge") {
           const link = params.data as EChartsLink;
-          return `<div style="min-width:170px;font-size:12px;line-height:1.6;color:#64748b">
-            <div style="font-weight:800;color:#0f172a;margin-bottom:4px">${escapeHtml(link.relation)}</div>
+          return `<div style="min-width:140px;font-size:11px;line-height:1.45;color:#64748b">
+            <div style="font-weight:800;color:#0f172a;margin-bottom:3px">${escapeHtml(link.relation)}</div>
             <div>Weight <b style="color:#334155">${link.value}</b></div>
           </div>`;
         }
         return "";
       },
-      backgroundColor: "rgba(255,255,255,0.68)",
-      borderColor: "rgba(255,255,255,0.84)",
+      backgroundColor: "rgba(255,255,255,0.62)",
+      borderColor: "rgba(255,255,255,0.9)",
       borderWidth: 1,
-      padding: [13, 16],
+      padding: [9, 11],
       textStyle: {
         color: "#0f172a",
         fontFamily: "Inter, system-ui, sans-serif",
       },
       extraCssText:
-        "box-shadow:0 22px 70px rgba(15,23,42,0.18);border-radius:18px;backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);",
+        "box-shadow:0 20px 54px rgba(55,95,170,0.16);border-radius:16px;backdrop-filter:blur(18px) saturate(155%);-webkit-backdrop-filter:blur(18px) saturate(155%);",
     } as echarts.TooltipComponentOption,
     legend: [
       {
@@ -705,7 +709,7 @@ function buildEChartsOption(
         roam: true,
         draggable: true,
         center: ["50%", "50%"],
-        zoom: 1,
+        zoom: fitConfig.initialZoom,
         top: "middle",
         left: "center",
         width: "100%",
@@ -765,10 +769,23 @@ function buildEChartsOption(
           focus: "adjacency",
           scale: true,
           lineStyle: { opacity: 0.96, shadowBlur: 16 },
-          label: { show: true, fontSize: 12, fontWeight: 800 },
-          edgeLabel: { show: true, fontSize: 10, fontWeight: 700 },
+          label: {
+            show: true,
+            fontSize: 12,
+            fontWeight: 800,
+            backgroundColor: "rgba(255,255,255,0.92)",
+          },
+          edgeLabel: {
+            show: true,
+            fontSize: 10,
+            fontWeight: 700,
+            backgroundColor: "rgba(255,255,255,0.92)",
+            padding: [3, 7],
+            borderRadius: 6,
+            color: "#0f172a",
+          },
           itemStyle: {
-            shadowBlur: 52,
+            shadowBlur: 60,
             shadowOffsetY: 15,
             opacity: 1,
           },
@@ -806,6 +823,7 @@ const KnowledgeGraphPanel = ({
   maxEdges = 180,
   hideLegend = false,
   fitProfile = "default",
+  nodeSizeScale = 1,
   autoRefreshOnMount = true,
   compact = false,
   hideHeader = false,
@@ -944,8 +962,14 @@ const KnowledgeGraphPanel = ({
 
   const formattedGraph = useMemo(
     () =>
-      formatGraphData(data?.nodes ?? [], data?.edges ?? [], maxNodes, maxEdges),
-    [data?.nodes, data?.edges, maxNodes, maxEdges],
+      formatGraphData(
+        data?.nodes ?? [],
+        data?.edges ?? [],
+        maxNodes,
+        maxEdges,
+        nodeSizeScale,
+      ),
+    [data?.nodes, data?.edges, maxNodes, maxEdges, nodeSizeScale],
   );
 
   const chartOption = useMemo(
@@ -964,131 +988,123 @@ const KnowledgeGraphPanel = ({
   const visibleNodeCount = formattedGraph.nodes.length;
   const visibleEdgeCount = formattedGraph.links.length;
 
-  // Fit the full graph into the viewport and keep its bounding box centered.
-  useEffect(() => {
+  const fitGraphIntoViewport = useCallback(() => {
     if (!chartRef.current || !graphReady) return;
     const chart = chartRef.current.getEchartsInstance();
+    const fitConfig = getFitProfileConfig(fitProfile, formattedGraph.nodes.length);
 
-    const fitGraphIntoViewport = () => {
-      chart.resize();
-      chart.dispatchAction({ type: "restore" });
-      chart.setOption(
-        {
-          series: [
-            {
-              center: ["50%", "50%"],
-              zoom: 1,
-            },
-          ],
-        },
-        false,
+    chart.resize();
+    chart.dispatchAction({ type: "restore" });
+    chart.setOption(
+      {
+        series: [
+          {
+            center: ["50%", "50%"],
+            zoom: fitConfig.initialZoom,
+          },
+        ],
+      },
+      false,
+    );
+
+    try {
+      const seriesModel = (chart as unknown as EChartsGraphModelAccessor)
+        .getModel()
+        .getSeriesByIndex(0);
+      const seriesData = seriesModel?.getData?.();
+      if (!seriesData || formattedGraph.nodes.length === 0) {
+        return;
+      }
+
+      let minX = Number.POSITIVE_INFINITY;
+      let minY = Number.POSITIVE_INFINITY;
+      let maxX = Number.NEGATIVE_INFINITY;
+      let maxY = Number.NEGATIVE_INFINITY;
+
+      for (let index = 0; index < formattedGraph.nodes.length; index += 1) {
+        const layout = seriesData.getItemLayout(index);
+        const nodeX = Array.isArray(layout) ? layout[0] : layout?.x;
+        const nodeY = Array.isArray(layout) ? layout[1] : layout?.y;
+        const nodeSize = Number(formattedGraph.nodes[index]?.symbolSize ?? 0);
+        if (
+          typeof nodeX !== "number" ||
+          !Number.isFinite(nodeX) ||
+          typeof nodeY !== "number" ||
+          !Number.isFinite(nodeY)
+        ) {
+          continue;
+        }
+
+        minX = Math.min(minX, nodeX - nodeSize / 2 - fitConfig.paddingX);
+        minY = Math.min(minY, nodeY - nodeSize / 2 - fitConfig.paddingY);
+        maxX = Math.max(maxX, nodeX + nodeSize / 2 + fitConfig.paddingX);
+        maxY = Math.max(maxY, nodeY + nodeSize / 2 + fitConfig.paddingY);
+      }
+
+      if (
+        !Number.isFinite(minX) ||
+        !Number.isFinite(minY) ||
+        !Number.isFinite(maxX) ||
+        !Number.isFinite(maxY)
+      ) {
+        return;
+      }
+
+      const chartWidth = chart.getWidth();
+      const chartHeight = chart.getHeight();
+      if (chartWidth <= 0 || chartHeight <= 0) {
+        return;
+      }
+
+      const graphWidth = Math.max(maxX - minX, 1);
+      const graphHeight = Math.max(maxY - minY, 1);
+      const graphCenterX = (minX + maxX) / 2;
+      const graphCenterY = (minY + maxY) / 2;
+      const fitScale = Math.min(
+        (chartWidth * fitConfig.viewportRatioX) / graphWidth,
+        (chartHeight * fitConfig.viewportRatioY) / graphHeight,
+      );
+      const targetZoom = Math.min(
+        fitConfig.maxZoom,
+        Math.max(fitConfig.minZoom, fitScale),
       );
 
-      try {
-        const seriesModel = (chart as unknown as EChartsGraphModelAccessor)
-          .getModel()
-          .getSeriesByIndex(0);
-        const seriesData = seriesModel?.getData?.();
-        if (!seriesData || formattedGraph.nodes.length === 0) {
-          return;
-        }
-
-        let minX = Number.POSITIVE_INFINITY;
-        let minY = Number.POSITIVE_INFINITY;
-        let maxX = Number.NEGATIVE_INFINITY;
-        let maxY = Number.NEGATIVE_INFINITY;
-
-        for (let index = 0; index < formattedGraph.nodes.length; index += 1) {
-          const layout = seriesData.getItemLayout(index);
-          const nodeX = Array.isArray(layout) ? layout[0] : layout?.x;
-          const nodeY = Array.isArray(layout) ? layout[1] : layout?.y;
-          const nodeSize = Number(formattedGraph.nodes[index]?.symbolSize ?? 0);
-          if (
-            typeof nodeX !== "number" ||
-            !Number.isFinite(nodeX) ||
-            typeof nodeY !== "number" ||
-            !Number.isFinite(nodeY)
-          ) {
-            continue;
-          }
-
-          const fitConfig = getFitProfileConfig(
-            fitProfile,
-            formattedGraph.nodes.length,
-          );
-          minX = Math.min(minX, nodeX - nodeSize / 2 - fitConfig.paddingX);
-          minY = Math.min(minY, nodeY - nodeSize / 2 - fitConfig.paddingY);
-          maxX = Math.max(maxX, nodeX + nodeSize / 2 + fitConfig.paddingX);
-          maxY = Math.max(maxY, nodeY + nodeSize / 2 + fitConfig.paddingY);
-        }
-
-        if (
-          !Number.isFinite(minX) ||
-          !Number.isFinite(minY) ||
-          !Number.isFinite(maxX) ||
-          !Number.isFinite(maxY)
-        ) {
-          return;
-        }
-
-        const chartWidth = chart.getWidth();
-        const chartHeight = chart.getHeight();
-        if (chartWidth <= 0 || chartHeight <= 0) {
-          return;
-        }
-
-        const fitConfig = getFitProfileConfig(
-          fitProfile,
-          formattedGraph.nodes.length,
-        );
-        const graphWidth = Math.max(maxX - minX, 1);
-        const graphHeight = Math.max(maxY - minY, 1);
-        const graphCenterX = (minX + maxX) / 2;
-        const graphCenterY = (minY + maxY) / 2;
-        const fitScale = Math.min(
-          (chartWidth * fitConfig.viewportRatioX) / graphWidth,
-          (chartHeight * fitConfig.viewportRatioY) / graphHeight,
-        );
-        const targetZoom = Math.min(
-          fitConfig.maxZoom,
-          Math.max(fitConfig.minZoom, fitScale),
-        );
-
-        if (Math.abs(targetZoom - 1) > 0.02) {
-          chart.dispatchAction({
-            type: "graphRoam",
-            zoom: targetZoom,
-            originX: graphCenterX,
-            originY: graphCenterY,
-          } as EChartsDispatchPayload);
-        }
-
-        const dx = chartWidth / 2 - graphCenterX;
-        const dy = chartHeight / 2 - graphCenterY;
-        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-          chart.dispatchAction({
-            type: "graphRoam",
-            dx,
-            dy,
-          } as EChartsDispatchPayload);
-        }
-      } catch {
-        // Keep the default restored view if fit-and-center fails.
+      if (Math.abs(targetZoom - fitConfig.initialZoom) > 0.02) {
+        chart.dispatchAction({
+          type: "graphRoam",
+          zoom: targetZoom,
+          originX: graphCenterX,
+          originY: graphCenterY,
+        } as EChartsDispatchPayload);
       }
-    };
 
-    const timers = [80, 320, 900, 1800, 3200, 5000].map((delay) =>
+      const dx = chartWidth / 2 - graphCenterX;
+      const dy = chartHeight / 2 - graphCenterY;
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+        chart.dispatchAction({
+          type: "graphRoam",
+          dx,
+          dy,
+        } as EChartsDispatchPayload);
+      }
+    } catch {
+      // Keep the default restored view if fit-and-center fails.
+    }
+  }, [fitProfile, formattedGraph.nodes, graphReady]);
+
+  // Fit the full graph into the viewport and keep its bounding box centered.
+  useEffect(() => {
+    if (!graphReady) return;
+    const timers = [0, 80, 320, 900, 1800, 3200, 5000].map((delay) =>
       setTimeout(fitGraphIntoViewport, delay),
     );
     return () => timers.forEach((timer) => clearTimeout(timer));
   }, [
-    compact,
+    fitGraphIntoViewport,
     fitProfile,
-    formattedGraph.links,
-    formattedGraph.nodes,
     graphReady,
-    hideLegend,
-    selectedChunkId,
+    formattedGraph.nodes.length,
+    formattedGraph.links.length,
   ]);
 
   return (
@@ -1195,6 +1211,9 @@ const KnowledgeGraphPanel = ({
           <ReactECharts
             ref={(instance) => {
               chartRef.current = instance;
+            }}
+            onChartReady={() => {
+              setTimeout(fitGraphIntoViewport, 0);
             }}
             option={chartOption}
             style={{ height: "100%", width: "100%" }}

@@ -30,7 +30,7 @@ KB_GRAPH_MAX_RELATIONS_PER_SENTENCE = 4
 KB_GRAPH_MIN_ENTITY_LENGTH = 2
 KB_GRAPH_MAX_ENTITY_LENGTH = 24
 KB_GRAPH_MIN_TOKEN_FREQ = 2
-KB_GRAPH_PERSISTED_CACHE_VERSION = 16
+KB_GRAPH_PERSISTED_CACHE_VERSION = 18
 # Backward-compatible alias for tests
 KB_GRAPH_MAX_NODES = KB_GRAPH_TARGET_MAX_NODES
 KB_GRAPH_FULL_CACHE_FILE = ".earthmind_kg_graph_cache.json"
@@ -1033,6 +1033,133 @@ def _sort_graph_nodes(
     return nodes
 
 
+def _build_document_graph_augmentation(
+    *,
+    entities: dict[str, _EntityStats],
+    topology: _GraphTopology,
+    keep_canonicals: set[str],
+    file_entity_scores: dict[str, Counter[str]],
+    file_chunk_ids: dict[str, set[str]],
+) -> tuple[list[KnowledgeGraphNode], list[KnowledgeGraphEdge]]:
+    if len(file_entity_scores) <= 1:
+        return [], []
+
+    ranked_files = sorted(
+        file_entity_scores.items(),
+        key=lambda item: (
+            len(file_chunk_ids.get(item[0], set())),
+            sum(item[1].values()),
+            item[0],
+        ),
+        reverse=True,
+    )[:12]
+
+    document_nodes: list[KnowledgeGraphNode] = []
+    document_edges: list[KnowledgeGraphEdge] = []
+    document_top_entities: dict[str, list[str]] = {}
+    document_node_ids: dict[str, str] = {}
+
+    for file_label, entity_scores in ranked_files:
+        ranked_entities = [
+            canonical
+            for canonical, _score in sorted(
+                entity_scores.items(),
+                key=lambda item: (
+                    item[1],
+                    topology.importance_by_entity.get(item[0], 0.0),
+                    entities.get(item[0]).label if entities.get(item[0]) is not None else item[0],
+                ),
+                reverse=True,
+            )
+            if canonical in keep_canonicals and canonical in entities
+        ]
+        if not ranked_entities:
+            continue
+
+        top_entities = ranked_entities[:4]
+        document_top_entities[file_label] = top_entities
+        node_id = _graph_id("file", file_label)
+        document_node_ids[file_label] = node_id
+        chunk_ids = sorted(file_chunk_ids.get(file_label, set()))
+        node_importance = min(96.0, len(chunk_ids) * 5.5 + len(top_entities) * 7.0)
+        document_nodes.append(
+            KnowledgeGraphNode(
+                id=node_id,
+                label=_sanitize_label(file_label, max_length=48),
+                type="document",
+                weight=max(22, min(80, round(node_importance))),
+                chunk_ids=chunk_ids[:24],
+                metadata={
+                    "chunk_count": len(chunk_ids),
+                    "file_labels": [file_label],
+                    "top_entities": [entities[canonical].label for canonical in top_entities],
+                    "importance_score": round(node_importance, 3),
+                },
+            )
+        )
+
+        for canonical in top_entities:
+            entity = entities.get(canonical)
+            if entity is None:
+                continue
+            weight = max(1, min(12, round(entity_scores.get(canonical, 0.0))))
+            document_edges.append(
+                KnowledgeGraphEdge(
+                    id=_graph_id("edge", f"{node_id}|focuses on|{canonical}"),
+                    source=node_id,
+                    target=_graph_id("entity", canonical),
+                    type="relation",
+                    label="focuses on",
+                    weight=weight,
+                    chunk_ids=chunk_ids[:24],
+                    metadata={
+                        "mentions": weight,
+                        "files_count": 1,
+                        "file_labels": [file_label],
+                        "synthetic": True,
+                    },
+                )
+            )
+
+    file_labels = [file_label for file_label, _scores in ranked_files if file_label in document_node_ids]
+    for index, left_file in enumerate(file_labels[:-1]):
+        left_entities = set(document_top_entities.get(left_file, []))
+        if not left_entities:
+            continue
+        for right_file in file_labels[index + 1 :]:
+            right_entities = set(document_top_entities.get(right_file, []))
+            shared_entities = sorted(left_entities & right_entities)
+            if not shared_entities:
+                continue
+            shared_labels = [
+                entities[canonical].label
+                for canonical in shared_entities[:4]
+                if canonical in entities
+            ]
+            if not shared_labels:
+                continue
+            document_edges.append(
+                KnowledgeGraphEdge(
+                    id=_graph_id("edge", f"{document_node_ids[left_file]}|shared themes|{document_node_ids[right_file]}"),
+                    source=document_node_ids[left_file],
+                    target=document_node_ids[right_file],
+                    type="relation",
+                    label="shared themes",
+                    weight=max(1, len(shared_labels)),
+                    chunk_ids=[],
+                    metadata={
+                        "mentions": len(shared_labels),
+                        "files_count": 2,
+                        "file_labels": [left_file, right_file],
+                        "shared_entities": shared_labels,
+                        "synthetic": True,
+                    },
+                )
+            )
+
+    return document_nodes, document_edges
+
+
 def build_knowledge_graph_response(
     entries: Sequence[tuple[str, str, dict[str, Any]]],
     *,
@@ -1049,16 +1176,29 @@ def build_knowledge_graph_response(
     entities: dict[str, _EntityStats] = {}
     edges: dict[tuple[str, str, str], dict[str, Any]] = {}
     triple_map = precomputed_triples_by_chunk or {}
+    file_entity_scores: dict[str, Counter[str]] = {}
+    file_chunk_ids: dict[str, set[str]] = {}
 
     for chunk_id, content, metadata in entries:
         context = _build_chunk_graph_context(chunk_id, content, metadata)
+        file_entity_scores.setdefault(context.file_label, Counter())
+        file_chunk_ids.setdefault(context.file_label, set()).add(context.chunk_id)
         _register_context_entities(entities, context)
+        for label in context.entities:
+            canonical = _canonical_label(label)
+            if canonical:
+                file_entity_scores[context.file_label][canonical] += _entity_score(label)
         triples = triple_map.get(context.chunk_id) or _extract_chunk_triples(
             context.content,
             known_entities=context.entities,
             sentences=context.sentences,
         )
         _register_context_triples(entities, edges, context, triples)
+        for triple in triples:
+            for label in (triple.source, triple.target):
+                canonical = _canonical_label(label)
+                if canonical:
+                    file_entity_scores[context.file_label][canonical] += _entity_score(label) + 1.2
 
     if not entities:
         return KnowledgeGraphResponse(
@@ -1100,6 +1240,15 @@ def build_knowledge_graph_response(
         canonical_to_id=canonical_to_id,
         topology=topology,
     )
+    document_nodes, document_edges = _build_document_graph_augmentation(
+        entities=entities,
+        topology=topology,
+        keep_canonicals=keep_canonicals,
+        file_entity_scores=file_entity_scores,
+        file_chunk_ids=file_chunk_ids,
+    )
+    nodes.extend(document_nodes)
+    graph_edges.extend(document_edges)
     nodes = _sort_graph_nodes(nodes, graph_edges)
 
     return KnowledgeGraphResponse(
@@ -1109,7 +1258,7 @@ def build_knowledge_graph_response(
         included_chunks=len(entries),
         total_files=total_files,
         total_entities=total_entities,
-        total_relations=len(edges),
+        total_relations=len(edges) + len(document_edges),
         total_topics=0,
         total_tags=0,
         truncated=response_truncated or edges_truncated,
@@ -1371,13 +1520,35 @@ def select_knowledge_graph_sample_entries(
     if sample_limit is None or full_graph or len(entries) <= sample_limit:
         return list(entries)
 
-    ranked = sorted(
-        entries,
-        key=lambda entry: (
+    def _entry_score(entry: tuple[str, str, dict[str, Any]]) -> tuple[int, int, int]:
+        return (
             len(_extract_chunk_triples(entry[1])),
             len(_extract_entities_from_text(entry[1])),
             len(entry[1] or ""),
-        ),
-        reverse=True,
-    )
-    return ranked[:sample_limit]
+        )
+
+    ranked_entries = sorted(entries, key=_entry_score, reverse=True)
+    grouped_by_file: dict[str, list[tuple[str, str, dict[str, Any]]]] = {}
+    file_order: list[str] = []
+    for entry in ranked_entries:
+        file_label = extract_file_label(entry[2])
+        if file_label not in grouped_by_file:
+            grouped_by_file[file_label] = []
+            file_order.append(file_label)
+        grouped_by_file[file_label].append(entry)
+
+    selected: list[tuple[str, str, dict[str, Any]]] = []
+    while len(selected) < sample_limit:
+        progressed = False
+        for file_label in file_order:
+            file_entries = grouped_by_file[file_label]
+            if not file_entries:
+                continue
+            selected.append(file_entries.pop(0))
+            progressed = True
+            if len(selected) >= sample_limit:
+                break
+        if not progressed:
+            break
+
+    return selected

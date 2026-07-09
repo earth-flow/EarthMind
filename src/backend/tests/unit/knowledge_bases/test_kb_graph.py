@@ -196,6 +196,66 @@ def test_select_knowledge_graph_sample_entries_skips_empty_preview_chunks():
     assert response.total_relations >= 1
 
 
+def test_select_knowledge_graph_sample_entries_balances_across_files():
+    entries = [
+        (
+            "chunk-a1",
+            "Remote sensing thermal infrared sensor calibration uses radiance transfer and emissivity retrieval.",
+            {"file_name": "file-a.md"},
+        ),
+        (
+            "chunk-a2",
+            "Thermal infrared remote sensing supports land surface temperature inversion and atmospheric correction.",
+            {"file_name": "file-a.md"},
+        ),
+        (
+            "chunk-b1",
+            "Hyperspectral imaging improves crop monitoring and mineral mapping.",
+            {"file_name": "file-b.md"},
+        ),
+        (
+            "chunk-c1",
+            "SAR data helps flood detection and terrain deformation analysis.",
+            {"file_name": "file-c.md"},
+        ),
+    ]
+
+    selected = select_knowledge_graph_sample_entries(
+        entries,
+        sample_limit=3,
+    )
+
+    selected_files = {entry[2]["file_name"] for entry in selected}
+    assert len(selected) == 3
+    assert selected_files == {"file-a.md", "file-b.md", "file-c.md"}
+
+
+def test_build_knowledge_graph_response_adds_document_context_nodes():
+    entries = [
+        (
+            "chunk-a1",
+            "Remote sensing uses hyperspectral imaging and SAR for terrain analysis.",
+            {"file_name": "file-a.md"},
+        ),
+        (
+            "chunk-b1",
+            "SAR supports flood detection while hyperspectral imaging improves crop mapping.",
+            {"file_name": "file-b.md"},
+        ),
+    ]
+
+    response = build_knowledge_graph_response(
+        entries,
+        matched_chunks=2,
+        total_files=2,
+        truncated=False,
+    )
+
+    assert any(node.type == "document" for node in response.nodes)
+    assert any(edge.label == "focuses on" for edge in response.edges)
+    assert any(edge.label == "shared themes" for edge in response.edges)
+
+
 def test_extract_chunk_triples_returns_triples():
     triples = _extract_chunk_triples(
         "OpenAI uses GPT-4 for language tasks.",
@@ -228,4 +288,4 @@ def test_entity_labels_are_truncated():
 
 
 def test_persisted_cache_version_is_current():
-    assert KB_GRAPH_PERSISTED_CACHE_VERSION == 16
+    assert KB_GRAPH_PERSISTED_CACHE_VERSION == 18

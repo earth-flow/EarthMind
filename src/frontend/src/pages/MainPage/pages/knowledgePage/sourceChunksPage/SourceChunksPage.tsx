@@ -398,7 +398,7 @@ export const SourceChunksPage = () => {
           ) : (
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="xl:container flex-1 min-h-0">
-                <div className="flex flex-col gap-4 xl:grid xl:h-[calc(100vh-220px)] xl:min-h-0 xl:grid-cols-[minmax(0,1fr)_minmax(460px,1.12fr)] xl:gap-5 xl:items-start">
+                <div className="flex flex-col gap-4 xl:grid xl:h-[calc(100vh-220px)] xl:min-h-0 xl:grid-cols-[minmax(0,1.08fr)_minmax(440px,1.06fr)] xl:gap-5 xl:items-start">
                   <div className="flex min-h-0 flex-col xl:h-[calc(100vh-220px)] xl:pr-2">
                     <div className="min-h-0 flex-1 overflow-y-auto">
                       <div className="flex flex-col gap-3 pb-2">
@@ -421,27 +421,15 @@ export const SourceChunksPage = () => {
                   <div className="min-h-[520px] xl:sticky xl:top-0 xl:h-[calc(100vh-220px)] xl:self-start xl:overflow-hidden">
                     <KnowledgeGraphPanel
                       kbName={sourceId || ""}
-                      search={debouncedSearch || undefined}
-                      sourceType={
-                        sourceTypeFilter === "all"
-                          ? undefined
-                          : sourceTypeFilter
-                      }
-                      metadataFilter={
-                        Object.keys(metadataFilter).length > 0
-                          ? metadataFilter
-                          : undefined
-                      }
-                      graphMode="generic_entity"
-                      sampleLimit={undefined}
+                      sampleLimit={80}
                       maxNodes={96}
                       maxEdges={180}
-                      selectedChunkId={selectedChunkId}
                       externalRefreshToken={graphRefreshToken}
                       onRefreshPendingChange={setIsGraphRefreshing}
                       autoRefreshOnMount={false}
                       compact
                       fitProfile="chunks"
+                      nodeSizeScale={1.18}
                       hideHeader
                       hideLegend
                       floatingNodeDetails
