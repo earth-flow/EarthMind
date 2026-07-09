@@ -202,6 +202,7 @@ export function FlowPageSlidingContainerContent({
                   setFiles={setFiles}
                   isDragging={isDragging}
                   sendMessage={sendMessage}
+                  playgroundPage={false}
                 />
               </div>
             </div>

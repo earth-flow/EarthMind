@@ -305,10 +305,12 @@ export const NodeDialog: React.FC<NodeDialogProps> = ({
                 templateData={fieldValue as Partial<InputFieldType>}
                 templateValue={(fieldValue as { value: string })?.value ?? ""}
                 editNode={false}
+                showParameter={true}
+                inspectionPanel={false}
                 handleNodeClass={() => {}}
                 nodeClass={dialogNodeData}
                 disabled={
-                  (fieldValue as { disabled: boolean })?.disabled ?? false
+                  (fieldValue as unknown as { disabled: boolean })?.disabled ?? false
                 }
                 placeholder={
                   (fieldValue as { placeholder: string })?.placeholder ?? ""

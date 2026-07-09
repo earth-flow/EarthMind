@@ -66,7 +66,11 @@ interface UseAssistantChatReturn {
   handleSend: (
     content: string,
     model: AssistantModel | null,
-    options?: { silent?: boolean },
+    options?: {
+      silent?: boolean;
+      internal?: boolean;
+      reuseAssistantMessageId?: string;
+    },
   ) => Promise<void>;
   handleApprove: (messageId: string, componentCode?: string) => Promise<void>;
   handleUpdateFlowAction: (

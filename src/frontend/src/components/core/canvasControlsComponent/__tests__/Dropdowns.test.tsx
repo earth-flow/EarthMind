@@ -94,7 +94,7 @@ describe("HelpDropdown", () => {
 
     render(
       <MemoryRouter>
-        <HelpDropdown isOpen={true} onOpenChange={() => {}} />
+        <HelpDropdown />
       </MemoryRouter>,
     );
 

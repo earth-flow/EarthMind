@@ -2,6 +2,7 @@ import { Check, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import type { FlowAction } from "@/controllers/API/queries/agentic";
 import useFlowStore from "@/stores/flowStore";
+import type { NodeDataType } from "@/types/flow";
 import {
   GHOST_PRIMARY_BUTTON,
   GHOST_SECONDARY_BUTTON,
@@ -170,19 +171,21 @@ export function FlowEditCarousel({
                 Record<string, unknown>
               >;
               if (!tmpl[field]) return node;
+              const nodeData = node.data as unknown as NodeDataType;
+              const existingNode = (nodeData.node ?? {}) as Record<string, unknown>;
               return {
                 ...node,
                 data: {
-                  ...node.data,
+                  ...nodeData,
                   node: {
-                    ...(node.data as Record<string, unknown>).node,
+                    ...existingNode,
                     template: {
                       ...tmpl,
                       [field]: { ...tmpl[field], value: op.value },
                     },
                   },
                 },
-              };
+              } as typeof node;
             }),
           );
         }

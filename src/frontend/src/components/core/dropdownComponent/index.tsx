@@ -622,7 +622,7 @@ export default function Dropdown({
           )}
           <NodeDialog
             open={openDialog}
-            dialogInputs={dialogInputs}
+            dialogInputs={dialogInputs ?? { fields: { data: { node: nodeClass! } }, functionality: "" }}
             onClose={() => {
               setOpenDialog(false);
               setOpen(false);

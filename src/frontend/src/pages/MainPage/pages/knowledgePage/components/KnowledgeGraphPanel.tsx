@@ -46,10 +46,10 @@ interface KnowledgeGraphPanelProps {
   className?: string;
 }
 
-// ── Entity type -> color mapping (matches backend _categorize_entity) ────────
+// ── Entity type -> color mapping (Sci-Fi Command aesthetic) ────────
 // Backend assigns type: technology | method | organization | metric | dataset | event | document | other
 interface CatDef {
-  color: string; // main color (used for node fill + edge color)
+  color: string; // main neon color
   dark: string; // darker shade for gradient end
   glow: string; // glow shadow rgba
   label: string; // legend label
@@ -66,58 +66,58 @@ const TYPE_ORDER = [
 ] as const;
 const CATEGORY_DEFS: Record<string, CatDef> = {
   technology: {
-    color: "#2f80ed",
-    dark: "#1455b8",
-    glow: "rgba(47,128,237,0.32)",
+    color: "#00d4ff",
+    dark: "#003855",
+    glow: "rgba(0,212,255,0.55)",
     label: "Technology",
   },
   method: {
-    color: "#f59e0b",
-    dark: "#b45309",
-    glow: "rgba(245,158,11,0.32)",
+    color: "#ff6b35",
+    dark: "#5c1a05",
+    glow: "rgba(255,107,53,0.55)",
     label: "Method",
   },
   organization: {
-    color: "#e84a8a",
-    dark: "#a81d5f",
-    glow: "rgba(232,74,138,0.32)",
+    color: "#ff2d75",
+    dark: "#5c0a23",
+    glow: "rgba(255,45,117,0.55)",
     label: "Organization",
   },
   metric: {
-    color: "#13b981",
-    dark: "#047857",
-    glow: "rgba(19,185,129,0.32)",
+    color: "#00ff9d",
+    dark: "#003c24",
+    glow: "rgba(0,255,157,0.50)",
     label: "Metric",
   },
   dataset: {
-    color: "#8b5cf6",
-    dark: "#5b21b6",
-    glow: "rgba(139,92,246,0.32)",
+    color: "#b537f2",
+    dark: "#3d1255",
+    glow: "rgba(181,55,242,0.50)",
     label: "Dataset",
   },
   event: {
-    color: "#f97316",
-    dark: "#9a3412",
-    glow: "rgba(249,115,22,0.32)",
+    color: "#ffaa00",
+    dark: "#5c3d00",
+    glow: "rgba(255,170,0,0.50)",
     label: "Event",
   },
   document: {
-    color: "#06b6d4",
-    dark: "#155e75",
-    glow: "rgba(6,182,212,0.30)",
+    color: "#00b4d8",
+    dark: "#003a48",
+    glow: "rgba(0,180,216,0.48)",
     label: "Document",
   },
   other: {
-    color: "#64748b",
-    dark: "#334155",
-    glow: "rgba(100,116,139,0.28)",
+    color: "#7a8ba0",
+    dark: "#2a3340",
+    glow: "rgba(122,139,160,0.40)",
     label: "Other",
   },
 };
 
-const GRAPH_BACKGROUND = "#F4F8FF";
-const GRAPH_LINK_COLOR = "rgba(99,132,186,0.42)";
-const GRAPH_LINK_SHADOW = "rgba(61,106,173,0.12)";
+const GRAPH_BACKGROUND = "#060912";
+const GRAPH_LINK_COLOR = "rgba(0,180,255,0.28)";
+const GRAPH_LINK_SHADOW = "rgba(0,212,255,0.15)";
 
 type KnowledgeGraphFitProfile = "drawer" | "chunks" | "default";
 
@@ -368,9 +368,9 @@ function formatGraphData(
     const cat = CATEGORY_DEFS[entityType] ?? CATEGORY_DEFS.other;
 
     const symbolSize = clamp(
-      (24 + normalized * 11) * nodeSizeScale,
-      24 * nodeSizeScale,
-      35 * nodeSizeScale,
+      (20 + normalized * 14) * nodeSizeScale,
+      20 * nodeSizeScale,
+      34 * nodeSizeScale,
     );
 
     const mentions = toNumber(node.metadata?.mentions, node.weight);
@@ -383,14 +383,14 @@ function formatGraphData(
       : [];
     const degree = degreeMap.get(node.id) ?? toNumber(node.metadata?.degree, 0);
 
-    const nodeGlow = rgbaFromHex(cat.color, 0.28);
-    const nodeShadow = "rgba(46,58,89,0.16)";
+    const nodeGlow = rgbaFromHex(cat.color, 0.50);
+    const nodeShadow = rgbaFromHex(cat.color, 0.30);
 
-    // Glass bead fill: high white specular highlight with a saturated lower rim.
-    const fillColor = new echarts.graphic.RadialGradient(0.32, 0.24, 1, [
-      { offset: 0, color: "rgba(255,255,255,1)" },
-      { offset: 0.18, color: "rgba(255,255,255,0.96)" },
-      { offset: 0.58, color: rgbaFromHex(cat.color, 0.9) },
+    // Holographic sphere: dark core with bright neon rim and inner glow
+    const fillColor = new echarts.graphic.RadialGradient(0.35, 0.30, 1, [
+      { offset: 0, color: rgbaFromHex(cat.color, 0.95) },
+      { offset: 0.35, color: rgbaFromHex(cat.color, 0.55) },
+      { offset: 0.72, color: rgbaFromHex(cat.color, 0.18) },
       { offset: 1, color: cat.dark },
     ]);
 
@@ -405,29 +405,29 @@ function formatGraphData(
       symbol: "circle",
       itemStyle: {
         color: fillColor,
-        borderWidth: 1.4,
-        borderColor: "rgba(255,255,255,0.98)",
-        shadowBlur: 28,
-        shadowColor: nodeShadow,
-        shadowOffsetY: 10,
+        borderWidth: 1.8,
+        borderColor: rgbaFromHex(cat.color, 0.85),
+        shadowBlur: 22,
+        shadowColor: nodeGlow,
+        shadowOffsetY: 0,
         shadowOffsetX: 0,
-        opacity: 0.98,
+        opacity: 0.92,
       },
       label: {
         show: defaultVisibleLabelIds.has(node.id),
         position: "bottom",
         distance: 8,
         fontSize: 10,
-        color: "#122033",
+        color: rgbaFromHex(cat.color, 0.95),
         fontWeight: 600,
-        backgroundColor: "rgba(255,255,255,0.66)",
-        padding: [3, 8],
-        borderRadius: 999,
-        borderColor: rgbaFromHex(cat.color, 0.18),
+        backgroundColor: "rgba(6,9,18,0.72)",
+        padding: [3, 7],
+        borderRadius: 3,
+        borderColor: rgbaFromHex(cat.color, 0.25),
         borderWidth: 1,
-        shadowBlur: 14,
-        shadowColor: rgbaFromHex(cat.color, 0.12),
-        shadowOffsetY: 4,
+        shadowBlur: 8,
+        shadowColor: nodeGlow,
+        shadowOffsetY: 0,
         formatter: (params: EChartsFormatterParams<EChartsNode>) => {
           const name = params.data?.rawLabel ?? params.data?.name ?? "";
           const chars = Array.from(String(name));
@@ -436,18 +436,19 @@ function formatGraphData(
       },
       emphasis: {
         itemStyle: {
-          borderColor: "#ffffff",
-          borderWidth: 2.4,
-          shadowBlur: 42,
+          borderColor: cat.color,
+          borderWidth: 2.8,
+          shadowBlur: 48,
           shadowColor: nodeGlow,
-          shadowOffsetY: 12,
+          shadowOffsetY: 0,
           opacity: 1,
         },
         label: {
           show: true,
-          color: "#0f172a",
-          fontWeight: 800,
-          backgroundColor: "rgba(255,255,255,0.9)",
+          color: "#ffffff",
+          fontWeight: 700,
+          backgroundColor: "rgba(6,9,18,0.88)",
+          borderColor: rgbaFromHex(cat.color, 0.5),
         },
       },
       rawLabel: node.label,
@@ -464,8 +465,8 @@ function formatGraphData(
 
   const echartsLinks: EChartsLink[] = connectedEdges.map((edge) => {
     const weight = Math.max(1, edge.weight);
-    const sourceColor = nodeColorMap.get(edge.source) ?? "#94a3b8";
-    const glowColor = rgbaFromHex(sourceColor, 0.34);
+    const sourceColor = nodeColorMap.get(edge.source) ?? "#00d4ff";
+    const glowColor = rgbaFromHex(sourceColor, 0.50);
     return {
       source: edge.source,
       target: edge.target,
@@ -474,30 +475,30 @@ function formatGraphData(
         show: false,
         formatter: edge.label || "related",
         fontSize: 10,
-        color: "#334155",
-        backgroundColor: "rgba(255,255,255,0.82)",
+        color: rgbaFromHex(sourceColor, 0.9),
+        backgroundColor: "rgba(6,9,18,0.82)",
         padding: [3, 7],
-        borderRadius: 6,
-        borderColor: "rgba(255,255,255,0.9)",
+        borderRadius: 3,
+        borderColor: rgbaFromHex(sourceColor, 0.3),
         borderWidth: 1,
       },
       lineStyle: {
-        width: clamp(0.65 + Math.log2(weight + 1) * 0.26, 0.7, 1.55),
+        width: clamp(0.5 + Math.log2(weight + 1) * 0.35, 0.6, 2.2),
         color: new echarts.graphic.LinearGradient(0, 0, 1, 1, [
-          { offset: 0, color: rgbaFromHex(sourceColor, 0.18) },
-          { offset: 0.5, color: rgbaFromHex(sourceColor, 0.42) },
-          { offset: 1, color: "rgba(148,163,184,0.22)" },
+          { offset: 0, color: rgbaFromHex(sourceColor, 0.08) },
+          { offset: 0.5, color: rgbaFromHex(sourceColor, 0.55) },
+          { offset: 1, color: "rgba(0,180,255,0.18)" },
         ]),
-        opacity: 0.72,
-        curveness: clamp(0.16 + weight * 0.013, 0.16, 0.32),
-        shadowBlur: 6,
-        shadowColor: GRAPH_LINK_SHADOW,
+        opacity: 0.65,
+        curveness: clamp(0.14 + weight * 0.016, 0.14, 0.30),
+        shadowBlur: 8,
+        shadowColor: glowColor,
       },
       emphasis: {
         lineStyle: {
-          width: clamp(1.8 + Math.log2(weight + 1) * 0.45, 2.1, 4),
+          width: clamp(1.6 + Math.log2(weight + 1) * 0.55, 2.0, 4.5),
           color: sourceColor,
-          opacity: 0.96,
+          opacity: 0.98,
           shadowBlur: 16,
           shadowColor: glowColor,
         },
@@ -509,7 +510,7 @@ function formatGraphData(
         },
       },
       blur: {
-        lineStyle: { opacity: 0.015 },
+        lineStyle: { opacity: 0.01 },
       },
       chunkIds: edge.chunk_ids ?? [],
       relation: edge.label || "related",
@@ -548,11 +549,11 @@ function buildEChartsOption(
         ...node,
         itemStyle: {
           ...node.itemStyle,
-          borderWidth: isHi ? 3 : node.itemStyle.borderWidth,
-          borderColor: isHi ? "#ffffff" : node.itemStyle.borderColor,
+          borderWidth: isHi ? 3.2 : node.itemStyle.borderWidth,
+          borderColor: isHi ? cat.color : node.itemStyle.borderColor,
           shadowBlur: isHi ? 56 : node.itemStyle.shadowBlur,
           shadowColor: isHi ? cat.glow : node.itemStyle.shadowColor,
-          shadowOffsetY: isHi ? 14 : node.itemStyle.shadowOffsetY,
+          shadowOffsetY: isHi ? 0 : node.itemStyle.shadowOffsetY,
         },
         label: { ...node.label, show: isHi ? true : node.label.show },
       };
@@ -565,8 +566,8 @@ function buildEChartsOption(
           ...link.lineStyle,
           width: isHi ? 2.8 : link.lineStyle.width,
           color: isHi ? link.accentColor : link.lineStyle.color,
-          opacity: isHi ? 0.92 : link.lineStyle.opacity,
-          shadowBlur: isHi ? 14 : link.lineStyle.shadowBlur,
+          opacity: isHi ? 0.95 : link.lineStyle.opacity,
+          shadowBlur: isHi ? 18 : link.lineStyle.shadowBlur,
           shadowColor: isHi ? link.glowColor : link.lineStyle.shadowColor,
         },
       };
@@ -576,6 +577,7 @@ function buildEChartsOption(
   return {
     backgroundColor: GRAPH_BACKGROUND,
     graphic: [
+      // Deep space gradient base
       {
         type: "rect",
         left: 0,
@@ -584,31 +586,34 @@ function buildEChartsOption(
         silent: true,
         z: -12,
         style: {
-          fill: new echarts.graphic.LinearGradient(0, 0, 1, 1, [
-            { offset: 0, color: "rgba(247,250,255,0.98)" },
-            { offset: 0.5, color: "rgba(240,247,255,0.98)" },
-            { offset: 1, color: "rgba(235,244,255,0.98)" },
+          fill: new echarts.graphic.RadialGradient(0.5, 0.5, 0.8, [
+            { offset: 0, color: "#0a1428" },
+            { offset: 0.5, color: "#060912" },
+            { offset: 1, color: "#020308" },
           ]),
         },
       },
+      // Radar glow - upper left
       {
         type: "circle",
-        left: "12%",
-        top: "10%",
+        left: "8%",
+        top: "6%",
+        shape: { r: 200 },
+        silent: true,
+        z: -11,
+        style: { fill: "rgba(0,212,255,0.04)" },
+      },
+      // Radar glow - lower right
+      {
+        type: "circle",
+        right: "6%",
+        bottom: "8%",
         shape: { r: 180 },
         silent: true,
         z: -11,
-        style: { fill: "rgba(59,130,246,0.06)" },
+        style: { fill: "rgba(181,55,242,0.035)" },
       },
-      {
-        type: "circle",
-        right: "10%",
-        bottom: "12%",
-        shape: { r: 160 },
-        silent: true,
-        z: -11,
-        style: { fill: "rgba(16,185,129,0.05)" },
-      },
+      // Tactical grid overlay
       {
         type: "rect",
         left: 0,
@@ -618,10 +623,50 @@ function buildEChartsOption(
         z: -10,
         style: {
           fill: {
-            image: `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><path d="M0 0H120V120H0Z" fill="none"/><path d="M0 0H120M0 30H120M0 60H120M0 90H120M0 120H120M0 0V120M30 0V120M60 0V120M90 0V120M120 0V120" stroke="rgba(99,132,186,0.08)" stroke-width="1"/></svg>`)}`,
+            image: `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><path d="M0 0H120V120H0Z" fill="none"/><path d="M0 0H120M0 30H120M0 60H120M0 90H120M0 120H120M0 0V120M30 0V120M60 0V120M90 0V120M120 0V120" stroke="rgba(0,180,255,0.06)" stroke-width="1"/></svg>`)}`,
             repeat: "repeat",
           },
           opacity: 1,
+        },
+      },
+      // Concentric radar rings - center
+      {
+        type: "circle",
+        left: "center",
+        top: "middle",
+        shape: { r: 120 },
+        silent: true,
+        z: -9,
+        style: {
+          fill: "none",
+          stroke: "rgba(0,212,255,0.05)",
+          lineWidth: 1,
+        },
+      },
+      {
+        type: "circle",
+        left: "center",
+        top: "middle",
+        shape: { r: 220 },
+        silent: true,
+        z: -9,
+        style: {
+          fill: "none",
+          stroke: "rgba(0,212,255,0.035)",
+          lineWidth: 1,
+        },
+      },
+      {
+        type: "circle",
+        left: "center",
+        top: "middle",
+        shape: { r: 320 },
+        silent: true,
+        z: -9,
+        style: {
+          fill: "none",
+          stroke: "rgba(0,212,255,0.022)",
+          lineWidth: 1,
         },
       },
     ],
@@ -637,49 +682,49 @@ function buildEChartsOption(
           const cat = CATEGORY_DEFS[node.type] ?? CATEGORY_DEFS.other;
           const fileSources =
             node.fileLabels.length > 0
-              ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(148,163,184,0.16)">
-                  <div style="margin-bottom:4px;font-size:10px;color:#64748b">Sources</div>
+              ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,212,255,0.15)">
+                  <div style="margin-bottom:4px;font-size:10px;color:rgba(0,212,255,0.6);text-transform:uppercase;letter-spacing:0.08em">Sources</div>
                   <div style="display:flex;flex-direction:column;gap:3px">${node.fileLabels
                     .map(
                       (label) =>
-                        `<div style="color:#334155;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(label)}</div>`,
+                        `<div style="color:rgba(180,200,220,0.9);font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(label)}</div>`,
                     )
                     .join("")}</div>
                 </div>`
               : "";
-          return `<div style="min-width:180px;max-width:240px;font-size:11px;line-height:1.45;color:#334155">
+          return `<div style="min-width:180px;max-width:240px;font-size:11px;line-height:1.45;color:rgba(180,200,220,0.85);font-family:'JetBrains Mono','Fira Code',monospace">
             <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
-              <span style="width:9px;height:9px;border-radius:999px;background:${cat.color};box-shadow:0 0 14px ${cat.glow};display:inline-block"></span>
-              <div style="font-weight:800;font-size:12px;color:#0f172a;letter-spacing:0">${escapeHtml(node.rawLabel)}</div>
+              <span style="width:9px;height:9px;border-radius:1px;background:${cat.color};box-shadow:0 0 12px ${cat.glow};display:inline-block"></span>
+              <div style="font-weight:700;font-size:12px;color:${cat.color};letter-spacing:0.02em">${escapeHtml(node.rawLabel)}</div>
             </div>
-            <div style="display:grid;grid-template-columns:auto auto;gap:3px 10px;color:#64748b">
-              <span>Type</span><b style="color:#334155;font-weight:700">${escapeHtml(cat.label)}</b>
-              <span>Mentions</span><b style="color:#334155;font-weight:700">${node.mentions}</b>
-              <span>Relations</span><b style="color:#334155;font-weight:700">${node.degree}</b>
-              <span>Files</span><b style="color:#334155;font-weight:700">${node.filesCount}</b>
+            <div style="display:grid;grid-template-columns:auto auto;gap:3px 10px;color:rgba(122,139,160,0.8)">
+              <span>TYPE</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${escapeHtml(cat.label)}</b>
+              <span>MENTIONS</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${node.mentions}</b>
+              <span>RELATIONS</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${node.degree}</b>
+              <span>FILES</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${node.filesCount}</b>
             </div>
             ${fileSources}
           </div>`;
         }
         if (params.dataType === "edge") {
           const link = params.data as EChartsLink;
-          return `<div style="min-width:140px;font-size:11px;line-height:1.45;color:#64748b">
-            <div style="font-weight:800;color:#0f172a;margin-bottom:3px">${escapeHtml(link.relation)}</div>
-            <div>Weight <b style="color:#334155">${link.value}</b></div>
+          return `<div style="min-width:140px;font-size:11px;line-height:1.45;color:rgba(122,139,160,0.8);font-family:'JetBrains Mono','Fira Code',monospace">
+            <div style="font-weight:700;color:${link.accentColor};margin-bottom:3px">${escapeHtml(link.relation)}</div>
+            <div>WEIGHT <b style="color:rgba(180,200,220,0.95)">${link.value}</b></div>
           </div>`;
         }
         return "";
       },
-      backgroundColor: "rgba(255,255,255,0.62)",
-      borderColor: "rgba(255,255,255,0.9)",
+      backgroundColor: "rgba(6,9,18,0.88)",
+      borderColor: "rgba(0,212,255,0.25)",
       borderWidth: 1,
       padding: [9, 11],
       textStyle: {
-        color: "#0f172a",
-        fontFamily: "Inter, system-ui, sans-serif",
+        color: "rgba(180,200,220,0.85)",
+        fontFamily: "'JetBrains Mono','Fira Code',monospace",
       },
       extraCssText:
-        "box-shadow:0 20px 54px rgba(55,95,170,0.16);border-radius:16px;backdrop-filter:blur(18px) saturate(155%);-webkit-backdrop-filter:blur(18px) saturate(155%);",
+        "box-shadow:0 0 30px rgba(0,212,255,0.12),inset 0 1px 0 rgba(0,212,255,0.08);border-radius:4px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);",
     } as echarts.TooltipComponentOption,
     legend: [
       {
@@ -691,12 +736,12 @@ function buildEChartsOption(
         itemWidth: 10,
         itemHeight: 10,
         itemGap: 10,
-        textStyle: { fontSize: 10, color: "#64748b" },
-        inactiveColor: "#cbd5e1",
+        textStyle: { fontSize: 10, color: "rgba(180,200,220,0.6)" },
+        inactiveColor: "rgba(50,60,75,0.5)",
       },
     ],
-    animationDuration: 1200,
-    animationDurationUpdate: 1400,
+    animationDuration: 1400,
+    animationDurationUpdate: 1200,
     animationEasing: "quarticOut",
     animationEasingUpdate: "cubicOut",
     series: [
@@ -718,7 +763,7 @@ function buildEChartsOption(
           repulsion: fitConfig.repulsion,
           edgeLength: fitConfig.edgeLength,
           gravity: fitConfig.gravity,
-          friction: 0.88,
+          friction: 0.82,
           layoutAnimation: true,
         },
         label: {
@@ -726,15 +771,15 @@ function buildEChartsOption(
           distance: 6,
           fontSize: 10,
           fontWeight: 560,
-          color: "#172033",
-          backgroundColor: "rgba(255,255,255,0.74)",
+          color: "rgba(180,200,220,0.85)",
+          backgroundColor: "rgba(6,9,18,0.72)",
           padding: [3, 7],
-          borderRadius: 6,
-          borderColor: "rgba(255,255,255,0.92)",
+          borderRadius: 3,
+          borderColor: "rgba(0,212,255,0.12)",
           borderWidth: 1,
-          shadowBlur: 10,
-          shadowColor: "rgba(15,23,42,0.08)",
-          shadowOffsetY: 3,
+          shadowBlur: 6,
+          shadowColor: "rgba(0,212,255,0.10)",
+          shadowOffsetY: 0,
           formatter: (params: EChartsFormatterParams<EChartsNode>) => {
             const name = params.data?.rawLabel ?? params.data?.name ?? "";
             const chars = Array.from(String(name));
@@ -747,10 +792,10 @@ function buildEChartsOption(
         edgeLabel: {
           show: false,
           fontSize: 10,
-          color: "#334155",
-          backgroundColor: "rgba(255,255,255,0.86)",
+          color: "rgba(180,200,220,0.85)",
+          backgroundColor: "rgba(6,9,18,0.82)",
           padding: [3, 7],
-          borderRadius: 6,
+          borderRadius: 3,
           formatter: (params: EChartsFormatterParams<EChartsLink>) =>
             params.data?.relation ?? "",
         },
@@ -761,45 +806,45 @@ function buildEChartsOption(
           curveness: 0.2,
           opacity: 0.5,
           width: 0.8,
-          shadowBlur: 2,
+          shadowBlur: 3,
           shadowColor: GRAPH_LINK_SHADOW,
         },
         // Hover creates depth: unrelated items fade while adjacency lights up.
         emphasis: {
           focus: "adjacency",
           scale: true,
-          lineStyle: { opacity: 0.96, shadowBlur: 16 },
+          lineStyle: { opacity: 0.98, shadowBlur: 20 },
           label: {
             show: true,
             fontSize: 12,
-            fontWeight: 800,
-            backgroundColor: "rgba(255,255,255,0.92)",
+            fontWeight: 700,
+            backgroundColor: "rgba(6,9,18,0.90)",
           },
           edgeLabel: {
             show: true,
             fontSize: 10,
             fontWeight: 700,
-            backgroundColor: "rgba(255,255,255,0.92)",
+            backgroundColor: "rgba(6,9,18,0.90)",
             padding: [3, 7],
-            borderRadius: 6,
-            color: "#0f172a",
+            borderRadius: 3,
+            color: "rgba(180,200,220,0.95)",
           },
           itemStyle: {
             shadowBlur: 60,
-            shadowOffsetY: 15,
+            shadowOffsetY: 0,
             opacity: 1,
           },
         },
         blur: {
-          itemStyle: { opacity: 0.055 },
-          lineStyle: { opacity: 0.015 },
-          label: { opacity: 0.08 },
-          edgeLabel: { opacity: 0.02 },
+          itemStyle: { opacity: 0.04 },
+          lineStyle: { opacity: 0.01 },
+          label: { opacity: 0.06 },
+          edgeLabel: { opacity: 0.01 },
         },
         select: {
           itemStyle: { borderWidth: 0 },
         },
-        scaleLimit: { min: 0.12, max: 3 },
+        scaleLimit: { min: 0.08, max: 5 },
       } as echarts.GraphSeriesOption,
     ],
   };
@@ -1116,35 +1161,35 @@ const KnowledgeGraphPanel = ({
       )}
       style={{
         backgroundColor: GRAPH_BACKGROUND,
-        borderColor: "rgba(255,255,255,0.8)",
-        boxShadow: "0 24px 70px rgba(15,23,42,0.10)",
+        borderColor: "rgba(0,212,255,0.12)",
+        boxShadow: "0 0 40px rgba(0,212,255,0.06), inset 0 1px 0 rgba(0,212,255,0.05)",
       }}
     >
       {!hideHeader ? (
         <div
           className="border-b px-5 py-2.5 backdrop-blur-md"
           style={{
-            backgroundColor: "rgba(255,255,255,0.7)",
-            borderColor: "rgba(255,255,255,0.8)",
+            backgroundColor: "rgba(6,9,18,0.75)",
+            borderColor: "rgba(0,212,255,0.10)",
           }}
         >
           <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold text-foreground">
+            <div className="text-sm font-semibold text-[#00d4ff]">
               Knowledge Graph
             </div>
             <div className="flex items-center gap-2">
               {data?.truncated ? (
-                <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
+                <span className="rounded-full border border-[rgba(0,212,255,0.2)] bg-[rgba(6,9,18,0.6)] px-2 py-0.5 text-[10px] text-[rgba(0,212,255,0.6)]">
                   Trimmed
                 </span>
               ) : null}
               {isFetching && graphReady ? (
-                <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                <span className="inline-flex items-center gap-1 text-[10px] text-[rgba(180,200,220,0.5)]">
                   <Loading size={11} /> Updating...
                 </span>
               ) : null}
               {refreshGraphCache.isPending ? (
-                <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                <span className="inline-flex items-center gap-1 text-[10px] text-[rgba(180,200,220,0.5)]">
                   <Loading size={11} /> Rebuilding...
                 </span>
               ) : null}
@@ -1152,7 +1197,7 @@ const KnowledgeGraphPanel = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7"
+                  className="h-7 w-7 hover:bg-[rgba(0,212,255,0.08)]"
                   onClick={onRequestClose}
                 >
                   <ForwardedIconComponent name="X" className="h-3.5 w-3.5" />
@@ -1162,7 +1207,7 @@ const KnowledgeGraphPanel = ({
                 variant="outline"
                 size="xs"
                 loading={refreshGraphCache.isPending}
-                className="h-7 rounded-full text-[11px]"
+                className="h-7 rounded-full text-[11px] border-[rgba(0,212,255,0.2)] bg-[rgba(6,9,18,0.6)] text-[rgba(0,212,255,0.7)] hover:bg-[rgba(0,212,255,0.08)] hover:text-[#00d4ff]"
                 onClick={() => void handleRefreshGraphCache()}
               >
                 {!refreshGraphCache.isPending ? (
@@ -1176,11 +1221,11 @@ const KnowledgeGraphPanel = ({
             </div>
           </div>
           {!compact && !hideLegend ? (
-            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-muted-foreground">
-              <span className="rounded-full border border-border bg-background px-2 py-0.5">
+            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-[rgba(180,200,220,0.4)]">
+              <span className="rounded-full border border-[rgba(0,212,255,0.12)] bg-[rgba(6,9,18,0.6)] px-2 py-0.5">
                 {visibleNodeCount} nodes
               </span>
-              <span className="rounded-full border border-border bg-background px-2 py-0.5">
+              <span className="rounded-full border border-[rgba(0,212,255,0.12)] bg-[rgba(6,9,18,0.6)] px-2 py-0.5">
                 {visibleEdgeCount} edges
               </span>
             </div>
@@ -1193,18 +1238,18 @@ const KnowledgeGraphPanel = ({
         style={{ backgroundColor: GRAPH_BACKGROUND }}
       >
         {showLoading ? (
-          <div className="flex h-full items-center justify-center gap-3 text-sm text-muted-foreground">
+          <div className="flex h-full items-center justify-center gap-3 text-sm text-[rgba(180,200,220,0.5)]">
             <Loading size={28} />
             <span>Loading knowledge graph...</span>
           </div>
         ) : isError ? (
-          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-destructive">
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-[#ff2d75]">
             {t("knowledge.failedToLoadGraph", {
               defaultValue: "Failed to load the knowledge graph.",
             })}
           </div>
         ) : !graphReady ? (
-          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-[rgba(180,200,220,0.4)]">
             No entity relations were found for the current filters.
           </div>
         ) : (

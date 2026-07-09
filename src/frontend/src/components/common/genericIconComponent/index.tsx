@@ -56,7 +56,7 @@ export const ForwardedIconComponent = memo(
         if (name && typeof name === "string") {
           getNodeIcon(name)
             .then((component) => {
-              if (isMounted) {
+              if (isMounted && component) {
                 setTargetIcon(component);
                 setShowFallback(false);
               }

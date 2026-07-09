@@ -36,8 +36,7 @@ const AccordionTrigger = React.forwardRef<
           "flex flex-1 cursor-pointer items-center justify-between py-4 text-sm font-medium transition-all [&[data-state=open]>svg]:rotate-180",
           className,
         )}
-      >
-        {children}
+      >{children as React.ReactNode}
         <ShadTooltip
           styleClasses="z-50"
           content={disabled ? "Empty" : "Open"}

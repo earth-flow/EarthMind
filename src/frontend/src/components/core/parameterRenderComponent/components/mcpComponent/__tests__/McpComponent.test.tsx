@@ -53,11 +53,13 @@ jest.mock("@/stores/flowStore", () => {
   const mockFlowState = {
     updateBuildStatus: mockUpdateBuildStatus,
   };
-  const useFlowStoreMock = jest.fn(
-    (selector?: (state: typeof mockFlowState) => unknown) =>
-      selector ? selector(mockFlowState) : mockFlowState,
+  const useFlowStoreMock = Object.assign(
+    jest.fn(
+      (selector?: (state: typeof mockFlowState) => unknown) =>
+        selector ? selector(mockFlowState) : mockFlowState,
+    ),
+    { getState: () => mockFlowState },
   );
-  useFlowStoreMock.getState = () => mockFlowState;
   return {
     __esModule: true,
     default: useFlowStoreMock,
@@ -118,7 +120,7 @@ describe("McpComponent", () => {
     const nodeClass = {
       template: { code: { value: "code" } },
       tool_mode: false,
-    } as APIClassType;
+    } as unknown as APIClassType;
 
     render(
       <McpComponent
