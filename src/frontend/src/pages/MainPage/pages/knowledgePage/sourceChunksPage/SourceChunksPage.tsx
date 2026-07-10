@@ -451,7 +451,9 @@ export const SourceChunksPage = ({
                       autoRefreshOnMount={false}
                       compact
                       fitProfile="chunks"
-                      showNodeLabels={false}
+                      showNodeLabels
+                      maxVisibleNodeLabels={8}
+                      nodeLabelMaxLength={12}
                       nodeSizeScale={1.18}
                       hideHeader
                       hideLegend

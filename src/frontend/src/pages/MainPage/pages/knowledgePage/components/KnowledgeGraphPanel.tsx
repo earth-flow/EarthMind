@@ -36,6 +36,8 @@ interface KnowledgeGraphPanelProps {
   hideLegend?: boolean;
   fitProfile?: KnowledgeGraphFitProfile;
   showNodeLabels?: boolean;
+  maxVisibleNodeLabels?: number;
+  nodeLabelMaxLength?: number;
   nodeSizeScale?: number;
   autoRefreshOnMount?: boolean;
   floatingNodeDetails?: boolean;
@@ -97,7 +99,10 @@ interface ClusterLayoutRuntimeConfig {
   collisionPaddingScale: number;
 }
 
-const CLUSTER_RUNTIME_BY_PROFILE: Record<KnowledgeGraphFitProfile, ClusterLayoutRuntimeConfig> = {
+const CLUSTER_RUNTIME_BY_PROFILE: Record<
+  KnowledgeGraphFitProfile,
+  ClusterLayoutRuntimeConfig
+> = {
   drawer: {
     centerScale: 0.3,
     baseRadiusScale: 0.5,
@@ -291,6 +296,14 @@ const getDisplayNodeLabel = (
   fallbackLabel: string,
 ) => String(displayLabel || fallbackLabel || "").trim();
 
+const truncateNodeLabel = (label: string, maxLength: number) => {
+  if (maxLength <= 0 || label.length <= maxLength) {
+    return label;
+  }
+  const safeLength = maxLength > 1 ? maxLength : 1;
+  return label.slice(0, safeLength).trimEnd() + "...";
+};
+
 // ── Data formatting ──────────────────────────────────────────────────────────
 interface EChartsNode {
   id: string;
@@ -407,7 +420,9 @@ function formatGraphData(
     connectedIds.add(edge.source);
     connectedIds.add(edge.target);
   });
-  const connectedNodes = trimmedNodes.filter((node) => connectedIds.has(node.id));
+  const connectedNodes = trimmedNodes.filter((node) =>
+    connectedIds.has(node.id),
+  );
   const connectedEdges = candidateEdges.filter(
     (edge) => connectedIds.has(edge.source) && connectedIds.has(edge.target),
   );
@@ -474,12 +489,9 @@ function formatGraphData(
     );
     const typeIndex = typeOffsets.get(entityType) ?? 0;
     typeOffsets.set(entityType, typeIndex + 1);
-    const clusterNodes = Math.max(nodesByType.get(entityType)?.length ?? 1, 1);
-    const clusterLayout = CLUSTER_LAYOUTS[entityType as GraphEntityType] ?? CLUSTER_LAYOUTS.other;
-    const displayLabel = getDisplayNodeLabel(
-      node.display_label,
-      node.label,
-    );
+    const clusterLayout =
+      CLUSTER_LAYOUTS[entityType as GraphEntityType] ?? CLUSTER_LAYOUTS.other;
+    const displayLabel = getDisplayNodeLabel(node.display_label, node.label);
     const labelWidth = Math.max(42, Array.from(displayLabel).length * 8 + 10);
     const labelHeight = 18;
     let x = clusterLayout.x;
@@ -524,7 +536,8 @@ function formatGraphData(
         if (dx * dx + dy * dy < minDistance * minDistance) {
           return true;
         }
-        const labelDx = candidateX + collisionRadius + 8 + labelWidth / 2 - placed.x;
+        const labelDx =
+          candidateX + collisionRadius + 8 + labelWidth / 2 - placed.x;
         const labelDy = candidateY - placed.y;
         return (
           Math.abs(labelDx) < labelWidth / 2 + placed.radius &&
@@ -537,7 +550,13 @@ function formatGraphData(
         break;
       }
     }
-    placedNodes.push({ x, y, radius: collisionRadius, labelWidth, labelHeight });
+    placedNodes.push({
+      x,
+      y,
+      radius: collisionRadius,
+      labelWidth,
+      labelHeight,
+    });
 
     const labelPosition = "right";
     const mentions = toNumber(node.metadata?.mentions, node.weight);
@@ -614,7 +633,7 @@ function formatGraphData(
   const echartsLinks: EChartsLink[] = connectedEdges.map((edge) => {
     const weight = Math.max(1, edge.weight);
     const sourceColor = nodeColorMap.get(edge.source) ?? "#00d4ff";
-    const glowColor = rgbaFromHex(sourceColor, 0.50);
+    const glowColor = rgbaFromHex(sourceColor, 0.5);
     return {
       source: edge.source,
       target: edge.target,
@@ -677,6 +696,8 @@ function buildEChartsOption(
   activeCategories: Set<string> | null = null,
   legendSelected: Record<string, boolean> = {},
   showNodeLabels = true,
+  maxVisibleNodeLabels?: number,
+  nodeLabelMaxLength = 14,
 ): echarts.EChartsOption {
   if (graph.nodes.length === 0) {
     return { series: [] };
@@ -720,6 +741,46 @@ function buildEChartsOption(
         },
       },
     }));
+  } else if (
+    typeof maxVisibleNodeLabels === "number" &&
+    maxVisibleNodeLabels >= 0
+  ) {
+    const visibleLabelIds = new Set(
+      [...highlightedNodes]
+        .sort(
+          (a, b) =>
+            b.importance - a.importance ||
+            b.mentions - a.mentions ||
+            b.degree - a.degree,
+        )
+        .slice(0, maxVisibleNodeLabels)
+        .map((node) => node.id),
+    );
+
+    highlightedNodes = highlightedNodes.map((node) => {
+      const showLabel = visibleLabelIds.has(node.id);
+      const truncatedLabel = truncateNodeLabel(
+        node.displayLabel,
+        nodeLabelMaxLength,
+      );
+      return {
+        ...node,
+        name: showLabel ? truncatedLabel : node.displayLabel,
+        label: {
+          ...node.label,
+          show: showLabel,
+          formatter: showLabel ? truncatedLabel : "",
+        },
+        emphasis: {
+          ...node.emphasis,
+          label: {
+            ...(node.emphasis?.label ?? {}),
+            show: true,
+            formatter: node.displayLabel,
+          },
+        },
+      };
+    });
   }
 
   if (activeCategories && activeCategories.size > 0) {
@@ -755,7 +816,9 @@ function buildEChartsOption(
       trigger: "item",
       confine: true,
       renderMode: "html",
-      formatter: (params: EChartsFormatterParams<EChartsNode | EChartsLink>) => {
+      formatter: (
+        params: EChartsFormatterParams<EChartsNode | EChartsLink>,
+      ) => {
         if (params.dataType === "node") {
           const node = params.data as EChartsNode;
           const cat = CATEGORY_DEFS[node.type] ?? CATEGORY_DEFS.other;
@@ -890,6 +953,8 @@ const KnowledgeGraphPanel = ({
   hideLegend = false,
   fitProfile = "default",
   showNodeLabels = true,
+  maxVisibleNodeLabels,
+  nodeLabelMaxLength = 14,
   nodeSizeScale = 1,
   autoRefreshOnMount = true,
   compact = false,
@@ -948,7 +1013,9 @@ const KnowledgeGraphPanel = ({
   );
 
   const refreshGraphCache = useRefreshKnowledgeBaseGraphCache();
-  const [activeCategories, setActiveCategories] = useState<Set<string> | null>(null);
+  const [activeCategories, setActiveCategories] = useState<Set<string> | null>(
+    null,
+  );
   const rebuildRequestKeysRef = useRef<Set<string>>(new Set());
   const lastExternalRefreshTokenRef = useRef(externalRefreshToken);
 
@@ -1048,9 +1115,12 @@ const KnowledgeGraphPanel = ({
     const selectedMap: Record<string, boolean> = {};
     formattedGraph.categories.forEach((category) => {
       selectedMap[category.name] =
-        activeCategories == null || activeCategories.has(category.name.toLowerCase()) ||
+        activeCategories == null ||
+        activeCategories.has(category.name.toLowerCase()) ||
         activeCategories.has(
-          TYPE_ORDER.find((type) => CATEGORY_DEFS[type].label === category.name) ?? category.name,
+          TYPE_ORDER.find(
+            (type) => CATEGORY_DEFS[type].label === category.name,
+          ) ?? category.name,
         );
     });
     return selectedMap;
@@ -1066,6 +1136,8 @@ const KnowledgeGraphPanel = ({
         activeCategories,
         legendSelected,
         showNodeLabels,
+        maxVisibleNodeLabels,
+        nodeLabelMaxLength,
       ),
     [
       activeCategories,
