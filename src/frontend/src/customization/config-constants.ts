@@ -1,10 +1,10 @@
 export const BASENAME = "";
 export const PORT = 3000;
-export const PROXY_TARGET = "http://10.171.205.153:7860";
+export const PROXY_TARGET = "http://localhost:7860";
 export const API_ROUTES = ["^/api/v1/", "^/api/v2/", "/health"];
-export const BASE_URL_API = "http://10.171.205.153:7860/api/v1/";
-export const BASE_URL_API_V2 = "http://10.171.205.153:7860/api/v2/";
-export const HEALTH_CHECK_URL = "http://10.171.205.153:7860/health_check";
+export const BASE_URL_API = "/api/v1/";
+export const BASE_URL_API_V2 = "/api/v2/";
+export const HEALTH_CHECK_URL = "/health";
 export const DOCS_LINK = "https://docs.earthmind.org";
 
 export default {

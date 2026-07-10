@@ -23,8 +23,7 @@ export default defineConfig(({ mode }) => {
 
   const apiRoutes = API_ROUTES || ["^/api/v1/", "^/api/v2/", "/health"];
 
-  const target =
-    env.VITE_PROXY_TARGET || PROXY_TARGET || "http://10.171.205.153:7860";
+  const target = env.VITE_PROXY_TARGET || PROXY_TARGET || "http://localhost:7860";
 
   const port = Number(env.VITE_PORT) || PORT || 3000;
 
@@ -45,7 +44,7 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       "import.meta.env.BACKEND_URL": JSON.stringify(
-        envEarthMind.BACKEND_URL ?? "http://10.171.205.153:7860",
+        envEarthMind.BACKEND_URL ?? "",
       ),
       "import.meta.env.ACCESS_TOKEN_EXPIRE_SECONDS": JSON.stringify(
         envEarthMind.ACCESS_TOKEN_EXPIRE_SECONDS ?? 60,
