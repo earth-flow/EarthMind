@@ -131,7 +131,7 @@ export default defineConfig({
       command: "npm start",
       port: PORT || 3000,
       env: {
-        VITE_PROXY_TARGET: "http://10.171.205.153:7860",
+        VITE_PROXY_TARGET: "http://localhost:7860",
       },
       reuseExistingServer: true,
     },
