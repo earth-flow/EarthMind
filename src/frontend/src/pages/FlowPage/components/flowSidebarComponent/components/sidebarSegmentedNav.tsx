@@ -9,6 +9,8 @@ import {
   type SidebarSection,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { ENABLE_KNOWLEDGE_BASES } from "@/customization/feature-flags";
+import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import { usePlaygroundStore } from "@/stores/playgroundStore";
 import { cn } from "@/utils/utils";
 import { useSearchContext } from "../index";
@@ -25,11 +27,16 @@ const SidebarSegmentedNav = () => {
   const setPlaygroundFullscreen = usePlaygroundStore(
     (state) => state.setIsFullscreen,
   );
+  const navigate = useCustomNavigate();
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => item.id !== "knowledge" || ENABLE_KNOWLEDGE_BASES,
+  );
 
   return (
     <div className="flex h-full flex-col border-r border-border bg-background">
       <SidebarMenu className="gap-2 py-1">
-        {NAV_ITEMS.map((item) => (
+        {visibleItems.map((item) => (
           <div key={item.id}>
             {item.id === "memories" && (
               <Separator className="mx-auto my-1 w-5" />
@@ -39,6 +46,12 @@ const SidebarSegmentedNav = () => {
                 <SidebarMenuButton
                   size="md"
                   onClick={() => {
+                    // Navigation items: navigate instead of switching panels
+                    if (item.href) {
+                      navigate(item.href);
+                      return;
+                    }
+
                     if (item.id === "traces") {
                       setPlaygroundOpen(false);
                       setPlaygroundFullscreen(false);

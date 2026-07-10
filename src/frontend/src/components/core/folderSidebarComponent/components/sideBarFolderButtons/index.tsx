@@ -26,7 +26,6 @@ import {
   ENABLE_CUSTOM_PARAM,
   ENABLE_DATASTAX_EARTHMIND,
   ENABLE_FILE_MANAGEMENT,
-  ENABLE_KNOWLEDGE_BASES,
   ENABLE_MCP_NOTICE,
 } from "@/customization/feature-flags";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
@@ -379,10 +378,6 @@ const SideBarFoldersButtonsComponent = ({
     _navigate("/assets/files");
   };
 
-  const handleKnowledgeNavigation = () => {
-    _navigate("/assets/knowledge-bases");
-  };
-
   return (
     <Sidebar
       collapsible={isMobile ? "offcanvas" : "none"}
@@ -504,16 +499,6 @@ const SideBarFoldersButtonsComponent = ({
           <div className="grid w-full items-center gap-2 p-2">
             {/* TODO: Remove this on cleanup */}
             {ENABLE_DATASTAX_EARTHMIND && <CustomStoreButton />}{" "}
-            {ENABLE_KNOWLEDGE_BASES && (
-              <SidebarMenuButton
-                onClick={handleKnowledgeNavigation}
-                size="md"
-                className="text-sm"
-              >
-                <ForwardedIconComponent name="Library" className="h-4 w-4" />
-                {t("sidebar.knowledge")}
-              </SidebarMenuButton>
-            )}
             <SidebarMenuButton
               onClick={handleFilesNavigation}
               size="md"

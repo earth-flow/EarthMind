@@ -298,3 +298,4 @@ tmp_toolguard/
 #whitesource
 whitesource/
 /.codex
+data/secret_key

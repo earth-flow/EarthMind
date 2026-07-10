@@ -31,7 +31,8 @@ export type SidebarSection =
   | "mcp"
   | "versions"
   | "traces"
-  | "memories";
+  | "memories"
+  | "knowledge";
 
 // Helper function to get cookie value
 function getCookie(name: string): string | null {
