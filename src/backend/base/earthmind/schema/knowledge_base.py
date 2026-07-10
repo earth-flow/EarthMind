@@ -187,6 +187,8 @@ class PaginatedChunkResponse(BaseModel):
 class KnowledgeGraphNode(BaseModel):
     id: str
     label: str
+    display_label: str | None = None
+    full_label: str | None = None
     type: str
     weight: int = 1
     chunk_ids: list[str] = Field(default_factory=list)

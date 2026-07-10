@@ -12,12 +12,16 @@ interface UseKnowledgeBaseActionsOptions {
   refetch: () => void;
   selectedFiles: KnowledgeBaseInfo[];
   clearSelection: () => void;
+  setSelectedFiles: (files: KnowledgeBaseInfo[]) => void;
+  setQuantitySelected: (quantity: number) => void;
 }
 
 export const useKnowledgeBaseActions = ({
   refetch,
   selectedFiles,
   clearSelection,
+  setSelectedFiles,
+  setQuantitySelected,
 }: UseKnowledgeBaseActionsOptions) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -108,6 +112,11 @@ export const useKnowledgeBaseActions = ({
         (old) =>
           old?.filter((kb) => kb.dir_name !== knowledgeBaseToDelete.dir_name),
       );
+      const remainingSelected = selectedFiles.filter(
+        (kb) => kb.dir_name !== knowledgeBaseToDelete.dir_name,
+      );
+      setSelectedFiles(remainingSelected);
+      setQuantitySelected(remainingSelected.length);
       resetDeleteState();
       deleteKnowledgeBaseMutation.mutate({
         kb_names: knowledgeBaseToDelete.dir_name,

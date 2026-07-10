@@ -7,6 +7,8 @@ import { UseRequestProcessor } from "../../services/request-processor";
 export interface KnowledgeGraphNode {
   id: string;
   label: string;
+  display_label?: string | null;
+  full_label?: string | null;
   type: string;
   weight: number;
   chunk_ids: string[];

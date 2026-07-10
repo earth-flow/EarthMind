@@ -199,8 +199,12 @@ const KnowledgeBaseDrawer = ({
               <KnowledgeGraphPanel
                 kbName={knowledgeBase.dir_name}
                 sampleLimit={80}
+                maxNodes={28}
+                maxEdges={56}
                 compact
                 fitProfile="drawer"
+                showNodeLabels={false}
+                nodeSizeScale={0.82}
                 hideHeader
                 hideLegend
                 autoRefreshOnMount={false}

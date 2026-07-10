@@ -187,6 +187,8 @@ const KnowledgeBasesTab = ({
     refetch,
     selectedFiles,
     clearSelection,
+    setSelectedFiles,
+    setQuantitySelected,
   });
 
   const { captureSubmit, applyOptimisticUpdate } = useOptimisticKnowledgeBase();

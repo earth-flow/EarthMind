@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,10 +27,24 @@ import ChunkCard from "./components/ChunkCard";
 import { ChunksMetadataFilter } from "./components/ChunksMetadataFilter";
 import { CHUNKS_PER_PAGE, PAGE_SIZE_OPTIONS } from "./constants";
 
-export const SourceChunksPage = () => {
+type SourceChunksPageProps = {
+  embeddedInFlow?: boolean;
+  sourceId?: string;
+};
+
+export const SourceChunksPage = ({
+  embeddedInFlow = false,
+  sourceId: sourceIdProp,
+}: SourceChunksPageProps) => {
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId: string }>();
+  const { id: flowId, sourceId: routeSourceId } = useParams<{
+    id: string;
+    sourceId: string;
+  }>();
+  const location = useLocation();
   const navigate = useCustomNavigate();
+  const sourceId = sourceIdProp ?? routeSourceId ?? "";
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
   const [pageSize, setPageSize] = useState<number>(CHUNKS_PER_PAGE);
@@ -92,6 +106,14 @@ export const SourceChunksPage = () => {
   });
 
   const handleBack = () => {
+    if (embeddedInFlow && flowId) {
+      const params = new URLSearchParams(location.search);
+      params.delete("knowledgeSourceId");
+      const nextSearch = params.toString();
+      navigate(location.pathname + (nextSearch ? "?" + nextSearch : ""));
+      return;
+    }
+
     navigate("/assets/knowledge-bases");
   };
 
@@ -422,13 +444,14 @@ export const SourceChunksPage = () => {
                     <KnowledgeGraphPanel
                       kbName={sourceId || ""}
                       sampleLimit={80}
-                      maxNodes={96}
+                      maxNodes={64}
                       maxEdges={180}
                       externalRefreshToken={graphRefreshToken}
                       onRefreshPendingChange={setIsGraphRefreshing}
                       autoRefreshOnMount={false}
                       compact
                       fitProfile="chunks"
+                      showNodeLabels={false}
                       nodeSizeScale={1.18}
                       hideHeader
                       hideLegend

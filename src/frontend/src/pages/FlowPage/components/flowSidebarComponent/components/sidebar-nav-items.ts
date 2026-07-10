@@ -56,7 +56,6 @@ export const NAV_ITEMS: SidebarNavItem[] = [
     icon: "Library",
     label: "sidebar.knowledge",
     tooltip: "sidebar.knowledge",
-    href: "/assets/knowledge-bases",
   },
   {
     id: "traces",

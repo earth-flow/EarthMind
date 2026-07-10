@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
-import { useBlocker, useParams } from "react-router-dom";
+import { useBlocker, useParams, useSearchParams } from "react-router-dom";
 import { AssistantPanel } from "@/components/core/assistantPanel";
 import { FlowPageSlidingContainerContent } from "@/components/core/playgroundComponent/sliding-container/components/flow-page-sliding-container";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
@@ -20,14 +20,16 @@ import { useWebhookEvents } from "@/hooks/use-webhook-events";
 import { SaveChangesModal } from "@/modals/saveChangesModal";
 import useAlertStore from "@/stores/alertStore";
 import useAssistantManagerStore from "@/stores/assistantManagerStore";
+import useFlowBuilderWelcomeStore from "@/stores/flowBuilderWelcomeStore";
 import { usePlaygroundStore } from "@/stores/playgroundStore";
 import { useShortcutsStore } from "@/stores/shortcuts";
-import useFlowBuilderWelcomeStore from "@/stores/flowBuilderWelcomeStore";
 import { useTypesStore } from "@/stores/typesStore";
 import { customStringify } from "@/utils/reactflowUtils";
 import { cn } from "@/utils/utils";
 import useFlowStore from "../../stores/flowStore";
 import useFlowsManagerStore from "../../stores/flowsManagerStore";
+import KnowledgePage from "../MainPage/pages/knowledgePage";
+import SourceChunksPage from "../MainPage/pages/knowledgePage/sourceChunksPage/SourceChunksPage";
 import {
   FlowSearchProvider,
   FlowSidebarComponent,
@@ -43,9 +45,40 @@ function FlowPageMainContent({
   flowId?: string;
   setIsLoading: (isLoading: boolean) => void;
 }): JSX.Element {
-  const { activeSection } = useSidebar();
+  const { activeSection, setActiveSection } = useSidebar();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const knowledgeSourceId = searchParams.get("knowledgeSourceId");
+  const shouldHydrateKnowledgeFromUrlRef = useRef(Boolean(knowledgeSourceId));
   const showTraces = ENABLE_NEW_SIDEBAR && activeSection === "traces";
   const showMemories = ENABLE_NEW_SIDEBAR && activeSection === "memories";
+  const showKnowledge = ENABLE_NEW_SIDEBAR && activeSection === "knowledge";
+
+  useEffect(() => {
+    if (!knowledgeSourceId || !shouldHydrateKnowledgeFromUrlRef.current) {
+      return;
+    }
+
+    if (activeSection !== "knowledge") {
+      setActiveSection("knowledge");
+      return;
+    }
+
+    shouldHydrateKnowledgeFromUrlRef.current = false;
+  }, [activeSection, knowledgeSourceId, setActiveSection]);
+
+  useEffect(() => {
+    if (shouldHydrateKnowledgeFromUrlRef.current) {
+      return;
+    }
+
+    if (!knowledgeSourceId || activeSection === "knowledge") {
+      return;
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete("knowledgeSourceId");
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [activeSection, knowledgeSourceId, searchParams, setSearchParams]);
 
   if (showTraces) {
     return (
@@ -64,6 +97,14 @@ function FlowPageMainContent({
 
   if (showMemories) {
     return <MemoriesMainContent />;
+  }
+
+  if (showKnowledge) {
+    return knowledgeSourceId ? (
+      <SourceChunksPage embeddedInFlow sourceId={knowledgeSourceId} />
+    ) : (
+      <KnowledgePage />
+    );
   }
 
   return <Page setIsLoading={setIsLoading} />;

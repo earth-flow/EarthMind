@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import * as echarts from "echarts";
 import ReactECharts from "echarts-for-react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ interface KnowledgeGraphPanelProps {
   maxEdges?: number;
   hideLegend?: boolean;
   fitProfile?: KnowledgeGraphFitProfile;
+  showNodeLabels?: boolean;
   nodeSizeScale?: number;
   autoRefreshOnMount?: boolean;
   floatingNodeDetails?: boolean;
@@ -46,13 +47,11 @@ interface KnowledgeGraphPanelProps {
   className?: string;
 }
 
-// ── Entity type -> color mapping (Sci-Fi Command aesthetic) ────────
+// ── Entity type -> color mapping ───────────────────────────────────────────
 // Backend assigns type: technology | method | organization | metric | dataset | event | document | other
 interface CatDef {
-  color: string; // main neon color
-  dark: string; // darker shade for gradient end
-  glow: string; // glow shadow rgba
-  label: string; // legend label
+  color: string;
+  label: string;
 }
 const TYPE_ORDER = [
   "technology",
@@ -65,59 +64,134 @@ const TYPE_ORDER = [
   "other",
 ] as const;
 const CATEGORY_DEFS: Record<string, CatDef> = {
-  technology: {
-    color: "#00d4ff",
-    dark: "#003855",
-    glow: "rgba(0,212,255,0.55)",
-    label: "Technology",
+  technology: { color: "#5070dd", label: "Technology" },
+  method: { color: "#b6d634", label: "Method" },
+  organization: { color: "#505372", label: "Organization" },
+  metric: { color: "#ff994d", label: "Metric" },
+  dataset: { color: "#0ca8df", label: "Dataset" },
+  event: { color: "#ffd10a", label: "Event" },
+  document: { color: "#fb628b", label: "Document" },
+  other: { color: "#785db0", label: "Other" },
+};
+
+const GRAPH_BACKGROUND = "#ffffff";
+const GRAPH_LABEL_COLOR = "#334155";
+const GRAPH_LINK_SHADOW = "rgba(15,23,42,0.05)";
+
+type GraphEntityType = (typeof TYPE_ORDER)[number];
+
+interface ClusterShapeConfig {
+  x: number;
+  y: number;
+  baseRadius: number;
+  ringGap: number;
+  stretchX: number;
+  stretchY: number;
+  collisionPadding: number;
+}
+
+interface ClusterLayoutRuntimeConfig {
+  centerScale: number;
+  baseRadiusScale: number;
+  ringGapScale: number;
+  collisionPaddingScale: number;
+}
+
+const CLUSTER_RUNTIME_BY_PROFILE: Record<KnowledgeGraphFitProfile, ClusterLayoutRuntimeConfig> = {
+  drawer: {
+    centerScale: 0.3,
+    baseRadiusScale: 0.5,
+    ringGapScale: 0.5,
+    collisionPaddingScale: 0.9,
   },
-  method: {
-    color: "#ff6b35",
-    dark: "#5c1a05",
-    glow: "rgba(255,107,53,0.55)",
-    label: "Method",
+  chunks: {
+    centerScale: 1,
+    baseRadiusScale: 1,
+    ringGapScale: 1,
+    collisionPaddingScale: 1,
   },
-  organization: {
-    color: "#ff2d75",
-    dark: "#5c0a23",
-    glow: "rgba(255,45,117,0.55)",
-    label: "Organization",
-  },
-  metric: {
-    color: "#00ff9d",
-    dark: "#003c24",
-    glow: "rgba(0,255,157,0.50)",
-    label: "Metric",
-  },
-  dataset: {
-    color: "#b537f2",
-    dark: "#3d1255",
-    glow: "rgba(181,55,242,0.50)",
-    label: "Dataset",
-  },
-  event: {
-    color: "#ffaa00",
-    dark: "#5c3d00",
-    glow: "rgba(255,170,0,0.50)",
-    label: "Event",
-  },
-  document: {
-    color: "#00b4d8",
-    dark: "#003a48",
-    glow: "rgba(0,180,216,0.48)",
-    label: "Document",
-  },
-  other: {
-    color: "#7a8ba0",
-    dark: "#2a3340",
-    glow: "rgba(122,139,160,0.40)",
-    label: "Other",
+  default: {
+    centerScale: 0.9,
+    baseRadiusScale: 0.92,
+    ringGapScale: 0.92,
+    collisionPaddingScale: 0.94,
   },
 };
 
-const GRAPH_BACKGROUND = "#060912";
-const GRAPH_LINK_COLOR = "rgba(0,180,255,0.28)";
-const GRAPH_LINK_SHADOW = "rgba(0,212,255,0.15)";
+const CLUSTER_LAYOUTS: Record<GraphEntityType, ClusterShapeConfig> = {
+  technology: {
+    x: -700,
+    y: -320,
+    baseRadius: 110,
+    ringGap: 126,
+    stretchX: 1.42,
+    stretchY: 1.06,
+    collisionPadding: 38,
+  },
+  method: {
+    x: -470,
+    y: 520,
+    baseRadius: 90,
+    ringGap: 108,
+    stretchX: 1.2,
+    stretchY: 0.98,
+    collisionPadding: 32,
+  },
+  organization: {
+    x: -940,
+    y: 120,
+    baseRadius: 96,
+    ringGap: 112,
+    stretchX: 1.22,
+    stretchY: 0.98,
+    collisionPadding: 34,
+  },
+  metric: {
+    x: 470,
+    y: 520,
+    baseRadius: 88,
+    ringGap: 108,
+    stretchX: 1.18,
+    stretchY: 0.96,
+    collisionPadding: 32,
+  },
+  dataset: {
+    x: 940,
+    y: -300,
+    baseRadius: 122,
+    ringGap: 136,
+    stretchX: 1.5,
+    stretchY: 1.12,
+    collisionPadding: 42,
+  },
+  event: {
+    x: 860,
+    y: 140,
+    baseRadius: 96,
+    ringGap: 112,
+    stretchX: 1.22,
+    stretchY: 0.98,
+    collisionPadding: 34,
+  },
+  document: {
+    x: 0,
+    y: 0,
+    baseRadius: 54,
+    ringGap: 64,
+    stretchX: 0.92,
+    stretchY: 0.78,
+    collisionPadding: 24,
+  },
+  other: {
+    x: 220,
+    y: -610,
+    baseRadius: 92,
+    ringGap: 108,
+    stretchX: 1.16,
+    stretchY: 0.94,
+    collisionPadding: 34,
+  },
+};
 
 type KnowledgeGraphFitProfile = "drawer" | "chunks" | "default";
 
@@ -151,9 +225,9 @@ const getFitProfileConfig = (
     return {
       viewportRatioX: 0.58,
       viewportRatioY: 0.56,
-      minZoom: 0.12,
-      maxZoom: 0.78,
-      initialZoom: 0.34,
+      minZoom: 0.16,
+      maxZoom: 0.92,
+      initialZoom: 0.8,
       paddingX: 64,
       paddingY: 68,
       repulsion: Math.round(460 * densityBoost),
@@ -170,7 +244,7 @@ const getFitProfileConfig = (
       viewportRatioY: 0.7,
       minZoom: 0.14,
       maxZoom: 0.92,
-      initialZoom: 0.7,
+      initialZoom: 1.15,
       paddingX: 56,
       paddingY: 62,
       repulsion: Math.round(390 * densityBoost),
@@ -186,7 +260,7 @@ const getFitProfileConfig = (
     viewportRatioY: 0.8,
     minZoom: 0.22,
     maxZoom: 1.08,
-    initialZoom: 0.58,
+    initialZoom: 0.42,
     paddingX: 34,
     paddingY: 46,
     repulsion: Math.round(270 * densityBoost),
@@ -212,6 +286,11 @@ const rgbaFromHex = (hex: string, alpha: number) => {
   return `rgba(${r},${g},${b},${alpha})`;
 };
 
+const getDisplayNodeLabel = (
+  displayLabel: string | null | undefined,
+  fallbackLabel: string,
+) => String(displayLabel || fallbackLabel || "").trim();
+
 // ── Data formatting ──────────────────────────────────────────────────────────
 interface EChartsNode {
   id: string;
@@ -227,6 +306,7 @@ interface EChartsNode {
   x?: number;
   y?: number;
   rawLabel: string;
+  displayLabel: string;
   type: string;
   weight: number;
   chunkIds: string[];
@@ -240,6 +320,8 @@ interface EChartsNode {
 interface EChartsLink {
   source: string;
   target: string;
+  sourceType: string;
+  targetType: string;
   value: number;
   label: Record<string, unknown>;
   lineStyle: Record<string, unknown>;
@@ -262,36 +344,13 @@ interface EChartsFormatterParams<TData> {
   dataType?: string;
 }
 
-type EChartsLayoutPoint = number[] | { x?: number; y?: number };
-
-interface EChartsSeriesDataAccessor {
-  getItemLayout: (index: number) => EChartsLayoutPoint | null | undefined;
-}
-
-interface EChartsGraphSeriesModel {
-  getData?: () => EChartsSeriesDataAccessor | null | undefined;
-}
-
-interface EChartsGraphModel {
-  getSeriesByIndex: (
-    index: number,
-  ) => EChartsGraphSeriesModel | null | undefined;
-}
-
-interface EChartsGraphModelAccessor {
-  getModel: () => EChartsGraphModel;
-}
-
-type EChartsDispatchPayload = Parameters<
-  echarts.EChartsType["dispatchAction"]
->[0];
-
 function formatGraphData(
   nodes: KnowledgeGraphNode[],
   edges: KnowledgeGraphEdge[],
   maxNodes: number,
   maxEdges: number,
   nodeSizeScale = 1,
+  fitProfile: KnowledgeGraphFitProfile = "default",
 ): FormattedGraph {
   if (!nodes || nodes.length === 0) {
     return { nodes: [], links: [], categories: [] };
@@ -304,8 +363,34 @@ function formatGraphData(
       toNumber(a.metadata?.importance_score, a.weight),
   );
 
-  const limitedNodes = sortedNodes.slice(0, maxNodes);
-  const allowedIds = new Set(limitedNodes.map((n) => n.id));
+  const typeBuckets = new Map<string, KnowledgeGraphNode[]>();
+  sortedNodes.forEach((node) => {
+    const entityType = node.type || "other";
+    if (!typeBuckets.has(entityType)) {
+      typeBuckets.set(entityType, []);
+    }
+    typeBuckets.get(entityType)!.push(node);
+  });
+  const limitedNodes: KnowledgeGraphNode[] = [];
+  TYPE_ORDER.forEach((type) => {
+    const bucket = typeBuckets.get(type) ?? [];
+    limitedNodes.push(...bucket.slice(0, 10));
+  });
+  if (limitedNodes.length < maxNodes) {
+    const selectedIds = new Set(limitedNodes.map((node) => node.id));
+    for (const node of sortedNodes) {
+      if (selectedIds.has(node.id)) {
+        continue;
+      }
+      limitedNodes.push(node);
+      selectedIds.add(node.id);
+      if (limitedNodes.length >= maxNodes) {
+        break;
+      }
+    }
+  }
+  const trimmedNodes = limitedNodes.slice(0, maxNodes);
+  const allowedIds = new Set(trimmedNodes.map((n) => n.id));
 
   const candidateEdges = edges
     .filter((e) => allowedIds.has(e.source) && allowedIds.has(e.target))
@@ -317,8 +402,15 @@ function formatGraphData(
     )
     .slice(0, maxEdges);
 
-  const connectedNodes = limitedNodes;
-  const connectedEdges = candidateEdges;
+  const connectedIds = new Set<string>();
+  candidateEdges.forEach((edge) => {
+    connectedIds.add(edge.source);
+    connectedIds.add(edge.target);
+  });
+  const connectedNodes = trimmedNodes.filter((node) => connectedIds.has(node.id));
+  const connectedEdges = candidateEdges.filter(
+    (edge) => connectedIds.has(edge.source) && connectedIds.has(edge.target),
+  );
 
   const importances = connectedNodes.map((n) =>
     toNumber(n.metadata?.importance_score, n.weight),
@@ -348,16 +440,24 @@ function formatGraphData(
 
   // Build a lookup: nodeId -> category color (for edge coloring)
   const nodeColorMap = new Map<string, string>();
-  const defaultVisibleLabelCount = clamp(
-    Math.round(Math.sqrt(connectedNodes.length) + 2),
-    5,
-    8,
-  );
-  const defaultVisibleLabelIds = new Set(
-    connectedNodes
-      .slice(0, defaultVisibleLabelCount)
-      .map((node) => node.id),
-  );
+  const nodeTypeMap = new Map<string, string>();
+  const nodesByType = new Map<string, KnowledgeGraphNode[]>();
+  connectedNodes.forEach((node) => {
+    const entityType = node.type || "other";
+    if (!nodesByType.has(entityType)) {
+      nodesByType.set(entityType, []);
+    }
+    nodesByType.get(entityType)!.push(node);
+  });
+  const typeOffsets = new Map<string, number>();
+  const placedNodes: Array<{
+    x: number;
+    y: number;
+    radius: number;
+    labelWidth: number;
+    labelHeight: number;
+  }> = [];
+  const clusterRuntime = CLUSTER_RUNTIME_BY_PROFILE[fitProfile];
 
   const echartsNodes: EChartsNode[] = connectedNodes.map((node) => {
     const importance = toNumber(node.metadata?.importance_score, node.weight);
@@ -368,11 +468,78 @@ function formatGraphData(
     const cat = CATEGORY_DEFS[entityType] ?? CATEGORY_DEFS.other;
 
     const symbolSize = clamp(
-      (20 + normalized * 14) * nodeSizeScale,
-      20 * nodeSizeScale,
-      34 * nodeSizeScale,
+      (10 + normalized * 30) * nodeSizeScale,
+      10 * nodeSizeScale,
+      48 * nodeSizeScale,
     );
+    const typeIndex = typeOffsets.get(entityType) ?? 0;
+    typeOffsets.set(entityType, typeIndex + 1);
+    const clusterNodes = Math.max(nodesByType.get(entityType)?.length ?? 1, 1);
+    const clusterLayout = CLUSTER_LAYOUTS[entityType as GraphEntityType] ?? CLUSTER_LAYOUTS.other;
+    const displayLabel = getDisplayNodeLabel(
+      node.display_label,
+      node.label,
+    );
+    const labelWidth = Math.max(42, Array.from(displayLabel).length * 8 + 10);
+    const labelHeight = 18;
+    let x = clusterLayout.x;
+    let y = clusterLayout.y;
+    const collisionRadius = symbolSize * 1.08 + clusterLayout.collisionPadding;
 
+    const resolveRingSlot = (nodeIndex: number) => {
+      let remaining = nodeIndex;
+      let ring = 0;
+      let ringCapacity = 1;
+      while (remaining >= ringCapacity) {
+        remaining -= ringCapacity;
+        ring += 1;
+        ringCapacity = 6 + ring * 4;
+      }
+      return { ring, slot: remaining, ringCapacity };
+    };
+
+    for (let attempt = 0; attempt < 320; attempt += 1) {
+      const candidateIndex = typeIndex + attempt;
+      const { ring, slot, ringCapacity } = resolveRingSlot(candidateIndex);
+      const baseAngle = (slot / ringCapacity) * Math.PI * 2 + catIdx * 0.16;
+      const radius =
+        clusterLayout.baseRadius * clusterRuntime.baseRadiusScale +
+        ring * clusterLayout.ringGap * clusterRuntime.ringGapScale +
+        normalized * 30 +
+        (slot % 2) * 10;
+      const jitterX = ((typeIndex * 17 + attempt * 13) % 13) - 6;
+      const jitterY = ((typeIndex * 23 + attempt * 9) % 11) - 5;
+      const candidateX =
+        clusterLayout.x * clusterRuntime.centerScale +
+        Math.cos(baseAngle) * radius * clusterLayout.stretchX +
+        jitterX;
+      const candidateY =
+        clusterLayout.y * clusterRuntime.centerScale +
+        Math.sin(baseAngle) * radius * clusterLayout.stretchY +
+        jitterY;
+      const overlaps = placedNodes.some((placed) => {
+        const dx = candidateX - placed.x;
+        const dy = candidateY - placed.y;
+        const minDistance = collisionRadius + placed.radius;
+        if (dx * dx + dy * dy < minDistance * minDistance) {
+          return true;
+        }
+        const labelDx = candidateX + collisionRadius + 8 + labelWidth / 2 - placed.x;
+        const labelDy = candidateY - placed.y;
+        return (
+          Math.abs(labelDx) < labelWidth / 2 + placed.radius &&
+          Math.abs(labelDy) < labelHeight / 2 + placed.radius
+        );
+      });
+      if (!overlaps || attempt === 319) {
+        x = candidateX;
+        y = candidateY;
+        break;
+      }
+    }
+    placedNodes.push({ x, y, radius: collisionRadius, labelWidth, labelHeight });
+
+    const labelPosition = "right";
     const mentions = toNumber(node.metadata?.mentions, node.weight);
     const filesCount = toNumber(node.metadata?.files_count, 0);
     const fileLabels = Array.isArray(node.metadata?.file_labels)
@@ -383,75 +550,56 @@ function formatGraphData(
       : [];
     const degree = degreeMap.get(node.id) ?? toNumber(node.metadata?.degree, 0);
 
-    const nodeGlow = rgbaFromHex(cat.color, 0.50);
-    const nodeShadow = rgbaFromHex(cat.color, 0.30);
-
-    // Holographic sphere: dark core with bright neon rim and inner glow
-    const fillColor = new echarts.graphic.RadialGradient(0.35, 0.30, 1, [
-      { offset: 0, color: rgbaFromHex(cat.color, 0.95) },
-      { offset: 0.35, color: rgbaFromHex(cat.color, 0.55) },
-      { offset: 0.72, color: rgbaFromHex(cat.color, 0.18) },
-      { offset: 1, color: cat.dark },
-    ]);
-
     nodeColorMap.set(node.id, cat.color);
+    nodeTypeMap.set(node.id, entityType);
 
     return {
       id: node.id,
-      name: node.label,
+      name: displayLabel,
       category: catIdx,
       value: importance,
       symbolSize,
       symbol: "circle",
+      x,
+      y,
       itemStyle: {
-        color: fillColor,
-        borderWidth: 1.8,
-        borderColor: rgbaFromHex(cat.color, 0.85),
-        shadowBlur: 22,
-        shadowColor: nodeGlow,
-        shadowOffsetY: 0,
-        shadowOffsetX: 0,
-        opacity: 0.92,
+        color: cat.color,
+        borderWidth: 0.8,
+        borderColor: "#ffffff",
+        opacity: 0.9,
       },
+      fixed: true,
       label: {
-        show: defaultVisibleLabelIds.has(node.id),
-        position: "bottom",
+        show: true,
+        position: labelPosition,
         distance: 8,
-        fontSize: 10,
-        color: rgbaFromHex(cat.color, 0.95),
-        fontWeight: 600,
-        backgroundColor: "rgba(6,9,18,0.72)",
-        padding: [3, 7],
+        fontSize: 11,
+        color: GRAPH_LABEL_COLOR,
+        fontWeight: 500,
+        backgroundColor: "rgba(255,255,255,0.92)",
+        padding: [1, 4],
         borderRadius: 3,
-        borderColor: rgbaFromHex(cat.color, 0.25),
-        borderWidth: 1,
-        shadowBlur: 8,
-        shadowColor: nodeGlow,
-        shadowOffsetY: 0,
-        formatter: (params: EChartsFormatterParams<EChartsNode>) => {
-          const name = params.data?.rawLabel ?? params.data?.name ?? "";
-          const chars = Array.from(String(name));
-          return chars.length <= 9 ? name : chars.slice(0, 9).join("") + "...";
-        },
+        width: labelWidth,
+        overflow: "break",
+        formatter: displayLabel,
       },
       emphasis: {
+        focus: "adjacency",
         itemStyle: {
           borderColor: cat.color,
-          borderWidth: 2.8,
-          shadowBlur: 48,
-          shadowColor: nodeGlow,
-          shadowOffsetY: 0,
+          borderWidth: 1.6,
+          shadowBlur: 14,
+          shadowColor: rgbaFromHex(cat.color, 0.22),
           opacity: 1,
         },
         label: {
           show: true,
-          color: "#ffffff",
+          color: "#111827",
           fontWeight: 700,
-          backgroundColor: "rgba(6,9,18,0.88)",
-          borderColor: rgbaFromHex(cat.color, 0.5),
         },
       },
-      rawLabel: node.label,
+      rawLabel: node.full_label || node.label,
+      displayLabel,
       type: entityType,
       weight: node.weight,
       chunkIds: node.chunk_ids ?? [],
@@ -470,6 +618,8 @@ function formatGraphData(
     return {
       source: edge.source,
       target: edge.target,
+      sourceType: nodeTypeMap.get(edge.source) ?? "other",
+      targetType: nodeTypeMap.get(edge.target) ?? "other",
       value: weight,
       label: {
         show: false,
@@ -483,24 +633,16 @@ function formatGraphData(
         borderWidth: 1,
       },
       lineStyle: {
-        width: clamp(0.5 + Math.log2(weight + 1) * 0.35, 0.6, 2.2),
-        color: new echarts.graphic.LinearGradient(0, 0, 1, 1, [
-          { offset: 0, color: rgbaFromHex(sourceColor, 0.08) },
-          { offset: 0.5, color: rgbaFromHex(sourceColor, 0.55) },
-          { offset: 1, color: "rgba(0,180,255,0.18)" },
-        ]),
-        opacity: 0.65,
-        curveness: clamp(0.14 + weight * 0.016, 0.14, 0.30),
-        shadowBlur: 8,
-        shadowColor: glowColor,
+        width: clamp(0.8 + Math.log2(weight + 1) * 0.18, 0.9, 1.8),
+        color: sourceColor,
+        opacity: 0.5,
+        curveness: 0.3,
       },
       emphasis: {
         lineStyle: {
-          width: clamp(1.6 + Math.log2(weight + 1) * 0.55, 2.0, 4.5),
+          width: 1.6,
           color: sourceColor,
-          opacity: 0.98,
-          shadowBlur: 16,
-          shadowColor: glowColor,
+          opacity: 0.9,
         },
         label: {
           show: true,
@@ -532,6 +674,9 @@ function buildEChartsOption(
   selectedChunkId?: string | null,
   hideLegend = false,
   fitProfile: KnowledgeGraphFitProfile = "default",
+  activeCategories: Set<string> | null = null,
+  legendSelected: Record<string, boolean> = {},
+  showNodeLabels = true,
 ): echarts.EChartsOption {
   if (graph.nodes.length === 0) {
     return { series: [] };
@@ -542,33 +687,63 @@ function buildEChartsOption(
   let highlightedLinks: EChartsLink[] = graph.links;
 
   if (selectedChunkId) {
-    highlightedNodes = graph.nodes.map((node) => {
-      const isHi = node.chunkIds.includes(selectedChunkId);
-      const cat = CATEGORY_DEFS[node.type] ?? CATEGORY_DEFS.other;
-      return {
-        ...node,
-        itemStyle: {
-          ...node.itemStyle,
-          borderWidth: isHi ? 3.2 : node.itemStyle.borderWidth,
-          borderColor: isHi ? cat.color : node.itemStyle.borderColor,
-          shadowBlur: isHi ? 56 : node.itemStyle.shadowBlur,
-          shadowColor: isHi ? cat.glow : node.itemStyle.shadowColor,
-          shadowOffsetY: isHi ? 0 : node.itemStyle.shadowOffsetY,
+    highlightedNodes = graph.nodes.map((node) => ({
+      ...node,
+      itemStyle: {
+        ...node.itemStyle,
+        opacity: node.chunkIds.includes(selectedChunkId) ? 1 : 0.9,
+      },
+    }));
+    highlightedLinks = graph.links.map((link) => ({
+      ...link,
+      lineStyle: {
+        ...link.lineStyle,
+        opacity: link.chunkIds.includes(selectedChunkId)
+          ? 0.85
+          : link.lineStyle.opacity,
+      },
+    }));
+  }
+
+  if (!showNodeLabels) {
+    highlightedNodes = highlightedNodes.map((node) => ({
+      ...node,
+      label: {
+        ...node.label,
+        show: false,
+      },
+      emphasis: {
+        ...node.emphasis,
+        label: {
+          ...(node.emphasis?.label ?? {}),
+          show: false,
         },
-        label: { ...node.label, show: isHi ? true : node.label.show },
-      };
-    });
-    highlightedLinks = graph.links.map((link) => {
-      const isHi = link.chunkIds.includes(selectedChunkId);
+      },
+    }));
+  }
+
+  if (activeCategories && activeCategories.size > 0) {
+    highlightedNodes = highlightedNodes.map((node) => ({
+      ...node,
+      itemStyle: {
+        ...node.itemStyle,
+        opacity: activeCategories.has(node.type) ? 1 : 0.14,
+      },
+      label: {
+        ...node.label,
+        opacity: activeCategories.has(node.type) ? 1 : 0.1,
+      },
+    }));
+    highlightedLinks = highlightedLinks.map((link) => {
+      const isActive =
+        activeCategories.has(link.sourceType) ||
+        activeCategories.has(link.targetType);
       return {
         ...link,
         lineStyle: {
           ...link.lineStyle,
-          width: isHi ? 2.8 : link.lineStyle.width,
-          color: isHi ? link.accentColor : link.lineStyle.color,
-          opacity: isHi ? 0.95 : link.lineStyle.opacity,
-          shadowBlur: isHi ? 18 : link.lineStyle.shadowBlur,
-          shadowColor: isHi ? link.glowColor : link.lineStyle.shadowColor,
+          opacity: isActive ? 0.82 : 0.04,
+          width: isActive ? 1.8 : link.lineStyle.width,
         },
       };
     });
@@ -576,275 +751,121 @@ function buildEChartsOption(
 
   return {
     backgroundColor: GRAPH_BACKGROUND,
-    graphic: [
-      // Deep space gradient base
-      {
-        type: "rect",
-        left: 0,
-        top: 0,
-        shape: { width: "100%", height: "100%" },
-        silent: true,
-        z: -12,
-        style: {
-          fill: new echarts.graphic.RadialGradient(0.5, 0.5, 0.8, [
-            { offset: 0, color: "#0a1428" },
-            { offset: 0.5, color: "#060912" },
-            { offset: 1, color: "#020308" },
-          ]),
-        },
-      },
-      // Radar glow - upper left
-      {
-        type: "circle",
-        left: "8%",
-        top: "6%",
-        shape: { r: 200 },
-        silent: true,
-        z: -11,
-        style: { fill: "rgba(0,212,255,0.04)" },
-      },
-      // Radar glow - lower right
-      {
-        type: "circle",
-        right: "6%",
-        bottom: "8%",
-        shape: { r: 180 },
-        silent: true,
-        z: -11,
-        style: { fill: "rgba(181,55,242,0.035)" },
-      },
-      // Tactical grid overlay
-      {
-        type: "rect",
-        left: 0,
-        top: 0,
-        shape: { width: "100%", height: "100%" },
-        silent: true,
-        z: -10,
-        style: {
-          fill: {
-            image: `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><path d="M0 0H120V120H0Z" fill="none"/><path d="M0 0H120M0 30H120M0 60H120M0 90H120M0 120H120M0 0V120M30 0V120M60 0V120M90 0V120M120 0V120" stroke="rgba(0,180,255,0.06)" stroke-width="1"/></svg>`)}`,
-            repeat: "repeat",
-          },
-          opacity: 1,
-        },
-      },
-      // Concentric radar rings - center
-      {
-        type: "circle",
-        left: "center",
-        top: "middle",
-        shape: { r: 120 },
-        silent: true,
-        z: -9,
-        style: {
-          fill: "none",
-          stroke: "rgba(0,212,255,0.05)",
-          lineWidth: 1,
-        },
-      },
-      {
-        type: "circle",
-        left: "center",
-        top: "middle",
-        shape: { r: 220 },
-        silent: true,
-        z: -9,
-        style: {
-          fill: "none",
-          stroke: "rgba(0,212,255,0.035)",
-          lineWidth: 1,
-        },
-      },
-      {
-        type: "circle",
-        left: "center",
-        top: "middle",
-        shape: { r: 320 },
-        silent: true,
-        z: -9,
-        style: {
-          fill: "none",
-          stroke: "rgba(0,212,255,0.022)",
-          lineWidth: 1,
-        },
-      },
-    ],
     tooltip: {
-      renderMode: "html",
+      trigger: "item",
       confine: true,
-      appendToBody: true,
-      formatter: (
-        params: EChartsFormatterParams<EChartsNode | EChartsLink>,
-      ) => {
+      renderMode: "html",
+      formatter: (params: EChartsFormatterParams<EChartsNode | EChartsLink>) => {
         if (params.dataType === "node") {
           const node = params.data as EChartsNode;
           const cat = CATEGORY_DEFS[node.type] ?? CATEGORY_DEFS.other;
-          const fileSources =
-            node.fileLabels.length > 0
-              ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,212,255,0.15)">
-                  <div style="margin-bottom:4px;font-size:10px;color:rgba(0,212,255,0.6);text-transform:uppercase;letter-spacing:0.08em">Sources</div>
-                  <div style="display:flex;flex-direction:column;gap:3px">${node.fileLabels
-                    .map(
-                      (label) =>
-                        `<div style="color:rgba(180,200,220,0.9);font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(label)}</div>`,
-                    )
-                    .join("")}</div>
-                </div>`
-              : "";
-          return `<div style="min-width:180px;max-width:240px;font-size:11px;line-height:1.45;color:rgba(180,200,220,0.85);font-family:'JetBrains Mono','Fira Code',monospace">
-            <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
-              <span style="width:9px;height:9px;border-radius:1px;background:${cat.color};box-shadow:0 0 12px ${cat.glow};display:inline-block"></span>
-              <div style="font-weight:700;font-size:12px;color:${cat.color};letter-spacing:0.02em">${escapeHtml(node.rawLabel)}</div>
-            </div>
-            <div style="display:grid;grid-template-columns:auto auto;gap:3px 10px;color:rgba(122,139,160,0.8)">
-              <span>TYPE</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${escapeHtml(cat.label)}</b>
-              <span>MENTIONS</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${node.mentions}</b>
-              <span>RELATIONS</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${node.degree}</b>
-              <span>FILES</span><b style="color:rgba(180,200,220,0.95);font-weight:600">${node.filesCount}</b>
-            </div>
-            ${fileSources}
+          const sources = node.fileLabels.length
+            ? `<div style="margin-top:6px;color:#64748b;white-space:normal;overflow-wrap:anywhere;word-break:break-word">${node.fileLabels
+                .slice(0, 4)
+                .map((label) => escapeHtml(label))
+                .join("<br/>")}</div>`
+            : "";
+          return `<div style="max-width:220px;font-size:12px;line-height:1.5;color:#6d6e73;white-space:normal;overflow-wrap:anywhere;word-break:break-word">
+            <div style="font-weight:600;color:#111827;margin-bottom:4px">${escapeHtml(node.rawLabel)}</div>
+            <div style="color:#475569">${escapeHtml(cat.label)}</div>
+            <div style="color:#64748b">Mentions ${node.mentions} · Relations ${node.degree}</div>
+            ${sources}
           </div>`;
         }
         if (params.dataType === "edge") {
           const link = params.data as EChartsLink;
-          return `<div style="min-width:140px;font-size:11px;line-height:1.45;color:rgba(122,139,160,0.8);font-family:'JetBrains Mono','Fira Code',monospace">
-            <div style="font-weight:700;color:${link.accentColor};margin-bottom:3px">${escapeHtml(link.relation)}</div>
-            <div>WEIGHT <b style="color:rgba(180,200,220,0.95)">${link.value}</b></div>
-          </div>`;
+          return `${escapeHtml(link.relation)} (${link.value})`;
         }
         return "";
       },
-      backgroundColor: "rgba(6,9,18,0.88)",
-      borderColor: "rgba(0,212,255,0.25)",
+      backgroundColor: "#fff",
+      borderColor: "#b7b9be",
       borderWidth: 1,
-      padding: [9, 11],
+      borderRadius: 4,
+      shadowBlur: 10,
+      shadowColor: "rgba(0, 0, 0, .2)",
+      shadowOffsetX: 1,
+      shadowOffsetY: 2,
       textStyle: {
-        color: "rgba(180,200,220,0.85)",
-        fontFamily: "'JetBrains Mono','Fira Code',monospace",
+        color: "#6d6e73",
+        fontSize: 14,
       },
-      extraCssText:
-        "box-shadow:0 0 30px rgba(0,212,255,0.12),inset 0 1px 0 rgba(0,212,255,0.08);border-radius:4px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);",
     } as echarts.TooltipComponentOption,
     legend: [
       {
         show: !hideLegend,
         data: graph.categories.map((c) => c.name),
         orient: "horizontal",
-        bottom: 6,
         left: "center",
-        itemWidth: 10,
-        itemHeight: 10,
-        itemGap: 10,
-        textStyle: { fontSize: 10, color: "rgba(180,200,220,0.6)" },
-        inactiveColor: "rgba(50,60,75,0.5)",
+        bottom: 15,
+        itemGap: 8,
+        itemWidth: 25,
+        itemHeight: 14,
+        textStyle: {
+          color: "#6d6e73",
+          fontSize: 12,
+        },
+        inactiveColor: "#cfd2d7",
+        selected: legendSelected,
       },
     ],
-    animationDuration: 1400,
-    animationDurationUpdate: 1200,
-    animationEasing: "quarticOut",
-    animationEasingUpdate: "cubicOut",
+    animationDuration: 800,
+    animationDurationUpdate: 800,
     series: [
       {
+        name: "Knowledge Graph",
         type: "graph",
-        layout: "force",
+        layout: "none",
         data: highlightedNodes,
         links: highlightedLinks,
         categories: graph.categories,
         roam: true,
-        draggable: true,
-        center: ["50%", "50%"],
-        zoom: fitConfig.initialZoom,
-        top: "middle",
-        left: "center",
-        width: "100%",
-        height: "100%",
-        force: {
-          repulsion: fitConfig.repulsion,
-          edgeLength: fitConfig.edgeLength,
-          gravity: fitConfig.gravity,
-          friction: 0.82,
-          layoutAnimation: true,
-        },
+        draggable: false,
         label: {
-          position: "bottom",
-          distance: 6,
-          fontSize: 10,
-          fontWeight: 560,
-          color: "rgba(180,200,220,0.85)",
-          backgroundColor: "rgba(6,9,18,0.72)",
-          padding: [3, 7],
-          borderRadius: 3,
-          borderColor: "rgba(0,212,255,0.12)",
-          borderWidth: 1,
-          shadowBlur: 6,
-          shadowColor: "rgba(0,212,255,0.10)",
-          shadowOffsetY: 0,
-          formatter: (params: EChartsFormatterParams<EChartsNode>) => {
-            const name = params.data?.rawLabel ?? params.data?.name ?? "";
-            const chars = Array.from(String(name));
-            return chars.length <= 9
-              ? name
-              : chars.slice(0, 9).join("") + "...";
-          },
+          show: showNodeLabels,
+          position: "right",
+          formatter: "{b}",
+          color: GRAPH_LABEL_COLOR,
+          fontSize: 12,
         },
-        // Edge labels hidden by default; shown on hover via emphasis
-        edgeLabel: {
-          show: false,
-          fontSize: 10,
-          color: "rgba(180,200,220,0.85)",
-          backgroundColor: "rgba(6,9,18,0.82)",
-          padding: [3, 7],
-          borderRadius: 3,
-          formatter: (params: EChartsFormatterParams<EChartsLink>) =>
-            params.data?.relation ?? "",
+        labelLayout: {
+          hideOverlap: false,
+          moveOverlap: "shiftY",
+          draggable: false,
+        },
+        scaleLimit: {
+          min: 0.4,
+          max: 2,
+        },
+        lineStyle: {
+          color: "source",
+          curveness: 0.3,
+          width: 1,
+          opacity: 0.5,
+          shadowBlur: 0,
+          shadowColor: GRAPH_LINK_SHADOW,
         },
         edgeSymbol: ["none", "none"],
         edgeSymbolSize: [0, 0],
-        lineStyle: {
-          color: GRAPH_LINK_COLOR,
-          curveness: 0.2,
-          opacity: 0.5,
-          width: 0.8,
-          shadowBlur: 3,
-          shadowColor: GRAPH_LINK_SHADOW,
-        },
-        // Hover creates depth: unrelated items fade while adjacency lights up.
         emphasis: {
           focus: "adjacency",
-          scale: true,
-          lineStyle: { opacity: 0.98, shadowBlur: 20 },
           label: {
-            show: true,
-            fontSize: 12,
+            show: showNodeLabels,
             fontWeight: 700,
-            backgroundColor: "rgba(6,9,18,0.90)",
           },
-          edgeLabel: {
-            show: true,
-            fontSize: 10,
-            fontWeight: 700,
-            backgroundColor: "rgba(6,9,18,0.90)",
-            padding: [3, 7],
-            borderRadius: 3,
-            color: "rgba(180,200,220,0.95)",
-          },
-          itemStyle: {
-            shadowBlur: 60,
-            shadowOffsetY: 0,
+          lineStyle: {
+            width: 1.8,
             opacity: 1,
           },
         },
         blur: {
-          itemStyle: { opacity: 0.04 },
-          lineStyle: { opacity: 0.01 },
-          label: { opacity: 0.06 },
-          edgeLabel: { opacity: 0.01 },
+          lineStyle: { opacity: 0.08 },
+          itemStyle: { opacity: 0.25 },
+          label: { opacity: 0.16 },
         },
-        select: {
-          itemStyle: { borderWidth: 0 },
-        },
-        scaleLimit: { min: 0.08, max: 5 },
+        center: ["50%", "50%"],
+        zoom: fitConfig.initialZoom,
+        nodeScaleRatio: 0.6,
       } as echarts.GraphSeriesOption,
     ],
   };
@@ -864,10 +885,11 @@ const KnowledgeGraphPanel = ({
   fullGraph = false,
   qualityMode = "standard",
   graphMode = GENERIC_GRAPH_MODE,
-  maxNodes = 96,
+  maxNodes = 64,
   maxEdges = 180,
   hideLegend = false,
   fitProfile = "default",
+  showNodeLabels = true,
   nodeSizeScale = 1,
   autoRefreshOnMount = true,
   compact = false,
@@ -926,7 +948,7 @@ const KnowledgeGraphPanel = ({
   );
 
   const refreshGraphCache = useRefreshKnowledgeBaseGraphCache();
-  const chartRef = useRef<ReactECharts | null>(null);
+  const [activeCategories, setActiveCategories] = useState<Set<string> | null>(null);
   const rebuildRequestKeysRef = useRef<Set<string>>(new Set());
   const lastExternalRefreshTokenRef = useRef(externalRefreshToken);
 
@@ -1013,9 +1035,26 @@ const KnowledgeGraphPanel = ({
         maxNodes,
         maxEdges,
         nodeSizeScale,
+        fitProfile,
       ),
-    [data?.nodes, data?.edges, maxNodes, maxEdges, nodeSizeScale],
+    [data?.nodes, data?.edges, fitProfile, maxNodes, maxEdges, nodeSizeScale],
   );
+
+  const graphReady = formattedGraph.nodes.length > 0;
+  const showLoading = (!data && isLoading) || refreshGraphCache.isPending;
+  const visibleNodeCount = formattedGraph.nodes.length;
+  const visibleEdgeCount = formattedGraph.links.length;
+  const legendSelected = useMemo(() => {
+    const selectedMap: Record<string, boolean> = {};
+    formattedGraph.categories.forEach((category) => {
+      selectedMap[category.name] =
+        activeCategories == null || activeCategories.has(category.name.toLowerCase()) ||
+        activeCategories.has(
+          TYPE_ORDER.find((type) => CATEGORY_DEFS[type].label === category.name) ?? category.name,
+        );
+    });
+    return selectedMap;
+  }, [activeCategories, formattedGraph.categories]);
 
   const chartOption = useMemo(
     () =>
@@ -1024,133 +1063,35 @@ const KnowledgeGraphPanel = ({
         selectedChunkId,
         hideLegend,
         fitProfile,
+        activeCategories,
+        legendSelected,
+        showNodeLabels,
       ),
-    [fitProfile, formattedGraph, hideLegend, selectedChunkId],
+    [
+      activeCategories,
+      fitProfile,
+      formattedGraph,
+      hideLegend,
+      legendSelected,
+      selectedChunkId,
+      showNodeLabels,
+    ],
   );
 
-  const graphReady = formattedGraph.nodes.length > 0;
-  const showLoading = !data && isLoading;
-  const visibleNodeCount = formattedGraph.nodes.length;
-  const visibleEdgeCount = formattedGraph.links.length;
-
-  const fitGraphIntoViewport = useCallback(() => {
-    if (!chartRef.current || !graphReady) return;
-    const chart = chartRef.current.getEchartsInstance();
-    const fitConfig = getFitProfileConfig(fitProfile, formattedGraph.nodes.length);
-
-    chart.resize();
-    chart.dispatchAction({ type: "restore" });
-    chart.setOption(
-      {
-        series: [
-          {
-            center: ["50%", "50%"],
-            zoom: fitConfig.initialZoom,
-          },
-        ],
+  const chartEvents = useMemo(
+    () => ({
+      legendselectchanged: (params: { selected?: Record<string, boolean> }) => {
+        const selected = params.selected ?? {};
+        const nextTypes = TYPE_ORDER.filter(
+          (type) => selected[CATEGORY_DEFS[type].label] !== false,
+        );
+        setActiveCategories(
+          nextTypes.length === TYPE_ORDER.length ? null : new Set(nextTypes),
+        );
       },
-      false,
-    );
-
-    try {
-      const seriesModel = (chart as unknown as EChartsGraphModelAccessor)
-        .getModel()
-        .getSeriesByIndex(0);
-      const seriesData = seriesModel?.getData?.();
-      if (!seriesData || formattedGraph.nodes.length === 0) {
-        return;
-      }
-
-      let minX = Number.POSITIVE_INFINITY;
-      let minY = Number.POSITIVE_INFINITY;
-      let maxX = Number.NEGATIVE_INFINITY;
-      let maxY = Number.NEGATIVE_INFINITY;
-
-      for (let index = 0; index < formattedGraph.nodes.length; index += 1) {
-        const layout = seriesData.getItemLayout(index);
-        const nodeX = Array.isArray(layout) ? layout[0] : layout?.x;
-        const nodeY = Array.isArray(layout) ? layout[1] : layout?.y;
-        const nodeSize = Number(formattedGraph.nodes[index]?.symbolSize ?? 0);
-        if (
-          typeof nodeX !== "number" ||
-          !Number.isFinite(nodeX) ||
-          typeof nodeY !== "number" ||
-          !Number.isFinite(nodeY)
-        ) {
-          continue;
-        }
-
-        minX = Math.min(minX, nodeX - nodeSize / 2 - fitConfig.paddingX);
-        minY = Math.min(minY, nodeY - nodeSize / 2 - fitConfig.paddingY);
-        maxX = Math.max(maxX, nodeX + nodeSize / 2 + fitConfig.paddingX);
-        maxY = Math.max(maxY, nodeY + nodeSize / 2 + fitConfig.paddingY);
-      }
-
-      if (
-        !Number.isFinite(minX) ||
-        !Number.isFinite(minY) ||
-        !Number.isFinite(maxX) ||
-        !Number.isFinite(maxY)
-      ) {
-        return;
-      }
-
-      const chartWidth = chart.getWidth();
-      const chartHeight = chart.getHeight();
-      if (chartWidth <= 0 || chartHeight <= 0) {
-        return;
-      }
-
-      const graphWidth = Math.max(maxX - minX, 1);
-      const graphHeight = Math.max(maxY - minY, 1);
-      const graphCenterX = (minX + maxX) / 2;
-      const graphCenterY = (minY + maxY) / 2;
-      const fitScale = Math.min(
-        (chartWidth * fitConfig.viewportRatioX) / graphWidth,
-        (chartHeight * fitConfig.viewportRatioY) / graphHeight,
-      );
-      const targetZoom = Math.min(
-        fitConfig.maxZoom,
-        Math.max(fitConfig.minZoom, fitScale),
-      );
-
-      if (Math.abs(targetZoom - fitConfig.initialZoom) > 0.02) {
-        chart.dispatchAction({
-          type: "graphRoam",
-          zoom: targetZoom,
-          originX: graphCenterX,
-          originY: graphCenterY,
-        } as EChartsDispatchPayload);
-      }
-
-      const dx = chartWidth / 2 - graphCenterX;
-      const dy = chartHeight / 2 - graphCenterY;
-      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-        chart.dispatchAction({
-          type: "graphRoam",
-          dx,
-          dy,
-        } as EChartsDispatchPayload);
-      }
-    } catch {
-      // Keep the default restored view if fit-and-center fails.
-    }
-  }, [fitProfile, formattedGraph.nodes, graphReady]);
-
-  // Fit the full graph into the viewport and keep its bounding box centered.
-  useEffect(() => {
-    if (!graphReady) return;
-    const timers = [0, 80, 320, 900, 1800, 3200, 5000].map((delay) =>
-      setTimeout(fitGraphIntoViewport, delay),
-    );
-    return () => timers.forEach((timer) => clearTimeout(timer));
-  }, [
-    fitGraphIntoViewport,
-    fitProfile,
-    graphReady,
-    formattedGraph.nodes.length,
-    formattedGraph.links.length,
-  ]);
+    }),
+    [],
+  );
 
   return (
     <div
@@ -1161,43 +1102,38 @@ const KnowledgeGraphPanel = ({
       )}
       style={{
         backgroundColor: GRAPH_BACKGROUND,
-        borderColor: "rgba(0,212,255,0.12)",
-        boxShadow: "0 0 40px rgba(0,212,255,0.06), inset 0 1px 0 rgba(0,212,255,0.05)",
+        borderColor: "rgba(226,232,240,0.9)",
+        boxShadow: "0 8px 24px rgba(15,23,42,0.06)",
       }}
     >
       {!hideHeader ? (
         <div
           className="border-b px-5 py-2.5 backdrop-blur-md"
           style={{
-            backgroundColor: "rgba(6,9,18,0.75)",
-            borderColor: "rgba(0,212,255,0.10)",
+            backgroundColor: "rgba(255,255,255,0.88)",
+            borderColor: "rgba(226,232,240,0.9)",
           }}
         >
           <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold text-[#00d4ff]">
+            <div className="text-sm font-semibold text-foreground">
               Knowledge Graph
             </div>
             <div className="flex items-center gap-2">
               {data?.truncated ? (
-                <span className="rounded-full border border-[rgba(0,212,255,0.2)] bg-[rgba(6,9,18,0.6)] px-2 py-0.5 text-[10px] text-[rgba(0,212,255,0.6)]">
+                <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
                   Trimmed
                 </span>
               ) : null}
-              {isFetching && graphReady ? (
-                <span className="inline-flex items-center gap-1 text-[10px] text-[rgba(180,200,220,0.5)]">
+              {isFetching && graphReady && !refreshGraphCache.isPending ? (
+                <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
                   <Loading size={11} /> Updating...
-                </span>
-              ) : null}
-              {refreshGraphCache.isPending ? (
-                <span className="inline-flex items-center gap-1 text-[10px] text-[rgba(180,200,220,0.5)]">
-                  <Loading size={11} /> Rebuilding...
                 </span>
               ) : null}
               {onRequestClose && fullGraph ? (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7 hover:bg-[rgba(0,212,255,0.08)]"
+                  className="h-7 w-7"
                   onClick={onRequestClose}
                 >
                   <ForwardedIconComponent name="X" className="h-3.5 w-3.5" />
@@ -1207,7 +1143,7 @@ const KnowledgeGraphPanel = ({
                 variant="outline"
                 size="xs"
                 loading={refreshGraphCache.isPending}
-                className="h-7 rounded-full text-[11px] border-[rgba(0,212,255,0.2)] bg-[rgba(6,9,18,0.6)] text-[rgba(0,212,255,0.7)] hover:bg-[rgba(0,212,255,0.08)] hover:text-[#00d4ff]"
+                className="h-7 rounded-full text-[11px]"
                 onClick={() => void handleRefreshGraphCache()}
               >
                 {!refreshGraphCache.isPending ? (
@@ -1221,11 +1157,11 @@ const KnowledgeGraphPanel = ({
             </div>
           </div>
           {!compact && !hideLegend ? (
-            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-[rgba(180,200,220,0.4)]">
-              <span className="rounded-full border border-[rgba(0,212,255,0.12)] bg-[rgba(6,9,18,0.6)] px-2 py-0.5">
+            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-muted-foreground">
+              <span className="rounded-full border border-border bg-background px-2 py-0.5">
                 {visibleNodeCount} nodes
               </span>
-              <span className="rounded-full border border-[rgba(0,212,255,0.12)] bg-[rgba(6,9,18,0.6)] px-2 py-0.5">
+              <span className="rounded-full border border-border bg-background px-2 py-0.5">
                 {visibleEdgeCount} edges
               </span>
             </div>
@@ -1238,29 +1174,24 @@ const KnowledgeGraphPanel = ({
         style={{ backgroundColor: GRAPH_BACKGROUND }}
       >
         {showLoading ? (
-          <div className="flex h-full items-center justify-center gap-3 text-sm text-[rgba(180,200,220,0.5)]">
+          <div className="flex h-full items-center justify-center gap-3 text-sm text-muted-foreground">
             <Loading size={28} />
             <span>Loading knowledge graph...</span>
           </div>
         ) : isError ? (
-          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-[#ff2d75]">
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-destructive">
             {t("knowledge.failedToLoadGraph", {
               defaultValue: "Failed to load the knowledge graph.",
             })}
           </div>
         ) : !graphReady ? (
-          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-[rgba(180,200,220,0.4)]">
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
             No entity relations were found for the current filters.
           </div>
         ) : (
           <ReactECharts
-            ref={(instance) => {
-              chartRef.current = instance;
-            }}
-            onChartReady={() => {
-              setTimeout(fitGraphIntoViewport, 0);
-            }}
             option={chartOption}
+            onEvents={chartEvents}
             style={{ height: "100%", width: "100%" }}
             opts={{ renderer: "canvas" }}
             notMerge={false}

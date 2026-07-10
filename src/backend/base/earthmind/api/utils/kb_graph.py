@@ -202,6 +202,7 @@ class ExtractedTriple:
 @dataclass
 class _EntityStats:
     label: str
+    full_label: str
     canonical: str
     mentions: int = 0
     score: float = 0.0
@@ -242,49 +243,54 @@ class _GraphTopology:
 
 # ── Entity type classification ───────────────────────────────────────────────
 _ENTITY_TYPE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
-    # Technology: models, algorithms, frameworks, systems, tools, sensors, satellites, instruments
     (
         re.compile(
-            r"model|algorithm|framework|technolog|tool|platform|system|network|architecture|engine|sensor|satellite|remote\s*sens|imag|spectromet|radiomet|thermomet|IRMSS|MODIS|LANDSAT|SENTINEL|camera|scanner|detector|GPT|BERT|transformer|CNN|RNN|LSTM|GAN|模型|算法|框架|技术|工具|平台|系统|网络|架构|引擎|传感器|卫星|遥感|成像|光谱|辐射|通道|载荷|仪器|设备|通道",
+            r"dataset|corpus|database|sample|benchmark|catalog|archive|repository|数据集|语料|数据库|样本|数据源|数据",
             re.IGNORECASE,
         ),
-        "technology",
+        "dataset",
     ),
-    # Method: approaches, strategies, calibration, correction, inversion, classification, detection
     (
         re.compile(
-            r"method|approach|strategy|process|calibration|correction|inversion|classif|detect|segment|fusion|registration|validation|verification|optimization|training|fine-?tun|preprocess|postprocess|normaliz|定标|校正|反演|分类|检测|分割|融合|配准|验证|优化|训练|预处理|后处理|归一化|方法|策略|流程|方案|处理|变换|提取|估计|重建",
-            re.IGNORECASE,
-        ),
-        "method",
-    ),
-    # Organization: companies, universities, institutes, teams, publishers
-    (
-        re.compile(
-            r"organization|organisation|company|corporation|university|institute|academy|agency|team|committee|center|centre|laborator|lab|IEEE|ACM|journal|transactions|proceedings|press|出版|期刊|学报|公司|大学|学院|研究院|研究所|机构|团队|委员会|中心|实验室",
-            re.IGNORECASE,
-        ),
-        "organization",
-    ),
-    # Metric: scores, accuracy, benchmarks, errors, coefficients
-    (
-        re.compile(
-            r"metric|measure|score|accuracy|precision|recall|f1|bleu|rouge|loss|perplexity|benchmark|evaluation|error|rmse|mae|psnr|ssim|snr|correlation|coefficient|variance|deviation|signal.?to.?noise|resolution|指标|精度|准确率|误差|方差|偏差|信噪比|分辨率|系数",
+            r"metric|measure|score|accuracy|precision|recall|f1|bleu|rouge|loss|perplexity|evaluation|error|rmse|mae|psnr|ssim|snr|correlation|coefficient|variance|deviation|signal.?to.?noise|resolution|指标|精度|准确率|误差|方差|偏差|信噪比|分辨率|系数",
             re.IGNORECASE,
         ),
         "metric",
     ),
-    # Dataset: data collections, corpora
-    (
-        re.compile(r"dataset|corpus|database|sample|data\s*source|数据集|语料|数据库|样本|数据源|数据", re.IGNORECASE),
-        "dataset",
-    ),
-    # Event: conferences, workshops, releases
     (
         re.compile(
-            r"conference|workshop|symposium|seminar|release|launch|会议|研讨会|发布|发表|召开|举办", re.IGNORECASE
+            r"conference|workshop|symposium|seminar|release|launch|meeting|forum|会议|研讨会|发布|发表|召开|举办",
+            re.IGNORECASE,
         ),
         "event",
+    ),
+    (
+        re.compile(
+            r"organization|organisation|company|corporation|university|institute|academy|agency|team|committee|center|centre|laborator|lab|publisher|journal|transactions|proceedings|press|出版|期刊|学报|公司|大学|学院|研究院|研究所|机构|团队|委员会|中心|实验室",
+            re.IGNORECASE,
+        ),
+        "organization",
+    ),
+    (
+        re.compile(
+            r"satellite|sensor|camera|scanner|detector|spectromet|radiomet|thermomet|instrument|payload|载荷|仪器|设备|传感器|卫星|相机|扫描仪|探测器|光谱仪|辐射计|热计",
+            re.IGNORECASE,
+        ),
+        "technology",
+    ),
+    (
+        re.compile(
+            r"model|algorithm|framework|technolog|tool|platform|system|network|architecture|engine|remote\s*sens|imag|GPT|BERT|transformer|CNN|RNN|LSTM|GAN|模型|算法|框架|技术|工具|平台|系统|网络|架构|引擎|遥感|成像|光谱|辐射|通道",
+            re.IGNORECASE,
+        ),
+        "technology",
+    ),
+    (
+        re.compile(
+            r"method|approach|strategy|process|calibration|correction|inversion|classif|detect|segment|fusion|registration|validation|verification|optimization|training|fine-?tun|preprocess|postprocess|normaliz|retrieval|定标|校正|反演|分类|检测|分割|融合|配准|验证|优化|训练|预处理|后处理|归一化|方法|策略|流程|方案|处理|变换|提取|估计|重建",
+            re.IGNORECASE,
+        ),
+        "method",
     ),
 )
 
@@ -310,6 +316,49 @@ def _sanitize_label(value: str, *, max_length: int = 24) -> str:
             cut = cut[:last_space]
         cleaned = cut.rstrip() + "..."
     return cleaned
+
+
+def _display_label(value: str) -> str:
+    sanitized = _sanitize_label(value, max_length=40)
+    if not sanitized:
+        return ""
+
+    cjk_chars = _GRAPH_CJK_RE.findall(sanitized)
+    if cjk_chars:
+        parts = [
+            part.strip()
+            for part in re.split(r"[的、，,；;：（）()\-_/]", sanitized)
+            if part.strip()
+        ]
+        preferred = [part for part in parts if 2 <= len(part) <= 6]
+        if preferred:
+            return max(preferred, key=len)
+
+        noun_suffixes = (
+            "传感器",
+            "卫星",
+            "模型",
+            "算法",
+            "方法",
+            "平台",
+            "系统",
+            "网络",
+            "数据集",
+            "数据库",
+            "遥感",
+            "热红外",
+            "光谱仪",
+            "辐射计",
+        )
+        for suffix in noun_suffixes:
+            idx = sanitized.find(suffix)
+            if idx >= 0:
+                start = max(0, idx + len(suffix) - 6)
+                return sanitized[start : idx + len(suffix)]
+        return sanitized[:6]
+
+    token = sanitized.split(" ")[0]
+    return token[:12]
 
 
 def _canonical_label(value: str) -> str:
@@ -443,6 +492,25 @@ def _looks_like_noise(label: str) -> bool:
     return False
 
 
+def _looks_like_sentence_fragment(label: str) -> bool:
+    normalized = _GRAPH_WHITESPACE_RE.sub(" ", label or "").strip()
+    if not normalized:
+        return True
+    word_count = len(normalized.split())
+    if word_count >= 5:
+        return True
+    ascii_tokens = re.findall(r"[A-Za-z][A-Za-z0-9-]*", normalized)
+    if len(ascii_tokens) >= 4:
+        return True
+    if any(token.casefold() in _EN_STOPWORDS for token in ascii_tokens[:2]):
+        return True
+    if re.search(r"\b(of|for|and|with|using|based|through|from|into)\b", normalized, re.IGNORECASE) and word_count >= 4:
+        return True
+    if len(_GRAPH_CJK_RE.findall(normalized)) >= 10 and not _ENTITY_CJK_SUFFIX_RE.fullmatch(normalized):
+        return True
+    return False
+
+
 def _entity_score(label: str, *, in_title_case: bool = False) -> float:
     cjk_count = len(_GRAPH_CJK_RE.findall(label))
     ascii_count = len(_GRAPH_ASCII_RE.findall(label))
@@ -470,7 +538,7 @@ def _extract_entities_from_text(text: str, *, max_entities: int = KB_GRAPH_MAX_E
 
     def add(label: str, score: float) -> None:
         sanitized = _sanitize_label(label)
-        if _looks_like_noise(sanitized):
+        if _looks_like_noise(sanitized) or _looks_like_sentence_fragment(sanitized):
             return
         canonical = _canonical_label(sanitized)
         if not canonical:
@@ -635,13 +703,15 @@ def _register_entity(
     current = entities.get(canonical)
     if current is None:
         current = _EntityStats(
-            label=_sanitize_label(label),
+            label=_display_label(label),
+            full_label=_sanitize_label(label, max_length=120),
             canonical=canonical,
             entity_type=_categorize_entity(label),
         )
         entities[canonical] = current
-    elif len(label) > len(current.label) and label.casefold() != current.label.casefold():
-        current.label = _sanitize_label(label)
+    elif len(label) > len(current.full_label) and label.casefold() != current.full_label.casefold():
+        current.label = _display_label(label)
+        current.full_label = _sanitize_label(label, max_length=120)
     # Upgrade type from "other" to a specific category if the new label matches
     if current.entity_type == "other":
         cat = _categorize_entity(label)
@@ -718,7 +788,9 @@ def _finalize_node(entity: _EntityStats, *, degree: int, edge_weight: int) -> Kn
     file_labels = sorted(entity.file_labels or set())
     return KnowledgeGraphNode(
         id=_graph_id("entity", entity.canonical),
-        label=entity.label,
+        label=entity.full_label,
+        display_label=entity.label,
+        full_label=entity.full_label,
         type=entity.entity_type,
         weight=weight,
         chunk_ids=chunk_ids[:24],
@@ -1052,7 +1124,7 @@ def _build_document_graph_augmentation(
             item[0],
         ),
         reverse=True,
-    )[:12]
+    )[:24]
 
     document_nodes: list[KnowledgeGraphNode] = []
     document_edges: list[KnowledgeGraphEdge] = []

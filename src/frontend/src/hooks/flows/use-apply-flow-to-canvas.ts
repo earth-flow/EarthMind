@@ -31,7 +31,10 @@ const useApplyFlowToCanvas = () => {
       }
       setCurrentFlow(clonedFlow);
       requestAnimationFrame(() => {
-        useFlowStore.getState().reactFlowInstance?.fitView();
+        useFlowStore.getState().reactFlowInstance?.fitView({
+          minZoom: 1,
+          maxZoom: 1,
+        });
       });
       refreshAllModelInputs({ silent: true }).catch((err) => {
         console.error(

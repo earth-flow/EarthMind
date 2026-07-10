@@ -10,7 +10,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ENABLE_KNOWLEDGE_BASES } from "@/customization/feature-flags";
-import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import { usePlaygroundStore } from "@/stores/playgroundStore";
 import { cn } from "@/utils/utils";
 import { useSearchContext } from "../index";
@@ -27,7 +26,6 @@ const SidebarSegmentedNav = () => {
   const setPlaygroundFullscreen = usePlaygroundStore(
     (state) => state.setIsFullscreen,
   );
-  const navigate = useCustomNavigate();
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => item.id !== "knowledge" || ENABLE_KNOWLEDGE_BASES,
@@ -46,12 +44,6 @@ const SidebarSegmentedNav = () => {
                 <SidebarMenuButton
                   size="md"
                   onClick={() => {
-                    // Navigation items: navigate instead of switching panels
-                    if (item.href) {
-                      navigate(item.href);
-                      return;
-                    }
-
                     if (item.id === "traces") {
                       setPlaygroundOpen(false);
                       setPlaygroundFullscreen(false);
@@ -59,7 +51,11 @@ const SidebarSegmentedNav = () => {
 
                     setSearch?.("");
                     if (activeSection === item.id && open) {
-                      if (item.id === "traces" || item.id === "memories") {
+                      if (
+                        item.id === "traces" ||
+                        item.id === "memories" ||
+                        item.id === "knowledge"
+                      ) {
                         setActiveSection("components");
                       } else {
                         toggleSidebar();
