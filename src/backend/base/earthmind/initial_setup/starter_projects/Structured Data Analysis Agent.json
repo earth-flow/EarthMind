@@ -2431,7 +2431,7 @@
             "description": "## About OpenDsStar and structured data analysis\n\n**OpenDsStar — Structured Data Agent 📚**\n\n[OpenDsStar](https://github.com/IBM/OpenDsStar) is an open-source implementation of the [DS-Star](https://arxiv.org/abs/2509.21825) agent. It keeps the core DS-Star workflow of planning, code generation, execution, debugging, and verification, while using a more practical tool-centric architecture that improves modularity, extensibility, and execution efficiency.\n\nThis EarthMind template applies OpenDsStar to **structured data analysis** over tabular datasets such as **CSV, Excel, Parquet, JSON, and TSV**. It enables natural-language exploration, retrieval, and reasoning over uploaded structured data.\n",
             "display_name": "",
             "documentation": "",
-            "i18n_key": "template_notes.structured_data_analysis_agent.92198b6b",
+            "i18n_key": "template_notes.structured_data_analysis_agent.f3d07c1e",
             "template": {
               "backgroundColor": "neutral"
             }
