@@ -211,7 +211,7 @@ def _get_cache_path() -> Path:
     """Get the path for the cached component index in the user's cache directory."""
     from platformdirs import user_cache_dir
 
-    cache_dir = Path(user_cache_dir("lfx", "langflow"))
+    cache_dir = Path(user_cache_dir("lfx", "earthmind"))
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir / "component_index.json"
 
@@ -235,11 +235,11 @@ def _save_generated_index(modules_dict: dict) -> None:
         # Get version
         from importlib.metadata import version
 
-        langflow_version = version("langflow")
+        earthmind_version = version("earthmind")
 
         # Build index structure
         index = {
-            "version": langflow_version,
+            "version": earthmind_version,
             "metadata": {
                 "num_modules": num_modules,
                 "num_components": num_components,
@@ -289,7 +289,7 @@ async def _send_telemetry(
         filtered_modules = ",".join(target_modules) if target_modules else None
 
         # Import the payload class dynamically to avoid circular imports
-        from langflow.services.telemetry.schema import ComponentIndexPayload
+        from earthmind.services.telemetry.schema import ComponentIndexPayload
 
         payload = ComponentIndexPayload(
             index_source=index_source,
@@ -406,7 +406,7 @@ async def _load_components_dynamically(
     try:
         import lfx.components as components_pkg
     except ImportError as e:
-        await logger.aerror(f"Failed to import langflow.components package: {e}", exc_info=True)
+        await logger.aerror(f"Failed to import earthmind.components package: {e}", exc_info=True)
         return modules_dict
 
     # Collect all module names to process
@@ -539,11 +539,11 @@ async def _load_production_mode(
     return modules_dict, index_source
 
 
-async def import_langflow_components(
+async def import_earthmind_components(
     settings_service: Optional["SettingsService"] = None,
     telemetry_service: Any | None = None,
 ) -> dict[str, dict[str, Any]]:
-    """Asynchronously discovers and loads all built-in Langflow components.
+    """Asynchronously discovers and loads all built-in EarthMind components.
 
     Loading Strategy:
     - Production mode: Load from prebuilt index -> cache -> build dynamically (with caching)
@@ -696,7 +696,7 @@ def _components_path_extension_paths(settings_service: "SettingsService") -> lis
 
     Each entry in components_path is treated as a parent directory whose
     immediate subfolders are inline bundles at the @extra slot. The base
-    Langflow components path is excluded (it is not an inline-bundle root).
+    EarthMind components path is excluded (it is not an inline-bundle root).
 
     Comparison against ``BASE_COMPONENTS_PATH`` resolves both sides so a
     trailing slash, ``./`` prefix, or symlink does not slip the base
@@ -758,7 +758,7 @@ def _emit_extension_diagnostics(results: list[LoadResult]) -> None:
 
 # Discovery-source precedence for cross-source bundle-name collisions.
 # Higher in the list wins.  Ordered from most-authoritative (pip-installed
-# distribution = explicit, packaged install) to least (LANGFLOW_COMPONENTS_PATH
+# distribution = explicit, packaged install) to least (EARTHMIND_COMPONENTS_PATH
 # = loose, legacy custom-components path).  Operators who stage a bundle in
 # multiple places almost always *want* the more-authoritative copy to win;
 # the typed warning is what catches the unintentional case.
@@ -883,7 +883,7 @@ async def import_extension_components(
     Two sources feed this:
         - Installed Extensions (any pip-installed distribution shipping
           ``extension.json``) -> ``@official`` slot.
-        - Subfolders of every ``LANGFLOW_COMPONENTS_PATH`` entry (parsed
+        - Subfolders of every ``EARTHMIND_COMPONENTS_PATH`` entry (parsed
           via the settings layer's pathsep split) -> ``@extra`` slot.
 
     For each :class:`LoadedComponent`, instantiates the class, builds a
@@ -904,11 +904,11 @@ async def import_extension_components(
     # Seed-directory bundles are the second @official-slot production-install
     # source documented in deployment-extensions-production.mdx: a Docker
     # image (or any operator-controlled host) can stage bundles under
-    # ``$LANGFLOW_SEED_DIR`` (or the default ``/opt/langflow/bundles``)
+    # ``$EARTHMIND_SEED_DIR`` (or the default ``/opt/earthmind/bundles``)
     # without going through pip.  Load them through the same pathway as
     # pip-installed Extensions so they enter the BundleRegistry, get
     # registered at @official, and are reloadable when reload is enabled.
-    # When neither $LANGFLOW_SEED_DIR is set nor /opt/langflow/bundles
+    # When neither $EARTHMIND_SEED_DIR is set nor /opt/earthmind/bundles
     # exists this is a no-op, so it costs nothing in Mode A.
     seed_results = load_seed_extensions()
     # Dev extensions registered via ``lfx extension dev`` ship the same v0
@@ -916,7 +916,7 @@ async def import_extension_components(
     # @official-slot pathway so they enter the BundleRegistry, expose the
     # extension_id/version/namespaced_id metadata the palette needs, and
     # become reloadable via the same endpoint.  This replaces an earlier
-    # approach that appended their bundle directories to LANGFLOW_COMPONENTS_PATH,
+    # approach that appended their bundle directories to EARTHMIND_COMPONENTS_PATH,
     # which silently fell back to legacy custom-component loading without
     # extension metadata.
     dev_results = load_dev_extensions()
@@ -924,7 +924,7 @@ async def import_extension_components(
 
     # Resolve cross-source bundle-name shadowing in a single pass.  Discovery
     # surfaces four sources -- installed (pip) > seed (filesystem-staged) >
-    # dev (`lfx extension dev`) > inline (LANGFLOW_COMPONENTS_PATH) -- and the
+    # dev (`lfx extension dev`) > inline (EARTHMIND_COMPONENTS_PATH) -- and the
     # registry is keyed by bundle name.  Without an explicit precedence the
     # registry-population loop would silently overwrite earlier records with
     # later ones (last-wins by iteration order), and the reload endpoint would
@@ -1104,7 +1104,7 @@ async def get_and_cache_all_types_dict(
 ):
     """Retrieves and caches the complete dictionary of component types and templates.
 
-    Supports both full and partial (lazy) loading. If the cache is empty, loads built-in Langflow
+    Supports both full and partial (lazy) loading. If the cache is empty, loads built-in EarthMind
     components and either fully loads all components or loads only their metadata, depending on the
     lazy loading setting. Merges built-in, custom, and Extension-System components into the cache
     and returns the resulting dictionary.
@@ -1116,7 +1116,7 @@ async def get_and_cache_all_types_dict(
     if component_cache.all_types_dict is None:
         await logger.adebug("Building components cache")
 
-        langflow_components = await import_langflow_components(settings_service, telemetry_service)
+        earthmind_components = await import_earthmind_components(settings_service, telemetry_service)
         custom_components_dict = await _determine_loading_strategy(settings_service)
         try:
             extension_components = await import_extension_components(settings_service)
@@ -1133,13 +1133,10 @@ async def get_and_cache_all_types_dict(
         # Extension components win on collision so a manifest-shipping bundle
         # supersedes any same-named legacy entry.
         component_cache.all_types_dict = {
-            **langflow_components["components"],
+            **earthmind_components["components"],
             **custom_flat,
             **extension_components,
         }
-        from lfx.interface.earthflow_components import apply_earthflow_component_policy
-
-        component_cache.all_types_dict = apply_earthflow_component_policy(component_cache.all_types_dict)
         component_count = sum(len(comps) for comps in component_cache.all_types_dict.values())
         await logger.adebug(f"Loaded {component_count} components")
 
@@ -1371,7 +1368,7 @@ async def get_type_dict(component_type: str, settings_service: Optional["Setting
     """Get a specific component type dictionary, loading if needed."""
     if settings_service is None:
         # Import here to avoid circular imports
-        from langflow.services.deps import get_settings_service
+        from earthmind.services.deps import get_settings_service
 
         settings_service = get_settings_service()
 

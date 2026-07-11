@@ -1,7 +1,7 @@
-"""Unit tests for langflow.core.celeryconfig module."""
+"""Unit tests for earthmind.core.celeryconfig module."""
 
 # Import the module to test
-from langflow.core import celeryconfig
+from earthmind.core import celeryconfig
 
 
 class TestCeleryConfigAcceptContent:

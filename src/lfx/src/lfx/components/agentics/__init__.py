@@ -1,4 +1,4 @@
-"""Agentics components for Langflow - LLM-powered data transformation and generation.
+"""Agentics components for EarthMind - LLM-powered data transformation and generation.
 
 This module provides components that leverage the Agentics framework for:
 - Semantic data transformation (aMap)

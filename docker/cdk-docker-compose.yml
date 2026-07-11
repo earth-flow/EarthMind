@@ -1,6 +1,6 @@
 version: "3"
 networks:
-  langflow:
+  earthmind:
 
 services:
   backend:
@@ -13,9 +13,9 @@ services:
       - "7860:7860"
     volumes:
       - ./:/app
-    command: bash -c "uvicorn --factory langflow.main:create_app --host 0.0.0.0 --port 7860 --reload --loop asyncio"
+    command: bash -c "uvicorn --factory earthmind.main:create_app --host 0.0.0.0 --port 7860 --reload --loop asyncio"
     networks:
-      - langflow
+      - earthmind
   frontend:
     build:
       context: ./src/frontend
@@ -34,4 +34,4 @@ services:
       - ./src/frontend/package.json:/home/node/app/package.json
     restart: on-failure
     networks:
-      - langflow
+      - earthmind

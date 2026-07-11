@@ -37,7 +37,7 @@ def update_pyproject_name(pyproject_path: str, new_project_name: str) -> None:
     # Rewrite this package's own `"<old name>[extra]"` self-references to the new
     # name so extras resolve against the renamed workspace member instead of
     # leaking the old name to PyPI. This generalizes the previous hardcoded
-    # langflow-base / langflow handling to every renamed package (lfx, the SDK,
+    # earthmind-base / earthmind handling to every renamed package (lfx, the SDK,
     # and each `lfx-*` bundle). The leading quote + escaped exact name keep
     # `"lfx[..."` from matching `"lfx-docling[..."`.
     if old_project_name != new_project_name:
@@ -48,19 +48,19 @@ def update_pyproject_name(pyproject_path: str, new_project_name: str) -> None:
 
 
 def update_uv_dep(pyproject_path: str, new_project_name: str) -> None:
-    """Update the langflow-base dependency in pyproject.toml."""
+    """Update the earthmind-base dependency in pyproject.toml."""
     filepath = BASE_DIR / pyproject_path
     content = filepath.read_text(encoding="utf-8")
 
-    if new_project_name == "langflow-nightly":
-        pattern = re.compile(r"langflow = \{ workspace = true \}")
-        replacement = "langflow-nightly = { workspace = true }"
-    elif new_project_name == "langflow-base-nightly":
-        pattern = re.compile(r"langflow-base = \{ workspace = true \}")
-        replacement = "langflow-base-nightly = { workspace = true }"
-    elif new_project_name == "langflow-sdk-nightly":
-        pattern = re.compile(r"langflow-sdk = \{ workspace = true \}")
-        replacement = "langflow-sdk-nightly = { workspace = true }"
+    if new_project_name == "earthmind-nightly":
+        pattern = re.compile(r"earthmind = \{ workspace = true \}")
+        replacement = "earthmind-nightly = { workspace = true }"
+    elif new_project_name == "earthmind-base-nightly":
+        pattern = re.compile(r"earthmind-base = \{ workspace = true \}")
+        replacement = "earthmind-base-nightly = { workspace = true }"
+    elif new_project_name == "earthmind-sdk-nightly":
+        pattern = re.compile(r"earthmind-sdk = \{ workspace = true \}")
+        replacement = "earthmind-sdk-nightly = { workspace = true }"
     else:
         msg = f"Invalid project name: {new_project_name}"
         raise ValueError(msg)
@@ -75,7 +75,7 @@ def update_uv_dep(pyproject_path: str, new_project_name: str) -> None:
 
 def main() -> None:
     if len(sys.argv) != ARGUMENT_NUMBER:
-        msg = "Must specify project name and build type, e.g. langflow-nightly base"
+        msg = "Must specify project name and build type, e.g. earthmind-nightly base"
         raise ValueError(msg)
     new_project_name = sys.argv[1]
     build_type = sys.argv[2]

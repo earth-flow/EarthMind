@@ -17,6 +17,7 @@ import {
   type DBProviderTextField,
   getActiveDBProvider,
   getGlobalVariableValue,
+  MILVUS_VARIABLES,
   OPENSEARCH_VARIABLES,
   parseBooleanGlobalVariable,
   toAPIBackendType,
@@ -489,6 +490,14 @@ function buildBackendConfigPayload(
       database_variable: CHROMA_CLOUD_VARIABLES.DATABASE,
       api_key_variable: CHROMA_CLOUD_VARIABLES.API_KEY,
       cloud_region: literalFields[CHROMA_CLOUD_VARIABLES.REGION] || "us-east-1",
+    };
+  }
+  if (providerId === "milvus") {
+    return {
+      uri_variable: MILVUS_VARIABLES.URI,
+      token_variable: MILVUS_VARIABLES.TOKEN,
+      collection_name:
+        literalFields[MILVUS_VARIABLES.COLLECTION_NAME] || "",
     };
   }
   if (providerId !== "opensearch") {

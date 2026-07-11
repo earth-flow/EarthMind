@@ -17,19 +17,19 @@ class TestRunCommand:
     @pytest.fixture
     def simple_chat_script(self, tmp_path):
         """Create a simple chat script for testing."""
-        script_content = '''"""A simple chat flow example for Langflow.
+        script_content = '''"""A simple chat flow example for EarthMind.
 
-This script demonstrates how to set up a basic conversational flow using Langflow's ChatInput and ChatOutput components.
+This script demonstrates how to set up a basic conversational flow using EarthMind's ChatInput and ChatOutput components.
 
 Features:
-- Configures logging to 'langflow.log' at INFO level
+- Configures logging to 'earthmind.log' at INFO level
 - Connects ChatInput to ChatOutput
 - Builds a Graph object for the flow
 
 Usage:
     python simple_chat.py
 
-You can use this script as a template for building more complex conversational flows in Langflow.
+You can use this script as a template for building more complex conversational flows in EarthMind.
 """
 
 from pathlib import Path
@@ -40,7 +40,7 @@ from lfx.log.logger import LogConfig
 
 log_config = LogConfig(
     log_level="INFO",
-    log_file=Path("langflow.log"),
+    log_file=Path("earthmind.log"),
 )
 chat_input = ChatInput()
 chat_output = ChatOutput().set(input_value=chat_input.message_response)

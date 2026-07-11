@@ -42,7 +42,7 @@ GENERATED_GUARD_INFO_PREFIX = "Auto-generated ToolGuard code for "
 
 _TOOLGUARD_INSTALL_HINT = (
     "The 'toolguard' package is required to use PoliciesComponent. "
-    "Install the optional extra: `pip install 'langflow-base[toolguard]'`."
+    "Install the optional extra: `pip install 'earthmind-base[toolguard]'`."
 )
 
 
@@ -53,7 +53,7 @@ class PoliciesComponent(LCModelComponent):
     ensuring that tool execution complies with defined business policies.
     Powered by ALTK ToolGuard (https://github.com/AgentToolkit/toolguard).
 
-    `toolguard` is an optional extra (`langflow-base[toolguard]`); imports happen
+    `toolguard` is an optional extra (`earthmind-base[toolguard]`); imports happen
     lazily inside methods so this component can be discovered and inspected even
     when the extra isn't installed.
     """

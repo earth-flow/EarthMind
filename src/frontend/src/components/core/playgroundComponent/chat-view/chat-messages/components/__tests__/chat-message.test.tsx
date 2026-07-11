@@ -3,9 +3,9 @@ import ChatMessage from "../chat-message";
 import ThinkingMessage from "../thinking-message";
 
 // Mock SVG imports
-jest.mock("@/assets/LangflowLogo.svg?react", () => ({
+jest.mock("@/assets/EarthMindLogo.svg?react", () => ({
   __esModule: true,
-  default: () => <div data-testid="langflow-logo" />,
+  default: () => <div data-testid="earthmind-logo" />,
 }));
 
 // Mock ES modules that Jest can't handle

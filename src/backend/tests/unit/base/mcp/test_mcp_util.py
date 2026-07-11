@@ -132,7 +132,7 @@ class TestMCPSessionManager:
         """Concurrent get_session calls for the same server must share one session.
 
         Regression test for the race condition reported in
-        https://github.com/langflow-ai/langflow/issues/9860 where two MCPTools
+        https://github.com/earthmind-ai/earthmind/issues/9860 where two MCPTools
         components pointing at the same SSE URL would race on session
         creation/cleanup under concurrent flow execution and intermittently
         fail with errors such as:
@@ -2721,8 +2721,8 @@ class TestNormalizeArgumentsForMcp:
         assert result == {"params": {"x": 1}}
         assert isinstance(result["params"], dict)
 
-    def test_langflow_data_to_dict_when_dict_expected(self):
-        """Test Langflow Data/JSON connected to a dict MCP parameter unwraps to its payload."""
+    def test_earthmind_data_to_dict_when_dict_expected(self):
+        """Test EarthMind Data/JSON connected to a dict MCP parameter unwraps to its payload."""
         from pydantic import BaseModel, Field
 
         class Schema(BaseModel):

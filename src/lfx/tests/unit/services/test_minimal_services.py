@@ -269,7 +269,7 @@ class TestVariableService:
 
     @pytest.mark.asyncio
     async def test_get_variable_absorbs_extra_kwargs(self, variables):
-        """Extra kwargs are accepted for compatibility with langflow call signature."""
+        """Extra kwargs are accepted for compatibility with earthmind call signature."""
         os.environ["LFX_KWARG_TEST"] = "value-from-env"
         try:
             value = await variables.get_variable(
@@ -290,20 +290,20 @@ class TestVariableService:
             del os.environ["WXO_DEMO_ACCESS_TOKEN"]
 
     @pytest.mark.asyncio
-    async def test_get_variable_from_langflow_request_variables(self, variables):
-        """Test request-scoped variables are read from LANGFLOW_REQUEST_VARIABLES."""
-        os.environ["LANGFLOW_REQUEST_VARIABLES"] = '{"runtime_token":"abc123","normal_key":"value1"}'
+    async def test_get_variable_from_earthmind_request_variables(self, variables):
+        """Test request-scoped variables are read from EARTHMIND_REQUEST_VARIABLES."""
+        os.environ["EARTHMIND_REQUEST_VARIABLES"] = '{"runtime_token":"abc123","normal_key":"value1"}'
         try:
             assert await variables.get_variable("runtime_token") == "abc123"
             assert await variables.get_variable("normal_key") == "value1"
         finally:
-            del os.environ["LANGFLOW_REQUEST_VARIABLES"]
+            del os.environ["EARTHMIND_REQUEST_VARIABLES"]
 
     async def test_global_alias_from_request_scope(self, variables):
-        """x-langflow-global-var-* aliases resolve from request-scoped variables."""
+        """x-earthmind-global-var-* aliases resolve from request-scoped variables."""
         from lfx.services.variable.request_scope import activate_request_variables, reset_request_variables
 
-        token = activate_request_variables({"x-langflow-global-var-access-token": "alias-token"})
+        token = activate_request_variables({"x-earthmind-global-var-access-token": "alias-token"})
         try:
             assert await variables.get_variable("access_token") == "alias-token"
         finally:
@@ -322,7 +322,7 @@ class TestVariableService:
             del os.environ["SHARED_VAR"]
 
     async def test_request_scope_alias_overrides_env(self, variables):
-        """A request-scoped x-langflow-global-var-* alias wins over an env var of the same name.
+        """A request-scoped x-earthmind-global-var-* alias wins over an env var of the same name.
 
         Ensures a caller's per-request credential is never shadowed by an ambient process
         credential, regardless of which form (exact name or alias) the caller supplied.
@@ -330,7 +330,7 @@ class TestVariableService:
         from lfx.services.variable.request_scope import activate_request_variables, reset_request_variables
 
         os.environ["ACCESS_TOKEN"] = "env-token"  # noqa: S105
-        token = activate_request_variables({"x-langflow-global-var-access-token": "alias-token"})
+        token = activate_request_variables({"x-earthmind-global-var-access-token": "alias-token"})
         try:
             assert await variables.get_variable("ACCESS_TOKEN") == "alias-token"
         finally:
@@ -349,25 +349,25 @@ class TestVariableService:
             reset_request_variables(token)
 
     @pytest.mark.asyncio
-    async def test_langflow_request_variables_invalid_json_falls_back(self, variables):
+    async def test_earthmind_request_variables_invalid_json_falls_back(self, variables):
         """Test invalid request variable JSON does not break env fallback."""
-        os.environ["LANGFLOW_REQUEST_VARIABLES"] = "{not-json"
+        os.environ["EARTHMIND_REQUEST_VARIABLES"] = "{not-json"
         os.environ["FALLBACK_ENV_KEY"] = "fallback-value"
         try:
             assert await variables.get_variable("FALLBACK_ENV_KEY") == "fallback-value"
         finally:
-            del os.environ["LANGFLOW_REQUEST_VARIABLES"]
+            del os.environ["EARTHMIND_REQUEST_VARIABLES"]
             del os.environ["FALLBACK_ENV_KEY"]
 
     @pytest.mark.asyncio
     async def test_strict_no_bearer_token_from_request_access_token(self, variables):
         """Request-scoped *_access_token does not satisfy *_bearer_token name."""
-        os.environ["LANGFLOW_REQUEST_VARIABLES"] = '{"wxo_github_access_token":"request-token"}'
+        os.environ["EARTHMIND_REQUEST_VARIABLES"] = '{"wxo_github_access_token":"request-token"}'
         try:
             assert await variables.get_variable("wxo_github_bearer_token") is None
             assert await variables.get_variable("wxo_github_access_token") == "request-token"
         finally:
-            del os.environ["LANGFLOW_REQUEST_VARIABLES"]
+            del os.environ["EARTHMIND_REQUEST_VARIABLES"]
 
     @pytest.mark.asyncio
     async def test_non_wxo_access_token_does_not_create_bearer_alias(self, variables):
@@ -391,32 +391,32 @@ class TestVariableService:
     @pytest.mark.asyncio
     async def test_strict_no_token_access_token_alias_resolution(self, variables):
         """Strict matching: token and access_token are not interchangeable."""
-        os.environ["LANGFLOW_REQUEST_VARIABLES"] = '{"access_token":"request-access"}'
+        os.environ["EARTHMIND_REQUEST_VARIABLES"] = '{"access_token":"request-access"}'
         try:
             assert await variables.get_variable("token") is None
             assert await variables.get_variable("access_token") == "request-access"
         finally:
-            del os.environ["LANGFLOW_REQUEST_VARIABLES"]
+            del os.environ["EARTHMIND_REQUEST_VARIABLES"]
 
     @pytest.mark.asyncio
     async def test_strict_no_prefixed_token_alias_resolution(self, variables):
         """Strict matching for prefixed token/access_token variables."""
-        os.environ["LANGFLOW_REQUEST_VARIABLES"] = '{"my_app_access_token":"prefixed-token"}'
+        os.environ["EARTHMIND_REQUEST_VARIABLES"] = '{"my_app_access_token":"prefixed-token"}'
         try:
             assert await variables.get_variable("my_app_token") is None
             assert await variables.get_variable("my_app_access_token") == "prefixed-token"
         finally:
-            del os.environ["LANGFLOW_REQUEST_VARIABLES"]
+            del os.environ["EARTHMIND_REQUEST_VARIABLES"]
 
     @pytest.mark.asyncio
     async def test_global_var_alias_resolution(self, variables):
-        """Test x-langflow-global-var-* alias lookup."""
-        os.environ["x-langflow-global-var-access-token"] = "global-token"  # noqa: SIM112
+        """Test x-earthmind-global-var-* alias lookup."""
+        os.environ["x-earthmind-global-var-access-token"] = "global-token"  # noqa: SIM112
         try:
             assert await variables.get_variable("access_token") == "global-token"
             assert await variables.get_variable("token") is None
         finally:
-            del os.environ["x-langflow-global-var-access-token"]  # noqa: SIM112
+            del os.environ["x-earthmind-global-var-access-token"]  # noqa: SIM112
 
     @pytest.mark.asyncio
     async def test_teardown(self, variables):

@@ -17,8 +17,8 @@ import requests
 from gp_client import BASE_URL, GP_INSTANCE, TARGET_LANGS, get_headers, get_strings
 
 DEFAULT_FRONTEND_OUTPUT = Path(__file__).parent.parent.parent / "src/frontend/src/locales"
-DEFAULT_BACKEND_OUTPUT = Path(__file__).parent.parent.parent / "src/backend/base/langflow/locales"
-GP_BACKEND_BUNDLE = os.getenv("GP_BACKEND_BUNDLE", "langflow-ui-backend-v2")
+DEFAULT_BACKEND_OUTPUT = Path(__file__).parent.parent.parent / "src/backend/base/earthmind/locales"
+GP_BACKEND_BUNDLE = os.getenv("GP_BACKEND_BUNDLE", "earthmind-ui-backend-v2")
 REQUEST_TIMEOUT = 30
 
 

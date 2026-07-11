@@ -73,7 +73,7 @@ WORKDIR /tmp/src/frontend
 RUN --mount=type=cache,target=/root/.npm \
     npm ci \
     && ESBUILD_BINARY_PATH="" NODE_OPTIONS="--max-old-space-size=4096" JOBS=1 npm run build \
-    && cp -r build /app/src/backend/langflow/frontend \
+    && cp -r build /app/src/backend/earthmind/frontend \
     && rm -rf /tmp/src/frontend
 
 WORKDIR /app
@@ -112,25 +112,25 @@ RUN useradd user -u 1000 -g 0 --no-create-home --home-dir /app/data
 COPY --from=builder --chown=1000 /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Pre-create LANGFLOW_CONFIG_DIR (the default location used by the docker_example
+# Pre-create EARTHMIND_CONFIG_DIR (the default location used by the docker_example
 # compose file) with the non-root user as owner. When the official compose mounts
-# a fresh named volume at /app/langflow, Docker copies this directory's ownership
+# a fresh named volume at /app/earthmind, Docker copies this directory's ownership
 # and permissions into the new volume, so the in-container uid=1000 user can
 # write secret_key, profile_pictures, etc. Without this, the volume is created
-# as root:root and Langflow crashes during startup with PermissionError on
-# /app/langflow/secret_key. See https://github.com/langflow-ai/langflow/issues/10437
-RUN mkdir -p /app/langflow && chown -R 1000:0 /app/langflow && chmod -R g+rwX /app/langflow
+# as root:root and EarthMind crashes during startup with PermissionError on
+# /app/earthmind/secret_key. See https://github.com/earthmind-ai/earthmind/issues/10437
+RUN mkdir -p /app/earthmind && chown -R 1000:0 /app/earthmind && chmod -R g+rwX /app/earthmind
 
-LABEL org.opencontainers.image.title=langflow
-LABEL org.opencontainers.image.authors=['Langflow']
+LABEL org.opencontainers.image.title=earthmind
+LABEL org.opencontainers.image.authors=['EarthMind']
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.url=https://github.com/langflow-ai/langflow
-LABEL org.opencontainers.image.source=https://github.com/langflow-ai/langflow
+LABEL org.opencontainers.image.url=https://github.com/earthmind-ai/earthmind
+LABEL org.opencontainers.image.source=https://github.com/earthmind-ai/earthmind
 
 USER user
 WORKDIR /app
 
-ENV LANGFLOW_HOST=0.0.0.0
-ENV LANGFLOW_PORT=7860
+ENV EARTHMIND_HOST=0.0.0.0
+ENV EARTHMIND_PORT=7860
 
-CMD ["langflow", "run"]
+CMD ["earthmind", "run"]

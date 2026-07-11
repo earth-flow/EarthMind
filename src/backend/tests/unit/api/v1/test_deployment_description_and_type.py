@@ -12,8 +12,8 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 
-from langflow.api.v1.mappers.deployments.base import BaseDeploymentMapper
-from langflow.services.database.models.deployment.model import Deployment, DeploymentRead
+from earthmind.api.v1.mappers.deployments.base import BaseDeploymentMapper
+from earthmind.services.database.models.deployment.model import Deployment, DeploymentRead
 from lfx.services.adapters.deployment.schema import (
     BaseDeploymentData,
     BaseDeploymentDataUpdate,

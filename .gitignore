@@ -251,7 +251,7 @@ dmypy.json
 
 # Poetry
 .testenv/*
-langflow.db
+earthmind.db
 
 
 .githooks/prepare-commit-msg
@@ -261,8 +261,8 @@ langflow.db
 .docusaurus/
 
 /tmp/*
-src/backend/langflow/frontend/
-src/backend/base/langflow/frontend/
+src/backend/earthmind/frontend/
+src/backend/base/earthmind/frontend/
 .docker
 scratchpad*
 chroma*/*
@@ -292,9 +292,10 @@ data/user
 sso-config.yaml
 AGENTS.md
 CLAUDE.local.md
-langflow.log.*
+earthmind.log.*
 tmp_toolguard/
 
 #whitesource
 whitesource/
 /.codex
+data/secret_key

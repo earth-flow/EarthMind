@@ -1,6 +1,6 @@
 import pytest
-from langflow.api.v1.schemas import VertexBuildResponse
-from langflow.serialization.constants import MAX_ITEMS_LENGTH
+from earthmind.api.v1.schemas import VertexBuildResponse
+from earthmind.serialization.constants import MAX_ITEMS_LENGTH
 
 expected_keys_vertex_build_response = {
     "id",

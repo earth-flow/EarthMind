@@ -148,9 +148,9 @@ function ApiInterceptor() {
 
     const isAuthorizedURL = (url) => {
       const authorizedDomains = [
-        "https://raw.githubusercontent.com/langflow-ai/langflow_examples/main/examples",
-        "https://api.github.com/repos/langflow-ai/langflow_examples/contents/examples",
-        "https://api.github.com/repos/langflow-ai/langflow",
+        "https://raw.githubusercontent.com/earthmind-ai/earthmind_examples/main/examples",
+        "https://api.github.com/repos/earthmind-ai/earthmind_examples/contents/examples",
+        "https://api.github.com/repos/earthmind-ai/earthmind",
         "auto_login",
       ];
 
@@ -203,10 +203,15 @@ function ApiInterceptor() {
         }
 
         const currentOrigin = window.location.origin;
+        const backendOrigin = api.defaults.baseURL
+          ? new URL(api.defaults.baseURL, currentOrigin).origin
+          : currentOrigin;
         const requestUrl = new URL(config?.url as string, currentOrigin);
 
-        const urlIsFromCurrentOrigin = requestUrl.origin === currentOrigin;
-        if (urlIsFromCurrentOrigin) {
+        const urlIsTrustedApiOrigin =
+          requestUrl.origin === currentOrigin ||
+          requestUrl.origin === backendOrigin;
+        if (urlIsTrustedApiOrigin) {
           for (const [key, value] of Object.entries(customHeaders)) {
             config.headers[key] = value;
           }

@@ -114,16 +114,16 @@ def load_seed_extensions(
 
     The "seed directory" is the filesystem source documented in the
     deployment guide where an operator stages bundles for startup without
-    going through pip.  Default location is ``/opt/langflow/bundles``;
-    override via ``$LANGFLOW_SEED_DIR``.  Each immediate subdirectory that
+    going through pip.  Default location is ``/opt/earthmind/bundles``;
+    override via ``$EARTHMIND_SEED_DIR``.  Each immediate subdirectory that
     ships a v0 manifest becomes one Extension at the @official slot.
 
     Args:
-        seed_dir_env: Test seam.  ``None`` reads ``$LANGFLOW_SEED_DIR``
+        seed_dir_env: Test seam.  ``None`` reads ``$EARTHMIND_SEED_DIR``
             from the live environment; pass an explicit string to bypass
             ``os.environ``.
         default_seed_dir: Test seam.  ``None`` uses the discovery layer's
-            default (``/opt/langflow/bundles``); pass an explicit ``Path``
+            default (``/opt/earthmind/bundles``); pass an explicit ``Path``
             to override or ``Path("/dev/null")`` to disable the default.
 
     Returns:

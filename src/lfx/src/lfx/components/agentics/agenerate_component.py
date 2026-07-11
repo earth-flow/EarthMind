@@ -33,7 +33,7 @@ class AgenerateComponent(BaseAgenticComponent):
         "Generate mock data for user defined schema. If a dataframe is provided, "
         "the component will generate similar rows."
     )
-    documentation: str = "https://docs.langflow.org/bundles-agentics"
+    documentation: str = "https://docs.earthmind.org/bundles-agentics"
     icon = "Agentics"
 
     inputs = [

@@ -61,6 +61,10 @@ export default function KnowledgeBaseUploadModal({
             onChunkOverlapChange={form.setChunkOverlap}
             separator={form.separator}
             onSeparatorChange={form.setSeparator}
+            ocrProvider={form.ocrProvider}
+            onOcrProviderChange={form.setOcrProvider}
+            chunkStrategy={form.chunkStrategy}
+            onChunkStrategyChange={form.setChunkStrategy}
             showAdvanced={form.showAdvanced}
             hasFiles={form.files.length > 0}
             onFileSelect={form.handleFileSelect}
@@ -92,6 +96,8 @@ export default function KnowledgeBaseUploadModal({
             chunkSize={form.chunkSize}
             chunkOverlap={form.chunkOverlap}
             separator={form.separator}
+            ocrProvider={form.ocrProvider}
+            chunkStrategy={form.chunkStrategy}
             selectedEmbeddingModel={form.selectedEmbeddingModel}
             backendType={form.backendType}
             metadataPairs={form.metadataPairs}

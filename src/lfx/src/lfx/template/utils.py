@@ -23,7 +23,7 @@ def get_file_path_value(file_path):
     # If the path is not in the cache dir, return empty string
     # This is to prevent access to files outside the cache dir
     # If the path is not a file, return empty string
-    if not str(path).startswith(user_cache_dir("langflow", "langflow")):
+    if not str(path).startswith(user_cache_dir("earthmind", "earthmind")):
         return ""
 
     if not path.exists():

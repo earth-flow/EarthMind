@@ -3,7 +3,7 @@
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from langflow.services.cache.service import RedisCache
+from earthmind.services.cache.service import RedisCache
 
 
 @pytest.mark.asyncio
@@ -50,7 +50,7 @@ class TestRedisCacheTeardown:
 
     async def test_is_external_async_base_cache_service(self):
         """Test that RedisCache is an instance of ExternalAsyncBaseCacheService."""
-        from langflow.services.cache.base import ExternalAsyncBaseCacheService
+        from earthmind.services.cache.base import ExternalAsyncBaseCacheService
 
         with patch("redis.asyncio.StrictRedis") as mock_redis_class:
             mock_client = AsyncMock()
@@ -74,7 +74,7 @@ class TestRedisCacheTeardown:
         ``teardown`` is now an abstract method on ``ExternalAsyncBaseCacheService``,
         so preload can call it directly without ``getattr`` fallbacks.
         """
-        from langflow.services.cache.base import ExternalAsyncBaseCacheService
+        from earthmind.services.cache.base import ExternalAsyncBaseCacheService
 
         with patch("redis.asyncio.StrictRedis") as mock_redis_class:
             mock_client = AsyncMock()

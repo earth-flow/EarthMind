@@ -1,4 +1,4 @@
-"""Dot-notation dictionary implementation copied from langflow for lfx package."""
+"""Dot-notation dictionary implementation copied from earthmind for lfx package."""
 
 
 class dotdict(dict):  # noqa: N801

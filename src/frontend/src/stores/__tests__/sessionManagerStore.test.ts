@@ -2,7 +2,7 @@ import { act } from "@testing-library/react";
 import { useSessionManagerStore } from "../sessionManagerStore";
 
 const FLOW_ID = "flow-1";
-const STORAGE_KEY = `langflow_local_sessions_${FLOW_ID}`;
+const STORAGE_KEY = `earthmind_local_sessions_${FLOW_ID}`;
 
 describe("useSessionManagerStore", () => {
   beforeEach(() => {

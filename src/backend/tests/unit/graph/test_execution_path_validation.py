@@ -79,7 +79,7 @@ async def run_via_arun_traced(graph: Graph) -> ExecutionTrace:
     """Run graph using arun path with full tracing."""
     from uuid import uuid4
 
-    from langflow.schema.schema import INPUT_FIELD_NAME
+    from earthmind.schema.schema import INPUT_FIELD_NAME
     from lfx.schema.schema import InputValueRequest
 
     trace = ExecutionTrace(path_name="arun")

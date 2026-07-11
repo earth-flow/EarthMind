@@ -8,16 +8,16 @@ slug: /integrations-langwatch
 ## Integrate LangWatch observability
 
 :::note LangWatch is unavailable in the default Docker images
-The official Langflow Docker images (`langflowai/langflow` and `langflowai/langflow-nightly`) run on Python 3.14, and the `langwatch` package doesn't yet support Python 3.14 (it requires Python `<3.14`). As a result, LangWatch tracing is **not available in the default Docker images** even when `LANGWATCH_API_KEY` is set. Langflow logs a warning on the first flow run and continues without LangWatch tracing.
+The official EarthMind Docker images (`earthmindai/earthmind` and `earthmindai/earthmind-nightly`) run on Python 3.14, and the `langwatch` package doesn't yet support Python 3.14 (it requires Python `<3.14`). As a result, LangWatch tracing is **not available in the default Docker images** even when `LANGWATCH_API_KEY` is set. EarthMind logs a warning on the first flow run and continues without LangWatch tracing.
 
-To use LangWatch, run Langflow on Python 3.10–3.13, such as the PyPI distribution (`pip install langflow`) or the Langflow desktop app. If you need a container, build a custom image on a Python 3.10–3.13 base.
+To use LangWatch, run EarthMind on Python 3.10–3.13, such as the PyPI distribution (`pip install earthmind`) or the EarthMind desktop app. If you need a container, build a custom image on a Python 3.10–3.13 base.
 :::
 
-To integrate with Langflow, add your LangWatch API key as a Langflow environment variable:
+To integrate with EarthMind, add your LangWatch API key as a EarthMind environment variable:
 
 1. Get a LangWatch API key from your LangWatch account.
 
-2. Add the key to your Langflow `.env` file:
+2. Add the key to your EarthMind `.env` file:
 
     ```shell
     LANGWATCH_API_KEY="API_KEY_STRING"
@@ -29,10 +29,10 @@ To integrate with Langflow, add your LangWatch API key as a Langflow environment
     export LANGWATCH_API_KEY="API_KEY_STRING"
     ```
 
-3. Restart Langflow with your `.env` file, if you modified the Langflow `.env`:
+3. Restart EarthMind with your `.env` file, if you modified the EarthMind `.env`:
 
     ```
-    langflow run --env-file .env
+    earthmind run --env-file .env
     ```
 
 4. Run a flow.

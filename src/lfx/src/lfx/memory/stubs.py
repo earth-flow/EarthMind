@@ -1,7 +1,7 @@
 """Memory management functions for lfx package.
 
 This module provides message storage and retrieval functionality adapted for lfx's
-service-based architecture. It mirrors the langflow.memory API but works with
+service-based architecture. It mirrors the earthmind.memory API but works with
 lfx's Message model and service interfaces.
 """
 
@@ -68,7 +68,7 @@ async def astore_message(
     # Real implementation would require a database service
     async with session_scope() as session:
         # Since we're using NoopSession by default, this doesn't actually persist
-        # but maintains the same interface as langflow.memory
+        # but maintains the same interface as earthmind.memory
         try:
             # Generate an ID if not present
             if not hasattr(message, "id") or not message.id:

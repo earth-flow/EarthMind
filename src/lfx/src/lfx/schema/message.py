@@ -57,7 +57,7 @@ def _is_text_like_extension(file_path: Any) -> bool:
 
 
 class Message(Data):
-    """Message schema for Langflow.
+    """Message schema for EarthMind.
 
     Message ID Semantics:
     - Messages only have an ID after being stored in the database

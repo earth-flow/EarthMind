@@ -1,8 +1,8 @@
 from pathlib import Path
 from urllib.parse import urlparse
 
-from langflow.custom.custom_component.component import Component
-from langflow.io import (
+from earthmind.custom.custom_component.component import Component
+from earthmind.io import (
     DropdownInput,
     FileInput,
     IntInput,
@@ -10,7 +10,7 @@ from langflow.io import (
     Output,
     SecretStrInput,
 )
-from langflow.schema.data import Data
+from earthmind.schema.data import Data
 from loguru import logger
 
 

@@ -49,8 +49,8 @@ class TestDatabaseUrlCredentialExposure:
         which we cannot control. We focus on sanitizing our error message text.
         """
         # Arrange - Settings class reads from environment variables
-        monkeypatch.setenv("LANGFLOW_DATABASE_URL", invalid_url)
-        monkeypatch.setenv("LANGFLOW_CONFIG_DIR", "/tmp/test_config")
+        monkeypatch.setenv("EARTHMIND_DATABASE_URL", invalid_url)
+        monkeypatch.setenv("EARTHMIND_CONFIG_DIR", "/tmp/test_config")
 
         from lfx.services.settings.base import Settings
 

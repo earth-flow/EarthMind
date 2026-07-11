@@ -1,10 +1,10 @@
-const url = `${process.env.LANGFLOW_URL ?? ""}/api/v1/flows/?remove_example_flows=true&components_only=false&get_all=false&project_id=${process.env.PROJECT_ID ?? ""}&header_flows=false&page=1&size=1`;
+const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/flows/?remove_example_flows=true&components_only=false&get_all=false&project_id=${process.env.PROJECT_ID ?? ""}&header_flows=false&page=1&size=1`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.LANGFLOW_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
   },
 };
 

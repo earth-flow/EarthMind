@@ -3,8 +3,8 @@
 from unittest.mock import MagicMock
 
 import pytest
-from langflow.services.telemetry.schema import ComponentInputsPayload
-from langflow.services.telemetry.service import TelemetryService
+from earthmind.services.telemetry.schema import ComponentInputsPayload
+from earthmind.services.telemetry.service import TelemetryService
 
 
 @pytest.mark.asyncio

@@ -260,8 +260,8 @@ def test_multi_worker_forces_direct_event_delivery(monkeypatch):
     order in Settings must ensure workers is in info.data when
     event_delivery validates.
     """
-    monkeypatch.setenv("LANGFLOW_WORKERS", "4")
-    monkeypatch.setenv("LANGFLOW_EVENT_DELIVERY", "streaming")
+    monkeypatch.setenv("EARTHMIND_WORKERS", "4")
+    monkeypatch.setenv("EARTHMIND_EVENT_DELIVERY", "streaming")
     settings = Settings()
     assert settings.workers == 4
     assert settings.event_delivery == "direct"
@@ -269,8 +269,8 @@ def test_multi_worker_forces_direct_event_delivery(monkeypatch):
 
 def test_single_worker_keeps_explicit_event_delivery(monkeypatch):
     """Workers == 1 leaves an explicit event_delivery setting alone."""
-    monkeypatch.setenv("LANGFLOW_WORKERS", "1")
-    monkeypatch.setenv("LANGFLOW_EVENT_DELIVERY", "polling")
+    monkeypatch.setenv("EARTHMIND_WORKERS", "1")
+    monkeypatch.setenv("EARTHMIND_EVENT_DELIVERY", "polling")
     settings = Settings()
     assert settings.event_delivery == "polling"
 
@@ -278,13 +278,13 @@ def test_single_worker_keeps_explicit_event_delivery(monkeypatch):
 def test_database_url_sees_config_dir(monkeypatch, tmp_path):
     """database_url validator must see config_dir in info.data.
 
-    With config_dir set and no LANGFLOW_DATABASE_URL env var, the validator
-    falls back to a sqlite path under the langflow package directory. If
+    With config_dir set and no EARTHMIND_DATABASE_URL env var, the validator
+    falls back to a sqlite path under the earthmind package directory. If
     PathSettings's config_dir wasn't validated first, the validator would
     raise 'config_dir not set'.
     """
-    monkeypatch.delenv("LANGFLOW_DATABASE_URL", raising=False)
-    monkeypatch.setenv("LANGFLOW_CONFIG_DIR", str(tmp_path))
+    monkeypatch.delenv("EARTHMIND_DATABASE_URL", raising=False)
+    monkeypatch.setenv("EARTHMIND_CONFIG_DIR", str(tmp_path))
     settings = Settings()
     assert settings.database_url.startswith("sqlite:///")
     assert settings.config_dir == str(tmp_path)
@@ -345,25 +345,25 @@ def test_yaml_round_trip():
 @pytest.mark.parametrize(
     ("env_var", "env_value", "field", "expected"),
     [
-        ("LANGFLOW_HOST", "0.0.0.0", "host", "0.0.0.0"),
-        ("LANGFLOW_PORT", "8080", "port", 8080),
-        ("LANGFLOW_WORKERS", "2", "workers", 2),
-        ("LANGFLOW_LOG_LEVEL", "info", "log_level", "info"),
-        ("LANGFLOW_CACHE_TYPE", "memory", "cache_type", "memory"),
-        ("LANGFLOW_STORAGE_TYPE", "s3", "storage_type", "s3"),
-        ("LANGFLOW_PROMETHEUS_ENABLED", "true", "prometheus_enabled", True),
-        ("LANGFLOW_PROMETHEUS_PORT", "9999", "prometheus_port", 9999),
-        ("LANGFLOW_MCP_SERVER_ENABLED", "false", "mcp_server_enabled", False),
-        ("LANGFLOW_DO_NOT_TRACK", "true", "do_not_track", True),
-        ("LANGFLOW_DEV", "true", "dev", True),
-        ("LANGFLOW_BACKEND_ONLY", "true", "backend_only", True),
-        ("LANGFLOW_AUTO_SAVING", "false", "auto_saving", False),
-        ("LANGFLOW_FALLBACK_TO_ENV_VAR", "false", "fallback_to_env_var", False),
-        ("LANGFLOW_VARIABLE_STORE", "kubernetes", "variable_store", "kubernetes"),
+        ("EARTHMIND_HOST", "0.0.0.0", "host", "0.0.0.0"),
+        ("EARTHMIND_PORT", "8080", "port", 8080),
+        ("EARTHMIND_WORKERS", "2", "workers", 2),
+        ("EARTHMIND_LOG_LEVEL", "info", "log_level", "info"),
+        ("EARTHMIND_CACHE_TYPE", "memory", "cache_type", "memory"),
+        ("EARTHMIND_STORAGE_TYPE", "s3", "storage_type", "s3"),
+        ("EARTHMIND_PROMETHEUS_ENABLED", "true", "prometheus_enabled", True),
+        ("EARTHMIND_PROMETHEUS_PORT", "9999", "prometheus_port", 9999),
+        ("EARTHMIND_MCP_SERVER_ENABLED", "false", "mcp_server_enabled", False),
+        ("EARTHMIND_DO_NOT_TRACK", "true", "do_not_track", True),
+        ("EARTHMIND_DEV", "true", "dev", True),
+        ("EARTHMIND_BACKEND_ONLY", "true", "backend_only", True),
+        ("EARTHMIND_AUTO_SAVING", "false", "auto_saving", False),
+        ("EARTHMIND_FALLBACK_TO_ENV_VAR", "false", "fallback_to_env_var", False),
+        ("EARTHMIND_VARIABLE_STORE", "kubernetes", "variable_store", "kubernetes"),
     ],
 )
 def test_env_var_round_trip(monkeypatch, env_var, env_value, field, expected):
-    """A sampling of LANGFLOW_* env vars still populate the right fields."""
+    """A sampling of EARTHMIND_* env vars still populate the right fields."""
     monkeypatch.setenv(env_var, env_value)
     settings = Settings()
     assert getattr(settings, field) == expected

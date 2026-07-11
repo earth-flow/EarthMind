@@ -203,7 +203,7 @@ export default function CreateMemoryModal({
                       <span>
                         {t("memory.preprocessingInstructionsHint")}{" "}
                         <a
-                          href="https://docs.langflow.org/memory-bases#preprocessing-prompt-examples"
+                          href="https://docs.earthmind.org/memory-bases#preprocessing-prompt-examples"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-0.5 text-tooltip-foreground underline opacity-80 hover:opacity-100"

@@ -103,9 +103,65 @@ MODEL_PROVIDER_METADATA: dict[str, Any] = {
                     "advanced": True,
                     "info": "Falls back to OPENAI_API_KEY environment variable",
                 },
+            },
+            {
+                "variable_name": "OpenAI API Base",
+                "variable_key": "OPENAI_API_BASE",
+                "required": False,
+                "is_secret": False,
+                "is_list": False,
+                "options": [],
+                "langchain_param": "base_url",
+                "component_metadata": {
+                    "mapping_field": "api_base",
+                    "required": False,
+                    "advanced": True,
+                    "info": "Optional OpenAI-compatible API base URL, e.g. SiliconFlow.",
+                },
             }
         ],
         "api_docs_url": "https://platform.openai.com/docs/overview",
+        "mapping": {
+            "model_class": "ChatOpenAI",
+            "model_param": "model",
+        },
+    },
+    "SiliconFlow": {
+        "icon": "OpenAI",
+        "max_tokens_field_name": "max_tokens",
+        "variables": [
+            {
+                "variable_name": "SiliconFlow API Key",
+                "variable_key": "SILICONFLOW_API_KEY",
+                "required": True,
+                "is_secret": True,
+                "is_list": False,
+                "options": [],
+                "langchain_param": "api_key",
+                "component_metadata": {
+                    "mapping_field": "api_key",
+                    "required": False,
+                    "advanced": True,
+                    "info": "API key for SiliconFlow's OpenAI-compatible endpoint.",
+                },
+            },
+            {
+                "variable_name": "SiliconFlow API Base",
+                "variable_key": "SILICONFLOW_API_BASE",
+                "required": True,
+                "is_secret": False,
+                "is_list": False,
+                "options": [],
+                "langchain_param": "base_url",
+                "component_metadata": {
+                    "mapping_field": "api_base",
+                    "required": False,
+                    "advanced": True,
+                    "info": "OpenAI-compatible base URL for SiliconFlow, e.g. https://api.siliconflow.cn/v1.",
+                },
+            }
+        ],
+        "api_docs_url": "https://siliconflow.cn/",
         "mapping": {
             "model_class": "ChatOpenAI",
             "model_param": "model",

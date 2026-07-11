@@ -377,7 +377,7 @@ def update_model_options_in_build_config(
                         variable_service = get_variable_service()
                         if variable_service is None:
                             return None, None
-                        from langflow.services.variable.service import (
+                        from earthmind.services.variable.service import (
                             DatabaseVariableService,
                         )
 

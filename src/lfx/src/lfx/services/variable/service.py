@@ -31,31 +31,31 @@ class VariableService(Service):
 
     @staticmethod
     def _normalize_global_var_key(name: str) -> str:
-        return f"x-langflow-global-var-{name.lower().replace('_', '-')}"
+        return f"x-earthmind-global-var-{name.lower().replace('_', '-')}"
 
     @staticmethod
     def _get_request_variables() -> dict[str, str]:
-        """Request-scoped variables from serve ContextVar or LANGFLOW_REQUEST_VARIABLES env."""
+        """Request-scoped variables from serve ContextVar or EARTHMIND_REQUEST_VARIABLES env."""
         active = get_active_request_variables()
         if active is not None:
             return active
 
-        # LANGFLOW_REQUEST_VARIABLES is a process-wide env var, so reading it is an
+        # EARTHMIND_REQUEST_VARIABLES is a process-wide env var, so reading it is an
         # os.environ access. Honor the no-env-fallback contract and skip it when the
         # request disables env fallback, keeping the "never reads os.environ" guarantee.
         if is_env_fallback_disabled():
             return {}
 
-        raw = os.getenv("LANGFLOW_REQUEST_VARIABLES")
+        raw = os.getenv("EARTHMIND_REQUEST_VARIABLES")
         if not raw:
             return {}
         try:
             parsed = json.loads(raw)
         except json.JSONDecodeError:
-            logger.debug("Invalid LANGFLOW_REQUEST_VARIABLES JSON; skipping request-scoped lookup")
+            logger.debug("Invalid EARTHMIND_REQUEST_VARIABLES JSON; skipping request-scoped lookup")
             return {}
         if not isinstance(parsed, dict):
-            logger.debug("LANGFLOW_REQUEST_VARIABLES must be a JSON object; skipping request-scoped lookup")
+            logger.debug("EARTHMIND_REQUEST_VARIABLES must be a JSON object; skipping request-scoped lookup")
             return {}
         return normalize_parsed_variables(parsed)
 
@@ -64,14 +64,14 @@ class VariableService(Service):
 
         Resolution order (first match wins):
           1. In-memory cache (``set_variable``).
-          2. Request-scoped exact name (serve ContextVar or ``LANGFLOW_REQUEST_VARIABLES``).
-          3. Request-scoped ``x-langflow-global-var-*`` alias.
+          2. Request-scoped exact name (serve ContextVar or ``EARTHMIND_REQUEST_VARIABLES``).
+          3. Request-scoped ``x-earthmind-global-var-*`` alias.
           4. Environment variable (exact name).
-          5. Environment variable (``x-langflow-global-var-*`` alias).
+          5. Environment variable (``x-earthmind-global-var-*`` alias).
 
         Both request-scoped lookups (2, 3) run *before* any process-env fallback (4, 5),
         so a credential the caller supplies for this request — in either the exact-name
-        or the ``x-langflow-global-var-*`` form — always beats a same-named variable left
+        or the ``x-earthmind-global-var-*`` form — always beats a same-named variable left
         in the worker's environment, preventing one caller's request from running on an
         ambient process credential.
 

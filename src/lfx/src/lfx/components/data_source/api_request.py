@@ -73,7 +73,7 @@ REDIRECT_STATUS_CODES = frozenset(
 class APIRequestComponent(Component):
     display_name = "API Request"
     description = "Make HTTP requests using URL or cURL commands."
-    documentation: str = "https://docs.langflow.org/api-request"
+    documentation: str = "https://docs.earthmind.org/api-request"
     icon = "Globe"
     name = "APIRequest"
 
@@ -159,7 +159,7 @@ class APIRequestComponent(Component):
                     "description": "Header value",
                 },
             ],
-            value=[{"key": "User-Agent", "value": "Langflow/1.0"}],
+            value=[{"key": "User-Agent", "value": "EarthMind/1.0"}],
             advanced=True,
             input_types=["Data", "JSON"],
             real_time_refresh=True,

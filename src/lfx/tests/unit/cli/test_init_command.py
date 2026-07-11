@@ -1,6 +1,6 @@
 """Unit tests for ``lfx init`` — init_command and helpers.
 
-All tests run entirely in-process; no running Langflow instance required.
+All tests run entirely in-process; no running EarthMind instance required.
 Filesystem operations use ``tmp_path`` so every test gets a fresh sandbox.
 """
 
@@ -265,10 +265,10 @@ class TestInitCommandRequiredFiles:
         _run_init(tmp_path)
         assert (tmp_path / ".gitignore").exists()
 
-    def test_gitignore_has_langflow_entry(self, tmp_path: Path) -> None:
+    def test_gitignore_has_earthmind_entry(self, tmp_path: Path) -> None:
         _run_init(tmp_path)
         content = (tmp_path / ".gitignore").read_text(encoding="utf-8")
-        assert "langflow-environments.toml" in content
+        assert "earthmind-environments.toml" in content
 
 
 # ---------------------------------------------------------------------------
@@ -295,16 +295,16 @@ class TestInitCommandGitignore:
         content = gitignore.read_text(encoding="utf-8")
         assert "*.pyc" in content
         assert "__pycache__/" in content
-        assert "langflow-environments.toml" in content
+        assert "earthmind-environments.toml" in content
 
     def test_does_not_append_duplicate_rule(self, tmp_path: Path) -> None:
         gitignore = tmp_path / ".gitignore"
-        gitignore.write_text("langflow-environments.toml\n", encoding="utf-8")
+        gitignore.write_text("earthmind-environments.toml\n", encoding="utf-8")
         # Directory already has .gitignore so use overwrite=True to bypass the non-empty guard
         init_command(project_dir=tmp_path, github_actions=False, overwrite=True, example=False)
         content = gitignore.read_text(encoding="utf-8")
         # Should appear exactly once
-        assert content.count("langflow-environments.toml") == 1
+        assert content.count("earthmind-environments.toml") == 1
 
     def test_existing_gitignore_preserved_and_appended(self, tmp_path: Path) -> None:
         gitignore = tmp_path / ".gitignore"
@@ -317,7 +317,7 @@ class TestInitCommandGitignore:
         assert "node_modules/" in content
         assert "dist/" in content
         # Rule is appended
-        assert "langflow-environments.toml" in content
+        assert "earthmind-environments.toml" in content
 
     def test_append_uses_double_newline_separator(self, tmp_path: Path) -> None:
         gitignore = tmp_path / ".gitignore"

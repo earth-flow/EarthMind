@@ -31,7 +31,8 @@ export type SidebarSection =
   | "mcp"
   | "versions"
   | "traces"
-  | "memories";
+  | "memories"
+  | "knowledge";
 
 // Helper function to get cookie value
 function getCookie(name: string): string | null {
@@ -70,7 +71,7 @@ function getInitialSidebarSection(
 type SidebarContext = {
   state: "expanded" | "collapsed";
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: (open: boolean | ((value: boolean) => boolean)) => void;
   toggleSidebar: () => void;
   defaultOpen: boolean;
   // Section management

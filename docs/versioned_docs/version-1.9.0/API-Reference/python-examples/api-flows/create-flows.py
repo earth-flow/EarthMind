@@ -3,8 +3,8 @@ import uuid
 
 import requests
 
-base = os.environ.get("LANGFLOW_URL", "")
-api_key = os.environ.get("LANGFLOW_API_KEY", "")
+base = os.environ.get("EARTHMIND_URL", "")
+api_key = os.environ.get("EARTHMIND_API_KEY", "")
 folder_id = (os.environ.get("PROJECT_ID") or os.environ.get("FOLDER_ID") or "").strip()
 
 headers = {"accept": "application/json", "Content-Type": "application/json", "x-api-key": api_key}

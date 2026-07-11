@@ -18,22 +18,22 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from langflow.agentic.services.assistant_service import (
+from earthmind.agentic.services.assistant_service import (
     execute_flow_with_validation_streaming,
 )
-from langflow.agentic.services.conversation_buffer import (
+from earthmind.agentic.services.conversation_buffer import (
     ConversationBuffer,
     ConversationTurn,
 )
-from langflow.agentic.services.flow_types import IntentResult
+from earthmind.agentic.services.flow_types import IntentResult
 
-MODULE = "langflow.agentic.services.assistant_service"
+MODULE = "earthmind.agentic.services.assistant_service"
 
 
 @pytest.fixture
 def fresh_buffer(monkeypatch):
     """Swap the module-level singleton with a fresh, empty buffer."""
-    import langflow.agentic.services.conversation_buffer as module
+    import earthmind.agentic.services.conversation_buffer as module
 
     buf = ConversationBuffer()
     monkeypatch.setattr(module, "_singleton", buf)
@@ -98,7 +98,7 @@ async def test_should_pass_none_context_to_classify_intent_for_fresh_session(
         await _drain(
             execute_flow_with_validation_streaming(
                 flow_filename="TestFlow",
-                input_value="what is langflow?",
+                input_value="what is earthmind?",
                 global_variables={},
                 session_id="agentic_fresh",
                 user_id="user-1",

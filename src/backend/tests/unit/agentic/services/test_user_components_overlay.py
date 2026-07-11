@@ -14,8 +14,8 @@ from unittest.mock import patch
 
 import lfx.custom.utils as lfx_utils
 import pytest
-from langflow.agentic.services.user_components import register_user_component
-from langflow.agentic.services.user_components_overlay import (
+from earthmind.agentic.services.user_components import register_user_component
+from earthmind.agentic.services.user_components_overlay import (
     load_registry_with_user_overlay,
 )
 
@@ -39,7 +39,7 @@ SAMPLE_CODE = (
 
 @pytest.fixture
 def isolated_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("LANGFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
     (tmp_path / ".fs_pepper").write_bytes(secrets.token_bytes(32))
 
     from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
@@ -54,8 +54,8 @@ def isolated_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     # ``_current_user_id_var`` ContextVar set OR leak ``_OVERLAY_ENTRY_CACHE``
     # entries that point at sandboxes from a prior tmp_path. Reset both so
     # this fixture is robust to whatever ordering pytest-xdist picks.
-    from langflow.agentic.services.user_components_context import reset_current_user_id
-    from langflow.agentic.services.user_components_overlay import _OVERLAY_ENTRY_CACHE
+    from earthmind.agentic.services.user_components_context import reset_current_user_id
+    from earthmind.agentic.services.user_components_overlay import _OVERLAY_ENTRY_CACHE
 
     reset_current_user_id()
     _OVERLAY_ENTRY_CACHE.clear()
@@ -270,7 +270,7 @@ class TestRegistryOverlay:
         # compile the node's real code and call a method that exists.
         import uuid
 
-        from langflow.agentic.services.flow_run import run_working_flow
+        from earthmind.agentic.services.flow_run import run_working_flow
         from lfx.graph.flow_builder.builder import build_flow_from_spec
 
         code = (
@@ -342,7 +342,7 @@ class TestRegistryOverlay:
         # result. The overlay must introspect the REAL template.
         import uuid
 
-        from langflow.agentic.services.flow_run import run_working_flow
+        from earthmind.agentic.services.flow_run import run_working_flow
         from lfx.graph.flow_builder.builder import build_flow_from_spec
 
         code = (
@@ -421,7 +421,7 @@ class TestRegistryOverlay:
             code=SAMPLE_CODE,
         )
         # Plant a corrupt file directly under the user's components dir.
-        from langflow.agentic.services.user_components import (
+        from earthmind.agentic.services.user_components import (
             _resolve_components_dir,
         )
 

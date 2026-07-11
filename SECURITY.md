@@ -1,6 +1,6 @@
-# Langflow Security Policy & Responsible Disclosure
+# EarthMind Security Policy & Responsible Disclosure
 
-This security policy applies to all public projects under the langflow-ai organization on GitHub. We prioritize security and continuously work to safeguard our systems. However, vulnerabilities can still exist. If you identify a security issue, please report it to us so we can address it promptly.
+This security policy applies to all public projects under the earthmind-ai organization on GitHub. We prioritize security and continuously work to safeguard our systems. However, vulnerabilities can still exist. If you identify a security issue, please report it to us so we can address it promptly.
 
 ### Security/Bugfix Versions
 
@@ -11,5 +11,5 @@ This security policy applies to all public projects under the langflow-ai organi
 
 Please do not report security vulnerabilities through public GitHub issues or GitHub security advisories.
 To report a vulnerability, submit a report on [HackerOne](https://hackerone.com/ibm).
-Include a clear description of the issue, steps to reproduce, the Langflow version, and any known or suggested mitigations.
+Include a clear description of the issue, steps to reproduce, the EarthMind version, and any known or suggested mitigations.
 Our team aims to respond to all new vulnerability reports within **7 business days**.

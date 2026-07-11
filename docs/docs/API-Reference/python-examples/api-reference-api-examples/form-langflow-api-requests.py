@@ -2,9 +2,9 @@ import os
 
 import requests
 
-base = os.environ.get("LANGFLOW_URL") or os.environ.get("LANGFLOW_SERVER_URL", "")
+base = os.environ.get("EARTHMIND_URL") or os.environ.get("EARTHMIND_SERVER_URL", "")
 flow_id = os.environ.get("FLOW_ID", "")
-api_key = os.environ.get("LANGFLOW_API_KEY", "")
+api_key = os.environ.get("EARTHMIND_API_KEY", "")
 
 url = f"{base}/api/v1/run/{flow_id}?stream=false"
 

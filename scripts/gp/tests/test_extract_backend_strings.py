@@ -134,9 +134,9 @@ class TestExtractBackendStrings:
 
         active_module.FakeComponent = FakeComponent
 
-        # Provide a minimal fake langflow.utils.i18n_keys so collect_strings()
-        # can be called without langflow installed in the test environment.
-        fake_i18n_keys = types.ModuleType("langflow.utils.i18n_keys")
+        # Provide a minimal fake earthmind.utils.i18n_keys so collect_strings()
+        # can be called without earthmind installed in the test environment.
+        fake_i18n_keys = types.ModuleType("earthmind.utils.i18n_keys")
 
         def _content_hash(english: str) -> str:
             return hashlib.sha256(english.encode()).hexdigest()[:8]
@@ -145,8 +145,8 @@ class TestExtractBackendStrings:
         fake_i18n_keys.normalize_component_key = lambda name: name.replace(" ", "").lower()
         fake_i18n_keys.safe_flow_key = lambda name: re.sub(r"[^a-zA-Z0-9]+", "_", name).strip("_").lower()
 
-        fake_langflow = types.ModuleType("langflow")
-        fake_langflow_utils = types.ModuleType("langflow.utils")
+        fake_earthmind = types.ModuleType("earthmind")
+        fake_earthmind_utils = types.ModuleType("earthmind.utils")
 
         with (
             patch.dict(
@@ -154,9 +154,9 @@ class TestExtractBackendStrings:
                 {
                     "lfx": types.ModuleType("lfx"),
                     "lfx.components": fake_components_pkg,
-                    "langflow": fake_langflow,
-                    "langflow.utils": fake_langflow_utils,
-                    "langflow.utils.i18n_keys": fake_i18n_keys,
+                    "earthmind": fake_earthmind,
+                    "earthmind.utils": fake_earthmind_utils,
+                    "earthmind.utils.i18n_keys": fake_i18n_keys,
                 },
             ),
             patch("pkgutil.walk_packages", return_value=fake_modules),

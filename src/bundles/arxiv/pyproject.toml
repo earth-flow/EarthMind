@@ -1,14 +1,14 @@
 [project]
 name = "lfx-arxiv"
 version = "0.1.1"
-description = "arXiv search component as a standalone Langflow Extension Bundle."
+description = "arXiv search component as a standalone EarthMind Extension Bundle."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
 license = { text = "MIT" }
 authors = [
-    { name = "Langflow", email = "contact@langflow.org" },
+    { name = "EarthMind", email = "contact@earthmind.org" },
 ]
-keywords = ["langflow", "lfx", "extension", "bundle", "arxiv", "search"]
+keywords = ["earthmind", "lfx", "extension", "bundle", "arxiv", "search"]
 
 # Runtime deps: lfx (the BUNDLE_API surface) plus defusedxml for safe XML
 # parsing (the arxiv API returns Atom).  defusedxml is already an lfx dep
@@ -20,17 +20,17 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/langflow-ai/langflow"
-Documentation = "https://docs.langflow.org/extensions"
-Repository = "https://github.com/langflow-ai/langflow"
+Homepage = "https://github.com/earthmind-ai/earthmind"
+Documentation = "https://docs.earthmind.org/extensions"
+Repository = "https://github.com/earthmind-ai/earthmind"
 
 # Manifest-shipping distributions are discovered via the
-# ``langflow.extensions`` entry-point.  The value is the dotted path to
+# ``earthmind.extensions`` entry-point.  The value is the dotted path to
 # the package containing ``extension.json`` -- the loader walks
 # ``importlib.metadata.files()`` from there to find the manifest, and
 # falls back to this entry-point for editable installs whose dist.files
 # only surfaces dist-info entries.
-[project.entry-points."langflow.extensions"]
+[project.entry-points."earthmind.extensions"]
 lfx-arxiv = "lfx_arxiv"
 
 [build-system]

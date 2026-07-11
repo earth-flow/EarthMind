@@ -12,8 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Tooltip,
   TooltipContent,
@@ -47,6 +49,10 @@ interface StepConfigurationProps {
   onChunkOverlapChange: (value: number) => void;
   separator: string;
   onSeparatorChange: (value: string) => void;
+  ocrProvider: string;
+  onOcrProviderChange: (value: string) => void;
+  chunkStrategy: string;
+  onChunkStrategyChange: (value: string) => void;
   showAdvanced: boolean;
   hasFiles: boolean;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -81,6 +87,10 @@ export function StepConfiguration({
   onChunkOverlapChange,
   separator,
   onSeparatorChange,
+  ocrProvider,
+  onOcrProviderChange,
+  chunkStrategy,
+  onChunkStrategyChange,
   showAdvanced,
   hasFiles,
   onFileSelect,
@@ -96,6 +106,7 @@ export function StepConfiguration({
   onMetadataPairsChange,
 }: StepConfigurationProps) {
   const { t } = useTranslation();
+  const useHeadingChunkingOnly = chunkStrategy === "heading_markdown";
   return (
     <div className="relative">
       <div className="flex flex-col">
@@ -173,6 +184,32 @@ export function StepConfiguration({
               {validationErrors.embeddingModel}
             </span>
           )}
+        </div>
+
+        {/* OCR Provider Selection */}
+        <div className="flex flex-col gap-2 pt-4">
+          <Label className="text-sm font-medium">
+            {t("knowledge.ocrProviderLabel", { defaultValue: "OCR Provider" })}
+          </Label>
+          <Select
+            value={ocrProvider}
+            onValueChange={(value) => {
+              onOcrProviderChange(value);
+              onFieldChange?.();
+            }}
+            disabled={isAddSourcesMode}
+          >
+            <SelectTrigger className="h-10" data-testid="kb-ocr-provider-select">
+              <SelectValue placeholder={t("knowledge.ocrProviderLabel", { defaultValue: "OCR Provider" })} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mineru">{t("knowledge.ocrProviderMineru", { defaultValue: "MinerU" })}</SelectItem>
+              <SelectItem value="plain_text">{t("knowledge.ocrProviderPlainText", { defaultValue: "Plain Text" })}</SelectItem>
+            </SelectContent>
+          </Select>
+          <span className="text-xs text-muted-foreground">
+            {t("knowledge.ocrProviderDescription", { defaultValue: "Choose the OCR/parser engine used to extract text from uploaded documents." })}
+          </span>
         </div>
 
         {/* Backend Selection */}
@@ -316,137 +353,112 @@ export function StepConfiguration({
                   )}
                 </div>
                 <div className="flex flex-col gap-2">
-                  {/* <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                    Column Details
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="cursor-help">
-                            <ForwardedIconComponent
-                              name="Info"
-                              className="h-3.5 w-3.5 text-muted-foreground"
-                            />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-[260px]">
-                          {t("knowledge.configureColumns")}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                  <Label className="text-xs text-muted-foreground">
+                    {t("knowledge.chunkStrategyLabel")}
                   </Label>
-                  <ColumnConfig
-                    columnConfig={columnConfig}
-                    onColumnConfigChange={onColumnConfigChange}
-                  /> */}
+                  <Select
+                    value={chunkStrategy}
+                    onValueChange={(value) => {
+                      onChunkStrategyChange(value);
+                      onFieldChange?.();
+                    }}
+                    disabled={!hasFiles}
+                  >
+                    <SelectTrigger className="h-10" data-testid="kb-chunk-strategy-select">
+                      <SelectValue placeholder={t("knowledge.chunkStrategyLabel")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="heading_markdown">{t("knowledge.chunkStrategyHeading")}</SelectItem>
+                      <SelectItem value="recursive_text">{t("knowledge.chunkStrategyRecursive")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className="text-xs text-muted-foreground">
+                    {t("knowledge.chunkStrategyDescription")}
+                  </span>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Chunking Settings - Animated */}
-        <div
-          className={cn(
-            "grid transition-all duration-300 ease-in-out",
-            showAdvanced
-              ? "grid-rows-[1fr] opacity-100"
-              : "grid-rows-[0fr] opacity-0",
-          )}
-        >
-          <div className="overflow-hidden">
-            <Separator className="my-4" />
-            <div
-              className={cn(
-                "flex flex-col gap-4 transition-opacity",
-                !hasFiles && "opacity-50",
+              {!useHeadingChunkingOnly && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <Label
+                      htmlFor="chunk-size"
+                      className="flex items-center gap-1 text-xs text-muted-foreground"
+                    >
+                      {t("knowledge.chunkSizeLabel")}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="cursor-help">
+                              <ForwardedIconComponent
+                                name="Info"
+                                className="h-3.5 w-3.5 text-muted-foreground"
+                              />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[260px]">
+                            {t("knowledge.chunkSizeTooltip")}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </Label>
+                    <Input
+                      id="chunk-size"
+                      type="number"
+                      value={chunkSize}
+                      onChange={(e) =>
+                        onChunkSizeChange(Number(e.target.value) || 0)
+                      }
+                      min={1}
+                      max={10000}
+                      disabled={!hasFiles}
+                      data-testid="kb-chunk-size-input"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Label
+                      htmlFor="chunk-overlap"
+                      className="flex items-center gap-1 text-xs text-muted-foreground"
+                    >
+                      {t("knowledge.chunkOverlapLabel")}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="cursor-help">
+                              <ForwardedIconComponent
+                                name="Info"
+                                className="h-3.5 w-3.5 text-muted-foreground"
+                              />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[260px]">
+                            {t("knowledge.chunkOverlapTooltip")}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </Label>
+                    <Input
+                      id="chunk-overlap"
+                      type="number"
+                      value={chunkOverlap}
+                      onChange={(e) =>
+                        onChunkOverlapChange(Number(e.target.value) || 0)
+                      }
+                      min={0}
+                      max={chunkSize - 1}
+                      disabled={!hasFiles}
+                      data-testid="kb-chunk-overlap-input"
+                    />
+                  </div>
+                </div>
               )}
-              aria-disabled={!hasFiles}
-            >
-              <div className="flex items-center gap-2">
-                <ForwardedIconComponent
-                  name="Settings2"
-                  className="h-4 w-4 text-muted-foreground"
-                />
-                <span className="text-sm font-medium">
-                  {t("knowledge.chunkingSettings")}
-                </span>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                {/* Chunk Size */}
-                <div className="flex flex-col gap-2">
-                  <Label
-                    htmlFor="chunk-size"
-                    className="flex items-center gap-1 text-xs text-muted-foreground"
-                  >
-                    {t("knowledge.chunkSizeLabel")}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="cursor-help">
-                            <ForwardedIconComponent
-                              name="Info"
-                              className="h-3.5 w-3.5 text-muted-foreground"
-                            />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-[260px]">
-                          {t("knowledge.chunkSizeTooltip")}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </Label>
-                  <Input
-                    id="chunk-size"
-                    type="number"
-                    value={chunkSize}
-                    onChange={(e) =>
-                      onChunkSizeChange(Number(e.target.value) || 0)
-                    }
-                    min={1}
-                    max={10000}
-                    disabled={!hasFiles}
-                    data-testid="kb-chunk-size-input"
-                  />
+              {useHeadingChunkingOnly && (
+                <div className="rounded-md border border-dashed bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                  {t("knowledge.headingChunkingNotice")}
                 </div>
-
-                {/* Chunk Overlap */}
-                <div className="flex flex-col gap-2">
-                  <Label
-                    htmlFor="chunk-overlap"
-                    className="flex items-center gap-1 text-xs text-muted-foreground"
-                  >
-                    {t("knowledge.chunkOverlapLabel")}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="cursor-help">
-                            <ForwardedIconComponent
-                              name="Info"
-                              className="h-3.5 w-3.5 text-muted-foreground"
-                            />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-[260px]">
-                          {t("knowledge.chunkOverlapTooltip")}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </Label>
-                  <Input
-                    id="chunk-overlap"
-                    type="number"
-                    value={chunkOverlap}
-                    onChange={(e) =>
-                      onChunkOverlapChange(Number(e.target.value) || 0)
-                    }
-                    min={0}
-                    max={chunkSize - 1}
-                    disabled={!hasFiles}
-                    data-testid="kb-chunk-overlap-input"
-                  />
-                </div>
-              </div>
+              )}
 
               {/* Separator */}
               <div className="flex flex-col gap-2">
@@ -497,6 +509,7 @@ export function StepConfiguration({
                 onPairsChange={onMetadataPairsChange}
                 testIdScope="kb-run"
               />
+
               {validationErrors.metadata && (
                 <span
                   className="text-xs text-destructive"

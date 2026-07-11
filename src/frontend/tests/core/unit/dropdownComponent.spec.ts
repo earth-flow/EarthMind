@@ -141,12 +141,12 @@ test(
     await page.locator("textarea").press("Control+a");
     const emptyOptionsCode = `from langchain_aws import ChatBedrock as BedrockChat
 
-from langflow.base.constants import STREAM_INFO_TEXT
-from langflow.base.models.model import LCModelComponent
-from langflow.field_typing import BaseLanguageModel, Text
-from langflow.io import BoolInput, DictInput, DropdownInput, StrInput
-from langflow.io import MessageInput
-from langflow.io import Output
+from earthmind.base.constants import STREAM_INFO_TEXT
+from earthmind.base.models.model import LCModelComponent
+from earthmind.field_typing import BaseLanguageModel, Text
+from earthmind.io import BoolInput, DictInput, DropdownInput, StrInput
+from earthmind.io import MessageInput
+from earthmind.io import Output
 
 class AmazonBedrockComponent(LCModelComponent):
     display_name: str = "Amazon Bedrock"

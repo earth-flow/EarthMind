@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from langflow.services.authorization.actions import (
+from earthmind.services.authorization.actions import (
     DeploymentAction,
     FileAction,
     FlowAction,

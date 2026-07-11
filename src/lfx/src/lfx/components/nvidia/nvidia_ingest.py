@@ -22,7 +22,7 @@ class NvidiaIngestComponent(BaseFileComponent):
     except ImportError:
         msg = (
             "NVIDIA Retriever Extraction (nv-ingest) is an optional dependency. "
-            "Install with `uv pip install 'langflow[nv-ingest]'` "
+            "Install with `uv pip install 'earthmind[nv-ingest]'` "
             "(requires Python 3.12>=)"
         )
         VALID_EXTENSIONS = [msg]
@@ -163,7 +163,7 @@ class NvidiaIngestComponent(BaseFileComponent):
         except ImportError as e:
             msg = (
                 "NVIDIA Retriever Extraction (nv-ingest) dependencies missing. "
-                "Please install them using your package manager. (e.g. uv pip install langflow[nv-ingest])"
+                "Please install them using your package manager. (e.g. uv pip install earthmind[nv-ingest])"
             )
             raise ImportError(msg) from e
 

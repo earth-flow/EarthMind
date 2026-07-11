@@ -21,8 +21,8 @@ import secrets
 from typing import TYPE_CHECKING
 
 import pytest
-from langflow.agentic.services.user_components import register_user_component
-from langflow.agentic.services.user_components_overlay import load_registry_with_user_overlay
+from earthmind.agentic.services.user_components import register_user_component
+from earthmind.agentic.services.user_components_overlay import load_registry_with_user_overlay
 from lfx.custom.custom_component.component import Component
 from lfx.custom.utils import build_custom_component_template
 
@@ -42,7 +42,7 @@ def isolated_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     FileSystemTool's auto-login path, which is not relevant here — and
     pulling it into a conftest would couple unrelated test files.
     """
-    monkeypatch.setenv("LANGFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
     (tmp_path / ".fs_pepper").write_bytes(secrets.token_bytes(32))
     return tmp_path
 

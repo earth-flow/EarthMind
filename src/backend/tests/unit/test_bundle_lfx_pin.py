@@ -1,7 +1,7 @@
 """Tests for ``scripts/ci/sync_bundle_lfx_pin.py``.
 
 The ``make patch`` target calls this script to keep every ``src/bundles/*``
-package's ``lfx`` runtime-dependency floor in step with the Langflow/LFX
+package's ``lfx`` runtime-dependency floor in step with the EarthMind/LFX
 ``major.minor`` line. These tests exercise the real script module so a
 regression in the floor format or the dependency regex is caught without
 running ``make``.

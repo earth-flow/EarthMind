@@ -129,7 +129,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         the canvas dropdown but not on the management page (which is
         DB-first). The two surfaces must agree.
         """
-        from langflow.api.utils import knowledge_base_service
+        from earthmind.api.utils import knowledge_base_service
 
         # Disk has both a "real" KB (with a DB row) and a leftover stale dir.
         (tmp_path / active_user.username / "real_kb").mkdir(parents=True, exist_ok=True)
@@ -148,7 +148,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         Matches the listing endpoint's behavior — those KBs are exposed
         through the Memory Base APIs, not the generic KB dropdown.
         """
-        from langflow.api.utils import knowledge_base_service
+        from earthmind.api.utils import knowledge_base_service
 
         await knowledge_base_service.create_record(user_id=active_user.id, name="regular_kb")
         await knowledge_base_service.create_record(user_id=active_user.id, name="memory_kb", source_types=["memory"])
@@ -364,7 +364,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         with (
             patch("lfx.components.files_and_knowledge.knowledge.session_scope") as mock_session_scope,
             patch(
-                "langflow.services.database.models.user.crud.get_user_by_id",
+                "earthmind.services.database.models.user.crud.get_user_by_id",
                 return_value=None,
             ),
         ):
@@ -402,7 +402,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         with (
             patch("lfx.components.files_and_knowledge.knowledge.session_scope") as mock_session_scope,
             patch(
-                "langflow.services.database.models.user.crud.get_user_by_id",
+                "earthmind.services.database.models.user.crud.get_user_by_id",
                 return_value=user_record,
             ),
             patch(
@@ -456,7 +456,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         with (
             patch("lfx.components.files_and_knowledge.knowledge.session_scope") as mock_session_scope,
             patch(
-                "langflow.services.database.models.user.crud.get_user_by_id",
+                "earthmind.services.database.models.user.crud.get_user_by_id",
                 return_value=user_record,
             ),
             patch(
@@ -501,7 +501,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         with (
             patch("lfx.components.files_and_knowledge.knowledge.session_scope") as mock_session_scope,
             patch(
-                "langflow.services.database.models.user.crud.get_user_by_id",
+                "earthmind.services.database.models.user.crud.get_user_by_id",
                 return_value=user_record,
             ),
             patch(
@@ -546,7 +546,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         with (
             patch("lfx.components.files_and_knowledge.knowledge.session_scope") as mock_session_scope,
             patch(
-                "langflow.services.database.models.user.crud.get_user_by_id",
+                "earthmind.services.database.models.user.crud.get_user_by_id",
                 return_value=user_record,
             ),
             patch(
@@ -615,7 +615,7 @@ class TestKnowledgeBaseComponent(ComponentTestBaseWithClient):
         with (
             patch("lfx.components.files_and_knowledge.knowledge.session_scope") as mock_session_scope,
             patch(
-                "langflow.services.database.models.user.crud.get_user_by_id",
+                "earthmind.services.database.models.user.crud.get_user_by_id",
                 return_value=user_record,
             ),
             patch(

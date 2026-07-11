@@ -1,14 +1,14 @@
 ---
-title: Langflow Extension quickstart
+title: EarthMind Extension quickstart
 slug: /extensions-quickstart
 ---
 
-Build, validate, and run a Langflow Extension bundle to create a single-component extension you can `pip-install` or load using `lfx extension dev`.
+Build, validate, and run a EarthMind Extension bundle to create a single-component extension you can `pip-install` or load using `lfx extension dev`.
 
 ## Prerequisites
 
 * Python 3.11 or greater
-* `langflow` installed with `uv pip install langflow`. The `lfx` CLI provides every command in this guide. For more information, see [Install the Langflow OSS package](/get-started-installation#install-and-run-the-langflow-oss-python-package).
+* `earthmind` installed with `uv pip install earthmind`. The `lfx` CLI provides every command in this guide. For more information, see [Install the EarthMind OSS package](/get-started-installation#install-and-run-the-earthmind-oss-python-package).
 
 ## Create an extension
 
@@ -56,10 +56,10 @@ The scaffold ships a working `Component` subclass that prints `"Hello, {name}!"`
             return Message(text=f"Hello, {self.who}!")
     ```
 
-    The full surface available to bundle code is enumerated in [`BUNDLE_API.md`](https://github.com/langflow-ai/langflow/blob/main/BUNDLE_API.md).
-    Anything outside of [`BUNDLE_API.md`](https://github.com/langflow-ai/langflow/blob/main/BUNDLE_API.md) is not part of the API contract, and may move or break between releases.
+    The full surface available to bundle code is enumerated in [`BUNDLE_API.md`](https://github.com/earthmind-ai/earthmind/blob/main/BUNDLE_API.md).
+    Anything outside of [`BUNDLE_API.md`](https://github.com/earthmind-ai/earthmind/blob/main/BUNDLE_API.md) is not part of the API contract, and may move or break between releases.
 
-3. Before launching Langflow, run the static extension checker.
+3. Before launching EarthMind, run the static extension checker.
 
     ```bash
     lfx extension validate .
@@ -68,13 +68,13 @@ The scaffold ships a working `Component` subclass that prints `"Hello, {name}!"`
     The validator parses the manifest and reports typed errors.
     It does not execute imports by default, so it is safe to run against an extension you just downloaded. Use `--execute-imports` only when you trust the source — it runs the import probe in a subprocess.
 
-4. Run Langflow with the extension loaded.
+4. Run EarthMind with the extension loaded.
 
     ```bash
     lfx extension dev .
     ```
 
-    This launches a Langflow dev server with `my-extension` registered at the `@official` slot. The Hello component appears in the Langflow UI component list under the bundle name in `extension.json`.
+    This launches a EarthMind dev server with `my-extension` registered at the `@official` slot. The Hello component appears in the EarthMind UI component list under the bundle name in `extension.json`.
 
     To see what the loader picked up:
 
@@ -96,11 +96,11 @@ The scaffold ships a working `Component` subclass that prints `"Hello, {name}!"`
     twine upload dist/*     # publish to PyPI
     ```
 
-    To install the extension into a Langflow environment with a regular `pip install`:
+    To install the extension into a EarthMind environment with a regular `pip install`:
 
     ```bash
     pip install lfx-my-extension
-    langflow run
+    earthmind run
     ```
 
     Discovery happens at server startup.

@@ -98,7 +98,7 @@ class OpenSearchVectorStoreComponent(LCVectorStoreComponent):
         StrInput(
             name="index_name",
             display_name="Index Name",
-            value="langflow",
+            value="earthmind",
             info=(
                 "The OpenSearch index name where documents will be stored and searched. "
                 "Will be created automatically if it doesn't exist."
@@ -780,7 +780,7 @@ class OpenSearchVectorStoreComponent(LCVectorStoreComponent):
         """Search documents and return results as Data objects.
 
         This is the main interface method that performs the search using the
-        configured search_query and returns results in Langflow's Data format.
+        configured search_query and returns results in EarthMind's Data format.
 
         Returns:
             List of Data objects containing search results with text and metadata

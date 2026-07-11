@@ -2,7 +2,7 @@ import os
 
 import requests
 
-url = f"{os.getenv('LANGFLOW_SERVER_URL', '')}/api/v1/version"
+url = f"{os.getenv('EARTHMIND_SERVER_URL', '')}/api/v1/version"
 
 headers = {
     "accept": "application/json",

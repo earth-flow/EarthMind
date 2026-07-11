@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation, useParams } from "react-router-dom";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import type { KnowledgeBaseInfo } from "@/controllers/API/queries/knowledge-bases/use-get-knowledge-bases";
+import {
+  type KnowledgeBaseInfo,
+  useGetKnowledgeBases,
+} from "@/controllers/API/queries/knowledge-bases/use-get-knowledge-bases";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import KnowledgeBaseDrawer from "./components/KnowledgeBaseDrawer";
 import KnowledgeBasesTab from "./components/KnowledgeBasesTab";
@@ -19,7 +23,10 @@ export const KnowledgePage = () => {
     useState<KnowledgeBaseInfo | null>(null);
 
   const { t } = useTranslation();
+  const { data: knowledgeBases } = useGetKnowledgeBases();
   const navigate = useCustomNavigate();
+  const location = useLocation();
+  const { id: flowId } = useParams<{ id: string }>();
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,13 +88,42 @@ export const KnowledgePage = () => {
   };
 
   const handleViewChunks = (knowledgeBase: KnowledgeBaseInfo) => {
-    navigate(`/assets/knowledge-bases/${knowledgeBase.dir_name}/chunks`);
+    if (flowId) {
+      const params = new URLSearchParams(location.search);
+      params.set("knowledgeSourceId", knowledgeBase.dir_name);
+      navigate(location.pathname + "?" + params.toString());
+      return;
+    }
+
+    navigate("/assets/knowledge-bases/" + knowledgeBase.dir_name + "/chunks");
   };
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
     setSelectedKnowledgeBase(null);
   };
+
+  useEffect(() => {
+    if (!selectedKnowledgeBase || !knowledgeBases) {
+      return;
+    }
+
+    const stillExists = knowledgeBases.some(
+      (knowledgeBase) =>
+        knowledgeBase.dir_name === selectedKnowledgeBase.dir_name,
+    );
+
+    if (!stillExists) {
+      closeDrawer();
+      setSelectedKnowledgeBases((previous) =>
+        previous.filter(
+          (knowledgeBase) =>
+            knowledgeBase.dir_name !== selectedKnowledgeBase.dir_name,
+        ),
+      );
+      setSelectionCount((previous) => Math.max(0, previous - 1));
+    }
+  }, [knowledgeBases, selectedKnowledgeBase]);
 
   const tabProps = {
     quickFilterText: searchText,

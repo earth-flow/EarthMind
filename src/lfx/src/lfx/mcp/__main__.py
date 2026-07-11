@@ -1,4 +1,4 @@
-"""Entry point for the Langflow MCP server.
+"""Entry point for the EarthMind MCP server.
 
 Usage:
     python -m lfx.mcp
@@ -6,8 +6,8 @@ Usage:
     lfx-mcp
 
 Environment variables:
-    LANGFLOW_SERVER_URL: Langflow server URL (default: http://localhost:7860)
-    LANGFLOW_API_KEY: API key for authentication (skips login)
+    EARTHMIND_SERVER_URL: EarthMind server URL (default: http://10.171.205.153:7860)
+    EARTHMIND_API_KEY: API key for authentication (skips login)
 """
 
 from lfx.mcp.server import mcp

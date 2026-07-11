@@ -60,7 +60,7 @@ def _err(code: str, **kw: object) -> ExtensionError:
 # Lines are intentionally long so the diff between expected and actual is one
 # line per change; ``noqa: E501`` is intentional throughout this dict.
 _FIRST_LINE_EXPECTATIONS: dict[str, str] = {
-    "manifest-not-found": "error[manifest-not-found]: No extension.json or [tool.langflow.extension] entry found in loc.",  # noqa: E501
+    "manifest-not-found": "error[manifest-not-found]: No extension.json or [tool.earthmind.extension] entry found in loc.",  # noqa: E501
     "manifest-invalid": "error[manifest-invalid]: Invalid manifest at loc: msg",
     "manifest-unreadable": "error[manifest-unreadable]: Could not read manifest at loc: msg",
     "field-deferred-in-this-milestone": "error[field-deferred-in-this-milestone]: Manifest field 'content' is deferred in this milestone.",  # noqa: E501
@@ -79,10 +79,10 @@ _FIRST_LINE_EXPECTATIONS: dict[str, str] = {
     "module-import-failed": "error[module-import-failed]: Failed to import bundle module loc: msg",
     "duplicate-component-name": "error[duplicate-component-name]: Duplicate Component class name 'content' in bundle loc; component class names must be unique within a bundle.",  # noqa: E501
     "duplicate-distribution": "error[duplicate-distribution]: Two installed distributions share the canonical name 'content'; the lexicographically-first manifest path wins. Locations: loc.",  # noqa: E501
-    "duplicate-inline-bundle": "error[duplicate-inline-bundle]: Inline bundle name 'content' appears in multiple LANGFLOW_COMPONENTS_PATH entries; first wins. Locations: loc.",  # noqa: E501
+    "duplicate-inline-bundle": "error[duplicate-inline-bundle]: Inline bundle name 'content' appears in multiple EARTHMIND_COMPONENTS_PATH entries; first wins. Locations: loc.",  # noqa: E501
     "inline-bundle-name-invalid": "error[inline-bundle-name-invalid]: Inline bundle directory 'content' does not match the bundle name pattern (lowercase snake_case).",  # noqa: E501
-    "inline-path-missing": "error[inline-path-missing]: LANGFLOW_COMPONENTS_PATH entry 'content' does not exist or is not a directory; skipped.",  # noqa: E501
-    "inline-path-unreadable": "error[inline-path-unreadable]: LANGFLOW_COMPONENTS_PATH entry 'content' could not be enumerated: msg",  # noqa: E501
+    "inline-path-missing": "error[inline-path-missing]: EARTHMIND_COMPONENTS_PATH entry 'content' does not exist or is not a directory; skipped.",  # noqa: E501
+    "inline-path-unreadable": "error[inline-path-unreadable]: EARTHMIND_COMPONENTS_PATH entry 'content' could not be enumerated: msg",  # noqa: E501
     "bundle-json-invalid": "error[bundle-json-invalid]: Inline bundle.json at loc is unreadable or malformed; falling back to derived id/version.",  # noqa: E501
     "extension-target-exists": "error[extension-target-exists]: Cannot create extension at loc: directory already exists and is not empty.",  # noqa: E501
     "extension-target-invalid": "error[extension-target-invalid]: Cannot create extension at loc: msg",
@@ -107,7 +107,7 @@ _FIRST_LINE_EXPECTATIONS: dict[str, str] = {
     "reload-transport-error": "error[reload-transport-error]: Could not reach the reload endpoint at loc: msg",
     "duplicate-bundle-name": "error[duplicate-bundle-name]: Bundle name 'content' is provided by two installed distributions; the second is dropped to prevent collision.",  # noqa: E501 — kept on one line for snapshot diff readability
     "multi-bundle-unsupported": "error[multi-bundle-unsupported]: Manifest declares more than one bundle entry; v0 supports exactly one bundle per extension.",  # noqa: E501
-    "extension-reload-disabled": "error[extension-reload-disabled]: Extension reload is disabled on this server.  Set LANGFLOW_ENABLE_EXTENSION_RELOAD=true to enable it on a local-development install (Mode A).",  # noqa: E501
+    "extension-reload-disabled": "error[extension-reload-disabled]: Extension reload is disabled on this server.  Set EARTHMIND_ENABLE_EXTENSION_RELOAD=true to enable it on a local-development install (Mode A).",  # noqa: E501
     "extension-events-keyspace-forbidden": "error[extension-events-keyspace-forbidden]: The loc query parameter is not accepted; events are scoped server-side to the authenticated user (rejected value: 'content').",  # noqa: E501
 }
 

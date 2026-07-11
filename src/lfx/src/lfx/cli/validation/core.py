@@ -86,14 +86,14 @@ def _node_display_name(node: dict[str, Any]) -> str | None:
 
 
 def _get_lf_version() -> str | None:
-    """Return the installed Langflow version string, or *None* if not installed.
+    """Return the installed EarthMind version string, or *None* if not installed.
 
     Tries the four known package names in order of preference so the check
     works with released builds, nightly builds, and editable installs.
     """
     from importlib.metadata import PackageNotFoundError, version
 
-    for pkg in ("langflow-base", "langflow", "langflow-base-nightly", "langflow-nightly"):
+    for pkg in ("earthmind-base", "earthmind", "earthmind-base-nightly", "earthmind-nightly"):
         try:
             return version(pkg)
         except PackageNotFoundError:

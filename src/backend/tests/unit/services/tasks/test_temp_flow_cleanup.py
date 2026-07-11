@@ -5,10 +5,10 @@ from datetime import timezone
 from uuid import uuid4
 
 import pytest
-from langflow.services.database.models.flow import Flow as FlowTable
-from langflow.services.database.models.message.model import MessageTable
-from langflow.services.deps import get_settings_service, get_storage_service, session_scope
-from langflow.services.task.temp_flow_cleanup import (
+from earthmind.services.database.models.flow import Flow as FlowTable
+from earthmind.services.database.models.message.model import MessageTable
+from earthmind.services.deps import get_settings_service, get_storage_service, session_scope
+from earthmind.services.task.temp_flow_cleanup import (
     CleanupWorker,
     cleanup_orphaned_records,
 )
@@ -97,7 +97,7 @@ async def test_cleanup_worker_start_stop():
 async def test_cleanup_worker_run_with_exception(mocker):
     """Test CleanupWorker handles exceptions gracefully."""
     # Mock the logger to capture log calls
-    mock_logger = mocker.patch("langflow.services.task.temp_flow_cleanup.logger")
+    mock_logger = mocker.patch("earthmind.services.task.temp_flow_cleanup.logger")
     mock_logger.adebug = mocker.AsyncMock()
     mock_logger.awarning = mocker.AsyncMock()
 

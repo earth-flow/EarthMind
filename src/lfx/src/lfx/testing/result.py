@@ -42,7 +42,7 @@ class FlowResult:
         """Return the primary text output, or ``None`` if there is none.
 
         Convenience alias for :attr:`text`, compatible with the
-        ``langflow_sdk.RunResponse`` interface so test code works against
+        ``earthmind_sdk.RunResponse`` interface so test code works against
         both local and remote runners without changes.
         """
         return self.text
@@ -95,7 +95,7 @@ def _build_result(raw: dict[str, Any]) -> FlowResult:
 
 
 def _build_result_from_sdk_response(response: Any) -> FlowResult:
-    """Convert a ``langflow_sdk.RunResponse`` to a :class:`FlowResult`.
+    """Convert a ``earthmind_sdk.RunResponse`` to a :class:`FlowResult`.
 
     Extracts text, messages, and raw outputs from the SDK response so that
     test assertions written against :class:`FlowResult` work identically

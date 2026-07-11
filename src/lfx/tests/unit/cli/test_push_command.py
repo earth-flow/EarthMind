@@ -1,6 +1,6 @@
 """Unit tests for lfx push -- push_command and helpers.
 
-All tests run entirely in-process; no real Langflow instance or SDK required.
+All tests run entirely in-process; no real EarthMind instance or SDK required.
 The SDK module is replaced wholesale with MagicMock so only the push logic
 (file loading, upsert routing, dry-run, project resolution, result rendering)
 is under test.
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 # Shared constants
 # ---------------------------------------------------------------------------
 
-_BASE_URL = "http://langflow.test"
+_BASE_URL = "http://earthmind.test"
 _API_KEY = "test-key"  # pragma: allowlist secret
 _FLOW_ID = UUID("aaaaaaaa-0000-0000-0000-000000000001")
 _FLOW_ID_2 = UUID("aaaaaaaa-0000-0000-0000-000000000002")
@@ -44,12 +44,12 @@ _FLOW_DICT_2: dict = {
 
 
 # ---------------------------------------------------------------------------
-# Fake exception class — avoids importing langflow_sdk in isolation mode
+# Fake exception class — avoids importing earthmind_sdk in isolation mode
 # ---------------------------------------------------------------------------
 
 
-class _FakeLangflowHTTPError(Exception):
-    """Stand-in for langflow_sdk.LangflowHTTPError in unit tests."""
+class _FakeEarthMindHTTPError(Exception):
+    """Stand-in for earthmind_sdk.EarthMindHTTPError in unit tests."""
 
     def __init__(self, status_code: int, detail: str) -> None:
         self.status_code = status_code
@@ -69,7 +69,7 @@ def _write_flow(tmp_path: Path, name: str, flow: dict | None = None) -> Path:
 
 
 def _fake_project(name: str = "My Project", project_id: UUID = _PROJECT_ID) -> MagicMock:
-    """Return a MagicMock that looks like a langflow_sdk.models.Project."""
+    """Return a MagicMock that looks like a earthmind_sdk.models.Project."""
     proj = MagicMock()
     proj.name = name
     proj.id = project_id
@@ -77,7 +77,7 @@ def _fake_project(name: str = "My Project", project_id: UUID = _PROJECT_ID) -> M
 
 
 def _fake_flow(flow_id: UUID = _FLOW_ID, name: str = "My Test Flow") -> MagicMock:
-    """Return a MagicMock that looks like a langflow_sdk.models.Flow."""
+    """Return a MagicMock that looks like a earthmind_sdk.models.Flow."""
     flow = MagicMock()
     flow.id = flow_id
     flow.name = name
@@ -94,17 +94,17 @@ def _make_client_mock(*, create: bool = True) -> MagicMock:
 
 
 def _make_sdk_mock(client_mock: MagicMock | None = None) -> MagicMock:
-    """Return a mock langflow_sdk module wired to client_mock.
+    """Return a mock earthmind_sdk module wired to client_mock.
 
     SDK exception and model types are replaced with lightweight fakes so
-    the test file has zero imports from langflow_sdk.
+    the test file has zero imports from earthmind_sdk.
     """
     if client_mock is None:
         client_mock = _make_client_mock()
 
     sdk = MagicMock()
     sdk.Client.return_value = client_mock
-    sdk.LangflowHTTPError = _FakeLangflowHTTPError
+    sdk.EarthMindHTTPError = _FakeEarthMindHTTPError
     # FlowCreate / ProjectCreate stay as MagicMock callables — push.py calls
     # them as constructors and passes the result to client.upsert_flow /
     # client.create_project.  We check the constructor call kwargs in tests.
@@ -384,7 +384,7 @@ class TestUpsertSingle:
         from lfx.cli.push import _upsert_single
 
         client = _make_client_mock()
-        client.upsert_flow.side_effect = _FakeLangflowHTTPError(500, "server error")
+        client.upsert_flow.side_effect = _FakeEarthMindHTTPError(500, "server error")
         sdk = _make_sdk_mock(client)
         result = _upsert_single(
             client,
@@ -536,7 +536,7 @@ class TestPushCommand:
         """HTTP failure on any flow → Exit(1) after all flows attempted."""
         p = _write_flow(tmp_path, "flow.json")
         client = _make_client_mock()
-        client.upsert_flow.side_effect = _FakeLangflowHTTPError(500, "oops")
+        client.upsert_flow.side_effect = _FakeEarthMindHTTPError(500, "oops")
         sdk = _make_sdk_mock(client)
         with pytest.raises(typer.Exit) as exc_info:
             _run_push([str(p)], sdk_mock=sdk)
@@ -596,7 +596,7 @@ class TestPushCommand:
         client = _make_client_mock()
         client.upsert_flow.side_effect = [
             (_fake_flow(), True),
-            _FakeLangflowHTTPError(500, "server down"),
+            _FakeEarthMindHTTPError(500, "server down"),
         ]
         sdk = _make_sdk_mock(client)
         with pytest.raises(typer.Exit) as exc_info:
@@ -615,7 +615,7 @@ class TestPushCommand:
     def test_environments_file_resolves_url(self, tmp_path):
         """Environment is resolved from a TOML config file (no --target)."""
         p = _write_flow(tmp_path, "flow.json")
-        env_file = tmp_path / "langflow-environments.toml"
+        env_file = tmp_path / "earthmind-environments.toml"
         env_file.write_text(
             f'[environments.ci]\nurl = "{_BASE_URL}"\n',
             encoding="utf-8",

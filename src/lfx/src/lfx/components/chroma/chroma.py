@@ -26,7 +26,7 @@ class ChromaVectorStoreComponent(LCVectorStoreComponent):
         StrInput(
             name="collection_name",
             display_name="Collection Name",
-            value="langflow",
+            value="earthmind",
         ),
         StrInput(
             name="persist_directory",

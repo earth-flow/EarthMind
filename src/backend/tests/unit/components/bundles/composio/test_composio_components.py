@@ -76,7 +76,7 @@ def _make_component(action_key: str, fields: dict) -> ComposioOutlookAPIComponen
 class TestExecuteActionRichTypeCoercion:
     """Regression: Message and Data objects must be coerced to primitives before being passed to the Composio API.
 
-    When a ChatInput node is wired to a str field (e.g. subject, body), Langflow
+    When a ChatInput node is wired to a str field (e.g. subject, body), EarthMind
     stores a Message object in the component attribute.  execute_action previously
     forwarded the raw object to composio.tools.execute, which caused the API call
     to fail or send a stringified object instead of plain text.

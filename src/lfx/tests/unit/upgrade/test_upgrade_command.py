@@ -136,9 +136,9 @@ def test_upgrade_file_not_found():
 
 
 def test_upgrade_outer_envelope_flow_finds_nodes(tmp_path, capsys):
-    """Lfx upgrade must detect nodes in Langflow's exported outer-envelope format.
+    """Lfx upgrade must detect nodes in EarthMind's exported outer-envelope format.
 
-    Langflow exports flows as {"name": "...", "data": {"nodes": [...], "edges": []}}.
+    EarthMind exports flows as {"name": "...", "data": {"nodes": [...], "edges": []}}.
     Before the fix, check_flow_compatibility received the outer dict, got nodes=[], and
     always reported 'all up to date' regardless of actual node state.
     """
@@ -213,7 +213,7 @@ def test_upgrade_outer_envelope_write_updates_inner_nodes(tmp_path):
     upgrade_command(f, write=True, registry=_registry())
 
     written = json.loads(f.read_text())
-    # The envelope must be preserved on write so the flow remains re-importable into Langflow.
+    # The envelope must be preserved on write so the flow remains re-importable into EarthMind.
     assert written.get("name") == "My Flow"
     assert written.get("description") == "envelope flow"
     assert written.get("endpoint_name") == "my-endpoint"

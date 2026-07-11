@@ -144,7 +144,7 @@ Payload contracts intentionally split ownership across layers:
     `lfx.services.adapters.deployment.payloads`)
 - **Adapters (LFX side) own adapter-facing payload models**:
   - adapters populate their `*PayloadSchemas` registry with adapter-side models
-- **API hosts (for example Langflow) own API-facing payload models**:
+- **API hosts (for example EarthMind) own API-facing payload models**:
   - API mapper layers populate their own API payload registries
   - API slots may differ from adapter slots when API-specific references or reshaping are required
 
@@ -154,7 +154,7 @@ transformation logic outside adapter implementations.
 Deployment is the concrete example in this repository:
 
 - LFX defines deployment slot taxonomy and adapter registry (`DeploymentPayloadFields` / `DeploymentPayloadSchemas`)
-- Langflow defines deployment API registry (`DeploymentApiPayloads`) and mapper behavior
+- EarthMind defines deployment API registry (`DeploymentApiPayloads`) and mapper behavior
 
 ### Error Handling Behavior
 
@@ -175,9 +175,9 @@ Create an `lfx.toml` in your project root:
 
 ```toml
 [services]
-database_service = "langflow.services.database.service:DatabaseService"
-storage_service = "langflow.services.storage.local:LocalStorageService"
-cache_service = "langflow.services.cache.service:ThreadingInMemoryCache"
+database_service = "earthmind.services.database.service:DatabaseService"
+storage_service = "earthmind.services.storage.local:LocalStorageService"
+cache_service = "earthmind.services.cache.service:ThreadingInMemoryCache"
 ```
 
 Then run:
@@ -440,16 +440,16 @@ def test_custom_service():
 3. Ensure config file is in the correct location:
    - If settings service exists: `{settings.config_dir}/lfx.toml`
    - Otherwise: `./lfx.toml` or `./pyproject.toml` in current directory
-4. Enable debug logging: `export LANGFLOW_LOG_LEVEL=DEBUG`
+4. Enable debug logging: `export EARTHMIND_LOG_LEVEL=DEBUG`
 
 ### Import Errors
 
-**Error:** `ModuleNotFoundError: No module named 'langflow'`
+**Error:** `ModuleNotFoundError: No module named 'earthmind'`
 
 **Solutions:**
-1. Ensure langflow is installed: `pip install langflow`
+1. Ensure earthmind is installed: `pip install earthmind`
 2. Check if module path in config is correct
-3. Verify the package is importable: `python -c "import langflow.services.database"`
+3. Verify the package is importable: `python -c "import earthmind.services.database"`
 
 ### Circular Dependencies
 
@@ -476,10 +476,10 @@ class ServiceB(Service):
 ## Examples
 
 See:
-- `lfx.toml.example` - Example configuration file showing Langflow service registration
+- `lfx.toml.example` - Example configuration file showing EarthMind service registration
 - `src/lfx/services/` - Minimal built-in service implementations (auth, telemetry, tracing, variable, storage, etc.)
-  - Auth: `lfx.services.auth.base` (BaseAuthService) and `lfx.services.auth.service` (AuthService). Use `get_auth_service()` from `lfx.services.deps`. Override with `auth_service = "langflow.services.auth.service:AuthService"` in config for full JWT/API key auth.
-- `src/backend/base/langflow/services/` - Full-featured Langflow services
+  - Auth: `lfx.services.auth.base` (BaseAuthService) and `lfx.services.auth.service` (AuthService). Use `get_auth_service()` from `lfx.services.deps`. Override with `auth_service = "earthmind.services.auth.service:AuthService"` in config for full JWT/API key auth.
+- `src/backend/base/earthmind/services/` - Full-featured EarthMind services
 
 ## Architecture Benefits
 

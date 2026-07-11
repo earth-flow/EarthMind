@@ -2,12 +2,12 @@ from datetime import datetime, timezone
 
 import pytest
 from httpx import AsyncClient
-from langflow.services.auth.utils import create_super_user, get_password_hash
-from langflow.services.database.models.file.model import File
-from langflow.services.database.models.user import UserUpdate
-from langflow.services.database.models.user.model import User
-from langflow.services.database.utils import session_getter
-from langflow.services.deps import get_db_service, get_settings_service
+from earthmind.services.auth.utils import create_super_user, get_password_hash
+from earthmind.services.database.models.file.model import File
+from earthmind.services.database.models.user import UserUpdate
+from earthmind.services.database.models.user.model import User
+from earthmind.services.database.utils import session_getter
+from earthmind.services.deps import get_db_service, get_settings_service
 from lfx.services.settings.constants import DEFAULT_SUPERUSER
 from sqlalchemy import text
 from sqlmodel import select

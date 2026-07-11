@@ -1,11 +1,11 @@
 [project]
-name = "langflow-sdk"
+name = "earthmind-sdk"
 version = "0.2.0"
-description = "Python SDK for the Langflow REST API"
+description = "Python SDK for the EarthMind REST API"
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
 license = "MIT"
-keywords = ["langflow", "sdk", "ai", "workflow"]
+keywords = ["earthmind", "sdk", "ai", "workflow"]
 
 dependencies = [
     "httpx[http2]>=0.24.0,<1.0.0",
@@ -22,14 +22,14 @@ testing = [
 ]
 
 [project.entry-points."pytest11"]
-langflow = "langflow_sdk.testing"
+earthmind = "earthmind_sdk.testing"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/langflow_sdk"]
+packages = ["src/earthmind_sdk"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -40,7 +40,7 @@ python_functions = "test_*"
 addopts = "-v --tb=short --strict-markers --disable-warnings --color=yes"
 markers = [
     "unit: Unit tests",
-    "integration: Integration tests (require a live Langflow instance)",
+    "integration: Integration tests (require a live EarthMind instance)",
 ]
 
 [dependency-groups]

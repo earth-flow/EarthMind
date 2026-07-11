@@ -4,13 +4,13 @@ import {
 } from "@/customization/config-constants";
 
 export function getBaseUrl(): string {
-  return BASE_URL_API || "/api/v1/";
+  return BASE_URL_API || `${window.location.origin}/api/v1/`;
 }
 
 export function getHealthCheckUrl(): string {
-  return HEALTH_CHECK_URL || "/health";
+  return HEALTH_CHECK_URL || `${window.location.origin}/health`;
 }
 
-export const LangflowButtonRedirectTarget = () => {
-  return "https://langflow.org";
+export const EarthMindButtonRedirectTarget = () => {
+  return "https://earthmind.org";
 };

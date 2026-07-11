@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import LangflowLogo from "@/assets/LangflowLogo.svg?react";
+import EarthMindLogo from "@/assets/EarthMindLogo.svg?react";
 import type { LoadingComponentProps } from "../../../types/components";
 
 export default function LoadingComponent({
@@ -8,9 +8,9 @@ export default function LoadingComponent({
   const { t } = useTranslation();
   return (
     <div role="status" className="flex flex-col items-center justify-center">
-      <LangflowLogo
+      <EarthMindLogo
         aria-hidden="true"
-        title={t("common.langflowLogo")}
+        title={t("common.earthMindLogo")}
         className="animate-pulse text-primary"
         style={{
           width: `${remSize * 0.25}rem`,

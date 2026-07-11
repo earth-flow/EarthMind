@@ -143,15 +143,15 @@ class TestS3CompatibleComponents:
             with (
                 patch("lfx.services.deps.session_scope"),
                 patch(
-                    "langflow.services.database.models.user.crud.get_user_by_id", new_callable=AsyncMock
+                    "earthmind.services.database.models.user.crud.get_user_by_id", new_callable=AsyncMock
                 ) as mock_get_user,
-                patch("langflow.api.v2.files.upload_user_file", new_callable=AsyncMock) as mock_upload,
+                patch("earthmind.api.v2.files.upload_user_file", new_callable=AsyncMock) as mock_upload,
             ):
                 mock_get_user.return_value = MagicMock()
                 mock_upload.return_value = "s3_file.txt"
 
                 # Test with DataFrame
-                from langflow.schema import Data, DataFrame
+                from earthmind.schema import Data, DataFrame
 
                 test_data = DataFrame(data=[Data(data={"text": "test content"})])
                 component.input = test_data  # Use 'input' not 'data'
@@ -205,7 +205,7 @@ class TestS3CompatibleComponents:
     @pytest.mark.asyncio
     async def test_components_work_in_local_mode(self, local_settings):
         """Test that components work in local mode."""
-        with patch("langflow.services.deps.get_settings_service", return_value=local_settings):
+        with patch("earthmind.services.deps.get_settings_service", return_value=local_settings):
             component = FileComponent()
             component.file_path = "/local/path/file.txt"
 

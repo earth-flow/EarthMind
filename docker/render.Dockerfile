@@ -1,3 +1,3 @@
-FROM langflowai/langflow:latest
+FROM earthmindai/earthmind:latest
 
-ENTRYPOINT ["python", "-m", "langflow", "run"]
+ENTRYPOINT ["python", "-m", "earthmind", "run"]

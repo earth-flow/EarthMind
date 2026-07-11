@@ -55,7 +55,7 @@ def table() -> MigrationTable:
                 added_in="1.10.0",
             ),
             MigrationEntry(
-                import_path="langflow.components.openai.OpenAIEmbeddings",
+                import_path="earthmind.components.openai.OpenAIEmbeddings",
                 target="ext:openai:OpenAIEmbeddings@official",
                 added_in="1.10.0",
             ),
@@ -87,7 +87,7 @@ def test_rewrites_bare_class_name(table: MigrationTable) -> None:
 
 @pytest.mark.unit
 def test_rewrites_import_path(table: MigrationTable) -> None:
-    payload = _payload(_node("X-1", "langflow.components.openai.OpenAIEmbeddings"))
+    payload = _payload(_node("X-1", "earthmind.components.openai.OpenAIEmbeddings"))
     report = migrate_flow_payload(payload, table=table)
     assert report.rewritten_count == 1
     assert payload["data"]["nodes"][0]["data"]["type"] == "ext:openai:OpenAIEmbeddings@official"
@@ -107,7 +107,7 @@ def test_rewrites_pre_phase_a_slot(table: MigrationTable) -> None:
 def test_rewrites_every_known_reference_in_one_pass(table: MigrationTable) -> None:
     payload = _payload(
         _node("a", "OpenAIEmbeddings"),
-        _node("b", "langflow.components.openai.OpenAIEmbeddings"),
+        _node("b", "earthmind.components.openai.OpenAIEmbeddings"),
         _node("c", "ext:openai:OpenAIEmbeddings@official-pre-a"),
         _node("d", "MergeDataComponent"),
     )

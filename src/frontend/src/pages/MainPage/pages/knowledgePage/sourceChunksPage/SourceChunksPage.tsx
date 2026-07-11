@@ -1,6 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,14 +22,29 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useGetKnowledgeBaseChunks } from "@/controllers/API/queries/knowledge-bases/use-get-knowledge-base-chunks";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
+import KnowledgeGraphPanel from "../components/KnowledgeGraphPanel";
 import ChunkCard from "./components/ChunkCard";
 import { ChunksMetadataFilter } from "./components/ChunksMetadataFilter";
 import { CHUNKS_PER_PAGE, PAGE_SIZE_OPTIONS } from "./constants";
 
-export const SourceChunksPage = () => {
+type SourceChunksPageProps = {
+  embeddedInFlow?: boolean;
+  sourceId?: string;
+};
+
+export const SourceChunksPage = ({
+  embeddedInFlow = false,
+  sourceId: sourceIdProp,
+}: SourceChunksPageProps) => {
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId: string }>();
+  const { id: flowId, sourceId: routeSourceId } = useParams<{
+    id: string;
+    sourceId: string;
+  }>();
+  const location = useLocation();
   const navigate = useCustomNavigate();
+  const sourceId = sourceIdProp ?? routeSourceId ?? "";
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
   const [pageSize, setPageSize] = useState<number>(CHUNKS_PER_PAGE);
@@ -32,6 +54,9 @@ export const SourceChunksPage = () => {
   const [metadataFilter, setMetadataFilter] = useState<
     Record<string, string[]>
   >({});
+  const [selectedChunkId, setSelectedChunkId] = useState<string | null>(null);
+  const [graphRefreshToken, setGraphRefreshToken] = useState(0);
+  const [isGraphRefreshing, setIsGraphRefreshing] = useState(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const removeMetadataChip = useCallback((key: string, value: string) => {
@@ -81,6 +106,14 @@ export const SourceChunksPage = () => {
   });
 
   const handleBack = () => {
+    if (embeddedInFlow && flowId) {
+      const params = new URLSearchParams(location.search);
+      params.delete("knowledgeSourceId");
+      const nextSearch = params.toString();
+      navigate(location.pathname + (nextSearch ? "?" + nextSearch : ""));
+      return;
+    }
+
     navigate("/assets/knowledge-bases");
   };
 
@@ -98,6 +131,26 @@ export const SourceChunksPage = () => {
     setPageInput(value);
   };
 
+  const chunks = paginatedResponse?.chunks || [];
+  const totalPages = paginatedResponse?.total_pages || 0;
+  const total = paginatedResponse?.total || 0;
+  const startIndex = ((paginatedResponse?.page || 1) - 1) * pageSize;
+
+  const visibleChunkIds = useMemo(
+    () => chunks.map((chunk) => chunk.id).filter(Boolean),
+    [chunks],
+  );
+
+  useEffect(() => {
+    if (visibleChunkIds.length === 0) {
+      setSelectedChunkId(null);
+      return;
+    }
+    if (!selectedChunkId || !visibleChunkIds.includes(selectedChunkId)) {
+      setSelectedChunkId(visibleChunkIds[0]);
+    }
+  }, [selectedChunkId, visibleChunkIds]);
+
   const commitPageInput = () => {
     const value = parseInt(pageInput, 10);
     if (!isNaN(value) && value >= 1 && value <= totalPages) {
@@ -112,31 +165,125 @@ export const SourceChunksPage = () => {
     commitPageInput();
   };
 
-  const handlePageInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handlePageInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       commitPageInput();
       e.currentTarget.blur();
     }
   };
 
-  const chunks = paginatedResponse?.chunks || [];
-  const totalPages = paginatedResponse?.total_pages || 0;
-  const total = paginatedResponse?.total || 0;
-  const startIndex = ((paginatedResponse?.page || 1) - 1) * pageSize;
+  const paginationControls = totalPages > 1 && (
+    <div className="mt-3 flex flex-wrap items-center justify-end gap-3 border-t border-border/70 pt-3">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <span className="whitespace-nowrap">{t("knowledge.perPage")}</span>
+        <Select
+          value={String(pageSize)}
+          onValueChange={(val) => handlePageSizeChange(Number(val))}
+        >
+          <SelectTrigger
+            className="h-8 w-[70px] text-sm"
+            data-testid="chunks-page-size-select"
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="min-w-[70px]">
+            {PAGE_SIZE_OPTIONS.map((opt) => (
+              <SelectItem key={opt} value={String(opt)}>
+                {opt}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <span className="text-sm text-muted-foreground xl:mr-auto xl:pl-1">
+        {t("knowledge.showing", {
+          start: startIndex + 1,
+          end: Math.min(startIndex + pageSize, total),
+          total,
+        })}
+      </span>
+      <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => {
+            setCurrentPage(1);
+            setPageInput("1");
+          }}
+          disabled={currentPage === 1}
+        >
+          <ForwardedIconComponent name="ChevronsLeft" className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => {
+            const newPage = Math.max(1, currentPage - 1);
+            setCurrentPage(newPage);
+            setPageInput(String(newPage));
+          }}
+          disabled={currentPage === 1}
+        >
+          <ForwardedIconComponent name="ChevronLeft" className="h-4 w-4" />
+        </Button>
+        <div className="flex items-center gap-1.5 px-1 text-sm">
+          <span>{t("knowledge.page")}</span>
+          <input
+            type="number"
+            min={1}
+            max={totalPages}
+            value={pageInput}
+            onChange={(e) => handlePageInputChange(e.target.value)}
+            onBlur={handlePageInputBlur}
+            onKeyDown={handlePageInputKeyDown}
+            className="h-7 w-16 rounded border border-input bg-background px-2 text-center text-sm focus:outline-none focus:ring-1 focus:ring-ring [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:[filter:invert(1)] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:[filter:invert(1)]"
+          />
+          <span>{t("knowledge.ofTotal", { total: totalPages })}</span>
+        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => {
+            const newPage = Math.min(totalPages, currentPage + 1);
+            setCurrentPage(newPage);
+            setPageInput(String(newPage));
+          }}
+          disabled={currentPage === totalPages}
+        >
+          <ForwardedIconComponent name="ChevronRight" className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => {
+            setCurrentPage(totalPages);
+            setPageInput(String(totalPages));
+          }}
+          disabled={currentPage === totalPages}
+        >
+          <ForwardedIconComponent name="ChevronsRight" className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div
       className="flex h-full w-full flex-col"
       data-testid="source-chunks-wrapper"
     >
-      <div className="flex h-full w-full flex-col overflow-hidden pt-10 px-5">
+      <div className="flex h-full w-full flex-col px-5 pt-10 overflow-y-auto xl:overflow-hidden">
         <div
-          className="flex shrink-0 items-center pb-4 text-base h-[44px] font-semibold"
+          className="flex h-[44px] shrink-0 items-center pb-4 text-base font-semibold"
           data-testid="mainpage_title"
         >
           <div className="xl:container flex items-center">
-            <div className="h-7 w-10 transition-all group-data-[open=true]/sidebar-wrapper:md:w-0 lg:hidden">
-              <div className="relative left-0 opacity-100 transition-all group-data-[open=true]/sidebar-wrapper:md:opacity-0">
+            <div className="group-data-[open=true]/sidebar-wrapper:md:w-0 h-7 w-10 transition-all lg:hidden">
+              <div className="group-data-[open=true]/sidebar-wrapper:md:opacity-0 relative left-0 opacity-100 transition-all">
                 <SidebarTrigger>
                   <ForwardedIconComponent
                     name="PanelLeftOpen"
@@ -159,8 +306,8 @@ export const SourceChunksPage = () => {
 
         <div className="flex shrink-0 items-center pb-4">
           <div className="xl:container">
-            <div className="flex w-full items-center gap-2 xl:w-7/12">
-              <div className="relative flex-1">
+            <div className="flex w-full flex-wrap items-center gap-2 xl:w-full">
+              <div className="relative min-w-[240px] flex-1 xl:max-w-[44rem]">
                 <ForwardedIconComponent
                   name="Search"
                   className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -206,10 +353,27 @@ export const SourceChunksPage = () => {
                   })
                 }
               />
+              <Button
+                variant="outline"
+                size="sm"
+                loading={isGraphRefreshing}
+                className="shrink-0"
+                onClick={() => setGraphRefreshToken((current) => current + 1)}
+              >
+                {!isGraphRefreshing && (
+                  <ForwardedIconComponent
+                    name="RefreshCcw"
+                    className="h-4 w-4"
+                  />
+                )}
+                {t("knowledge.graphRefreshButton", {
+                  defaultValue: "Update Knowledge Graph",
+                })}
+              </Button>
             </div>
             {Object.keys(metadataFilter).length > 0 && (
               <div
-                className="mt-2 flex flex-wrap gap-1.5 xl:w-7/12"
+                className="mt-2 flex flex-wrap gap-1.5 xl:max-w-[44rem]"
                 data-testid="chunks-metadata-filter-chips"
               >
                 {Object.entries(metadataFilter).flatMap(([key, values]) =>
@@ -237,11 +401,11 @@ export const SourceChunksPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {isLoading ? (
-            <div className="flex flex-1 w-full flex-col items-center justify-center gap-3">
+            <div className="flex w-full flex-1 flex-col items-center justify-center gap-3">
               <Loading size={36} />
-              <span className="text-sm text-muted-foreground pt-3">
+              <span className="pt-3 text-sm text-muted-foreground">
                 {t("knowledge.loadingChunks")}
               </span>
             </div>
@@ -254,149 +418,51 @@ export const SourceChunksPage = () => {
               {t("knowledge.noChunksFound")}
             </div>
           ) : (
-            <div className="flex flex-1 flex-col overflow-hidden">
-              <div className="flex-1 overflow-y-auto">
-                <div className="xl:container">
-                  <div className="flex flex-col gap-3">
-                    {chunks.map((chunk, index) => (
-                      <ChunkCard
-                        key={chunk.id}
-                        chunk={chunk}
-                        index={startIndex + index + 1}
-                        onCopy={handleCopyChunk}
-                      />
-                    ))}
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              <div className="xl:container flex-1 min-h-0">
+                <div className="flex flex-col gap-4 xl:grid xl:h-[calc(100vh-220px)] xl:min-h-0 xl:grid-cols-[minmax(0,1.08fr)_minmax(440px,1.06fr)] xl:gap-5 xl:items-start">
+                  <div className="flex min-h-0 flex-col xl:h-[calc(100vh-220px)] xl:pr-2">
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                      <div className="flex flex-col gap-3 pb-2">
+                        {chunks.map((chunk, index) => (
+                          <ChunkCard
+                            key={chunk.id || `chunk-${startIndex + index}`}
+                            chunk={chunk}
+                            index={startIndex + index + 1}
+                            onCopy={handleCopyChunk}
+                            isSelected={chunk.id === selectedChunkId}
+                            onSelect={() =>
+                              setSelectedChunkId(chunk.id || null)
+                            }
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    {paginationControls}
+                  </div>
+                  <div className="min-h-[520px] xl:sticky xl:top-0 xl:h-[calc(100vh-220px)] xl:self-start xl:overflow-hidden">
+                    <KnowledgeGraphPanel
+                      kbName={sourceId || ""}
+                      sampleLimit={80}
+                      maxNodes={64}
+                      maxEdges={180}
+                      externalRefreshToken={graphRefreshToken}
+                      onRefreshPendingChange={setIsGraphRefreshing}
+                      autoRefreshOnMount={false}
+                      compact
+                      fitProfile="chunks"
+                      showNodeLabels
+                      maxVisibleNodeLabels={8}
+                      nodeLabelMaxLength={12}
+                      nodeSizeScale={1.18}
+                      hideHeader
+                      hideLegend
+                      floatingNodeDetails
+                      className="min-h-[520px] xl:h-[calc(100vh-220px)]"
+                    />
                   </div>
                 </div>
               </div>
-
-              {totalPages > 1 && (
-                <div className="shrink-0 pb-4 pt-3">
-                  <div className="xl:container">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground whitespace-nowrap">
-                            {t("knowledge.perPage")}
-                          </span>
-                          <Select
-                            value={String(pageSize)}
-                            onValueChange={(val) =>
-                              handlePageSizeChange(Number(val))
-                            }
-                          >
-                            <SelectTrigger
-                              className="h-8 w-[70px] text-sm"
-                              data-testid="chunks-page-size-select"
-                            >
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="min-w-[70px]">
-                              {PAGE_SIZE_OPTIONS.map((opt) => (
-                                <SelectItem key={opt} value={String(opt)}>
-                                  {opt}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {t("knowledge.showing", {
-                            start: startIndex + 1,
-                            end: Math.min(startIndex + pageSize, total),
-                            total,
-                          })}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => {
-                            setCurrentPage(1);
-                            setPageInput("1");
-                          }}
-                          disabled={currentPage === 1}
-                        >
-                          <ForwardedIconComponent
-                            name="ChevronsLeft"
-                            className="h-4 w-4"
-                          />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => {
-                            const newPage = Math.max(1, currentPage - 1);
-                            setCurrentPage(newPage);
-                            setPageInput(String(newPage));
-                          }}
-                          disabled={currentPage === 1}
-                        >
-                          <ForwardedIconComponent
-                            name="ChevronLeft"
-                            className="h-4 w-4"
-                          />
-                        </Button>
-                        <div className="flex items-center gap-1.5 px-2 text-sm">
-                          <span>{t("knowledge.page")}</span>
-                          <input
-                            type="number"
-                            min={1}
-                            max={totalPages}
-                            value={pageInput}
-                            onChange={(e) =>
-                              handlePageInputChange(e.target.value)
-                            }
-                            onBlur={handlePageInputBlur}
-                            onKeyDown={handlePageInputKeyDown}
-                            className="h-7 w-16 rounded border border-input bg-background px-2 text-center text-sm focus:outline-none focus:ring-1 focus:ring-ring [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:[filter:invert(1)] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:[filter:invert(1)]"
-                          />
-                          <span>
-                            {t("knowledge.ofTotal", { total: totalPages })}
-                          </span>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => {
-                            const newPage = Math.min(
-                              totalPages,
-                              currentPage + 1,
-                            );
-                            setCurrentPage(newPage);
-                            setPageInput(String(newPage));
-                          }}
-                          disabled={currentPage === totalPages}
-                        >
-                          <ForwardedIconComponent
-                            name="ChevronRight"
-                            className="h-4 w-4"
-                          />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => {
-                            setCurrentPage(totalPages);
-                            setPageInput(String(totalPages));
-                          }}
-                          disabled={currentPage === totalPages}
-                        >
-                          <ForwardedIconComponent
-                            name="ChevronsRight"
-                            className="h-4 w-4"
-                          />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>

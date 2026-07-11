@@ -11,7 +11,7 @@ import secrets
 from typing import TYPE_CHECKING
 
 import pytest
-from langflow.agentic.services.user_components import (
+from earthmind.agentic.services.user_components import (
     clear_user_components,
     register_user_component,
 )
@@ -34,7 +34,7 @@ SAMPLE_CODE = (
 
 @pytest.fixture
 def isolated_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("LANGFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
     (tmp_path / ".fs_pepper").write_bytes(secrets.token_bytes(32))
 
     from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
@@ -49,7 +49,7 @@ def isolated_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 @pytest.fixture
 def shared_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("LANGFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
     (tmp_path / ".fs_pepper").write_bytes(secrets.token_bytes(32))
 
     from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
@@ -80,7 +80,7 @@ class TestClearUserComponentsHappyPath:
         assert deleted == 2
         # The directory still exists (we wipe contents, not the dir itself
         # — keeps the loader's walk simple on the next register call).
-        from langflow.agentic.services.user_components import (
+        from earthmind.agentic.services.user_components import (
             get_user_components_dir,
         )
 
@@ -147,7 +147,7 @@ class TestClearUserComponentsIsolation:
             class_name="SumComponent",
             code=SAMPLE_CODE,
         )
-        from langflow.agentic.services.user_components import (
+        from earthmind.agentic.services.user_components import (
             get_user_components_dir,
         )
 
@@ -184,7 +184,7 @@ class TestClearUserComponentsRefusal:
             class_name="SumComponent",
             code=SAMPLE_CODE,
         )
-        from langflow.agentic.services.user_components import (
+        from earthmind.agentic.services.user_components import (
             get_user_components_dir,
         )
 

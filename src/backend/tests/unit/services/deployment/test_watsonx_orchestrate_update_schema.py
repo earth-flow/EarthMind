@@ -7,7 +7,7 @@ from uuid import UUID
 import pytest
 
 try:
-    from langflow.services.adapters.deployment.watsonx_orchestrate import (
+    from earthmind.services.adapters.deployment.watsonx_orchestrate import (
         WatsonxOrchestrateDeploymentService,  # noqa: F401
     )
 except ModuleNotFoundError:
@@ -16,7 +16,7 @@ except ModuleNotFoundError:
         allow_module_level=True,
     )
 
-from langflow.services.adapters.deployment.watsonx_orchestrate.payloads import (
+from earthmind.services.adapters.deployment.watsonx_orchestrate.payloads import (
     PAYLOAD_SCHEMAS,
     WatsonxAgentExecutionResultData,
     WatsonxDeploymentCreatePayload,

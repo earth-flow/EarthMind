@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Langflow
+name: EarthMind
 description: Visual AI workflow builder for composing LLM-powered applications
 colors:
   # Core UI palette
@@ -509,7 +509,7 @@ components:
 
 ## Overview
 
-Langflow is a visual AI workflow builder where users compose LLM-powered applications by dragging, connecting, and configuring modular components on an infinite canvas. The design language is that of a professional developer tool -- clean, information-dense, and deliberately restrained. Color is earned, not decorative; every hue in the system carries semantic meaning.
+EarthMind is a visual AI workflow builder where users compose LLM-powered applications by dragging, connecting, and configuring modular components on an infinite canvas. The design language is that of a professional developer tool -- clean, information-dense, and deliberately restrained. Color is earned, not decorative; every hue in the system carries semantic meaning.
 
 The aesthetic sits between a code editor and a node-based creative tool. The core UI is strictly monochromatic -- black primary on white, with a warm zinc-gray scale for layering. This neutral foundation lets the **data type color system** (14 distinct hues encoding connection compatibility) and **accent families** (emerald for success, indigo for selection, pink for components) communicate meaning without competing for attention. The result is an interface that feels focused and engineered: complexity emerges from the user's composition, not from the UI itself.
 
@@ -555,7 +555,7 @@ Used for build status indicators, connection health, and real-time feedback dots
 
 ### Data Type Color System
 
-Langflow uses **14 distinct hues** to encode the type of data flowing through node connections. Each type has a saturated foreground and a light-tint background. In **light mode**, the base token is the saturated color (used for port dots and connection lines) and the `-foreground` token is the light tint (used for backgrounds). In **dark mode, these roles swap** -- the base becomes the light tint and the foreground becomes the saturated color. This ensures readability against both light and dark surfaces.
+EarthMind uses **14 distinct hues** to encode the type of data flowing through node connections. Each type has a saturated foreground and a light-tint background. In **light mode**, the base token is the saturated color (used for port dots and connection lines) and the `-foreground` token is the light tint (used for backgrounds). In **dark mode, these roles swap** -- the base becomes the light tint and the foreground becomes the saturated color. This ensures readability against both light and dark surfaces.
 
 | Data Type | Color Name | Hex (saturated) | Used For |
 |:----------|:-----------|:-----------------|:---------|
@@ -723,7 +723,7 @@ Rounded bordered containers with icon + text layout. Default variant uses standa
 
 ### Canvas Nodes
 
-The core UI element of Langflow. Each node is a white rounded card on the canvas containing typed input/output ports, configuration fields, and a status indicator.
+The core UI element of EarthMind. Each node is a white rounded card on the canvas containing typed input/output ports, configuration fields, and a status indicator.
 
 - **Port dots** use the data type color system to visually encode connection compatibility. When two ports share a compatible type, their colors match, providing immediate visual feedback.
 - **Selected nodes** show an indigo ring (`node-selected: #4F46E5`) replacing the standard border.

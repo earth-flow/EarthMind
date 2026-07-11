@@ -8,29 +8,29 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::tip
-As of Langflow 1.10.x, the IBM watsonx Orchestrate deployments feature is behind a feature flag. To enable it, set the following environment variable before starting Langflow:
+As of EarthMind 1.10.x, the IBM watsonx Orchestrate deployments feature is behind a feature flag. To enable it, set the following environment variable before starting EarthMind:
 
 ```bash
-LANGFLOW_FEATURE_WXO_DEPLOYMENTS=true
+EARTHMIND_FEATURE_WXO_DEPLOYMENTS=true
 ```
 :::
 
 Create a flow and deploy it to [IBM watsonx Orchestrate](https://www.ibm.com/docs/en/watsonx/watson-orchestrate/base?topic=getting-started-watsonx-orchestrate).
 
-Deploying a flow on IBM watsonx Orchestrate is different from the other Langflow deployment options.
-This workflow **does not** deploy a full-featured Langflow server and flow builder UI.
-Instead, Langflow packages your selected flow and flow version, and then publishes it to IBM watsonx Orchestrate as a wxO Tool that a wxO Agent can execute.
-Langflow is used to build and configure the flow, while IBM watsonx Orchestrate hosts the wxO Agent experience and invokes the deployed flow as part of that wxO Agent's toolset.
+Deploying a flow on IBM watsonx Orchestrate is different from the other EarthMind deployment options.
+This workflow **does not** deploy a full-featured EarthMind server and flow builder UI.
+Instead, EarthMind packages your selected flow and flow version, and then publishes it to IBM watsonx Orchestrate as a wxO Tool that a wxO Agent can execute.
+EarthMind is used to build and configure the flow, while IBM watsonx Orchestrate hosts the wxO Agent experience and invokes the deployed flow as part of that wxO Agent's toolset.
 
 ## Prerequisites
 
-- [Install and start Langflow](/get-started-installation)
+- [Install and start EarthMind](/get-started-installation)
 - Create an [OpenAI API key](https://platform.openai.com/api-keys)
 - Create an [IBM watsonx Orchestrate instance](https://www.ibm.com/docs/en/watsonx/watson-orchestrate/base?topic=getting-started-watsonx-orchestrate)
 
 ## Create and deploy a flow
 
-1. Create a flow in the Langflow UI, such as the Simple Agent starter flow in the [Quickstart](/get-started-quickstart).
+1. Create a flow in the EarthMind UI, such as the Simple Agent starter flow in the [Quickstart](/get-started-quickstart).
 
 2. To deploy this flow to watsonx Orchestrate, click <Icon name="Rocket" aria-hidden="true"/> **Deploy**.
 The **Provider** pane opens.
@@ -51,7 +51,7 @@ These values are found in the **Settings** page of your IBM watsonx Orchestrate 
 
     The **Type** is always **Agent**. The deployed flow is a wxO Agent with your flow available as a wxO Tool the wxO Agent can call.
 
-    The **Model** list is populated from the connected watsonx Orchestrate instance, not Langflow.
+    The **Model** list is populated from the connected watsonx Orchestrate instance, not EarthMind.
 
 6. In the **Flows** pane, in the **Available** list, select a flow and flow version to deploy.
     For this example, select the simple agent flow you created.
@@ -68,7 +68,7 @@ These values are found in the **Settings** page of your IBM watsonx Orchestrate 
    To create a new connection, do the following:
 
       1. Enter a **Connection Name** and any environment variables the flow requires, such as the `OPENAI_API_KEY` for the simple agent flow.
-      Langflow auto-detects global variables from the flow JSON file.
+      EarthMind auto-detects global variables from the flow JSON file.
       Click <Icon name="Plus" aria-hidden="true"/> **Add variable** to add any additional environment variables.
 
       2. To add the new connection to the list of available connections, click **Create Connection**.
@@ -81,9 +81,9 @@ These values are found in the **Settings** page of your IBM watsonx Orchestrate 
 8. Click **Next**. The **Review & Confirm** pane opens.
 9. Confirm the deployment values are correct, and then click <Icon name="Rocket" aria-hidden="true"/> **Deploy**.
 
-    Langflow installs any required extra dependencies on your watsonx Orchestrate tenant automatically.
+    EarthMind installs any required extra dependencies on your watsonx Orchestrate tenant automatically.
 
-    In the Langflow UI, `Deployment successful` indicates your deployment succeeded.
+    In the EarthMind UI, `Deployment successful` indicates your deployment succeeded.
 
     :::tip
     If you get an error that the wxO Tool name already exists on your deployment, click <Icon name="Pencil" aria-hidden="true"/> **Edit** to change the wxO Tool name.
@@ -91,9 +91,9 @@ These values are found in the **Settings** page of your IBM watsonx Orchestrate 
 
 10. Click **Test** to open a chat window with your wxO Agent on watsonx Orchestrate.
     Enter a question, and the wxO Agent responds using the connected flow as a wxO Tool.
-11. In your IBM watsonx Orchestrate deployment, navigate to **Agent chat** > **Manage Agents**, and confirm that a new wxO Agent is listed with your Langflow flow attached as a wxO Tool.
+11. In your IBM watsonx Orchestrate deployment, navigate to **Agent chat** > **Manage Agents**, and confirm that a new wxO Agent is listed with your EarthMind flow attached as a wxO Tool.
 12. To test the wxO Agent in watsonx Orchestrate, click **Talk to agent**, and then enter a question.
-    The wxO Agent responds using your Langflow flow as a wxO Tool.
+    The wxO Agent responds using your EarthMind flow as a wxO Tool.
 13. To deploy the wxO Agent to a live environment, click **Deploy**.
 14. Optionally, click **Activate agent monitoring**.
 15. To view your wxO Agent's metrics, click **Agent chat** > **Agent analytics**, and then select your wxO Agent.
@@ -101,36 +101,36 @@ These values are found in the **Settings** page of your IBM watsonx Orchestrate 
     To view traces for each wxO Agent request, click **Trace Detail**.
     For more information, see [Monitoring agents](https://www.ibm.com/docs/en/watsonx/watson-orchestrate/base?topic=monitoring-agents).
 
-## Manage deployments in Langflow
+## Manage deployments in EarthMind
 
 From the **Projects** page, click **Deployments** to open the deployment management screen.
 
 * **Deployments**:
 
-   A **Deployment** is a published wxO Agent equipped with one or more Langflow flows as wxO Tools. Deployment details include the wxO Agent name, type, attached flows, model, and the IBM watsonx Orchestrate environment it belongs to.
+   A **Deployment** is a published wxO Agent equipped with one or more EarthMind flows as wxO Tools. Deployment details include the wxO Agent name, type, attached flows, model, and the IBM watsonx Orchestrate environment it belongs to.
 
-   Use the **Deployments** tab to create, update, view, and delete flow deployments in Langflow.
+   Use the **Deployments** tab to create, update, view, and delete flow deployments in EarthMind.
 
 * **Deployment Environments**:
 
-   A **Deployment Environment** is a saved watsonx Orchestrate target that Langflow can deploy to. An environment stores the connection details for a watsonx Orchestrate tenant.
+   A **Deployment Environment** is a saved watsonx Orchestrate target that EarthMind can deploy to. An environment stores the connection details for a watsonx Orchestrate tenant.
 
-   Use the **Deployment Environments** tab to connect, view, and disconnect IBM watsonx Orchestrate environments in Langflow.
+   Use the **Deployment Environments** tab to connect, view, and disconnect IBM watsonx Orchestrate environments in EarthMind.
 
    To manage the tenant itself, use the IBM watsonx Orchestrate dashboard.
 
 ## Send requests to your flow
 
-After you deploy your flow to IBM watsonx Orchestrate, you can chat with the wxO Agent through the Langflow deployment run endpoints.
+After you deploy your flow to IBM watsonx Orchestrate, you can chat with the wxO Agent through the EarthMind deployment run endpoints.
 
 Don't use the `/run` endpoint for flows deployed to IBM watsonx Orchestrate.
 Instead use `POST /api/v1/deployments/{deployment_id}/runs` to start a run, and `GET /api/v1/deployments/{deployment_id}/runs/{run_id}` to check its status.
 
-Endpoint paths must be prefixed with your Langflow server URL, such as `http://localhost:7860`.
+Endpoint paths must be prefixed with your EarthMind server URL, such as `http://localhost:7860`.
 
 To find your `deployment_id`, navigate to the **Projects** page, click **Deployments**, and select the deployment. The ID is displayed in the deployment details.
 
-These endpoints require a Langflow API key passed in the `x-api-key` header. To create one, see [API keys and authentication](/api-keys-and-authentication).
+These endpoints require a EarthMind API key passed in the `x-api-key` header. To create one, see [API keys and authentication](/api-keys-and-authentication).
 
 ### Create deployment run endpoint
 
@@ -146,7 +146,7 @@ These endpoints require a Langflow API key passed in the `x-api-key` header. To 
 ```python
 import requests
 
-url = "http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs"
+url = "http://EARTHMIND_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs"
 
 payload = {
     "provider_data": {
@@ -157,7 +157,7 @@ payload = {
 
 headers = {
     "Content-Type": "application/json",
-    "x-api-key": "LANGFLOW_API_KEY"
+    "x-api-key": "EARTHMIND_API_KEY"
 }
 
 response = requests.post(url, json=payload, headers=headers)
@@ -181,12 +181,12 @@ const options = {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": "LANGFLOW_API_KEY"
+    "x-api-key": "EARTHMIND_API_KEY"
   },
   body: JSON.stringify(payload)
 };
 
-fetch("http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs", options)
+fetch("http://EARTHMIND_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs", options)
   .then((response) => response.json())
   .then((response) => console.log(response))
   .catch((err) => console.error(err));
@@ -197,9 +197,9 @@ fetch("http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs", op
 
 ```bash
 curl --request POST \
-     --url "http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs" \
+     --url "http://EARTHMIND_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs" \
      --header "Content-Type: application/json" \
-     --header "x-api-key: LANGFLOW_API_KEY" \
+     --header "x-api-key: EARTHMIND_API_KEY" \
      --data '{
        "provider_data": {
          "input": "Summarize today's tickets",
@@ -240,7 +240,7 @@ curl --request POST \
 
 #### Response body
 
-The response returns the Langflow `deployment_id` and a `provider_data` object containing the provider-owned run metadata.
+The response returns the EarthMind `deployment_id` and a `provider_data` object containing the provider-owned run metadata.
 Use `provider_data.id` as the `run_id` when checking the run status.
 
 ### Get deployment run status endpoint
@@ -257,11 +257,11 @@ Use `provider_data.id` as the `run_id` when checking the run status.
 ```python
 import requests
 
-url = "http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs/RUN_ID"
+url = "http://EARTHMIND_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs/RUN_ID"
 
 headers = {
     "Content-Type": "application/json",
-    "x-api-key": "LANGFLOW_API_KEY"
+    "x-api-key": "EARTHMIND_API_KEY"
 }
 
 response = requests.get(url, headers=headers)
@@ -278,11 +278,11 @@ const options = {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": "LANGFLOW_API_KEY"
+    "x-api-key": "EARTHMIND_API_KEY"
   }
 };
 
-fetch("http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs/RUN_ID", options)
+fetch("http://EARTHMIND_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs/RUN_ID", options)
   .then((response) => response.json())
   .then((response) => console.log(response))
   .catch((err) => console.error(err));
@@ -293,9 +293,9 @@ fetch("http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs/RUN_
 
 ```bash
 curl --request GET \
-     --url "http://LANGFLOW_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs/RUN_ID" \
+     --url "http://EARTHMIND_SERVER_ADDRESS/api/v1/deployments/DEPLOYMENT_ID/runs/RUN_ID" \
      --header "Content-Type: application/json" \
-     --header "x-api-key: LANGFLOW_API_KEY"
+     --header "x-api-key: EARTHMIND_API_KEY"
 ```
 
 </TabItem>
@@ -305,7 +305,7 @@ curl --request GET \
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `deployment_id` | `uuid` | Yes | The Langflow deployment ID for the deployed flow. |
+| `deployment_id` | `uuid` | Yes | The EarthMind deployment ID for the deployed flow. |
 | `run_id` | `string` | Yes | The provider-owned run ID returned in `provider_data.id`. |
 
 #### Example response

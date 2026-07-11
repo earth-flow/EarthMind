@@ -1,10 +1,10 @@
-const url = `${process.env.LANGFLOW_URL ?? ""}/api/v1/monitor/messages?flow_id=${process.env.FLOW_ID ?? ""}&session_id=01ce083d-748b-4b8d-97b6-33adbb6a528a&sender=Machine&sender_name=AI&order_by=timestamp`;
+const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/monitor/messages?flow_id=${process.env.FLOW_ID ?? ""}&session_id=01ce083d-748b-4b8d-97b6-33adbb6a528a&sender=Machine&sender_name=AI&order_by=timestamp`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.LANGFLOW_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
   },
 };
 

@@ -17,7 +17,7 @@ Override scope:
 
 Cache layout:
     * In-memory module-level singleton (:func:`get_active_snapshot`).
-    * Disk snapshot at ``<langflow-cache>/models_dev/snapshot.json`` for
+    * Disk snapshot at ``<earthmind-cache>/models_dev/snapshot.json`` for
       offline cold starts.
     * Bundled ``*_constants.py`` lists as the final fallback.
 
@@ -70,8 +70,8 @@ MODELS_DEV_FETCH_TIMEOUT = 10.0
 MODELS_DEV_SNAPSHOT_FILENAME = "snapshot.json"
 MODELS_DEV_SNAPSHOT_SUBDIR = "models_dev"
 
-# Translation: models.dev provider slug -> Langflow display name. Only
-# providers Langflow already knows how to instantiate (have an entry in
+# Translation: models.dev provider slug -> EarthMind display name. Only
+# providers EarthMind already knows how to instantiate (have an entry in
 # ``MODEL_PROVIDER_METADATA`` + a ``_MODEL_CLASS_IMPORTS`` row) should appear
 # here; otherwise we'd surface models the runtime can't actually call.
 MODELS_DEV_PROVIDER_KEYS: dict[str, str] = {
@@ -90,7 +90,7 @@ def _snapshot_dir() -> Path:
     Resolved via ``platformdirs.user_cache_dir`` so deployments inherit their
     platform's conventional cache root. Creates the directory on first use.
     """
-    cache_root = Path(user_cache_dir("langflow", "langflow"))
+    cache_root = Path(user_cache_dir("earthmind", "earthmind"))
     snapshot_dir = cache_root / MODELS_DEV_SNAPSHOT_SUBDIR
     snapshot_dir.mkdir(parents=True, exist_ok=True)
     return snapshot_dir
@@ -269,7 +269,7 @@ def _translate_model_entry(
     deprecated: bool = False,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Convert one models.dev model entry to Langflow's ``ModelMetadata`` shape.
+    """Convert one models.dev model entry to EarthMind's ``ModelMetadata`` shape.
 
     models.dev field -> ours:
         ``tool_call``           -> ``tool_calling``

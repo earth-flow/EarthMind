@@ -9,20 +9,20 @@ import PartialConditionalParams from '@site/docs/_partial-conditional-params.mdx
 import PartialVectorSearchResults from '@site/docs/_partial-vector-search-results.mdx';
 import PartialVectorStoreInstance from '@site/docs/_partial-vector-store-instance.mdx';
 
-<Icon name="Blocks" aria-hidden="true" /> [**Bundles**](/components-bundle-components) contain custom components that support specific third-party integrations with Langflow.
+<Icon name="Blocks" aria-hidden="true" /> [**Bundles**](/components-bundle-components) contain custom components that support specific third-party integrations with EarthMind.
 
 The **IBM** bundle provides access to IBM watsonx.ai models for text and embedding generation, plus an IBM Db2 Vector Store.
 These components require an IBM watsonx.ai deployment with API credentials, and/or a reachable IBM Db2 instance with the `ibm-db` driver.
 
 ## Install the IBM bundle
 
-The **IBM** bundle is included in the `lfx-ibm` Extension bundle, which is installed automatically as part of `uv pip install langflow`.
+The **IBM** bundle is included in the `lfx-ibm` Extension bundle, which is installed automatically as part of `uv pip install earthmind`.
 
 If you need to install it separately, run:
 
 ```bash
 uv pip install lfx-ibm
-uv run langflow run
+uv run earthmind run
 ```
 
 To verify the bundle is loaded in your environment:
@@ -148,7 +148,7 @@ For information about accepted values and functionality, see the provider's docu
 
 | Name | Type | Description |
 |------|------|-------------|
-| **Table Name** (`collection_name`) | String | Input parameter. The name of your Db2 table to store vectors. Default: `LANGFLOW_VECTORS`. The table will be created if it doesn't exist. |
+| **Table Name** (`collection_name`) | String | Input parameter. The name of your Db2 table to store vectors. Default: `EARTHMIND_VECTORS`. The table will be created if it doesn't exist. |
 | **Database Name** (`database`) | String | Input parameter. Name of the Db2 database. Use a Generic-typed global variable or direct input. Credential-typed variables are not allowed for database names. |
 | **Hostname** (`hostname`) | String | Input parameter. Db2 server hostname or IP address. Use a Generic-typed global variable or direct input. |
 | **Port** (`port`) | Integer | Input parameter. Db2 server port. Default: `50000`. |

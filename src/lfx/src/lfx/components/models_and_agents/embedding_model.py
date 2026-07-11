@@ -24,7 +24,7 @@ DEFAULT_OLLAMA_URL = "http://localhost:11434"
 class EmbeddingModelComponent(LCEmbeddingsModel):
     display_name = "Embedding Model"
     description = "Generate embeddings using a specified provider."
-    documentation: str = "https://docs.langflow.org/components-embedding-models"
+    documentation: str = "https://docs.earthmind.org/components-embedding-models"
     icon = "binary"
     name = "EmbeddingModel"
     category = "models"

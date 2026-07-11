@@ -1,7 +1,7 @@
 """Unit tests for the lfx.helpers.flow module."""
 
 import pytest
-from lfx.utils.langflow_utils import has_langflow_memory
+from lfx.utils.earthmind_utils import has_earthmind_memory
 
 # Globals
 
@@ -20,11 +20,11 @@ def is_helper_module(module, module_name):
 class TestDynamicImport:
     """Test dynamic imports of the lfx implementation."""
 
-    def test_langflow_available(self):
-        """Test whether the langflow implementation is available."""
-        # Langflow implementation should not be available
-        if has_langflow_memory():
-            pytest.fail("Langflow implementation is available")
+    def test_earthmind_available(self):
+        """Test whether the earthmind implementation is available."""
+        # EarthMind implementation should not be available
+        if has_earthmind_memory():
+            pytest.fail("EarthMind implementation is available")
 
     def test_helpers_import_build_schema_from_inputs(self):
         """Test the lfx.helpers.build_schema_from_inputs import."""

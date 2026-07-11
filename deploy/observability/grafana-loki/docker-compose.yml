@@ -16,9 +16,9 @@ services:
     container_name: lf-promtail
     volumes:
       - ./promtail/config.yml:/etc/promtail/config.yml
-      # Mount the directory that holds your langflow JSON log file.
-      # Override LANGFLOW_LOG_DIR to point at your real log location.
-      - ${LANGFLOW_LOG_DIR:-./logs}:/var/log/langflow:ro
+      # Mount the directory that holds your earthmind JSON log file.
+      # Override EARTHMIND_LOG_DIR to point at your real log location.
+      - ${EARTHMIND_LOG_DIR:-./logs}:/var/log/earthmind:ro
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       loki:

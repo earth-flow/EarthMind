@@ -140,15 +140,15 @@ PY
 for file in "${JS_FILES[@]}"; do
   rel="${file#"$ROOT_DIR"/}"
 
-  if ! node --check "$file" >/tmp/langflow-js-check.out 2>/tmp/langflow-js-check.err; then
+  if ! node --check "$file" >/tmp/earthmind-js-check.out 2>/tmp/earthmind-js-check.err; then
     echo "FAIL  $rel (node --check)"
     ((FAIL+=1))
     continue
   fi
 
   if [[ "$MODE" == "execute" ]]; then
-    if [[ -z "${LANGFLOW_API_KEY:-}" || ( -z "${LANGFLOW_URL:-}" && -z "${LANGFLOW_SERVER_URL:-}" ) ]]; then
-      echo "SKIP  $rel (set LANGFLOW_API_KEY and LANGFLOW_URL or LANGFLOW_SERVER_URL to execute)"
+    if [[ -z "${EARTHMIND_API_KEY:-}" || ( -z "${EARTHMIND_URL:-}" && -z "${EARTHMIND_SERVER_URL:-}" ) ]]; then
+      echo "SKIP  $rel (set EARTHMIND_API_KEY and EARTHMIND_URL or EARTHMIND_SERVER_URL to execute)"
       ((SKIP+=1))
       continue
     fi
@@ -166,9 +166,9 @@ for file in "${JS_FILES[@]}"; do
       continue
     fi
 
-    if ! node "$file" >/tmp/langflow-js-example.out 2>/tmp/langflow-js-example.err; then
+    if ! node "$file" >/tmp/earthmind-js-example.out 2>/tmp/earthmind-js-example.err; then
       echo "FAIL  $rel (execution)"
-      print_failure_logs "/tmp/langflow-js-example.out" "/tmp/langflow-js-example.err"
+      print_failure_logs "/tmp/earthmind-js-example.out" "/tmp/earthmind-js-example.err"
       ((FAIL+=1))
       continue
     fi

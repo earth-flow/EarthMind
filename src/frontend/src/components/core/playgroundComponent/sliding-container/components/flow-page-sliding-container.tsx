@@ -77,7 +77,7 @@ export function FlowPageSlidingContainerContent({
     if (chatHistory.length > prevChatLenRef.current) {
       const lastMsg = chatHistory[chatHistory.length - 1];
       if (lastMsg?.isSend) {
-        window.dispatchEvent(new Event("langflow-scroll-to-bottom"));
+        window.dispatchEvent(new Event("earthmind-scroll-to-bottom"));
         stickyInstance.scrollToBottom("smooth");
       }
     }
@@ -202,6 +202,7 @@ export function FlowPageSlidingContainerContent({
                   setFiles={setFiles}
                   isDragging={isDragging}
                   sendMessage={sendMessage}
+                  playgroundPage={false}
                 />
               </div>
             </div>

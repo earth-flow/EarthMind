@@ -1,10 +1,10 @@
-const url = `${process.env.LANGFLOW_URL ?? ""}/api/v1/users/?skip=0&limit=10`;
+const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/users/?skip=0&limit=10`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.LANGFLOW_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
   },
 };
 

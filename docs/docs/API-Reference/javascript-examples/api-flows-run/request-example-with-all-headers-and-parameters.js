@@ -1,11 +1,11 @@
-const url = `${process.env.LANGFLOW_SERVER_URL ?? ""}/api/v1/run/${process.env.FLOW_ID ?? ""}?stream=true`;
+const url = `${process.env.EARTHMIND_SERVER_URL ?? ""}/api/v1/run/${process.env.FLOW_ID ?? ""}?stream=true`;
 
 const options = {
   method: 'POST',
   headers: {
     "Content-Type": `application/json`,
     "accept": `application/json`,
-    "x-api-key": `${process.env.LANGFLOW_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
   },
   body: JSON.stringify({
   "input_value": "Tell me a story",

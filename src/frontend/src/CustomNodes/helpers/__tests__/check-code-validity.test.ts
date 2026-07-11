@@ -11,7 +11,7 @@ describe("checkCodeValidity", () => {
         },
       },
     },
-  } as Parameters<typeof checkCodeValidity>[0];
+  } as unknown as Parameters<typeof checkCodeValidity>[0];
 
   const templates = {
     CustomComponent: {

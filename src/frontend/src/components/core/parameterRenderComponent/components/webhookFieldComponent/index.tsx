@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "@/contexts/authContext";
 import { useGetBuildsMutation } from "@/controllers/API/queries/_builds/use-get-builds-polling-mutation";
 import SecretKeyModalButton from "@/customization/components/custom-secret-key-modal-button";
-import { ENABLE_DATASTAX_LANGFLOW } from "@/customization/feature-flags";
+import { ENABLE_DATASTAX_EARTHMIND } from "@/customization/feature-flags";
 import { getModalPropsApiKey } from "@/customization/utils/get-modal-props";
 import type { InputProps, TextAreaComponentType } from "../../types";
 import CopyFieldAreaComponent from "../copyFieldAreaComponent";
@@ -28,12 +28,12 @@ export default function WebhookFieldComponent({
   const isAuth = nodeInformationMetadata?.isAuth;
   const showGenerateToken =
     (isBackendUrl && !editNode && !isAuth) ||
-    (ENABLE_DATASTAX_LANGFLOW && !editNode);
+    (ENABLE_DATASTAX_EARTHMIND && !editNode);
 
   useEffect(() => {
     const getBuilds =
       (!editNode && isBackendUrl && !hasInitialized.current) ||
-      (ENABLE_DATASTAX_LANGFLOW && !editNode);
+      (ENABLE_DATASTAX_EARTHMIND && !editNode);
 
     if (getBuilds) {
       hasInitialized.current = true;

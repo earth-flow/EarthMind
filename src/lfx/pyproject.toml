@@ -1,10 +1,10 @@
 [project]
 name = "lfx"
 version = "1.10.0"
-description = "Langflow Executor - A lightweight CLI tool for executing and serving Langflow AI flows"
+description = "EarthMind Executor - A lightweight CLI tool for executing and serving EarthMind AI flows"
 readme = "README.md"
 authors = [
-    { name = "Gabriel Luiz Freitas Almeida", email = "gabriel@langflow.org" }
+    { name = "Gabriel Luiz Freitas Almeida", email = "gabriel@earthmind.org" }
 ]
 requires-python = ">=3.10,<3.15"
 dependencies = [
@@ -45,7 +45,7 @@ dependencies = [
     "pypdf>=6.10.0,<7.0.0",
     "cryptography>=46.0.7",
     "ag-ui-protocol>=0.1.10",
-    "langflow-sdk>=0.1.0",
+    "earthmind-sdk>=0.1.0",
     "markitdown>=0.1.4,<2.0.0",
     "setuptools>=80.0.0,<81.0.0",
     "wheel>=0.46.2,<1.0.0",

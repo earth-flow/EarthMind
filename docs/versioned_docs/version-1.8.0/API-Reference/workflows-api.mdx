@@ -12,11 +12,11 @@ The Workflow API is currently in **Beta**.
 The API endpoints and response formats may change in future releases.
 :::
 
-The Workflow API provides programmatic access to execute Langflow workflows synchronously or asynchronously.
+The Workflow API provides programmatic access to execute EarthMind workflows synchronously or asynchronously.
 Synchronous requests receive complete results immediately upon completion.
 Asynchronous requests are queued in the background and will run until complete, or a request is issued to the [Stop Workflow endpoint](#stop-workflow-endpoint).
 
-The Workflow API is part of the Langflow Developer v2 API and offers enhanced workflow execution capabilities compared to the v1 `/run` endpoint.
+The Workflow API is part of the EarthMind Developer v2 API and offers enhanced workflow execution capabilities compared to the v1 `/run` endpoint.
 
 <PartialAPISetup />
 
@@ -41,10 +41,10 @@ Execute a workflow synchronously and receive complete results immediately:
 ```python
 import requests
 
-url = f"{LANGFLOW_SERVER_URL}/api/v2/workflows"
+url = f"{EARTHMIND_SERVER_URL}/api/v2/workflows"
 headers = {
     "Content-Type": "application/json",
-    "x-api-key": LANGFLOW_API_KEY
+    "x-api-key": EARTHMIND_API_KEY
 }
 
 payload = {
@@ -67,7 +67,7 @@ print(response.json())
 ```typescript
 import axios from 'axios';
 
-const url = `${LANGFLOW_SERVER_URL}/api/v2/workflows`;
+const url = `${EARTHMIND_SERVER_URL}/api/v2/workflows`;
 
 const payload = {
   flow_id: "flow_67ccd2be17f0819081ff3bb2cf6508e60bb6a6b452d3795b",
@@ -84,7 +84,7 @@ const runWorkflow = async () => {
     const response = await axios.post(url, payload, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': LANGFLOW_API_KEY
+        'x-api-key': EARTHMIND_API_KEY
       }
     });
     console.log(response.data);
@@ -101,9 +101,9 @@ runWorkflow();
 
 ```bash
 curl -X POST \
-  "$LANGFLOW_SERVER_URL/api/v2/workflows" \
+  "$EARTHMIND_SERVER_URL/api/v2/workflows" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -d '{
     "flow_id": "flow_67ccd2be17f0819081ff3bb2cf6508e60bb6a6b452d3795b",
     "background": false,
@@ -136,10 +136,10 @@ The asynchronous request contains `stream` parameter, but streaming is not yet s
 ```python
 import requests
 
-url = f"{LANGFLOW_SERVER_URL}/api/v2/workflows"
+url = f"{EARTHMIND_SERVER_URL}/api/v2/workflows"
 headers = {
     "Content-Type": "application/json",
-    "x-api-key": LANGFLOW_API_KEY
+    "x-api-key": EARTHMIND_API_KEY
 }
 
 payload = {
@@ -163,7 +163,7 @@ print(response.json())  # Returns job_id immediately
 ```typescript
 import axios from 'axios';
 
-const url = `${LANGFLOW_SERVER_URL}/api/v2/workflows`;
+const url = `${EARTHMIND_SERVER_URL}/api/v2/workflows`;
 
 const payload = {
   flow_id: "flow_67ccd2be17f0819081ff3bb2cf6508e60bb6a6b452d3795b",
@@ -181,7 +181,7 @@ const runWorkflow = async () => {
     const response = await axios.post(url, payload, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': LANGFLOW_API_KEY
+        'x-api-key': EARTHMIND_API_KEY
       }
     });
     console.log(response.data);  // Returns job_id immediately
@@ -198,9 +198,9 @@ runWorkflow();
 
 ```bash
 curl -X POST \
-  "$LANGFLOW_SERVER_URL/api/v2/workflows" \
+  "$EARTHMIND_SERVER_URL/api/v2/workflows" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -d '{
     "flow_id": "flow_67ccd2be17f0819081ff3bb2cf6508e60bb6a6b452d3795b",
     "background": true,
@@ -289,13 +289,13 @@ The response includes an `outputs` field containing component-level results. Eac
 ```python
 import requests
 
-url = f"{LANGFLOW_SERVER_URL}/api/v2/workflows"
+url = f"{EARTHMIND_SERVER_URL}/api/v2/workflows"
 params = {
     "job_id": "job_id_1234567890"
 }
 headers = {
     "accept": "application/json",
-    "x-api-key": LANGFLOW_API_KEY
+    "x-api-key": EARTHMIND_API_KEY
 }
 
 response = requests.get(url, params=params, headers=headers)
@@ -309,7 +309,7 @@ print(response.json())
 import axios from 'axios';
 
 const jobId = 'job_id_1234567890';
-const url = `${LANGFLOW_SERVER_URL}/api/v2/workflows`;
+const url = `${EARTHMIND_SERVER_URL}/api/v2/workflows`;
 
 const getWorkflowStatus = async () => {
   try {
@@ -319,7 +319,7 @@ const getWorkflowStatus = async () => {
       },
       headers: {
         'accept': 'application/json',
-        'x-api-key': LANGFLOW_API_KEY
+        'x-api-key': EARTHMIND_API_KEY
       }
     });
     console.log(response.data);
@@ -336,9 +336,9 @@ getWorkflowStatus();
 
 ```bash
 curl -X GET \
-  "$LANGFLOW_SERVER_URL/api/v2/workflows?job_id=job_id_1234567890" \
+  "$EARTHMIND_SERVER_URL/api/v2/workflows?job_id=job_id_1234567890" \
   -H "accept: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY"
+  -H "x-api-key: $EARTHMIND_API_KEY"
 ```
 
 </TabItem>
@@ -407,10 +407,10 @@ The response includes a `status` field that indicates the current state of the w
 ```python
 import requests
 
-url = f"{LANGFLOW_SERVER_URL}/api/v2/workflows/stop"
+url = f"{EARTHMIND_SERVER_URL}/api/v2/workflows/stop"
 headers = {
     "Content-Type": "application/json",
-    "x-api-key": LANGFLOW_API_KEY
+    "x-api-key": EARTHMIND_API_KEY
 }
 payload = {
     "job_id": "job_id_1234567890"
@@ -426,7 +426,7 @@ print(response.json())
 ```typescript
 import axios from 'axios';
 
-const url = `${LANGFLOW_SERVER_URL}/api/v2/workflows/stop`;
+const url = `${EARTHMIND_SERVER_URL}/api/v2/workflows/stop`;
 
 const payload = {
   job_id: "job_id_1234567890"
@@ -437,7 +437,7 @@ const stopWorkflow = async () => {
     const response = await axios.post(url, payload, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': LANGFLOW_API_KEY
+        'x-api-key': EARTHMIND_API_KEY
       }
     });
     console.log(response.data);
@@ -454,9 +454,9 @@ stopWorkflow();
 
 ```bash
 curl -X POST \
-  "$LANGFLOW_SERVER_URL/api/v2/workflows/stop" \
+  "$EARTHMIND_SERVER_URL/api/v2/workflows/stop" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -d '{
     "job_id": "job_id_1234567890"
   }'
@@ -502,7 +502,7 @@ For example, this demonstrates targeting multiple components and their parameter
 }
 ```
 
-To find the component ID in the Langflow UI, open your flow in Langflow, click the component, and then click **Controls**. The component ID is at the top of the **Controls** pane.
+To find the component ID in the EarthMind UI, open your flow in EarthMind, click the component, and then click **Controls**. The component ID is at the top of the **Controls** pane.
 
 You can override any component's parameters.
 

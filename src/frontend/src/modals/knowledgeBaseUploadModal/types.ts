@@ -11,6 +11,9 @@ export interface KnowledgeBaseUploadModalProps {
     chunkSize?: number;
     chunkOverlap?: number;
     separator?: string;
+    parserStrategy?: string;
+    chunkStrategy?: string;
+    ocrProvider?: string;
     columnConfig?: ColumnConfigRow[];
     backendType?: string;
     backendConfig?: Record<string, unknown>;
@@ -18,6 +21,7 @@ export interface KnowledgeBaseUploadModalProps {
   hideAdvanced?: boolean;
   existingKnowledgeBaseNames?: string[];
 }
+
 
 export interface ColumnConfigRow {
   column_name: string;
@@ -32,6 +36,7 @@ export interface KnowledgeBaseFormData {
   chunkSize?: number;
   chunkOverlap?: number;
   separator?: string;
+  ocrProvider?: string;
   columnConfig?: ColumnConfigRow[];
   chunkCount?: number;
   backendType?: string;
@@ -45,6 +50,11 @@ export interface ChunkPreview {
     source: string;
     start: number;
     end: number;
+    title?: string;
+    level?: number;
+    sectionPath?: string;
+    parserStrategy?: string;
+    chunkStrategy?: string;
   };
 }
 

@@ -1,8 +1,8 @@
 curl -X POST \
-  "$LANGFLOW_URL/api/v1/build/$FLOW_ID/flow" \
+  "$EARTHMIND_URL/api/v1/build/$FLOW_ID/flow" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -d '{
     "data": {
       "nodes": [],

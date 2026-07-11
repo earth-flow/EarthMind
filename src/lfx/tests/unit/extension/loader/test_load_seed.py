@@ -1,7 +1,7 @@
 """Tests for ``load_seed_extensions`` -- the filesystem-resident @official source.
 
 Covers the deployment-doc contract: an immediate subdirectory of
-``$LANGFLOW_SEED_DIR`` (or the default ``/opt/langflow/bundles/``) that
+``$EARTHMIND_SEED_DIR`` (or the default ``/opt/earthmind/bundles/``) that
 ships a v0 manifest is loaded at the @official slot, identical in shape to
 a pip-installed distribution. Configured-but-missing roots emit a typed
 ``seed-directory-not-found`` error; the default-and-absent case is a silent
@@ -39,7 +39,7 @@ def _seed_subdir(seed_root: Path, extension_id: str, *, bundle_name: str = "pilo
 
 
 def test_seed_default_absent_is_silent_no_op(tmp_path: Path) -> None:
-    """Mode A: $LANGFLOW_SEED_DIR unset and the default doesn't exist -> []."""
+    """Mode A: $EARTHMIND_SEED_DIR unset and the default doesn't exist -> []."""
     results = load_seed_extensions(seed_dir_env="", default_seed_dir=tmp_path / "does-not-exist")
     assert results == []
 
@@ -123,7 +123,7 @@ def test_seed_results_are_deterministic(tmp_path: Path) -> None:
 
 
 def test_pathsep_split_loads_multiple_seed_roots(tmp_path: Path) -> None:
-    """``$LANGFLOW_SEED_DIR`` is pathsep-separated for multiple roots."""
+    """``$EARTHMIND_SEED_DIR`` is pathsep-separated for multiple roots."""
     root_a = tmp_path / "a"
     root_b = tmp_path / "b"
     root_a.mkdir()

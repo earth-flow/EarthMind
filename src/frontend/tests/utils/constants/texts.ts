@@ -62,10 +62,10 @@ export const TEXTS = {
   toastBuiltSuccessfully: "built successfully",
 
   // ─── Auth / login screen ────────────────────────────────────────────
-  /** Visible on the sign-in route when LANGFLOW_AUTO_LOGIN=false. */
-  authSignInHeader: "sign in to langflow",
-  /** Default seeded username/password ("langflow"/"langflow"). */
-  authDefaultCredential: "langflow",
+  /** Visible on the sign-in route when EARTHMIND_AUTO_LOGIN=false. */
+  authSignInHeader: "sign in to earthmind",
+  /** Default seeded username/password ("earthmind"/"earthmind"). */
+  authDefaultCredential: "earthmind",
 
   // ─── Form placeholders (getByPlaceholder) ───────────────────────────
   placeholderUsername: "Username",

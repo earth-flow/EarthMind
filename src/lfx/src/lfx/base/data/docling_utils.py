@@ -33,7 +33,7 @@ def _get_docling_document_class() -> type[Any]:
     except ImportError as e:
         dependency_name = "docling-core"
         install_command = (
-            "Install Docling with `uv pip install 'langflow[docling]'` or `uv pip install 'lfx-docling[local]'`."
+            "Install Docling with `uv pip install 'earthmind[docling]'` or `uv pip install 'lfx-docling[local]'`."
         )
         raise DoclingDependencyError(dependency_name, install_command) from e
     return docling_doc_module.DoclingDocument
@@ -348,8 +348,8 @@ def docling_worker(
 
     except ModuleNotFoundError:
         msg = (
-            "Docling is an optional dependency of Langflow. "
-            "Install with `uv pip install 'langflow[docling]'` "
+            "Docling is an optional dependency of EarthMind. "
+            "Install with `uv pip install 'earthmind[docling]'` "
             "or refer to the documentation"
         )
         queue.put({"error": msg})
@@ -386,7 +386,7 @@ def docling_worker(
             except ImportError as e:
                 msg = (
                     "langchain-docling is not installed. Install it with "
-                    "`uv pip install 'langflow[docling-image-description]'` or "
+                    "`uv pip install 'earthmind[docling-image-description]'` or "
                     "`uv pip install 'lfx-docling[image-description]'`."
                 )
                 raise ImportError(msg) from e

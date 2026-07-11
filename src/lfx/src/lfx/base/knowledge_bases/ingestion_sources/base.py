@@ -176,7 +176,7 @@ class KBIngestionSource(ABC):
     user's id and the source-specific ``source_config`` dict.
 
     Credential resolution for connector sources (Phase 3) happens inside
-    the source's own implementation using Langflow's
+    the source's own implementation using EarthMind's
     ``variable_service`` — credentials do NOT live on the ABC to avoid
     forcing simple sources (file upload, folder walk) to implement
     secret-lookup plumbing they don't need.

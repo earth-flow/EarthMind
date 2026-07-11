@@ -7,11 +7,11 @@ import pytest
 try:
     import altk  # noqa: F401
 except ImportError:
-    # agent-lifecycle-toolkit is an optional extra (langflow-base[altk]); skip if
+    # agent-lifecycle-toolkit is an optional extra (earthmind-base[altk]); skip if
     # not installed. (Upstream dropped its <3.14 cap in 0.10.1, now requires >=3.10.)
     pytest.skip("altk (agent-lifecycle-toolkit) not available", allow_module_level=True)
 
-from langflow.custom import Component
+from earthmind.custom import Component
 from lfx.base.models.anthropic_constants import ANTHROPIC_MODELS
 from lfx.components.altk.altk_agent import ALTKAgentComponent
 from lfx.components.tools.calculator import CalculatorToolComponent

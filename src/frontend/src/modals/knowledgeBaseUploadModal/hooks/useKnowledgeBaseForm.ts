@@ -26,6 +26,8 @@ import { validateMetadataPairs } from "../components/metadataValidation";
 import {
   DEFAULT_CHUNK_OVERLAP,
   DEFAULT_CHUNK_SIZE,
+  DEFAULT_CHUNK_STRATEGY,
+  DEFAULT_PARSER_STRATEGY,
   DEFAULT_SEPARATOR,
   KB_INGEST_EXTENSIONS,
   KB_NAME_REGEX,
@@ -63,6 +65,12 @@ function validateBackendConfig(
     const indexName = config.index_name;
     if (typeof indexName !== "string" || !indexName.trim()) {
       return "OpenSearch requires an index_name";
+    }
+  }
+  if (backendType === "milvus") {
+    const collectionName = config.collection_name;
+    if (typeof collectionName !== "string" || !collectionName.trim()) {
+      return "Milvus requires a collection_name";
     }
   }
   return null;
@@ -123,6 +131,9 @@ export function useKnowledgeBaseForm({
   const [chunkSize, setChunkSize] = useState(DEFAULT_CHUNK_SIZE);
   const [chunkOverlap, setChunkOverlap] = useState(DEFAULT_CHUNK_OVERLAP);
   const [separator, setSeparator] = useState(DEFAULT_SEPARATOR);
+  const [ocrProvider, setOcrProvider] = useState("mineru");
+  const parserStrategy = ocrProvider === "mineru" ? "mineru_markdown" : "plain_text";
+  const [chunkStrategy, setChunkStrategy] = useState(DEFAULT_CHUNK_STRATEGY);
   const [metadataPairs, setMetadataPairs] = useState<MetadataPair[]>([]);
   const [perFileMetadata, setPerFileMetadata] = useState<
     Record<string, MetadataPair[]>
@@ -130,7 +141,6 @@ export function useKnowledgeBaseForm({
   const [columnConfig, setColumnConfig] = useState<ColumnConfigRow[]>([
     { column_name: "text", vectorize: true, identifier: true },
   ]);
-
   // Validation state
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
@@ -182,6 +192,7 @@ export function useKnowledgeBaseForm({
 
   // Preview state
   const [chunkPreviews, setChunkPreviews] = useState<ChunkPreview[]>([]);
+  const useHeadingChunkingOnly = chunkStrategy === "heading_markdown";
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [selectedPreviewFileIndex, setSelectedPreviewFileIndex] = useState(0);
@@ -241,6 +252,14 @@ export function useKnowledgeBaseForm({
       } else {
         setSeparator(DEFAULT_SEPARATOR);
       }
+      setOcrProvider(
+        (existingKnowledgeBase.parserStrategy || "mineru_markdown") === "mineru_markdown"
+          ? "mineru"
+          : "plain_text",
+      );
+      setChunkStrategy(
+        existingKnowledgeBase.chunkStrategy || DEFAULT_CHUNK_STRATEGY,
+      );
       // Always enable advanced mode in add-sources mode so the file
       // upload section is visible. Also enable when the KB already has
       // advanced chunking config.
@@ -304,6 +323,8 @@ export function useKnowledgeBaseForm({
     setChunkSize(DEFAULT_CHUNK_SIZE);
     setChunkOverlap(DEFAULT_CHUNK_OVERLAP);
     setSeparator(DEFAULT_SEPARATOR);
+    setOcrProvider("mineru");
+    setChunkStrategy(DEFAULT_CHUNK_STRATEGY);
     setColumnConfig([
       { column_name: "text", vectorize: true, identifier: true },
     ]);
@@ -336,9 +357,15 @@ export function useKnowledgeBaseForm({
       const selectedFile = files[selectedPreviewFileIndex] || files[0];
       const formData = new FormData();
       formData.append("files", selectedFile);
-      formData.append("chunk_size", chunkSize.toString());
-      formData.append("chunk_overlap", chunkOverlap.toString());
+      if (!useHeadingChunkingOnly) {
+        if (!useHeadingChunkingOnly) {
+          formData.append("chunk_size", chunkSize.toString());
+          formData.append("chunk_overlap", chunkOverlap.toString());
+        }
+      }
       formData.append("separator", separator);
+      formData.append("parser_strategy", parserStrategy);
+      formData.append("chunk_strategy", chunkStrategy);
 
       const response = await api.post(
         `${getURL("KNOWLEDGE_BASES")}/preview-chunks`,
@@ -364,6 +391,11 @@ export function useKnowledgeBaseForm({
               source: selectedFile.name,
               start: chunk.start,
               end: chunk.end,
+              title: chunk.title,
+              level: chunk.level,
+              sectionPath: chunk.section_path,
+              parserStrategy: filePreview?.parser_strategy,
+              chunkStrategy: filePreview?.chunk_strategy,
             },
           }),
         ) ?? [];
@@ -378,7 +410,7 @@ export function useKnowledgeBaseForm({
     } finally {
       setIsGeneratingPreview(false);
     }
-  }, [files, chunkSize, chunkOverlap, separator, selectedPreviewFileIndex]);
+  }, [files, chunkSize, chunkOverlap, separator, parserStrategy, chunkStrategy, selectedPreviewFileIndex, useHeadingChunkingOnly]);
 
   // Generate previews when entering step 2
   useEffect(() => {
@@ -409,12 +441,24 @@ export function useKnowledgeBaseForm({
     }
     if (!isAddSourcesMode) {
       const selectedProvider = getDBProviderOption(backendType);
-      if (!isDBProviderConfigured(backendType, globalVariables)) {
-        errors.backend = `${selectedProvider.label} must be configured in DB Providers settings before it can be used.`;
+      if (backendType === "milvus") {
+        const effectiveCollectionName =
+          String(backendConfig.collection_name || "").trim() ||
+          getGlobalVariableValue(globalVariables, "MILVUS_COLLECTION_NAME") || "";
+
+        if (!isDBProviderConfigured(backendType, globalVariables)) {
+          errors.backend = `${selectedProvider.label} must be configured in DB Providers settings before it can be used.`;
+        } else if (!effectiveCollectionName) {
+          errors.backend = "Milvus requires a collection_name";
+        }
       } else {
-        const backendErrors = validateBackendConfig(backendType, backendConfig);
-        if (backendErrors) {
-          errors.backend = backendErrors;
+        if (!isDBProviderConfigured(backendType, globalVariables)) {
+          errors.backend = `${selectedProvider.label} must be configured in DB Providers settings before it can be used.`;
+        } else {
+          const backendErrors = validateBackendConfig(backendType, backendConfig);
+          if (backendErrors) {
+            errors.backend = backendErrors;
+          }
         }
       }
     }
@@ -467,14 +511,26 @@ export function useKnowledgeBaseForm({
     try {
       // Create the knowledge base (skip if adding to existing)
       if (!isAddSourcesMode) {
+        const effectiveBackendConfig =
+          backendType === "milvus"
+            ? {
+                ...backendConfig,
+                collection_name: String(backendConfig.collection_name || '').trim() || kbName,
+              }
+            : backendConfig;
+
         await createKnowledgeBase.mutateAsync({
           name: kbName,
           embedding_provider: selectedModel.provider || "Unknown",
           embedding_model: selectedModel.id || selectedModel.name,
-          model_selection: selectedModel,
+          model_selection: {
+            ...selectedModel,
+          },
           column_config: columnConfig,
           backend_type: toAPIBackendType(backendType),
-          backend_config: backendConfig,
+          backend_config: effectiveBackendConfig,
+          parser_strategy: parserStrategy,
+          chunk_strategy: chunkStrategy,
         });
       }
 
@@ -487,6 +543,9 @@ export function useKnowledgeBaseForm({
           columnConfig,
           backendType,
           backendConfig,
+          ocrProvider,
+          parserStrategy,
+          chunkStrategy,
         };
 
         setSuccessData({
@@ -506,9 +565,18 @@ export function useKnowledgeBaseForm({
           formData.append("files", file);
         });
         formData.append("source_name", sourceName);
-        formData.append("chunk_size", chunkSize.toString());
-        formData.append("chunk_overlap", chunkOverlap.toString());
+        // In heading-only mode (mineru_markdown + heading_markdown),
+        // chunk_size / chunk_overlap are not used by the backend's heading
+        // splitter, so we omit them — matching preview-chunks behavior.
+        // Sending the frontend default (100) would cause the oversized-section
+        // sub-splitter to fire on every section, fragmenting one sentence per chunk.
+        if (!useHeadingChunkingOnly) {
+          formData.append("chunk_size", chunkSize.toString());
+          formData.append("chunk_overlap", chunkOverlap.toString());
+        }
         formData.append("separator", separator);
+        formData.append("parser_strategy", parserStrategy);
+        formData.append("chunk_strategy", chunkStrategy);
         formData.append("column_config", JSON.stringify(columnConfig));
 
         // User-supplied metadata is sent as JSON strings so the same
@@ -559,6 +627,9 @@ export function useKnowledgeBaseForm({
         chunkSize,
         chunkOverlap,
         separator,
+        ocrProvider,
+        parserStrategy,
+        chunkStrategy,
         columnConfig,
         backendType,
         backendConfig,
@@ -672,6 +743,11 @@ export function useKnowledgeBaseForm({
     setChunkOverlap,
     separator,
     setSeparator,
+    ocrProvider,
+    setOcrProvider,
+    parserStrategy,
+    chunkStrategy,
+    setChunkStrategy,
     selectedEmbeddingModel,
     setSelectedEmbeddingModel,
     embeddingModelOptions,

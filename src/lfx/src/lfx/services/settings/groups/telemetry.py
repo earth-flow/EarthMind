@@ -13,13 +13,13 @@ class TelemetrySettings(BaseModel):
 
     # Telemetry
     do_not_track: bool = False
-    """If set to True, Langflow will not track telemetry."""
-    telemetry_base_url: str = "https://langflow.gateway.scarf.sh"
+    """If set to True, EarthMind will not track telemetry."""
+    telemetry_base_url: str = "https://earthmind.gateway.scarf.sh"
 
     transactions_storage_enabled: bool = True
-    """If set to True, Langflow will track transactions between flows."""
+    """If set to True, EarthMind will track transactions between flows."""
     vertex_builds_storage_enabled: bool = True
-    """If set to True, Langflow will keep track of each vertex builds (outputs) in the UI for any flow."""
+    """If set to True, EarthMind will keep track of each vertex builds (outputs) in the UI for any flow."""
 
     telemetry_writer_enabled: bool = True
     """Route transaction and vertex_build writes through an async batched writer backed by a
@@ -40,7 +40,7 @@ class TelemetrySettings(BaseModel):
     incremented. Bounds disk usage in pathological backlog scenarios."""
     telemetry_writer_outbox_dir: str | None = None
     """Directory for the disk-backed outbox. Defaults to
-    <tempdir>/langflow_telemetry_outbox. Each worker process uses an isolated
+    <tempdir>/earthmind_telemetry_outbox. Each worker process uses an isolated
     subdirectory keyed by PID; sibling subdirectories from crashed workers are
     automatically adopted on startup."""
     telemetry_writer_shutdown_drain_s: float = 5.0

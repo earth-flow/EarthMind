@@ -1,14 +1,14 @@
 [project]
 name = "lfx-ibm"
 version = "0.1.1"
-description = "IBM components (Db2 Vector Store + watsonx.ai LLM and embeddings) as a standalone Langflow Extension Bundle."
+description = "IBM components (Db2 Vector Store + watsonx.ai LLM and embeddings) as a standalone EarthMind Extension Bundle."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
 license = { text = "MIT" }
 authors = [
-    { name = "Langflow", email = "contact@langflow.org" },
+    { name = "EarthMind", email = "contact@earthmind.org" },
 ]
-keywords = ["langflow", "lfx", "extension", "bundle", "ibm", "db2", "watsonx", "vector-store"]
+keywords = ["earthmind", "lfx", "extension", "bundle", "ibm", "db2", "watsonx", "vector-store"]
 
 # Runtime deps: lfx (the BUNDLE_API surface) plus IBM SDK packages used by
 # the bundled components.
@@ -23,7 +23,7 @@ keywords = ["langflow", "lfx", "extension", "bundle", "ibm", "db2", "watsonx", "
 #   former ``python_version < '3.14'`` markers are lifted.  ``ibm-watsonx-ai``
 #   raised its floor to ``>=3.11`` on the 3.14-capable build, so the universal
 #   resolver forks: a 3.14 build on the 3.14 Docker image, an older
-#   3.10-compatible build elsewhere.  Kept in lockstep with langflow-base.
+#   3.10-compatible build elsewhere.  Kept in lockstep with earthmind-base.
 # * ``langchain-community`` provides the helpers DB2VS leans on.
 dependencies = [
     "lfx>=1.10.0.dev0,<2.0.0",
@@ -34,17 +34,17 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/langflow-ai/langflow"
-Documentation = "https://docs.langflow.org/extensions"
-Repository = "https://github.com/langflow-ai/langflow"
+Homepage = "https://github.com/earthmind-ai/earthmind"
+Documentation = "https://docs.earthmind.org/extensions"
+Repository = "https://github.com/earthmind-ai/earthmind"
 
 # Manifest-shipping distributions are discovered via the
-# ``langflow.extensions`` entry-point.  The value is the dotted path to
+# ``earthmind.extensions`` entry-point.  The value is the dotted path to
 # the package containing ``extension.json`` -- the loader walks
 # ``importlib.metadata.files()`` from there to find the manifest, and
 # falls back to this entry-point for editable installs whose dist.files
 # only surfaces dist-info entries.
-[project.entry-points."langflow.extensions"]
+[project.entry-points."earthmind.extensions"]
 lfx-ibm = "lfx_ibm"
 
 [build-system]

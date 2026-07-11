@@ -14,6 +14,8 @@ export const getStepDescriptions = (): Record<WizardStep, string> => ({
 export const DEFAULT_CHUNK_SIZE = 100;
 export const DEFAULT_CHUNK_OVERLAP = 0;
 export const DEFAULT_SEPARATOR = "\\n";
+export const DEFAULT_PARSER_STRATEGY = "auto";
+export const DEFAULT_CHUNK_STRATEGY = "heading_markdown";
 
 export const KB_INGEST_FORMATS: Record<string, string[]> = {
   documents: [

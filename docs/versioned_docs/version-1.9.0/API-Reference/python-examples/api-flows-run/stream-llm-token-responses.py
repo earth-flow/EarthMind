@@ -2,12 +2,12 @@ import os
 
 import requests
 
-url = f"{os.getenv('LANGFLOW_SERVER_URL', '')}/api/v1/run/{os.getenv('FLOW_ID', '')}?stream=true"
+url = f"{os.getenv('EARTHMIND_SERVER_URL', '')}/api/v1/run/{os.getenv('FLOW_ID', '')}?stream=true"
 
 headers = {
     "accept": "application/json",
     "Content-Type": "application/json",
-    "x-api-key": f"{os.getenv('LANGFLOW_API_KEY', '')}",
+    "x-api-key": f"{os.getenv('EARTHMIND_API_KEY', '')}",
 }
 
 payload = {"message": "Tell me something interesting!", "session_id": "chat-123"}

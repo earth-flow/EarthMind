@@ -178,7 +178,7 @@ def get_llm(
             pass  # Skip invalid max_tokens (e.g. empty string from form input)
 
     # Enable streaming usage for providers that support it
-    if provider in ["OpenAI", "Anthropic"]:
+    if provider in ["OpenAI", "SiliconFlow", "Anthropic"]:
         kwargs["stream_usage"] = True
 
     # Add provider-specific parameters
@@ -326,6 +326,8 @@ def get_embeddings(
         api_base_value = _to_str(os.environ.get("OPENAI_EMBEDDINGS_API_BASE")) or _to_str(
             os.environ.get("OPENAI_API_BASE")
         )
+    if provider == "SiliconFlow" and not api_base_value:
+        api_base_value = _to_str(os.environ.get("SILICONFLOW_API_BASE"))
 
     # --- resolve API key -----------------------------------------------------
     api_key = unified_models_module.get_api_key_for_provider(user_id, provider, api_key)

@@ -5,8 +5,8 @@ CASCADE delete, unique constraints, and default values.
 """
 
 import pytest
-from langflow.services.database.models.auth.sso import SSOConfig, SSOUserProfile
-from langflow.services.database.models.user.model import User
+from earthmind.services.database.models.auth.sso import SSOConfig, SSOUserProfile
+from earthmind.services.database.models.user.model import User
 from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import create_async_engine

@@ -26,7 +26,7 @@ class GleanAPIWrapper(BaseModel):
 
     glean_api_url: str
     glean_access_token: str
-    act_as: str = "langflow-component@datastax.com"  # TODO: Detect this
+    act_as: str = "earthmind-component@datastax.com"  # TODO: Detect this
 
     def _prepare_request(
         self,
@@ -101,7 +101,7 @@ class GleanAPIWrapper(BaseModel):
 class GleanSearchAPIComponent(LCToolComponent):
     display_name: str = "Glean Search API"
     description: str = "Search using Glean's API."
-    documentation: str = "https://docs.langflow.org/bundles-glean"
+    documentation: str = "https://docs.earthmind.org/bundles-glean"
     icon: str = "Glean"
 
     outputs = [

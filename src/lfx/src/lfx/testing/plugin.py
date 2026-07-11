@@ -51,33 +51,33 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Base directory for resolving relative flow paths (default: cwd).",
     )
 
-    # Guard against duplicate registration when langflow-sdk[testing] is also installed.
-    # Both plugins expose the same --langflow-* options; only register them once.
-    remote = parser.getgroup("langflow", "Langflow remote integration testing options")
+    # Guard against duplicate registration when earthmind-sdk[testing] is also installed.
+    # Both plugins expose the same --earthmind-* options; only register them once.
+    remote = parser.getgroup("earthmind", "EarthMind remote integration testing options")
     _remote_opts = {
-        "--langflow-env": {
-            "dest": "langflow_env",
+        "--earthmind-env": {
+            "dest": "earthmind_env",
             "default": None,
             "metavar": "NAME",
             "help": (
-                "Named environment from .lfx/environments.yaml or langflow-environments.toml. "
+                "Named environment from .lfx/environments.yaml or earthmind-environments.toml. "
                 "When set, flow_runner targets the remote instance instead of running locally."
             ),
         },
-        "--langflow-url": {
-            "dest": "langflow_url",
+        "--earthmind-url": {
+            "dest": "earthmind_url",
             "default": None,
             "metavar": "URL",
-            "help": "Base URL of the remote Langflow instance (overrides --langflow-env).",
+            "help": "Base URL of the remote EarthMind instance (overrides --earthmind-env).",
         },
-        "--langflow-api-key": {
-            "dest": "langflow_api_key",
+        "--earthmind-api-key": {
+            "dest": "earthmind_api_key",
             "default": None,
             "metavar": "KEY",
-            "help": "API key for the remote Langflow instance.",
+            "help": "API key for the remote EarthMind instance.",
         },
-        "--langflow-environments-file": {
-            "dest": "langflow_environments_file",
+        "--earthmind-environments-file": {
+            "dest": "earthmind_environments_file",
             "default": None,
             "metavar": "PATH",
             "help": "Path to environments config file (.yaml or .toml; overrides default lookup).",
@@ -100,13 +100,13 @@ def pytest_configure(config: pytest.Config) -> None:
     )
     config.addinivalue_line(
         "markers",
-        "integration: integration test that requires a live Langflow instance",
+        "integration: integration test that requires a live EarthMind instance",
     )
 
 
 _SKIP_NO_REMOTE = (
-    "No remote Langflow connection configured. "
-    "Pass --langflow-url <URL> or --langflow-env <NAME> to run against a live instance."
+    "No remote EarthMind connection configured. "
+    "Pass --earthmind-url <URL> or --earthmind-env <NAME> to run against a live instance."
 )
 
 
@@ -114,70 +114,70 @@ def _resolve_remote_client(request: pytest.FixtureRequest) -> Any | None:
     """Return a sync SDK client if remote options are configured, else ``None``.
 
     Priority:
-    1. ``--langflow-url`` / ``LANGFLOW_URL`` -- direct URL (with optional ``--langflow-api-key``)
-    2. ``--langflow-env`` / ``LANGFLOW_ENV`` -- named environment from TOML/YAML file
+    1. ``--earthmind-url`` / ``EARTHMIND_URL`` -- direct URL (with optional ``--earthmind-api-key``)
+    2. ``--earthmind-env`` / ``EARTHMIND_ENV`` -- named environment from TOML/YAML file
     """
-    url: str | None = request.config.getoption("langflow_url", default=None) or os.environ.get("LANGFLOW_URL")
-    env_name: str | None = request.config.getoption("langflow_env", default=None) or os.environ.get("LANGFLOW_ENV")
+    url: str | None = request.config.getoption("earthmind_url", default=None) or os.environ.get("EARTHMIND_URL")
+    env_name: str | None = request.config.getoption("earthmind_env", default=None) or os.environ.get("EARTHMIND_ENV")
 
     if not url and not env_name:
         return None
 
     try:
-        import langflow_sdk  # type: ignore[import-untyped]
+        import earthmind_sdk  # type: ignore[import-untyped]
     except ImportError:
-        pytest.skip("langflow-sdk is required for remote testing. Install: pip install langflow-sdk")
+        pytest.skip("earthmind-sdk is required for remote testing. Install: pip install earthmind-sdk")
 
     if url:
-        api_key: str | None = request.config.getoption("langflow_api_key", default=None) or os.environ.get(
-            "LANGFLOW_API_KEY"
+        api_key: str | None = request.config.getoption("earthmind_api_key", default=None) or os.environ.get(
+            "EARTHMIND_API_KEY"
         )
-        return langflow_sdk.Client(base_url=url, api_key=api_key)
+        return earthmind_sdk.Client(base_url=url, api_key=api_key)
 
     # Named environment
-    env_file: str | None = request.config.getoption("langflow_environments_file", default=None) or os.environ.get(
-        "LANGFLOW_ENVIRONMENTS_FILE"
+    env_file: str | None = request.config.getoption("earthmind_environments_file", default=None) or os.environ.get(
+        "EARTHMIND_ENVIRONMENTS_FILE"
     )
     try:
         from pathlib import Path as _Path
 
-        from langflow_sdk.environments import get_client  # type: ignore[import-untyped]
+        from earthmind_sdk.environments import get_client  # type: ignore[import-untyped]
 
         return get_client(env_name, config_file=_Path(env_file) if env_file else None)
     except Exception as exc:  # noqa: BLE001
-        pytest.skip(f"Could not configure Langflow environment {env_name!r}: {exc}")
+        pytest.skip(f"Could not configure EarthMind environment {env_name!r}: {exc}")
 
 
 def _resolve_async_remote_client(request: pytest.FixtureRequest) -> Any | None:
     """Return an async SDK client if remote options are configured, else ``None``."""
-    url: str | None = request.config.getoption("langflow_url", default=None) or os.environ.get("LANGFLOW_URL")
-    env_name: str | None = request.config.getoption("langflow_env", default=None) or os.environ.get("LANGFLOW_ENV")
+    url: str | None = request.config.getoption("earthmind_url", default=None) or os.environ.get("EARTHMIND_URL")
+    env_name: str | None = request.config.getoption("earthmind_env", default=None) or os.environ.get("EARTHMIND_ENV")
 
     if not url and not env_name:
         return None
 
     try:
-        import langflow_sdk  # type: ignore[import-untyped]
+        import earthmind_sdk  # type: ignore[import-untyped]
     except ImportError:
-        pytest.skip("langflow-sdk is required for remote testing. Install: pip install langflow-sdk")
+        pytest.skip("earthmind-sdk is required for remote testing. Install: pip install earthmind-sdk")
 
     if url:
-        api_key: str | None = request.config.getoption("langflow_api_key", default=None) or os.environ.get(
-            "LANGFLOW_API_KEY"
+        api_key: str | None = request.config.getoption("earthmind_api_key", default=None) or os.environ.get(
+            "EARTHMIND_API_KEY"
         )
-        return langflow_sdk.AsyncClient(base_url=url, api_key=api_key)
+        return earthmind_sdk.AsyncClient(base_url=url, api_key=api_key)
 
-    env_file: str | None = request.config.getoption("langflow_environments_file", default=None) or os.environ.get(
-        "LANGFLOW_ENVIRONMENTS_FILE"
+    env_file: str | None = request.config.getoption("earthmind_environments_file", default=None) or os.environ.get(
+        "EARTHMIND_ENVIRONMENTS_FILE"
     )
     try:
         from pathlib import Path as _Path
 
-        from langflow_sdk.environments import get_async_client  # type: ignore[import-untyped]
+        from earthmind_sdk.environments import get_async_client  # type: ignore[import-untyped]
 
         return get_async_client(env_name, config_file=_Path(env_file) if env_file else None)
     except Exception as exc:  # noqa: BLE001
-        pytest.skip(f"Could not configure Langflow environment {env_name!r}: {exc}")
+        pytest.skip(f"Could not configure EarthMind environment {env_name!r}: {exc}")
 
 
 def _get_marker_arg(request: pytest.FixtureRequest, name: str) -> Any:
@@ -225,14 +225,14 @@ def flow_runner(
         * ``--lfx-env-file`` / ``--lfx-timeout`` / ``--lfx-flow-dir``
         * ``LFX_ENV_FILE`` / ``LFX_TIMEOUT`` / ``LFX_FLOW_DIR``
 
-    **Remote mode** (when ``--langflow-env`` or ``--langflow-url`` is supplied)
-        Calls the live Langflow API.  Requires ``langflow-sdk``.
+    **Remote mode** (when ``--earthmind-env`` or ``--earthmind-url`` is supplied)
+        Calls the live EarthMind API.  Requires ``earthmind-sdk``.
 
-        * ``--langflow-env <NAME>`` -- named environment from ``.lfx/environments.yaml``
-        * ``--langflow-url <URL>`` -- direct URL
-        * ``--langflow-api-key <KEY>`` / ``LANGFLOW_API_KEY``
-        * ``--langflow-environments-file <PATH>`` / ``LANGFLOW_ENVIRONMENTS_FILE``
-        * ``LANGFLOW_ENV`` / ``LANGFLOW_URL``
+        * ``--earthmind-env <NAME>`` -- named environment from ``.lfx/environments.yaml``
+        * ``--earthmind-url <URL>`` -- direct URL
+        * ``--earthmind-api-key <KEY>`` / ``EARTHMIND_API_KEY``
+        * ``--earthmind-environments-file <PATH>`` / ``EARTHMIND_ENVIRONMENTS_FILE``
+        * ``EARTHMIND_ENV`` / ``EARTHMIND_URL``
 
     Example (local)::
 
@@ -240,7 +240,7 @@ def flow_runner(
             result = flow_runner("flows/greeting.json", input_value="Hello")
             assert result.ok
 
-    Example (remote -- run with ``pytest --langflow-env staging``)::
+    Example (remote -- run with ``pytest --earthmind-env staging``)::
 
         @pytest.mark.integration
         def test_greeting(flow_runner):

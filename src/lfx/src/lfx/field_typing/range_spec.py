@@ -1,4 +1,4 @@
-"""Range specification for field types copied from langflow for lfx package."""
+"""Range specification for field types copied from earthmind for lfx package."""
 
 from typing import Literal
 

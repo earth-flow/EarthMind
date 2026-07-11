@@ -5,7 +5,7 @@ files. Safe-by-default via ``allowed_roots`` — the caller must declare
 which directories are permitted, and the resolved folder path must be
 inside one of them (no symlink traversal out).
 
-Intended for Langflow Desktop and self-hosted deployments where the
+Intended for EarthMind Desktop and self-hosted deployments where the
 operator can reason about which directories the service can read. In
 multi-tenant cloud the allow-list should be configured to an empty
 list (or per-tenant roots) so arbitrary-path access is refused.
@@ -109,7 +109,7 @@ class FolderSource(KBIngestionSource):
         if not allowed_roots:
             msg = (
                 "FolderSource refuses to walk without an allow-list. Configure "
-                "LANGFLOW_KB_ALLOWED_FOLDER_ROOTS or pass 'allowed_roots' in source_config."
+                "EARTHMIND_KB_ALLOWED_FOLDER_ROOTS or pass 'allowed_roots' in source_config."
             )
             raise ValueError(msg)
 

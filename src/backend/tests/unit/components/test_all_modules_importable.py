@@ -18,7 +18,7 @@ import importlib
 import pkgutil
 
 import pytest
-from langflow import components
+from earthmind import components
 from lfx.interface.components import _warm_circular_imports
 
 
@@ -51,7 +51,7 @@ class TestAllModulesImportable:
         # in pyproject.toml because upstream pins exclude 3.14. These are expected
         # to fail import on 3.14 until the upstreams adapt.
         # NOTE: ibm.* moved to the lfx-ibm bundle (src/bundles/ibm) and is no
-        # longer iterated through ``langflow.components``; the watsonx
+        # longer iterated through ``earthmind.components``; the watsonx
         # 3.14-gating moved with them.
         gated_on_py314 = {
             "altk.ALTKAgentComponent",
@@ -137,11 +137,11 @@ class TestAllModulesImportable:
         """Test that traditional import patterns still work."""
         # Test some key imports that should always work
         traditional_imports = [
-            ("langflow.components.openai", "OpenAIModelComponent"),
-            ("langflow.components.anthropic", "AnthropicModelComponent"),
-            ("langflow.components.data", "APIRequestComponent"),
-            ("langflow.components.models_and_agents", "AgentComponent"),
-            ("langflow.components.helpers", "CalculatorComponent"),
+            ("earthmind.components.openai", "OpenAIModelComponent"),
+            ("earthmind.components.anthropic", "AnthropicModelComponent"),
+            ("earthmind.components.data", "APIRequestComponent"),
+            ("earthmind.components.models_and_agents", "AgentComponent"),
+            ("earthmind.components.helpers", "CalculatorComponent"),
         ]
 
         failed_imports = []

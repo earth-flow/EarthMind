@@ -18,7 +18,7 @@ class SecuritySettings(BaseModel):
 
     # SSRF Protection
     ssrf_protection_enabled: bool = True
-    """If set to True, Langflow will enable SSRF (Server-Side Request Forgery) protection.
+    """If set to True, EarthMind will enable SSRF (Server-Side Request Forgery) protection.
     When enabled, blocks requests to private IP ranges, localhost, and cloud metadata endpoints.
     When False, no URL validation is performed, allowing requests to any destination
     including internal services, private networks, and cloud metadata endpoints.
@@ -46,7 +46,7 @@ class SecuritySettings(BaseModel):
     when the cache is not yet loaded (e.g., during startup), all flow execution is blocked
     as a safety measure.
 
-    Note: LANGFLOW_COMPONENTS_PATH and LANGFLOW_COMPONENTS_INDEX_PATH can be used to define
+    Note: EARTHMIND_COMPONENTS_PATH and EARTHMIND_COMPONENTS_INDEX_PATH can be used to define
     an allow-list of custom components that will be allowed to execute, even when
     allow_custom_components is False. That bypass can be disabled with
     allow_components_paths_override.
@@ -58,7 +58,7 @@ class SecuritySettings(BaseModel):
     are blocked from modifying custom component templates."""
 
     allow_components_paths_override: bool = True
-    """If set to False, LANGFLOW_COMPONENTS_PATH and LANGFLOW_COMPONENTS_INDEX_PATH will
+    """If set to False, EARTHMIND_COMPONENTS_PATH and EARTHMIND_COMPONENTS_INDEX_PATH will
     not bypass the allow_custom_components=False restriction — only components matching
     built-in server templates will be executable.
 

@@ -55,7 +55,7 @@ except ModuleNotFoundError:
 MAX_PORT_NUMBER = 65535
 
 # Fixed namespace constant for deterministic UUID5 generation across runs
-_LANGFLOW_NAMESPACE_UUID = uuid.UUID("3c091057-e799-4e32-8ebc-27bc31e1108c")
+_EARTHMIND_NAMESPACE_UUID = uuid.UUID("3c091057-e799-4e32-8ebc-27bc31e1108c")
 
 # Environment variable for GitHub token
 _GITHUB_TOKEN_ENV = "GITHUB_TOKEN"
@@ -79,7 +79,7 @@ def create_verbose_printer(*, verbose: bool):
     return verbose_print
 
 
-def is_port_in_use(port: int, host: str = "localhost") -> bool:
+def is_port_in_use(port: int, host: str = "10.171.205.153") -> bool:
     """Check if a port is already in use."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
@@ -109,7 +109,7 @@ def get_best_access_host(host: str) -> str:
     """Get the best host address for external access."""
     # Note: 0.0.0.0 and :: are intentionally checked as they bind to all interfaces
     if host in ("0.0.0.0", "::", ""):
-        return "localhost"
+        return "10.171.205.153"
     return host
 
 
@@ -121,9 +121,9 @@ def get_api_key() -> str:
     is resolved via :func:`lfx.config.resolve_environment` and the
     ``api_key_env`` field in ``.lfx/environments.yaml``.
     """
-    api_key = os.getenv("LANGFLOW_API_KEY") or os.getenv("LFX_API_KEY")
+    api_key = os.getenv("EARTHMIND_API_KEY") or os.getenv("LFX_API_KEY")
     if not api_key:
-        msg = "LANGFLOW_API_KEY environment variable is not set"
+        msg = "EARTHMIND_API_KEY environment variable is not set"
         raise ValueError(msg)
     return api_key
 
@@ -548,7 +548,7 @@ def flow_id_from_path(file_path: Path, root_dir: Path) -> str:
         Canonical UUID string (36 chars, including hyphens).
     """
     relative = file_path.relative_to(root_dir).as_posix()
-    return str(uuid.uuid5(_LANGFLOW_NAMESPACE_UUID, relative))
+    return str(uuid.uuid5(_EARTHMIND_NAMESPACE_UUID, relative))
 
 
 # ---------------------------------------------------------------------------
@@ -645,7 +645,7 @@ def download_and_extract_repo(url: str, verbose_print, *, timeout: float = 60.0)
 
 
 def load_sdk(command_name: str) -> Any:
-    """Lazily import ``langflow_sdk`` to keep CLI startup fast.
+    """Lazily import ``earthmind_sdk`` to keep CLI startup fast.
 
     Raises :class:`typer.BadParameter` with install guidance when the package
     is not available.
@@ -655,12 +655,12 @@ def load_sdk(command_name: str) -> Any:
             the error message).
     """
     try:
-        import langflow_sdk  # type: ignore[import-untyped]
+        import earthmind_sdk  # type: ignore[import-untyped]
     except ImportError as exc:
-        msg = f"langflow-sdk is required for lfx {command_name}. Install it with: pip install langflow-sdk"
+        msg = f"earthmind-sdk is required for lfx {command_name}. Install it with: pip install earthmind-sdk"
         raise typer.BadParameter(msg) from exc
     else:
-        return langflow_sdk
+        return earthmind_sdk
 
 
 def safe_filename(name: str) -> str:

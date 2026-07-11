@@ -1,7 +1,7 @@
 """Tests for the loader's public dataclasses.
 
 ``LoadedComponent`` and ``LoadResult`` are the values the rest of the
-Langflow stack consumes (events pipeline, registry, future reload).
+EarthMind stack consumes (events pipeline, registry, future reload).
 These tests pin their shape and behavior independently of the orchestrator
 so a future refactor can move the dataclass code without breaking
 downstream consumers.

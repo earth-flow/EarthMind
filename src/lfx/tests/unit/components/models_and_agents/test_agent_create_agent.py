@@ -583,7 +583,7 @@ async def test_should_pass_event_manager_on_token_callback_to_process_agent_even
     """Parity with legacy lines 261-263, 283: stream tokens to the event manager.
 
     When the component is wired to an event_manager (typical when running inside the
-    Langflow runtime), `process_agent_events` must receive a callback that pipes each
+    EarthMind runtime), `process_agent_events` must receive a callback that pipes each
     token chunk to `event_manager.on_token`. Without this, the frontend's live-typing
     view stops working for the AgentComponent.
     """

@@ -27,7 +27,7 @@ from unittest.mock import Mock
 from uuid import uuid4
 
 import pytest
-from langflow.api.v2.converters import (
+from earthmind.api.v2.converters import (
     _build_metadata_for_non_output,
     _extract_file_path,
     _extract_model_source,

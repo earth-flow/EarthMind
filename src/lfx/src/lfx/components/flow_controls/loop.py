@@ -21,7 +21,7 @@ class LoopComponent(Component):
         "Iterates through Data or Message objects, processing items individually "
         "and aggregating results from loop inputs."
     )
-    documentation: str = "https://docs.langflow.org/loop"
+    documentation: str = "https://docs.earthmind.org/loop"
     icon = "infinity"
 
     inputs = [

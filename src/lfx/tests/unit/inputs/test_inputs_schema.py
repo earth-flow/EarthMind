@@ -4,7 +4,7 @@ from typing import Union
 
 import pytest
 from lfx.inputs.inputs import BoolInput, DictInput, FloatInput, InputTypes, IntInput, MessageTextInput, NestedDictInput
-from lfx.io.schema import schema_to_langflow_inputs
+from lfx.io.schema import schema_to_earthmind_inputs
 from lfx.schema.data import Data
 from lfx.schema.json_schema import create_input_schema_from_json_schema
 from lfx.template import Input, Output
@@ -179,7 +179,7 @@ class TestPostProcessType:
         assert set(post_process_type(Union[CustomType, int])) == {CustomType, int}  # noqa: UP007
 
 
-def test_schema_to_langflow_inputs():
+def test_schema_to_earthmind_inputs():
     # Define a test Pydantic model with various field types
     class TestSchema(BaseModel):
         text_field: str = Field(title="Custom Text Title", description="A text field")
@@ -188,8 +188,8 @@ def test_schema_to_langflow_inputs():
         dict_field: dict = Field(description="A dictionary field")
         list_field: list[str] = Field(description="A list of strings")
 
-    # Convert schema to Langflow inputs
-    inputs = schema_to_langflow_inputs(TestSchema)
+    # Convert schema to EarthMind inputs
+    inputs = schema_to_earthmind_inputs(TestSchema)
 
     # Verify the number of inputs matches the schema fields
     expected_len = 5
@@ -228,13 +228,13 @@ def test_schema_to_langflow_inputs():
     assert isinstance(list_input, MessageTextInput)
 
 
-def test_schema_to_langflow_inputs_sets_input_types_for_connectable_handles():
+def test_schema_to_earthmind_inputs_sets_input_types_for_connectable_handles():
     """Non-string schema fields must carry input_types so the frontend renders connection handles.
 
-    Regression test for https://github.com/langflow-ai/langflow/issues/9424:
+    Regression test for https://github.com/earthmind-ai/earthmind/issues/9424:
     MCP Tool components did not expose input ports for number, bool, or dict/JSON fields
-    because schema_to_langflow_inputs left input_types unset, and the frontend's
-    computeDisplayHandle hides handles for LANGFLOW_SUPPORTED_TYPES with no input_types.
+    because schema_to_earthmind_inputs left input_types unset, and the frontend's
+    computeDisplayHandle hides handles for EARTHMIND_SUPPORTED_TYPES with no input_types.
     """
 
     class ConnectableSchema(BaseModel):
@@ -243,7 +243,7 @@ def test_schema_to_langflow_inputs_sets_input_types_for_connectable_handles():
         enabled: bool = Field(description="Enabled flag")
         payload: dict = Field(description="JSON payload")
 
-    inputs = {inp.name: inp for inp in schema_to_langflow_inputs(ConnectableSchema)}
+    inputs = {inp.name: inp for inp in schema_to_earthmind_inputs(ConnectableSchema)}
 
     assert isinstance(inputs["lat"], FloatInput)
     assert inputs["lat"].input_types == ["Message"]
@@ -258,7 +258,7 @@ def test_schema_to_langflow_inputs_sets_input_types_for_connectable_handles():
     assert inputs["payload"].input_types == ["JSON"]
 
 
-def test_schema_to_langflow_inputs_sets_data_input_types_for_nested_dict():
+def test_schema_to_earthmind_inputs_sets_data_input_types_for_nested_dict():
     """Nullable object fields resolve to NestedDictInput and must also advertise a JSON handle."""
     schema = {
         "type": "object",
@@ -270,13 +270,13 @@ def test_schema_to_langflow_inputs_sets_data_input_types_for_nested_dict():
         },
     }
     model = create_input_schema_from_json_schema(schema)
-    inputs = {inp.name: inp for inp in schema_to_langflow_inputs(model)}
+    inputs = {inp.name: inp for inp in schema_to_earthmind_inputs(model)}
 
     assert isinstance(inputs["config"], NestedDictInput)
     assert inputs["config"].input_types == ["JSON"]
 
 
-def test_schema_to_langflow_inputs_preserves_optional_defaults_and_nullable_objects():
+def test_schema_to_earthmind_inputs_preserves_optional_defaults_and_nullable_objects():
     schema = {
         "type": "object",
         "properties": {
@@ -302,7 +302,7 @@ def test_schema_to_langflow_inputs_preserves_optional_defaults_and_nullable_obje
     }
     model = create_input_schema_from_json_schema(schema)
 
-    inputs = {input_.name: input_ for input_ in schema_to_langflow_inputs(model)}
+    inputs = {input_.name: input_ for input_ in schema_to_earthmind_inputs(model)}
 
     assert isinstance(inputs["task"], MessageTextInput)
     assert inputs["task"].required is True
@@ -337,7 +337,7 @@ def test_float_input_allows_range_spec_minimum_for_non_negative_values():
     assert input_field.range_spec.step == 0.01
 
 
-def test_schema_to_langflow_inputs_invalid_type():
+def test_schema_to_earthmind_inputs_invalid_type():
     # Define a schema with an unsupported type
     class CustomType:
         pass
@@ -348,4 +348,4 @@ def test_schema_to_langflow_inputs_invalid_type():
 
     # Test that attempting to convert an unsupported type raises TypeError
     with pytest.raises(TypeError, match="Unsupported field type:"):
-        schema_to_langflow_inputs(InvalidSchema)
+        schema_to_earthmind_inputs(InvalidSchema)

@@ -24,7 +24,7 @@ from lfx.inputs.inputs import (
     TabInput,
 )
 from lfx.io import Output
-from lfx.io.schema import flatten_schema, schema_to_langflow_inputs
+from lfx.io.schema import flatten_schema, schema_to_earthmind_inputs
 from lfx.log.logger import logger
 from lfx.schema.data import Data
 from lfx.schema.dataframe import DataFrame
@@ -758,7 +758,7 @@ class ComposioBaseComponent(Component):
             logger.debug(f"Could not populate Composio actions for {self.app_name}: {e}")
 
     def _validate_schema_inputs(self, action_key: str) -> list[InputTypes]:
-        """Convert the JSON schema for *action_key* into Langflow input objects."""
+        """Convert the JSON schema for *action_key* into EarthMind input objects."""
         # Skip validation for default/placeholder values
         if action_key in ("disabled", "placeholder", ""):
             logger.debug(f"Skipping schema validation for placeholder value: {action_key}")
@@ -912,7 +912,7 @@ class ComposioBaseComponent(Component):
                 logger.warning(f"Input schema is None for action key: {action_key}")
                 return []
 
-            # Additional safety check before calling schema_to_langflow_inputs
+            # Additional safety check before calling schema_to_earthmind_inputs
             if not hasattr(input_schema, "model_fields"):
                 logger.warning(f"Input schema for {action_key} does not have model_fields attribute")
                 return []
@@ -921,7 +921,7 @@ class ComposioBaseComponent(Component):
                 logger.warning(f"Input schema model_fields is None for {action_key}")
                 return []
 
-            result = schema_to_langflow_inputs(input_schema)
+            result = schema_to_earthmind_inputs(input_schema)
 
             # Process inputs to handle attachment fields and set advanced status
             if result:
@@ -2461,7 +2461,7 @@ class ComposioBaseComponent(Component):
                     continue
                 value = getattr(self, field)
 
-                # Coerce Langflow rich types to primitives the Composio API can serialise.
+                # Coerce EarthMind rich types to primitives the Composio API can serialise.
                 # A Message connected to a str field (e.g. subject, body) must arrive as
                 # plain text; a Data object should be unwrapped to its dict payload.
                 if isinstance(value, Message):

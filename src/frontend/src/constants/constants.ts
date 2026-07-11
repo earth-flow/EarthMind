@@ -678,7 +678,7 @@ export const LAST_USED_SPAN_1 = "The last time this key was used.";
 export const LAST_USED_SPAN_2 =
   "Accurate to within the hour from the most recent usage.";
 
-export const LANGFLOW_SUPPORTED_TYPES = new Set([
+export const EARTHMIND_SUPPORTED_TYPES = new Set([
   "str",
   "bool",
   "float",
@@ -750,7 +750,7 @@ export const INPUT_HANDLER_HOVER = "Avaliable input components:";
 export const OUTPUT_HANDLER_HOVER = "Avaliable output components:";
 export const TEXT_INPUT_MODAL_TITLE = "Inputs";
 export const OUTPUTS_MODAL_TITLE = "Outputs";
-export const LANGFLOW_CHAT_TITLE = "EarthMind Chat";
+export const EARTHMIND_CHAT_TITLE = "EarthMind Chat";
 export const CHAT_INPUT_PLACEHOLDER =
   "No chat input variables found. Click to run your flow.";
 export const CHAT_INPUT_PLACEHOLDER_SEND = "Send a message...";
@@ -871,13 +871,13 @@ export const TABS_ORDER = [
   "chat widget html",
 ];
 
-export const LANGFLOW_ACCESS_TOKEN = "access_token_lf";
-export const LANGFLOW_API_TOKEN = "apikey_tkn_lflw";
-export const LANGFLOW_AUTO_LOGIN_OPTION = "auto_login_lf";
-export const LANGFLOW_REFRESH_TOKEN = "refresh_token_lf";
+export const EARTHMIND_ACCESS_TOKEN = "access_token_lf";
+export const EARTHMIND_API_TOKEN = "apikey_tkn_lflw";
+export const EARTHMIND_AUTO_LOGIN_OPTION = "auto_login_lf";
+export const EARTHMIND_REFRESH_TOKEN = "refresh_token_lf";
 
-export const LANGFLOW_ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 - 60 * 60 * 0.1;
-export const LANGFLOW_ACCESS_TOKEN_EXPIRE_SECONDS_ENV =
+export const EARTHMIND_ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 - 60 * 60 * 0.1;
+export const EARTHMIND_ACCESS_TOKEN_EXPIRE_SECONDS_ENV =
   Number(getEnvVar("ACCESS_TOKEN_EXPIRE_SECONDS", 60)) -
   Number(getEnvVar("ACCESS_TOKEN_EXPIRE_SECONDS", 60)) * 0.1;
 export const TEXT_FIELD_TYPES: string[] = ["str", "SecretStr"];
@@ -955,8 +955,8 @@ export const POLLING_MESSAGES = {
 export const BUILD_POLLING_INTERVAL = 25;
 
 export const IS_AUTO_LOGIN =
-  !getEnvVar("LANGFLOW_AUTO_LOGIN") ||
-  String(getEnvVar("LANGFLOW_AUTO_LOGIN"))?.toLowerCase() !== "false";
+  !getEnvVar("EARTHMIND_AUTO_LOGIN") ||
+  String(getEnvVar("EARTHMIND_AUTO_LOGIN"))?.toLowerCase() !== "false";
 
 export const AUTO_LOGIN_RETRY_DELAY = 2000;
 export const AUTO_LOGIN_MAX_RETRY_DELAY = 60000;
@@ -1003,11 +1003,11 @@ export const DEFAULT_TIMEOUT = 30000;
 export const DEFAULT_FILE_PICKER_TIMEOUT = 60000;
 export const DISCORD_URL = "https://discord.com/invite/EqksyE2EX9";
 export const GITHUB_URL = "https://github.com/earth-flow/EarthMind";
-export const TWITTER_URL = "https://x.com/langflow_ai";
-export const DOCS_URL = "https://docs.langflow.org";
+export const TWITTER_URL = "https://x.com/earthmind_ai";
+export const DOCS_URL = "https://docs.earthmind.org";
 export const DATASTAX_DOCS_URL =
-  "https://docs.datastax.com/en/langflow/index.html";
-export const DESKTOP_URL = "https://www.langflow.org/desktop";
+  "https://docs.datastax.com/en/earthmind/index.html";
+export const DESKTOP_URL = "https://www.earthmind.org/desktop";
 export const BUG_REPORT_URL = "https://github.com/earth-flow/EarthMind/issues";
 
 export const UUID_PARSING_ERROR = "uuid_parsing";

@@ -44,7 +44,7 @@ class LocalDBComponent(LCVectorStoreComponent):
         MessageTextInput(
             name="collection_name",
             display_name="Collection Name",
-            value="langflow",
+            value="earthmind",
             required=True,
         ),
         MessageTextInput(

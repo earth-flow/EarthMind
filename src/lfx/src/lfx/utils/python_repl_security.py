@@ -23,7 +23,7 @@ This module restricts that environment:
 
 This is defense-in-depth, NOT a guaranteed sandbox — Python sandboxing is notoriously
 hard and determined attackers may still find gadgets. The primary control for untrusted
-access is authentication: do not expose an instance with ``LANGFLOW_AUTO_LOGIN=true`` on
+access is authentication: do not expose an instance with ``EARTHMIND_AUTO_LOGIN=true`` on
 an untrusted network.
 """
 

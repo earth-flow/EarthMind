@@ -1,4 +1,4 @@
-"""Offline, non-executing validator for a Langflow Extension.
+"""Offline, non-executing validator for a EarthMind Extension.
 
 ``validate_extension`` is the function backing the ``lfx extension validate``
 CLI.  It performs four passes:
@@ -17,7 +17,7 @@ CLI.  It performs four passes:
        obfuscation (``getattr``, base64, aliasing).  Operators must still
        treat third-party bundles as untrusted code.
     4. **(opt-in)** ``--execute-imports``: forks a subprocess with a temporary
-       Langflow state dir, a strict env allowlist, and no inherited server
+       EarthMind state dir, a strict env allowlist, and no inherited server
        state, imports each bundle module, and reports failures.  Still
        executes arbitrary Python; see the CLI help for the trust caveat.
 
@@ -231,11 +231,11 @@ def _discover_manifest_data(
         None,
         ExtensionError(
             code="manifest-not-found",
-            message=(f"No extension.json or [tool.langflow.extension] entry found in {root}."),
+            message=(f"No extension.json or [tool.earthmind.extension] entry found in {root}."),
             location=str(root),
             hint=(
                 "Create an extension.json at the extension root or add a "
-                "[tool.langflow.extension] section to pyproject.toml. See "
+                "[tool.earthmind.extension] section to pyproject.toml. See "
                 "the manifest reference for the minimal shape."
             ),
         ),
@@ -407,7 +407,7 @@ def _is_component_class(node: ast.ClassDef) -> bool:
 def _has_build_method(node: ast.ClassDef) -> bool:
     """Return True if the class body declares an invocable entry-point.
 
-    Langflow Components reach the runtime in two shapes:
+    EarthMind Components reach the runtime in two shapes:
 
     1. A literal ``build`` method on the class (the original convention).
     2. A method named in an ``Output(method="...")`` declaration in the
@@ -689,16 +689,16 @@ def _build_probe_env(tmp_path: Path) -> dict[str, str]:
 
     Allowlist approach: only well-known, non-credential-bearing variables
     inherit from the parent environment.  HOME, TMPDIR, and
-    LANGFLOW_CONFIG_DIR are pinned to the throwaway temp directory so a
+    EARTHMIND_CONFIG_DIR are pinned to the throwaway temp directory so a
     misbehaving bundle cannot read or pollute the developer's real
-    Langflow state.  Cloud credentials (AWS_*, OPENAI_API_KEY, GITHUB_TOKEN,
+    EarthMind state.  Cloud credentials (AWS_*, OPENAI_API_KEY, GITHUB_TOKEN,
     ...) are intentionally NOT in the allowlist; without this, a malicious
     bundle's top-level import would read them and could exfiltrate.
     """
     env = {key: value for key, value in os.environ.items() if key in _SUBPROCESS_ENV_ALLOWLIST}
     env["HOME"] = str(tmp_path)
     env["TMPDIR"] = str(tmp_path)
-    env["LANGFLOW_CONFIG_DIR"] = str(tmp_path / "config")
+    env["EARTHMIND_CONFIG_DIR"] = str(tmp_path / "config")
     # PATH is required for sys.executable to resolve loadable shared libraries
     # on macOS / Linux; if the parent has no PATH, fall back to a minimal one.
     if not env.get("PATH"):

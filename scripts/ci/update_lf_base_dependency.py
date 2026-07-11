@@ -11,28 +11,28 @@ ARGUMENT_NUMBER = 3
 
 
 def update_base_dep(pyproject_path: str, new_version: str) -> None:
-    """Update the langflow-base dependency in pyproject.toml."""
+    """Update the earthmind-base dependency in pyproject.toml."""
     filepath = BASE_DIR / pyproject_path
     content = filepath.read_text(encoding="utf-8")
 
     # Updated pattern to handle PEP 440 version suffixes, extras (e.g., [complete]),
-    # ~=, ==, and >= version specifiers, and both langflow-base and langflow-base-nightly names
+    # ~=, ==, and >= version specifiers, and both earthmind-base and earthmind-base-nightly names
     # Captures extras in group 2 to preserve them in the replacement
     pattern = re.compile(
-        r'("langflow-base(?:-nightly)?((?:\[[^\]]+\])?)(?:~=|==|>=)[\d.]+(?:\.(?:post|dev|a|b|rc)\d+)*")'
+        r'("earthmind-base(?:-nightly)?((?:\[[^\]]+\])?)(?:~=|==|>=)[\d.]+(?:\.(?:post|dev|a|b|rc)\d+)*")'
     )
 
     # Check if the pattern is found
     match = pattern.search(content)
     if not match:
-        msg = f'langflow-base dependency not found in "{filepath}"'
+        msg = f'earthmind-base dependency not found in "{filepath}"'
         raise ValueError(msg)
 
     # Extract extras if present (e.g., "[complete]")
     extras = match.group(2) if match.group(2) else ""
-    # Keep the canonical `langflow-base` name; the exact `==<dev>` pin enables pre-release
+    # Keep the canonical `earthmind-base` name; the exact `==<dev>` pin enables pre-release
     # resolution down the tree and keeps base in lockstep with the run.
-    replacement = f'"langflow-base{extras}=={new_version}"'
+    replacement = f'"earthmind-base{extras}=={new_version}"'
 
     # Replace the matched pattern with the new one
     content = pattern.sub(replacement, content)
@@ -40,7 +40,7 @@ def update_base_dep(pyproject_path: str, new_version: str) -> None:
 
 
 def update_lfx_dep_in_base(pyproject_path: str, lfx_version: str) -> None:
-    """Update the LFX dependency in langflow-base pyproject.toml to use nightly version."""
+    """Update the LFX dependency in earthmind-base pyproject.toml to use nightly version."""
     filepath = BASE_DIR / pyproject_path
     content = filepath.read_text(encoding="utf-8")
 
@@ -83,10 +83,10 @@ def main() -> None:
     verify_pep440(base_version)
     verify_pep440(lfx_version)
 
-    # Update langflow-base dependency in main project
+    # Update earthmind-base dependency in main project
     update_base_dep("pyproject.toml", base_version)
 
-    # Update LFX dependency in langflow-base
+    # Update LFX dependency in earthmind-base
     update_lfx_dep_in_base("src/backend/base/pyproject.toml", lfx_version)
 
 

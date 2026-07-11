@@ -1,6 +1,6 @@
 import pytest
-from langflow.services.database.models.user import User
-from langflow.services.deps import get_auth_service, session_scope
+from earthmind.services.database.models.user import User
+from earthmind.services.deps import get_auth_service, session_scope
 from sqlalchemy.exc import IntegrityError
 
 

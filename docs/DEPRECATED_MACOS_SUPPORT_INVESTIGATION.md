@@ -1,4 +1,4 @@
-# Investigation: Deprecated macOS Support — Impact on Langflow
+# Investigation: Deprecated macOS Support — Impact on EarthMind
 
 **Date:** 2026-04-02
 **Status:** Complete
@@ -8,9 +8,9 @@
 
 ## TL;DR
 
-macOS Intel (x86_64) is in its final phase of deprecation across the entire ecosystem — Apple hardware, operating system, GitHub Actions runners, PyTorch, and the broader ML/AI stack. Langflow already has platform exclusion markers for the most critical torch-dependent extras (PR #12469), but additional deprecations in GitHub Actions runners, macOS versions, and upstream dependencies will require further action over the next 12–18 months.
+macOS Intel (x86_64) is in its final phase of deprecation across the entire ecosystem — Apple hardware, operating system, GitHub Actions runners, PyTorch, and the broader ML/AI stack. EarthMind already has platform exclusion markers for the most critical torch-dependent extras (PR #12469), but additional deprecations in GitHub Actions runners, macOS versions, and upstream dependencies will require further action over the next 12–18 months.
 
-**Key decision required:** Set a timeline to officially drop macOS x86_64 from Langflow's support matrix (recommended: Langflow 2.0 or Q4 2026, whichever comes first).
+**Key decision required:** Set a timeline to officially drop macOS x86_64 from EarthMind's support matrix (recommended: EarthMind 2.0 or Q4 2026, whichever comes first).
 
 ---
 
@@ -67,7 +67,7 @@ macOS Intel (x86_64) is in its final phase of deprecation across the entire ecos
 
 ---
 
-## 2. Current State of Langflow macOS Support
+## 2. Current State of EarthMind macOS Support
 
 ### 2.1 Platform Exclusion Markers in `pyproject.toml`
 
@@ -97,8 +97,8 @@ The following extras have platform markers excluding macOS x86_64 (**as of PR #1
 
 | Workaround | Location | Purpose |
 |------------|----------|---------|
-| `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` | `__main__.py`, `langflow_launcher.py`, CI workflows | Prevents Objective-C fork safety crashes with gunicorn multiprocessing |
-| `os.execv()` re-exec pattern | `langflow_launcher.py` | Sets env vars before Objective-C runtime initializes |
+| `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` | `__main__.py`, `earthmind_launcher.py`, CI workflows | Prevents Objective-C fork safety crashes with gunicorn multiprocessing |
+| `os.execv()` re-exec pattern | `earthmind_launcher.py` | Sets env vars before Objective-C runtime initializes |
 | `brew install protobuf` | CI workflow (AMD64 only) | protoc not available on Intel CI runners |
 
 ### 2.3 CI Matrix Coverage
@@ -116,7 +116,7 @@ The following extras have platform markers excluding macOS x86_64 (**as of PR #1
 
 ### 3.1 What Works on macOS x86_64 Today
 
-Langflow **core functionality** (flow builder, API, database, all non-ML components) works on macOS Intel with Python 3.10–3.13. The following features are **unavailable**:
+EarthMind **core functionality** (flow builder, API, database, all non-ML components) works on macOS Intel with Python 3.10–3.13. The following features are **unavailable**:
 
 - ALTK (Agent Lifecycle Toolkit) components
 - HuggingFace/sentence-transformers embeddings
@@ -130,7 +130,7 @@ Langflow **core functionality** (flow builder, API, database, all non-ML compone
 
 ### 3.2 What Will Break Next
 
-| Timeline | Event | Impact on Langflow |
+| Timeline | Event | Impact on EarthMind |
 |----------|-------|--------------------|
 | **Now** | PyTorch has no Intel Mac wheels for Python 3.13+ | Already mitigated (PR #12469) |
 | **Q3 2026** | GitHub may deprecate `macos-latest-large` (Intel) | Stable CI tests for macOS Intel would need migration or removal |
@@ -158,7 +158,7 @@ PR #12469 has already addressed the most critical issue:
 - ✅ `mlx`, `cuga` are ARM64-only
 - ✅ Experimental CI uses `continue-on-error: true`
 
-### 4.2 Short-Term (Langflow 1.10 / Q2 2026)
+### 4.2 Short-Term (EarthMind 1.10 / Q2 2026)
 
 #### ~~R1: Add `platform_machine` marker to `metal` extra~~ — NOT NEEDED
 
@@ -182,7 +182,7 @@ Remove the Python 3.10 stable test on macOS AMD64. Python 3.12 is the most commo
 
 Add a support matrix page to `docs/` clarifying which features require Apple Silicon vs. work on Intel, so users have clear expectations.
 
-### 4.3 Medium-Term (Langflow 2.0 / Q4 2026)
+### 4.3 Medium-Term (EarthMind 2.0 / Q4 2026)
 
 #### R4: Drop macOS x86_64 from CI entirely
 
@@ -196,18 +196,18 @@ Once GitHub deprecates `macos-latest-large` or macOS 26 ships:
 
 #### R5: Audit and clean up OBJC fork safety workaround
 
-The `OBJC_DISABLE_INITIALIZE_FORK_SAFETY` workaround in `__main__.py` and `langflow_launcher.py` applies to all macOS, not just Intel. However, once Intel is dropped:
+The `OBJC_DISABLE_INITIALIZE_FORK_SAFETY` workaround in `__main__.py` and `earthmind_launcher.py` applies to all macOS, not just Intel. However, once Intel is dropped:
 - Verify if the issue persists on Apple Silicon with current gunicorn/uvicorn
 - If ARM64-only deployments don't trigger the issue, consider removing the workaround
 - If still needed, keep it but document why
 
 #### R6: Officially deprecate macOS x86_64 in release notes
 
-Add a deprecation notice in the Langflow 2.0 release notes:
+Add a deprecation notice in the EarthMind 2.0 release notes:
 
-> **macOS Intel (x86_64) support is deprecated.** Langflow 2.0 is the last version tested on Intel Macs. Future releases will only be tested on Apple Silicon (ARM64). Core functionality may continue to work, but ML features require Apple Silicon.
+> **macOS Intel (x86_64) support is deprecated.** EarthMind 2.0 is the last version tested on Intel Macs. Future releases will only be tested on Apple Silicon (ARM64). Core functionality may continue to work, but ML features require Apple Silicon.
 
-### 4.4 Long-Term (Langflow 2.x+ / 2027)
+### 4.4 Long-Term (EarthMind 2.x+ / 2027)
 
 #### R7: Remove all macOS x86_64 platform markers
 
@@ -238,7 +238,7 @@ With Intel out of the picture, lean into Apple Silicon capabilities:
 | GitHub removes `macos-latest-large` runner | High (12–18 months) | CI breaks for Intel tests | R4: Drop Intel from CI proactively |
 | User complaints about missing ML features on Intel Mac | Low | User frustration | R3: Document support matrix clearly |
 | ~~`metal_sdk` fails on Intel Mac install~~ | N/A | N/A | `metal_sdk` is getmetal.io cloud SDK — cross-platform, no issue |
-| Python 3.14 drops macOS x86_64 support | Low (2027+) | Core Langflow broken on Intel | R6: Deprecation notice well in advance |
+| Python 3.14 drops macOS x86_64 support | Low (2027+) | Core EarthMind broken on Intel | R6: Deprecation notice well in advance |
 | OBJC fork safety workaround breaks on new macOS | Low | Server startup crash | R5: Audit and test on macOS 26 |
 | Upstream deps (numpy, scipy) drop Intel Mac wheels | Medium (2027+) | Broad installation failures | R6/R7: Official deprecation covers this |
 
@@ -246,7 +246,7 @@ With Intel out of the picture, lean into Apple Silicon capabilities:
 
 ## 6. Recommended macOS Support Matrix
 
-### Current (Langflow 1.9.x)
+### Current (EarthMind 1.9.x)
 
 | Feature Category | macOS ARM64 (Apple Silicon) | macOS x86_64 (Intel) |
 |-----------------|---------------------------|---------------------|
@@ -257,7 +257,7 @@ With Intel out of the picture, lean into Apple Silicon capabilities:
 | GPU acceleration (Metal, CUGA) | ✅ Full support | ❌ Not available (ARM64 only) |
 | Native OCR (ocrmac) | ✅ Full support | ✅ Full support |
 
-### Proposed (Langflow 2.0+)
+### Proposed (EarthMind 2.0+)
 
 | Feature Category | macOS ARM64 (Apple Silicon) | macOS x86_64 (Intel) |
 |-----------------|---------------------------|---------------------|

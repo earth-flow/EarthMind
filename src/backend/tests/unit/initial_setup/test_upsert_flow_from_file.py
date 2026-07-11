@@ -2,7 +2,7 @@
 
 Covers the CI/CD upgrade scenario where a flow file's id differs from the DB
 row's id but the flow name is the same. Before the fix the loader hit the
-``unique_flow_name`` UniqueConstraint on INSERT and Langflow failed to start.
+``unique_flow_name`` UniqueConstraint on INSERT and EarthMind failed to start.
 """
 
 from __future__ import annotations
@@ -12,14 +12,14 @@ from uuid import uuid4
 
 import orjson
 import pytest
-from langflow.initial_setup.setup import (
+from earthmind.initial_setup.setup import (
     find_existing_flow,
     get_or_create_default_folder,
     session_scope,
     upsert_flow_from_file,
 )
-from langflow.services.database.models.flow.model import Flow
-from langflow.services.database.models.user.model import User
+from earthmind.services.database.models.flow.model import Flow
+from earthmind.services.database.models.user.model import User
 from lfx.services.deps import get_settings_service
 from sqlmodel import select
 
@@ -314,7 +314,7 @@ async def test_upsert_flow_from_file_id_match_still_overwrites_id_field() -> Non
 async def test_upsert_flow_from_file_skips_name_match_when_overwrite_disabled() -> None:
     """When load_flows_overwrite_on_name_match=False, name-matched rows are NOT overwritten.
 
-    Protects the case where a user edited a flow in the UI and Langflow restarts with a
+    Protects the case where a user edited a flow in the UI and EarthMind restarts with a
     regenerated file id; the on-disk JSON should not silently wipe the user's changes.
     """
     user_id = uuid4()
@@ -354,7 +354,7 @@ async def test_upsert_flow_from_file_ignores_relationship_keys_in_json() -> None
     True for relationship attributes (``user``, ``folder``), and ``getattr`` on an unloaded
     relationship under an async session triggers an implicit lazy load outside greenlet
     context, raising ``MissingGreenlet`` ("greenlet_spawn has not been called; can't call
-    await_only() here.") and crashing Langflow startup.
+    await_only() here.") and crashing EarthMind startup.
     """
     user_id = uuid4()
     original = await _create_flow(name="WithRel", user_id=user_id)
@@ -432,7 +432,7 @@ async def test_upsert_flow_from_file_with_user_loaded_in_same_session() -> None:
     with _overwrite_on_name_match(enabled=True):
         async with session_scope() as session:
             # Load *our* user into the session (mirrors load_flows_from_directory loading
-            # the superuser). Filter by username so we don't pick up the default langflow
+            # the superuser). Filter by username so we don't pick up the default earthmind
             # superuser the test fixture creates.
             stmt = select(User).where(User.username == username)
             loaded_user = (await session.exec(stmt)).first()

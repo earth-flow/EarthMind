@@ -1,10 +1,10 @@
-const url = `${process.env.LANGFLOW_URL ?? ""}/api/v1/users/10c1c6a2-ab8a-4748-8700-0e4832fd5ce8`;
+const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/users/10c1c6a2-ab8a-4748-8700-0e4832fd5ce8`;
 
 const options = {
   method: 'PATCH',
   headers: {
     "Content-Type": `application/json`,
-    "x-api-key": `${process.env.LANGFLOW_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
   },
   body: JSON.stringify({
   "is_active": true,

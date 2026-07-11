@@ -305,33 +305,48 @@ def test_validate_openrouter_no_key_returns_silently():
     validate_model_provider_key("OpenRouter", {})
 
 
-def test_validate_provider_uses_requested_model_name():
-    """Dynamic catalog order must not change which model a toggle validates."""
-    from types import SimpleNamespace
-
+def test_validate_openai_compatible_uses_models_probe_when_api_base_present():
     from lfx.base.models.unified_models import validate_model_provider_key
 
-    calls = []
+    response = MagicMock()
+    response.status_code = 200
+    response.raise_for_status.return_value = None
 
-    class FakeChatOpenAI:
-        def __init__(self, **kwargs):
-            calls.append(kwargs)
-
-        def invoke(self, _prompt):
-            return "ok"
-
-    catalog = [{"provider": "OpenAI", "models": [{"model_name": "gpt-5.5-pro"}]}]
-    with (
-        patch.dict("sys.modules", {"langchain_openai": SimpleNamespace(ChatOpenAI=FakeChatOpenAI)}),
-        patch("lfx.base.models.unified_models.model_catalog.get_unified_models_detailed", return_value=catalog),
-    ):
+    with patch.object(requests, "get", return_value=response) as mock_get:
         validate_model_provider_key(
-            "OpenAI",
-            {"OPENAI_API_KEY": "dummy-openai-key"},  # pragma: allowlist secret
-            model_name="gpt-4o-mini",
+            "SiliconFlow",
+            {
+                "SILICONFLOW_API_KEY": "dummy-siliconflow-key",  # pragma: allowlist secret
+                "SILICONFLOW_API_BASE": "https://api.siliconflow.cn/v1",
+            },
+            model_name="Qwen/Qwen3-8B",
         )
 
-    assert calls[0]["model_name"] == "gpt-4o-mini"
+    mock_get.assert_called_once()
+    call = mock_get.call_args
+    assert call.args[0] == "https://api.siliconflow.cn/v1/models"
+    assert call.kwargs["timeout"] == 5
+    assert call.kwargs["headers"]["Authorization"].startswith("Bearer ")
+
+
+def test_validate_openai_compatible_raises_on_401():
+    from lfx.base.models.unified_models import validate_model_provider_key
+
+    response = MagicMock()
+    response.status_code = 401
+    response.raise_for_status.side_effect = AssertionError("should not be called when 401 path triggers")
+
+    with (
+        patch.object(requests, "get", return_value=response),
+        pytest.raises(ValueError, match="Invalid API key for SiliconFlow"),
+    ):
+        validate_model_provider_key(
+            "SiliconFlow",
+            {
+                "SILICONFLOW_API_KEY": "dummy-siliconflow-bad",  # pragma: allowlist secret
+                "SILICONFLOW_API_BASE": "https://api.siliconflow.cn/v1",
+            },
+        )
 
 
 def test_validate_openrouter_happy_path():

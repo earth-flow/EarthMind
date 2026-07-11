@@ -1,5 +1,5 @@
 # Set the VM, image, and networking configuration
-VM_NAME="langflow-dev"
+VM_NAME="earthmind-dev"
 IMAGE_FAMILY="debian-11"
 IMAGE_PROJECT="debian-cloud"
 BOOT_DISK_SIZE="100GB"
@@ -46,10 +46,10 @@ STARTUP_SCRIPT=$(cat <<'EOF'
 apt -y update
 apt -y upgrade
 
-# Install Python 3 pip, Langflow, and Nginx
+# Install Python 3 pip, EarthMind, and Nginx
 apt -y install python3-pip
-pip install langflow
-langflow --host 0.0.0.0 --port 7860
+pip install earthmind
+earthmind --host 0.0.0.0 --port 7860
 EOF
 )
 

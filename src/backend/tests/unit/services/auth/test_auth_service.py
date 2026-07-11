@@ -9,15 +9,15 @@ from uuid import UUID, uuid4
 import jwt
 import pytest
 from fastapi import HTTPException, WebSocketException, status
-from langflow.services.auth.constants import AUTO_LOGIN_WARNING
-from langflow.services.auth.exceptions import (
+from earthmind.services.auth.constants import AUTO_LOGIN_WARNING
+from earthmind.services.auth.exceptions import (
     InactiveUserError,
     InvalidTokenError,
     MissingCredentialsError,
     TokenExpiredError,
 )
-from langflow.services.auth.service import AuthService
-from langflow.services.database.models.user.model import User
+from earthmind.services.auth.service import AuthService
+from earthmind.services.database.models.user.model import User
 from lfx.services.settings.auth import AuthSettings
 from pydantic import SecretStr
 
@@ -59,7 +59,7 @@ async def test_get_current_user_from_access_token_returns_active_user(auth_servi
     token = auth_service.create_token({"sub": str(user_id), "type": "access"}, timedelta(minutes=5))
     fake_user = _dummy_user(user_id)
 
-    with patch("langflow.services.auth.service.get_user_by_id", new=AsyncMock(return_value=fake_user)) as mock_get_user:
+    with patch("earthmind.services.auth.service.get_user_by_id", new=AsyncMock(return_value=fake_user)) as mock_get_user:
         result = await auth_service.get_current_user_from_access_token(token, db)
 
     assert result is fake_user
@@ -103,7 +103,7 @@ async def test_get_current_user_from_access_token_requires_active_user(auth_serv
     inactive_user = _dummy_user(user_id, active=False)
 
     with (
-        patch("langflow.services.auth.service.get_user_by_id", new=AsyncMock(return_value=inactive_user)),
+        patch("earthmind.services.auth.service.get_user_by_id", new=AsyncMock(return_value=inactive_user)),
         pytest.raises(InactiveUserError),
     ):
         await auth_service.get_current_user_from_access_token(token, db)
@@ -154,10 +154,10 @@ async def test_authenticate_with_credentials_auto_login_skip_returns_superuser(
 
     with (
         patch(
-            "langflow.services.auth.service.get_user_by_username",
+            "earthmind.services.auth.service.get_user_by_username",
             new=AsyncMock(return_value=superuser),
         ) as mock_lookup,
-        patch("langflow.services.auth.service.logger") as mock_logger,
+        patch("earthmind.services.auth.service.logger") as mock_logger,
     ):
         result = await auth_service.authenticate_with_credentials(token=None, api_key=None, db=AsyncMock())
 
@@ -180,11 +180,11 @@ async def test_authenticate_with_credentials_auto_login_skip_missing_superuser_r
     auth_settings.skip_auth_auto_login = True
     auth_settings.SUPERUSER = "admin"
 
-    from langflow.services.auth.exceptions import InvalidCredentialsError
+    from earthmind.services.auth.exceptions import InvalidCredentialsError
 
     with (
         patch(
-            "langflow.services.auth.service.get_user_by_username",
+            "earthmind.services.auth.service.get_user_by_username",
             new=AsyncMock(return_value=None),
         ),
         pytest.raises(InvalidCredentialsError),
@@ -200,7 +200,7 @@ async def test_authenticate_with_credentials_auto_login_skip_empty_superuser_con
     must fire before ``get_user_by_username`` is called. Uses SimpleNamespace to
     bypass Pydantic model validation so SUPERUSER can be set to an empty string.
     """
-    from langflow.services.auth.exceptions import InvalidCredentialsError
+    from earthmind.services.auth.exceptions import InvalidCredentialsError
 
     settings_service = SimpleNamespace(
         auth_settings=SimpleNamespace(
@@ -232,7 +232,7 @@ async def test_authenticate_with_credentials_auto_login_skip_rejects_inactive_su
 
     with (
         patch(
-            "langflow.services.auth.service.get_user_by_username",
+            "earthmind.services.auth.service.get_user_by_username",
             new=AsyncMock(return_value=inactive_superuser),
         ),
         pytest.raises(InactiveUserError),
@@ -262,7 +262,7 @@ def test_encrypt_and_decrypt_api_key_roundtrip(auth_service: AuthService):
 
 def test_add_padding_no_extra_chars_when_divisible_by_4():
     """add_base64_padding must not add characters when length is already a multiple of 4."""
-    from langflow.services.auth.utils import add_base64_padding
+    from earthmind.services.auth.utils import add_base64_padding
 
     assert add_base64_padding("ABCD") == "ABCD"
     assert add_base64_padding("ABCDEFGH") == "ABCDEFGH"
@@ -271,7 +271,7 @@ def test_add_padding_no_extra_chars_when_divisible_by_4():
 
 def test_add_padding_pads_correctly():
     """add_base64_padding must add the right number of = characters."""
-    from langflow.services.auth.utils import add_base64_padding
+    from earthmind.services.auth.utils import add_base64_padding
 
     assert add_base64_padding("ABC") == "ABC="
     assert add_base64_padding("AB") == "AB=="
@@ -357,7 +357,7 @@ def test_ensure_fernet_key_with_44_char_key():
     import os
 
     from cryptography.fernet import Fernet
-    from langflow.services.auth.utils import ensure_fernet_key
+    from earthmind.services.auth.utils import ensure_fernet_key
 
     raw_key = base64.urlsafe_b64encode(os.urandom(32)).decode()  # 44 chars, len % 4 == 0
     assert len(raw_key) == 44
@@ -452,7 +452,7 @@ async def test_create_user_tokens_updates_last_login(auth_service: AuthService):
     user_id = uuid4()
     db = AsyncMock()
 
-    with patch("langflow.services.auth.service.update_user_last_login_at", new=AsyncMock()) as mock_update:
+    with patch("earthmind.services.auth.service.update_user_last_login_at", new=AsyncMock()) as mock_update:
         await auth_service.create_user_tokens(user_id, db, update_last_login=True)
         mock_update.assert_awaited_once_with(user_id, db)
 
@@ -465,7 +465,7 @@ async def test_create_refresh_token_valid(auth_service: AuthService):
     refresh_token = auth_service.create_token({"sub": str(user_id), "type": "refresh"}, timedelta(minutes=5))
     fake_user = _dummy_user(user_id)
 
-    with patch("langflow.services.auth.service.get_user_by_id", new=AsyncMock(return_value=fake_user)):
+    with patch("earthmind.services.auth.service.get_user_by_id", new=AsyncMock(return_value=fake_user)):
         result = await auth_service.create_refresh_token(refresh_token, db)
 
     assert "access_token" in result
@@ -480,7 +480,7 @@ async def test_create_refresh_token_user_not_found(auth_service: AuthService):
     refresh_token = auth_service.create_token({"sub": str(user_id), "type": "refresh"}, timedelta(minutes=5))
 
     with (
-        patch("langflow.services.auth.service.get_user_by_id", new=AsyncMock(return_value=None)),
+        patch("earthmind.services.auth.service.get_user_by_id", new=AsyncMock(return_value=None)),
         pytest.raises(HTTPException) as exc,
     ):
         await auth_service.create_refresh_token(refresh_token, db)
@@ -497,7 +497,7 @@ async def test_create_refresh_token_inactive_user(auth_service: AuthService):
     inactive_user = _dummy_user(user_id, active=False)
 
     with (
-        patch("langflow.services.auth.service.get_user_by_id", new=AsyncMock(return_value=inactive_user)),
+        patch("earthmind.services.auth.service.get_user_by_id", new=AsyncMock(return_value=inactive_user)),
         pytest.raises(HTTPException) as exc,
     ):
         await auth_service.create_refresh_token(refresh_token, db)
@@ -586,7 +586,7 @@ async def test_authenticate_user_success(auth_service: AuthService):
     )
     db = AsyncMock()
 
-    with patch("langflow.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)):
+    with patch("earthmind.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)):
         result = await auth_service.authenticate_user("testuser", password, db)
 
     assert result is user
@@ -606,7 +606,7 @@ async def test_authenticate_user_wrong_password(auth_service: AuthService):
     )
     db = AsyncMock()
 
-    with patch("langflow.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)):
+    with patch("earthmind.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)):
         result = await auth_service.authenticate_user("testuser", "wrong_password", db)
 
     assert result is None
@@ -617,7 +617,7 @@ async def test_authenticate_user_not_found(auth_service: AuthService):
     """Test authentication returns None for non-existent user."""
     db = AsyncMock()
 
-    with patch("langflow.services.auth.service.get_user_by_username", new=AsyncMock(return_value=None)):
+    with patch("earthmind.services.auth.service.get_user_by_username", new=AsyncMock(return_value=None)):
         result = await auth_service.authenticate_user("nonexistent", "password", db)
 
     assert result is None
@@ -637,7 +637,7 @@ async def test_authenticate_user_inactive_never_logged_in(auth_service: AuthServ
     db = AsyncMock()
 
     with (
-        patch("langflow.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)),
+        patch("earthmind.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)),
         pytest.raises(HTTPException) as exc,
     ):
         await auth_service.authenticate_user("testuser", "password", db)
@@ -660,7 +660,7 @@ async def test_authenticate_user_inactive_previously_logged_in(auth_service: Aut
     db = AsyncMock()
 
     with (
-        patch("langflow.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)),
+        patch("earthmind.services.auth.service.get_user_by_username", new=AsyncMock(return_value=user)),
         pytest.raises(HTTPException) as exc,
     ):
         await auth_service.authenticate_user("testuser", "password", db)
@@ -714,9 +714,9 @@ async def test_ws_api_key_security_auto_login_skip_rejects_missing_superuser(
     auth_settings.SUPERUSER = "admin"
 
     with (
-        patch("langflow.services.auth.service.session_scope", _mock_session_scope),
+        patch("earthmind.services.auth.service.session_scope", _mock_session_scope),
         patch(
-            "langflow.services.auth.service.get_user_by_username",
+            "earthmind.services.auth.service.get_user_by_username",
             new=AsyncMock(return_value=None),
         ),
         pytest.raises(WebSocketException) as exc,
@@ -738,9 +738,9 @@ async def test_ws_api_key_security_auto_login_skip_rejects_inactive_superuser(
     inactive_superuser = _dummy_user(uuid4(), active=False)
 
     with (
-        patch("langflow.services.auth.service.session_scope", _mock_session_scope),
+        patch("earthmind.services.auth.service.session_scope", _mock_session_scope),
         patch(
-            "langflow.services.auth.service.get_user_by_username",
+            "earthmind.services.auth.service.get_user_by_username",
             new=AsyncMock(return_value=inactive_superuser),
         ),
         pytest.raises(WebSocketException) as exc,
@@ -768,7 +768,7 @@ async def test_api_key_security_impl_auto_login_skip_rejects_inactive_superuser(
 
     with (
         patch(
-            "langflow.services.auth.service.get_user_by_username",
+            "earthmind.services.auth.service.get_user_by_username",
             new=AsyncMock(return_value=inactive_superuser),
         ),
         pytest.raises(HTTPException) as exc,

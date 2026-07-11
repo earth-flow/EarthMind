@@ -32,6 +32,8 @@ interface StepReviewProps {
   chunkSize: number;
   chunkOverlap: number;
   separator: string;
+  ocrProvider: string;
+  chunkStrategy: string;
   selectedEmbeddingModel: ModelOption[];
   backendType: AvailableDBProviderId;
   metadataPairs?: MetadataPair[];
@@ -51,6 +53,8 @@ export function StepReview({
   chunkSize,
   chunkOverlap,
   separator,
+  ocrProvider,
+  chunkStrategy,
   selectedEmbeddingModel,
   backendType,
   metadataPairs = [],
@@ -58,6 +62,7 @@ export function StepReview({
 }: StepReviewProps) {
   const { t } = useTranslation();
   const selectedBackend = getDBProviderOption(backendType);
+  const useHeadingChunkingOnly = chunkStrategy === "heading_markdown";
   // Use the same validator that gates "Next Step" so the summary only
   // shows pairs the backend will actually accept.
   const populatedRunPairs = filterValidMetadataPairs(metadataPairs);
@@ -213,21 +218,44 @@ export function StepReview({
           label={t("knowledge.files")}
           value={`${files.length} ${files.length !== 1 ? t("knowledge.files") : t("knowledge.file")} (${totalFileSize})`}
         />
-        <SummaryItem
-          icon="Ruler"
-          label={t("knowledge.labelChunkSize")}
-          value={`${chunkSize} ${t("knowledge.charsSuffix")}`}
-        />
-        <SummaryItem
-          icon="Layers"
-          label={t("knowledge.labelChunkOverlap")}
-          value={`${chunkOverlap} ${t("knowledge.charsSuffix")}`}
-        />
+        {!useHeadingChunkingOnly && (
+          <>
+            <SummaryItem
+              icon="Ruler"
+              label={t("knowledge.labelChunkSize")}
+              value={`${chunkSize} ${t("knowledge.charsSuffix")}`}
+            />
+            <SummaryItem
+              icon="Layers"
+              label={t("knowledge.labelChunkOverlap")}
+              value={`${chunkOverlap} ${t("knowledge.charsSuffix")}`}
+            />
+          </>
+        )}
         <SummaryItem
           icon="SplitSquareHorizontal"
           label={t("knowledge.labelSeparator")}
           value={separator || t("knowledge.labelNone")}
         />
+        <SummaryItem
+          icon="ScanSearch"
+          label={t("knowledge.ocrProviderLabel", { defaultValue: "OCR Provider" })}
+          value={ocrProvider === "mineru"
+            ? t("knowledge.ocrProviderMineru", { defaultValue: "MinerU" })
+            : t("knowledge.ocrProviderPlainText", { defaultValue: "Plain Text" })}
+        />
+        <SummaryItem
+          icon="Heading1"
+          label={t("knowledge.chunkStrategyLabel")}
+          value={t(`knowledge.chunkStrategyValue.${chunkStrategy}`)}
+        />
+        {useHeadingChunkingOnly && (
+          <SummaryItem
+            icon="TextQuote"
+            label={t("knowledge.headingChunkingLabel")}
+            value={t("knowledge.headingChunkingSummary")}
+          />
+        )}
         <div className="flex items-center justify-between py-1.5">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <ForwardedIconComponent name="Cpu" className="h-4 w-4" />

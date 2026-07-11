@@ -23,7 +23,7 @@ Object.defineProperty(window, "localStorage", {
 });
 
 // --- Helpers ---
-const STORAGE_KEY = "langflow-assistant-sessions";
+const STORAGE_KEY = "earthmind-assistant-sessions";
 const SAMPLE_DATE = new Date("2026-03-20T10:00:00Z");
 
 function createMessage(

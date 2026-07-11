@@ -1,12 +1,12 @@
 # lfx-ibm
 
 IBM components — Db2 Vector Store plus watsonx.ai LLM and embeddings — as a
-standalone Langflow Extension Bundle.
+standalone EarthMind Extension Bundle.
 
 This bundle ships three components:
 
 * **`DB2VectorStoreComponent`** — wraps the `DB2VS` LangChain-compatible
-  vector store and exposes Db2's native vector search through Langflow's
+  vector store and exposes Db2's native vector search through EarthMind's
   standard vector-store palette entry.
 * **`WatsonxAIComponent`** — chat/text-generation against IBM watsonx.ai
   foundation models via `langchain-ibm`'s `ChatWatsonx`.
@@ -22,8 +22,8 @@ It follows the documented porting recipe in
 pip install lfx-ibm
 ```
 
-The bundle is registered automatically via the `langflow.extensions`
-entry-point. After install, restart your Langflow server; the three
+The bundle is registered automatically via the `earthmind.extensions`
+entry-point. After install, restart your EarthMind server; the three
 components appear in the palette under the `ibm` bundle group.
 
 > **Platform notes:**

@@ -3,18 +3,18 @@ title: Logs endpoints
 slug: /api-logs
 ---
 
-Retrieve logs for your Langflow flows and server.
+Retrieve logs for your EarthMind flows and server.
 
 ## Enable log retrieval
 
-The `/logs` endpoint requires log retrieval to be enabled in your Langflow instance.
+The `/logs` endpoint requires log retrieval to be enabled in your EarthMind instance.
 
-To enable log retrieval, set the following [environment variables](/environment-variables) in your Langflow `.env` file, and then start Langflow with `uv run langflow run --env-file .env`:
+To enable log retrieval, set the following [environment variables](/environment-variables) in your EarthMind `.env` file, and then start EarthMind with `uv run earthmind run --env-file .env`:
 
 ```text
-LANGFLOW_ENABLE_LOG_RETRIEVAL=True
-LANGFLOW_LOG_RETRIEVER_BUFFER_SIZE=10000 // Must be greater than 0
-LANGFLOW_LOG_LEVEL=DEBUG // Can be DEBUG, ERROR, INFO, WARNING, or CRITICAL
+EARTHMIND_ENABLE_LOG_RETRIEVAL=True
+EARTHMIND_LOG_RETRIEVER_BUFFER_SIZE=10000 // Must be greater than 0
+EARTHMIND_LOG_LEVEL=DEBUG // Can be DEBUG, ERROR, INFO, WARNING, or CRITICAL
 ```
 
 ## Stream logs
@@ -23,9 +23,9 @@ Stream logs in real-time using Server Sent Events (SSE):
 
 ```bash
 curl -X GET \
-  "$LANGFLOW_URL/logs-stream" \
+  "$EARTHMIND_URL/logs-stream" \
   -H "accept: text/event-stream" \
-  -H "x-api-key: $LANGFLOW_API_KEY"
+  -H "x-api-key: $EARTHMIND_API_KEY"
 ```
 
 <details>
@@ -66,9 +66,9 @@ With default values, the endpoint returns the last 10 lines of logs.
 
 ```bash
 curl -X GET \
-  "$LANGFLOW_URL/logs?lines_before=0&lines_after=0&timestamp=0" \
+  "$EARTHMIND_URL/logs?lines_before=0&lines_after=0&timestamp=0" \
   -H "accept: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY"
+  -H "x-api-key: $EARTHMIND_API_KEY"
 ```
 
 <details>
@@ -85,7 +85,7 @@ curl -X GET \
   "1736354770588": "2025-01-08T11:46:10.588105-0500 DEBUG Create service ServiceType.CHAT_SERVICE\n",
   "1736354771021": "2025-01-08T11:46:11.021817-0500 DEBUG Telemetry data sent successfully.\n",
   "1736354775619": "2025-01-08T11:46:15.619545-0500 DEBUG Create service ServiceType.STORE_SERVICE\n",
-  "1736354775699": "2025-01-08T11:46:15.699661-0500 DEBUG File 046-rocket.svg retrieved successfully from flow /Users/USER/Library/Caches/langflow/profile_pictures/Space.\n"
+  "1736354775699": "2025-01-08T11:46:15.699661-0500 DEBUG File 046-rocket.svg retrieved successfully from flow /Users/USER/Library/Caches/earthmind/profile_pictures/Space.\n"
 }
 ```
 

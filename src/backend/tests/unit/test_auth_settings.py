@@ -24,12 +24,12 @@ def test_auto_login_true_forces_default_and_scrubs_password(tmp_path: Path):
     # Validator forces default username and scrubs password
     assert settings.SUPERUSER == DEFAULT_SUPERUSER
     assert isinstance(settings.SUPERUSER_PASSWORD, SecretStr)
-    assert settings.SUPERUSER_PASSWORD.get_secret_value() == "langflow"
+    assert settings.SUPERUSER_PASSWORD.get_secret_value() == "earthmind"
 
     # reset_credentials keeps default username (AUTO_LOGIN on) and keeps password scrubbed
     settings.reset_credentials()
     assert settings.SUPERUSER == DEFAULT_SUPERUSER
-    assert settings.SUPERUSER_PASSWORD.get_secret_value() == "langflow"
+    assert settings.SUPERUSER_PASSWORD.get_secret_value() == "earthmind"
 
 
 def test_auto_login_false_preserves_username_and_scrubs_password_on_reset(tmp_path: Path):
@@ -94,22 +94,22 @@ class TestApiKeySourceEnvironmentVariables:
     """Tests for API_KEY_SOURCE loaded from environment variables."""
 
     def test_api_key_source_from_env_var(self, tmp_path: Path, monkeypatch):
-        """API_KEY_SOURCE should be loaded from LANGFLOW_API_KEY_SOURCE env var."""
+        """API_KEY_SOURCE should be loaded from EARTHMIND_API_KEY_SOURCE env var."""
         cfg_dir = tmp_path.as_posix()
-        monkeypatch.setenv("LANGFLOW_API_KEY_SOURCE", "env")
+        monkeypatch.setenv("EARTHMIND_API_KEY_SOURCE", "env")
         settings = AuthSettings(CONFIG_DIR=cfg_dir)
         assert settings.API_KEY_SOURCE == "env"
 
     def test_explicit_value_overrides_env_var(self, tmp_path: Path, monkeypatch):
         """Explicit parameter should override environment variable."""
         cfg_dir = tmp_path.as_posix()
-        monkeypatch.setenv("LANGFLOW_API_KEY_SOURCE", "env")
+        monkeypatch.setenv("EARTHMIND_API_KEY_SOURCE", "env")
         settings = AuthSettings(CONFIG_DIR=cfg_dir, API_KEY_SOURCE="db")
         assert settings.API_KEY_SOURCE == "db"
 
     def test_invalid_api_key_source_from_env_var(self, tmp_path: Path, monkeypatch):
         """Invalid API_KEY_SOURCE from env var should raise ValidationError."""
         cfg_dir = tmp_path.as_posix()
-        monkeypatch.setenv("LANGFLOW_API_KEY_SOURCE", "invalid")
+        monkeypatch.setenv("EARTHMIND_API_KEY_SOURCE", "invalid")
         with pytest.raises(ValidationError):
             AuthSettings(CONFIG_DIR=cfg_dir)

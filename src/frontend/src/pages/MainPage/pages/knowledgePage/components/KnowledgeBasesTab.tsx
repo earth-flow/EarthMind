@@ -187,6 +187,8 @@ const KnowledgeBasesTab = ({
     refetch,
     selectedFiles,
     clearSelection,
+    setSelectedFiles,
+    setQuantitySelected,
   });
 
   const { captureSubmit, applyOptimisticUpdate } = useOptimisticKnowledgeBase();
@@ -244,9 +246,12 @@ const KnowledgeBasesTab = ({
       chunkSize: actions.knowledgeBaseForAddSources.chunk_size,
       chunkOverlap: actions.knowledgeBaseForAddSources.chunk_overlap,
       separator: actions.knowledgeBaseForAddSources.separator,
+      parserStrategy: actions.knowledgeBaseForAddSources.parser_strategy,
+      chunkStrategy: actions.knowledgeBaseForAddSources.chunk_strategy,
       columnConfig: actions.knowledgeBaseForAddSources.column_config,
       backendType: actions.knowledgeBaseForAddSources.backend_type,
       backendConfig: actions.knowledgeBaseForAddSources.backend_config,
+      connectionConfig: actions.knowledgeBaseForAddSources.connection_config,
     };
   }, [actions.knowledgeBaseForAddSources]);
 

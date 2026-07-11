@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  type MouseEvent,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +17,13 @@ interface ChunkCardProps {
   chunk: ChunkInfo;
   index: number;
   onCopy: (content: string) => void;
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
 interface ParsedChunkMetadata {
   fileName: string | null;
+  sectionPath: string | null;
   userTags: Array<{ key: string; value: string }>;
 }
 
@@ -26,19 +35,22 @@ const formatTagValue = (value: unknown): string => {
   return String(value);
 };
 
-// `source_metadata` is stored as a JSON string on each chunk so the value
-// space stays portable across vector stores (see
-// `knowledge_bases.py::get_knowledge_base_chunks`). Parse it once per render
-// and split into the file-name surface + user-supplied tags so the card can
-// show both without leaking ingestion-internal keys.
 const parseChunkMetadata = (
   metadata: Record<string, unknown> | null,
 ): ParsedChunkMetadata => {
-  const empty: ParsedChunkMetadata = { fileName: null, userTags: [] };
+  const empty: ParsedChunkMetadata = {
+    fileName: null,
+    sectionPath: null,
+    userTags: [],
+  };
   if (!metadata) return empty;
 
   const fileName =
     typeof metadata.file_name === "string" ? metadata.file_name : null;
+  const sectionPath =
+    typeof metadata.section_path === "string" && metadata.section_path.length > 0
+      ? metadata.section_path
+      : null;
 
   const raw = metadata.source_metadata;
   let parsed: Record<string, unknown> | null = null;
@@ -55,24 +67,30 @@ const parseChunkMetadata = (
     parsed = raw as Record<string, unknown>;
   }
 
-  if (!parsed) return { fileName, userTags: [] };
+  if (!parsed) return { fileName, sectionPath, userTags: [] };
 
   const userTags = Object.entries(parsed)
     .filter(([key]) => !isReservedKbMetadataKey(key))
     .map(([key, value]) => ({ key, value: formatTagValue(value) }))
     .filter((entry) => entry.value !== "");
 
-  return { fileName, userTags };
+  return { fileName, sectionPath, userTags };
 };
 
-const ChunkCard = ({ chunk, index, onCopy }: ChunkCardProps) => {
+const ChunkCard = ({
+  chunk,
+  index,
+  onCopy,
+  isSelected = false,
+  onSelect,
+}: ChunkCardProps) => {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const contentRef = useRef<HTMLParagraphElement>(null);
 
-  const { fileName, userTags } = useMemo(
+  const { fileName, sectionPath, userTags } = useMemo(
     () => parseChunkMetadata(chunk.metadata),
     [chunk.metadata],
   );
@@ -84,20 +102,30 @@ const ChunkCard = ({ chunk, index, onCopy }: ChunkCardProps) => {
     }
   }, [chunk.content]);
 
-  const handleCopy = (e: React.MouseEvent) => {
+  const handleCopy = (e: MouseEvent) => {
     e.stopPropagation();
     onCopy(chunk.content);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const handleCardClick = () => {
+    onSelect?.();
+    if (isOverflowing) {
+      setIsExpanded((current) => !current);
+    }
+  };
+
   return (
     <div
       className={cn(
-        "rounded-lg border border-muted bg-muted p-3 transition-all duration-200",
+        "rounded-lg border p-3 transition-all duration-200",
+        isSelected
+          ? "border-primary/50 bg-background shadow-[0_0_0_1px_rgba(59,130,246,0.18)]"
+          : "border-muted bg-muted",
         isOverflowing && "cursor-pointer",
       )}
-      onClick={() => isOverflowing && setIsExpanded(!isExpanded)}
+      onClick={handleCardClick}
     >
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -149,6 +177,11 @@ const ChunkCard = ({ chunk, index, onCopy }: ChunkCardProps) => {
         >
           <ForwardedIconComponent name="File" className="h-3 w-3" />
           <span className="truncate">{fileName}</span>
+        </div>
+      )}
+      {sectionPath && (
+        <div className="mb-2 text-xs text-muted-foreground/90">
+          {sectionPath}
         </div>
       )}
       <p

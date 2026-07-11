@@ -104,9 +104,9 @@ logger = logging.getLogger(__name__)
 # Post-swap hooks
 # ---------------------------------------------------------------------------
 #
-# Layers above lfx (the langflow component cache; eventually the events
+# Layers above lfx (the earthmind component cache; eventually the events
 # service) need to react to a successful reload.  ``lfx`` cannot import
-# ``langflow``, so we expose a tiny registration API: ``langflow`` calls
+# ``earthmind``, so we expose a tiny registration API: ``earthmind`` calls
 # :func:`register_post_swap_hook` at startup; this module calls every
 # registered hook in Stage 5 with the new BundleRecord.  Hooks must be
 # fast and exception-tolerant -- we wrap calls in ``logger.exception`` so
@@ -119,7 +119,7 @@ def register_post_swap_hook(hook: Callable[[BundleRecord], None]) -> None:
     """Register a callback to fire after a successful Stage-3 swap.
 
     Idempotent: registering the same callable twice is a no-op.  The
-    canonical use case is the langflow component cache, which needs to
+    canonical use case is the earthmind component cache, which needs to
     rebuild its templates for the bundle so the palette / new-graph path
     sees post-reload classes without a server restart.
     """
@@ -401,7 +401,7 @@ def _run_pipeline_body(
     # path here is not the path the operator was editing, the bug is
     # cross-source bundle-name shadowing in the registry-population
     # pass, not the loader itself.  Logged at INFO so it shows up under
-    # the default langflow verbosity.
+    # the default earthmind verbosity.
     logger.info(
         "extension.reload.stage1_load",
         extra={

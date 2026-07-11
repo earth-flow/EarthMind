@@ -77,7 +77,7 @@ def create_backend(
     one-line change in ``kb_helpers``.
 
     ``user_id`` is forwarded so backends can resolve credential *variables*
-    through Langflow's ``variable_service`` (same pattern as the connector
+    through EarthMind's ``variable_service`` (same pattern as the connector
     ingestion sources). Legacy call sites that pass ``None`` still work —
     the backends fall back to ``os.environ`` in that case.
 

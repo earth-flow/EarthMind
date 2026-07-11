@@ -2,7 +2,7 @@
 
 Context: the agent's run-time security scanner refuses to ``exec`` any flow whose
 node ``code`` field has forbidden imports/calls. The scanner was designed to
-catch LLM-generated component code, but it was also flagging *built-in* Langflow
+catch LLM-generated component code, but it was also flagging *built-in* EarthMind
 components (e.g., ``URLComponent`` uses ``importlib.util.find_spec`` for optional
 dependency detection and ``os.environ.get`` for proxy config). Those built-ins
 are part of the trusted code surface — the assistant adds them via the
@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from langflow.agentic.services.flow_run import _scan_flow_component_code
+from earthmind.agentic.services.flow_run import _scan_flow_component_code
 
 
 def _node(*, node_id: str, component_type: str, code: str) -> dict:
@@ -37,9 +37,9 @@ def _node(*, node_id: str, component_type: str, code: str) -> dict:
 _BUILTIN_URL_CODE = """import importlib
 import os
 
-# Built-in URLComponent uses importlib.util.find_spec for optional langflow
+# Built-in URLComponent uses importlib.util.find_spec for optional earthmind
 # detection and os.environ.get for proxy env vars — both safe in trusted code.
-if importlib.util.find_spec("langflow"):
+if importlib.util.find_spec("earthmind"):
     pass
 
 has_proxy = any((os.environ.get(key) or "").strip() for key in ("HTTPS_PROXY",))

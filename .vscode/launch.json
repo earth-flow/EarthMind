@@ -11,7 +11,7 @@
 
       "args": [
         "--factory",
-        "langflow.main:create_app",
+        "earthmind.main:create_app",
         "--port",
         "7860",
         "--reload",
@@ -31,8 +31,8 @@
       "jinja": true,
       "justMyCode": false,
       "env": {
-        "LANGFLOW_LOG_LEVEL": "debug",
-        "LANGFLOW_PROMETHEUS_PORT": "9090"
+        "EARTHMIND_LOG_LEVEL": "debug",
+        "EARTHMIND_PROMETHEUS_PORT": "9090"
       },
       "envFile": "${workspaceFolder}/.env"
     },
@@ -40,11 +40,11 @@
       "name": "Debug CLI",
       "type": "debugpy",
       "request": "launch",
-      "module": "langflow",
+      "module": "earthmind",
       "args": [
         "run",
         "--frontend-path",
-        "${workspaceFolder}/src/backend/base/langflow/frontend",
+        "${workspaceFolder}/src/backend/base/earthmind/frontend",
         "--env-file",
         "${workspaceFolder}/.env"
       ],

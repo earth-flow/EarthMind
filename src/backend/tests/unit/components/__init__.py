@@ -1,3 +1,3 @@
-"""Tests for Langflow components."""
+"""Tests for EarthMind components."""
 
 # Made with Bob

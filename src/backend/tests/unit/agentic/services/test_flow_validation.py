@@ -11,10 +11,10 @@ silently delivers a broken flow; never leaks secrets in the caveat.
 from __future__ import annotations
 
 import pytest
-from langflow.agentic.services.flow_agent_model import AgentModelOutcome
-from langflow.agentic.services.flow_graph_build_check import BuildCheckResult
-from langflow.agentic.services.flow_static_validation import FlowValidationReport
-from langflow.agentic.services.flow_validation import (
+from earthmind.agentic.services.flow_agent_model import AgentModelOutcome
+from earthmind.agentic.services.flow_graph_build_check import BuildCheckResult
+from earthmind.agentic.services.flow_static_validation import FlowValidationReport
+from earthmind.agentic.services.flow_validation import (
     FlowVerifyStatus,
     verify_flow,
 )

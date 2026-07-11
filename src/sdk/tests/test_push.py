@@ -1,4 +1,4 @@
-"""Unit tests for lfx push / LangflowClient.upsert_flow.
+"""Unit tests for lfx push / EarthMindClient.upsert_flow.
 
 Uses respx to mock HTTP without a live server.
 """
@@ -13,10 +13,10 @@ from uuid import UUID
 import httpx
 import pytest
 import respx
-from langflow_sdk.client import LangflowClient
-from langflow_sdk.exceptions import LangflowHTTPError, LangflowNotFoundError
+from earthmind_sdk.client import EarthMindClient
+from earthmind_sdk.exceptions import EarthMindHTTPError, EarthMindNotFoundError
 
-_BASE = "http://langflow.test"
+_BASE = "http://earthmind.test"
 _FLOW_ID = UUID("aaaaaaaa-0000-0000-0000-000000000001")
 
 _FLOW_PAYLOAD = {
@@ -39,8 +39,8 @@ _FLOW_PAYLOAD = {
 }
 
 
-def _client() -> LangflowClient:
-    return LangflowClient(base_url=_BASE, api_key="test-key")  # pragma: allowlist secret
+def _client() -> EarthMindClient:
+    return EarthMindClient(base_url=_BASE, api_key="test-key")  # pragma: allowlist secret
 
 
 # ---------------------------------------------------------------------------
@@ -51,7 +51,7 @@ def _client() -> LangflowClient:
 @respx.mock
 def test_upsert_flow_create():
     respx.put(f"{_BASE}/api/v1/flows/{_FLOW_ID}").mock(return_value=httpx.Response(201, json=_FLOW_PAYLOAD))
-    from langflow_sdk.models import FlowCreate
+    from earthmind_sdk.models import FlowCreate
 
     client = _client()
     flow, created = client.upsert_flow(_FLOW_ID, FlowCreate(name="Test Flow"))
@@ -68,7 +68,7 @@ def test_upsert_flow_create():
 @respx.mock
 def test_upsert_flow_update():
     respx.put(f"{_BASE}/api/v1/flows/{_FLOW_ID}").mock(return_value=httpx.Response(200, json=_FLOW_PAYLOAD))
-    from langflow_sdk.models import FlowCreate
+    from earthmind_sdk.models import FlowCreate
 
     client = _client()
     flow, created = client.upsert_flow(_FLOW_ID, FlowCreate(name="Test Flow"))
@@ -77,7 +77,7 @@ def test_upsert_flow_update():
 
 
 # ---------------------------------------------------------------------------
-# upsert_flow -- 404 raises LangflowNotFoundError
+# upsert_flow -- 404 raises EarthMindNotFoundError
 # ---------------------------------------------------------------------------
 
 
@@ -86,15 +86,15 @@ def test_upsert_flow_not_found_raises():
     respx.put(f"{_BASE}/api/v1/flows/{_FLOW_ID}").mock(
         return_value=httpx.Response(404, json={"detail": "Flow not found"})
     )
-    from langflow_sdk.models import FlowCreate
+    from earthmind_sdk.models import FlowCreate
 
     client = _client()
-    with pytest.raises(LangflowNotFoundError):
+    with pytest.raises(EarthMindNotFoundError):
         client.upsert_flow(_FLOW_ID, FlowCreate(name="Test Flow"))
 
 
 # ---------------------------------------------------------------------------
-# upsert_flow -- 409 conflict raises LangflowHTTPError
+# upsert_flow -- 409 conflict raises EarthMindHTTPError
 # ---------------------------------------------------------------------------
 
 
@@ -103,10 +103,10 @@ def test_upsert_flow_conflict_raises():
     respx.put(f"{_BASE}/api/v1/flows/{_FLOW_ID}").mock(
         return_value=httpx.Response(409, json={"detail": "Name must be unique"})
     )
-    from langflow_sdk.models import FlowCreate
+    from earthmind_sdk.models import FlowCreate
 
     client = _client()
-    with pytest.raises(LangflowHTTPError) as exc_info:
+    with pytest.raises(EarthMindHTTPError) as exc_info:
         client.upsert_flow(_FLOW_ID, FlowCreate(name="Test Flow"))
     from http import HTTPStatus
 
@@ -138,7 +138,7 @@ def test_push_command_creates_flow(tmp_path: Path):
     respx.get(f"{_BASE}/api/v1/projects/").mock(return_value=httpx.Response(200, json=[]))
 
     # Write an environments config
-    env_file = tmp_path / "langflow-environments.toml"
+    env_file = tmp_path / "earthmind-environments.toml"
     env_file.write_text(
         f'[environments.test]\nurl = "{_BASE}"\n',
         encoding="utf-8",
@@ -169,7 +169,7 @@ def test_push_command_dry_run_makes_no_requests(tmp_path: Path):
         encoding="utf-8",
     )
 
-    env_file = tmp_path / "langflow-environments.toml"
+    env_file = tmp_path / "earthmind-environments.toml"
     env_file.write_text(
         f'[environments.test]\nurl = "{_BASE}"\n',
         encoding="utf-8",
@@ -218,7 +218,7 @@ def test_push_command_project_dir(tmp_path: Path):
         payload = {**_FLOW_PAYLOAD, "id": str(fid)}
         respx.put(f"{_BASE}/api/v1/flows/{fid}").mock(return_value=httpx.Response(201, json=payload))
 
-    env_file = tmp_path / "langflow-environments.toml"
+    env_file = tmp_path / "earthmind-environments.toml"
     env_file.write_text(
         f'[environments.test]\nurl = "{_BASE}"\n',
         encoding="utf-8",

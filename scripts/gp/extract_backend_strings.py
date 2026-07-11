@@ -1,4 +1,4 @@
-"""Extract translatable strings from Langflow component classes.
+"""Extract translatable strings from EarthMind component classes.
 
 Walks the lfx.components package, reads class-level display_name/description
 and field-level display_names directly from component class definitions
@@ -32,15 +32,15 @@ import pkgutil
 import sys
 from pathlib import Path
 
-OUTPUT_PATH = Path(__file__).parent.parent.parent / "src/backend/base/langflow/locales/en.json"
-STARTER_PROJECTS_DIR = Path(__file__).parent.parent.parent / "src/backend/base/langflow/initial_setup/starter_projects"
+OUTPUT_PATH = Path(__file__).parent.parent.parent / "src/backend/base/earthmind/locales/en.json"
+STARTER_PROJECTS_DIR = Path(__file__).parent.parent.parent / "src/backend/base/earthmind/initial_setup/starter_projects"
 
 
 def collect_strings() -> dict[str, str]:
     """Walk lfx.components and extract all translatable display_name strings."""
-    from langflow.utils.i18n_keys import component_field_key as _component_field_key
-    from langflow.utils.i18n_keys import normalize_component_key as _normalize_component_key
-    from langflow.utils.i18n_keys import safe_flow_key as _safe_key
+    from earthmind.utils.i18n_keys import component_field_key as _component_field_key
+    from earthmind.utils.i18n_keys import normalize_component_key as _normalize_component_key
+    from earthmind.utils.i18n_keys import safe_flow_key as _safe_key
 
     try:
         import lfx.components as components_pkg

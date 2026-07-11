@@ -42,7 +42,7 @@ def _per_url_fetch(pages: dict):
 @pytest.fixture
 def disable_ssrf(monkeypatch):
     """Disable SSRF protection so ``ensure_url`` skips DNS resolution."""
-    monkeypatch.setenv("LANGFLOW_SSRF_PROTECTION_ENABLED", "false")
+    monkeypatch.setenv("EARTHMIND_SSRF_PROTECTION_ENABLED", "false")
 
 
 class TestURLComponent(ComponentTestBaseWithoutClient):
@@ -233,8 +233,8 @@ class TestURLComponentSSRFProtection:
     @pytest.fixture(autouse=True)
     def enable_ssrf(self, monkeypatch):
         """Enable SSRF protection with an empty allowlist for these tests."""
-        monkeypatch.setenv("LANGFLOW_SSRF_PROTECTION_ENABLED", "true")
-        monkeypatch.delenv("LANGFLOW_SSRF_ALLOWED_HOSTS", raising=False)
+        monkeypatch.setenv("EARTHMIND_SSRF_PROTECTION_ENABLED", "true")
+        monkeypatch.delenv("EARTHMIND_SSRF_ALLOWED_HOSTS", raising=False)
 
     def test_ensure_url_blocks_localhost(self):
         """Loopback addresses are blocked."""

@@ -69,12 +69,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Walk every ``.py`` file under each root.
 SCAN_ROOTS: tuple[Path, ...] = (
-    REPO_ROOT / "src" / "backend" / "base" / "langflow" / "api",
+    REPO_ROOT / "src" / "backend" / "base" / "earthmind" / "api",
     REPO_ROOT / "src" / "lfx" / "src" / "lfx",
 )
 
 # Python package roots.  Used to resolve ``from <module> import <name>``
-# back to a file path -- ``langflow.api.v1.extensions`` lives under
+# back to a file path -- ``earthmind.api.v1.extensions`` lives under
 # ``src/backend/base/`` and ``lfx.extension.bundle_registry`` lives under
 # ``src/lfx/src/``.
 MODULE_ROOTS: tuple[Path, ...] = (

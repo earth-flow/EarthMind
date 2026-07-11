@@ -1,8 +1,8 @@
 import os
 
 import pytest
-from langflow.initial_setup.setup import load_starter_projects
-from langflow.load import aload_flow_from_json
+from earthmind.initial_setup.setup import load_starter_projects
+from earthmind.load import aload_flow_from_json
 from lfx.graph import Graph
 
 # TODO: UPDATE BASIC EXAMPLE

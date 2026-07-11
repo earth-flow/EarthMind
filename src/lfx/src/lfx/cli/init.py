@@ -29,43 +29,43 @@ console = Console()
 _ENVIRONMENTS_YAML = """\
 # .lfx/environments.yaml
 #
-# Configure your Langflow instances here.
+# Configure your EarthMind instances here.
 # Safe to commit — API keys are NEVER stored in this file.
 # The api_key_env value is the NAME of an environment variable that holds
 # the actual API key; set that variable in your shell or CI secrets.
 #
 # Quick start:
-#   1. Open Langflow → Settings → API Keys → Create a new key
-#   2. export LANGFLOW_LOCAL_API_KEY=<your key>
+#   1. Open EarthMind → Settings → API Keys → Create a new key
+#   2. export EARTHMIND_LOCAL_API_KEY=<your key>
 #   3. lfx export --env local --flow-id <uuid> --output-dir flows/
 
 environments:
   local:
-    url: http://localhost:7860
-    api_key_env: LANGFLOW_LOCAL_API_KEY
+    url: http://10.171.205.153:7860
+    api_key_env: EARTHMIND_LOCAL_API_KEY
 
   staging:
-    url: https://staging.langflow.example.com
-    api_key_env: LANGFLOW_STAGING_API_KEY
+    url: https://staging.earthmind.example.com
+    api_key_env: EARTHMIND_STAGING_API_KEY
 
   production:
-    url: https://langflow.example.com
-    api_key_env: LANGFLOW_PROD_API_KEY
+    url: https://earthmind.example.com
+    api_key_env: EARTHMIND_PROD_API_KEY
 
 defaults:
   environment: local
 """
 
 _TEST_FLOWS_PY = '''\
-"""Integration tests for Langflow flows.
+"""Integration tests for EarthMind flows.
 
 Run against a local instance (started with ``lfx serve``):
 
-    pytest tests/ --langflow-url http://localhost:8000
+    pytest tests/ --earthmind-url http://localhost:8000
 
 Run against a named environment (staging, production, etc.):
 
-    pytest tests/ --langflow-env staging -m integration
+    pytest tests/ --earthmind-env staging -m integration
 
 The flow_runner fixture auto-skips when no connection is configured,
 so these tests are safe to include in any CI pipeline.
@@ -85,16 +85,16 @@ def test_flow_responds(flow_runner):
 @pytest.mark.integration
 def test_flow_output_quality(flow_runner):
     """Example: assert on the content of the response."""
-    result = flow_runner("my-flow-endpoint", "What is Langflow?")
+    result = flow_runner("my-flow-endpoint", "What is EarthMind?")
     text = result.first_text_output()
     assert text is not None
     assert len(text) > 20, f"Response seems too short: {text!r}"
 '''
 
 _GITIGNORE = """\
-# Langflow credentials -- never commit API keys
-# (langflow-environments.toml may contain literal keys; .lfx/environments.yaml is safe to commit)
-langflow-environments.toml
+# EarthMind credentials -- never commit API keys
+# (earthmind-environments.toml may contain literal keys; .lfx/environments.yaml is safe to commit)
+earthmind-environments.toml
 """
 
 # Templates bundled inside the Python package
@@ -210,11 +210,11 @@ def init_command(
         **kw,
     )
 
-    # .gitignore — keep langflow-environments.toml ignored for backward compat
+    # .gitignore — keep earthmind-environments.toml ignored for backward compat
     gitignore = target / ".gitignore"
     if gitignore.exists():
         existing_content = gitignore.read_text(encoding="utf-8")
-        if "langflow-environments.toml" not in existing_content:
+        if "earthmind-environments.toml" not in existing_content:
             gitignore.write_text(existing_content.rstrip() + "\n\n" + _GITIGNORE, encoding="utf-8")
             created.append((".gitignore", "appended credentials ignore rule"))
     else:
@@ -245,13 +245,13 @@ def init_command(
     console.print()
     console.print("[bold green]✓ Project scaffolded.[/bold green]  Next steps:\n")
     console.print("  1. Edit [bold].lfx/environments.yaml[/bold] with your instance URL")
-    console.print("  2. [bold]export LANGFLOW_LOCAL_API_KEY=<key>[/bold]   (Settings → API Keys)")
+    console.print("  2. [bold]export EARTHMIND_LOCAL_API_KEY=<key>[/bold]   (Settings → API Keys)")
     if example:
         console.print("  3. [bold]lfx validate flows/hello-world.json[/bold]  (check the starter flow)")
         console.print("  4. [bold]lfx serve flows/hello-world.json[/bold]     (run it locally)")
-        console.print("  5. [bold]lfx push --dir flows/ --env local[/bold]    (deploy to Langflow)")
+        console.print("  5. [bold]lfx push --dir flows/ --env local[/bold]    (deploy to EarthMind)")
     else:
         console.print("  3. [bold]lfx create my-flow --template hello-world[/bold]")
         console.print("  4. [bold]lfx push --dir flows/ --env local[/bold]")
-    console.print(f"  {'6' if example else '5'}. [bold]pytest tests/ --langflow-env local[/bold]")
+    console.print(f"  {'6' if example else '5'}. [bold]pytest tests/ --earthmind-env local[/bold]")
     console.print()

@@ -1,6 +1,6 @@
 """Vector-store backend abstraction for Knowledge Bases.
 
-Provides a thin wrapper over LangChain's ``VectorStore`` base so Langflow's KB
+Provides a thin wrapper over LangChain's ``VectorStore`` base so EarthMind's KB
 subsystem can address multiple vector databases through a single interface.
 
 Public surface:
@@ -11,7 +11,7 @@ Public surface:
 * ``BackendType`` — enum of registered backend identifiers.
 * ``register_backend`` / ``create_backend`` — registry entry points.
 
-In this phase only **Chroma** and **OpenSearch** are registered. The
+In this phase only **Chroma**, **OpenSearch**, and **Milvus** are registered. The
 ``AstraBackend`` / ``MongoDBBackend`` / ``PostgresBackend`` classes are
 preserved as stubs so the framework wiring (enum values, type imports,
 DB-stored ``backend_type`` strings on existing rows) keeps round-tripping,
@@ -40,6 +40,7 @@ from lfx.base.knowledge_bases.backends.chroma import (
     ChromaCloudBackend,
     ChromaLocalBackend,
 )
+from lfx.base.knowledge_bases.backends.milvus import MilvusBackend
 from lfx.base.knowledge_bases.backends.mongodb import MongoDBBackend
 from lfx.base.knowledge_bases.backends.opensearch import OpenSearchBackend
 from lfx.base.knowledge_bases.backends.postgres import PostgresBackend
@@ -58,6 +59,7 @@ from lfx.base.knowledge_bases.backends.registry import (
 # to the correct class based on backend_config["mode"] at call time.
 register_backend(BackendType.CHROMA, ChromaLocalBackend)
 register_backend(BackendType.OPENSEARCH, OpenSearchBackend)
+register_backend(BackendType.MILVUS, MilvusBackend)
 
 __all__ = [
     "AstraBackend",
@@ -67,6 +69,7 @@ __all__ = [
     "ChromaCloudBackend",
     "ChromaLocalBackend",
     "IngestedDocument",
+    "MilvusBackend",
     "MongoDBBackend",
     "OpenSearchBackend",
     "PostgresBackend",

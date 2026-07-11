@@ -14,7 +14,7 @@ from lfx.memory import (
 
 # Import the appropriate Message class based on what's available
 try:
-    from langflow.schema.message import Message
+    from earthmind.schema.message import Message
 except (ImportError, ModuleNotFoundError):
     from lfx.schema.message import Message
 

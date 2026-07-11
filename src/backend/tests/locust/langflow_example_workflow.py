@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Example Langflow Load Testing Workflow
+"""Example EarthMind Load Testing Workflow
 
 This script demonstrates the complete workflow for setting up and running
-Langflow load tests with real starter project flows.
+EarthMind load tests with real starter project flows.
 
 Usage:
     python example_workflow.py
@@ -81,11 +81,11 @@ def check_dependencies():
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Example Langflow Load Testing Workflow")
+    parser = argparse.ArgumentParser(description="Example EarthMind Load Testing Workflow")
     parser.add_argument("--auto", action="store_true", help="Run automatically without user input prompts")
     args = parser.parse_args()
 
-    print("🚀 Langflow Load Testing Example Workflow")
+    print("🚀 EarthMind Load Testing Example Workflow")
     print("This example will demonstrate the complete load testing setup and execution.")
 
     # Check dependencies
@@ -94,8 +94,8 @@ def main():
         sys.exit(1)
 
     script_dir = Path(__file__).parent
-    setup_script = script_dir / "langflow_setup_test.py"
-    runner_script = script_dir / "langflow_run_load_test.py"
+    setup_script = script_dir / "earthmind_setup_test.py"
+    runner_script = script_dir / "earthmind_run_load_test.py"
 
     # Check if scripts exist
     if not setup_script.exists():
@@ -157,12 +157,12 @@ def main():
 
             # Set environment variables for the load test
             env = os.environ.copy()
-            env["LANGFLOW_HOST"] = creds["host"]
+            env["EARTHMIND_HOST"] = creds["host"]
             env["API_KEY"] = creds["api_key"]
             env["FLOW_ID"] = creds["flow_id"]
 
             print("   🔧 Setting environment variables:")
-            print(f"      LANGFLOW_HOST={creds['host']}")
+            print(f"      EARTHMIND_HOST={creds['host']}")
             print(f"      API_KEY={creds['api_key'][:20]}...")
             print(f"      FLOW_ID={creds['flow_id']}")
 
@@ -182,11 +182,11 @@ def main():
                 "2",
                 "--duration",
                 "30",
-                "--no-start-langflow",
+                "--no-start-earthmind",
                 "--html",
-                "langflow_load_test_report.html",
+                "earthmind_load_test_report.html",
                 "--csv",
-                "langflow_load_test_results",
+                "earthmind_load_test_results",
             ],
             "Run quick load test with HTML report generation",
             env=env,
@@ -202,7 +202,7 @@ def main():
         print("The example workflow is complete! Here's what you can do next:")
         print()
         print("🔧 Try different flows:")
-        print("   python setup_langflow_test.py --interactive")
+        print("   python setup_earthmind_test.py --interactive")
         print()
         print("📊 Run more comprehensive tests:")
         print("   python run_load_test.py --shape ramp100 --headless --users 100 --duration 180")
@@ -213,14 +213,14 @@ def main():
         print("💾 Your test credentials are saved in: example_test_creds.json")
         print()
         print("📊 Generated Reports:")
-        print("   - langflow_load_test_report.html (detailed HTML report)")
-        print("   - langflow_load_test_results_*.csv (CSV data files)")
-        print("   - langflow_load_test_detailed_errors_*.log (detailed error logs)")
-        print("   - langflow_load_test_error_summary_*.json (error analysis)")
-        print("   - langflow_server_logs_during_test_*.log (Langflow server logs)")
+        print("   - earthmind_load_test_report.html (detailed HTML report)")
+        print("   - earthmind_load_test_results_*.csv (CSV data files)")
+        print("   - earthmind_load_test_detailed_errors_*.log (detailed error logs)")
+        print("   - earthmind_load_test_error_summary_*.json (error analysis)")
+        print("   - earthmind_server_logs_during_test_*.log (EarthMind server logs)")
         print()
         print("🧹 Clean up:")
-        print("   - Remove test flows from Langflow UI")
+        print("   - Remove test flows from EarthMind UI")
         print("   - Delete example_test_creds.json")
         print("   - Delete generated report files")
         print("   - Reset environment variables")
@@ -231,27 +231,27 @@ def main():
             print("\nAuto mode - skipping cleanup so you can view the generated reports!")
             print("📁 Files preserved:")
             print("   - example_test_creds.json")
-            print("   - langflow_load_test_report.html")
-            print("   - langflow_load_test_results_*.csv")
+            print("   - earthmind_load_test_report.html")
+            print("   - earthmind_load_test_results_*.csv")
         else:
             cleanup_response = input("\nWould you like to clean up the example files? (y/N): ").strip().lower()
 
             if cleanup_response == "y":
                 files_to_clean = [
                     "example_test_creds.json",
-                    "langflow_load_test_report.html",
-                    "langflow_load_test_results_failures.csv",
-                    "langflow_load_test_results_stats.csv",
-                    "langflow_load_test_results_stats_history.csv",
-                    "langflow_load_test_results_exceptions.csv",
+                    "earthmind_load_test_report.html",
+                    "earthmind_load_test_results_failures.csv",
+                    "earthmind_load_test_results_stats.csv",
+                    "earthmind_load_test_results_stats_history.csv",
+                    "earthmind_load_test_results_exceptions.csv",
                 ]
 
                 # Also clean up error logs (they have timestamps, so use glob pattern)
                 import glob
 
-                error_files = glob.glob("langflow_load_test_detailed_errors_*.log")
-                error_files.extend(glob.glob("langflow_load_test_error_summary_*.json"))
-                error_files.extend(glob.glob("langflow_server_logs_during_test_*.log"))
+                error_files = glob.glob("earthmind_load_test_detailed_errors_*.log")
+                error_files.extend(glob.glob("earthmind_load_test_error_summary_*.json"))
+                error_files.extend(glob.glob("earthmind_server_logs_during_test_*.log"))
                 files_to_clean.extend(error_files)
 
                 for file_path in files_to_clean:
@@ -264,14 +264,14 @@ def main():
                         print(f"⚠️  Could not clean up {file_path}: {e}")
 
         print("\n🎉 Example workflow completed successfully!")
-        print("You're now ready to use Langflow load testing for your own projects.")
+        print("You're now ready to use EarthMind load testing for your own projects.")
         print()
         print("📊 View your load test results:")
-        print("   • Open langflow_load_test_report.html in your browser for detailed analysis")
-        print("   • Check langflow_load_test_results_*.csv for raw data")
-        print("   • Review langflow_load_test_detailed_errors_*.log for comprehensive error details")
-        print("   • Analyze langflow_load_test_error_summary_*.json for error patterns")
-        print("   • Examine langflow_server_logs_during_test_*.log for server-side issues")
+        print("   • Open earthmind_load_test_report.html in your browser for detailed analysis")
+        print("   • Check earthmind_load_test_results_*.csv for raw data")
+        print("   • Review earthmind_load_test_detailed_errors_*.log for comprehensive error details")
+        print("   • Analyze earthmind_load_test_error_summary_*.json for error patterns")
+        print("   • Examine earthmind_server_logs_during_test_*.log for server-side issues")
 
     except KeyboardInterrupt:
         print("\n\n⚠️  Example workflow interrupted by user")

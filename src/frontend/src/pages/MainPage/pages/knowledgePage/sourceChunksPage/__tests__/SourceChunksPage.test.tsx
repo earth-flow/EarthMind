@@ -54,6 +54,16 @@ jest.mock("@/components/ui/sidebar", () => ({
   SidebarTrigger: ({ children }: any) => <div>{children}</div>,
 }));
 
+const mockKnowledgeGraphPanel = jest.fn();
+jest.mock("../../components/KnowledgeGraphPanel", () => ({
+  __esModule: true,
+  // biome-ignore lint/suspicious/noExplicitAny: test double
+  default: (props: any) => {
+    mockKnowledgeGraphPanel(props);
+    return <div data-testid="knowledge-graph-panel" />;
+  },
+}));
+
 // ── Utilities ────────────────────────────────────────────────────────────────
 
 import { SourceChunksPage } from "../SourceChunksPage";
@@ -76,6 +86,7 @@ const makePaginatedResponse = (overrides = {}) => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockKnowledgeGraphPanel.mockClear();
 });
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -159,6 +170,25 @@ describe("SourceChunksPage", () => {
     it("renders the search input", () => {
       render(<SourceChunksPage />);
       expect(screen.getByTestId("chunks-search-input")).toBeInTheDocument();
+    });
+
+    it("renders a page-level update knowledge graph button", () => {
+      render(<SourceChunksPage />);
+      expect(
+        screen.getByRole("button", { name: "knowledge.graphRefreshButton" }),
+      ).toBeInTheDocument();
+    });
+
+    it("renders the knowledge graph panel next to the chunk list", () => {
+      render(<SourceChunksPage />);
+      expect(screen.getByTestId("knowledge-graph-panel")).toBeInTheDocument();
+      expect(mockKnowledgeGraphPanel).toHaveBeenCalledWith(
+        expect.objectContaining({
+          kbName: "my_knowledge_base",
+          chunkIds: undefined,
+          sampleLimit: 80,
+        }),
+      );
     });
   });
 

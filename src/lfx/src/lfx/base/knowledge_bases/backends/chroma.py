@@ -6,7 +6,7 @@ Two independent classes cover the two Chroma deployment modes:
   directory at ``kb_path``.  No credentials needed.
 * ``ChromaCloudBackend`` — ``chromadb.CloudClient`` connecting to Chroma Cloud.
   Credentials (API key; optionally tenant / database) are resolved through
-  Langflow's variable service or env vars.
+  EarthMind's variable service or env vars.
 
 ``create_backend()`` in the registry dispatches to the right class based on
 ``backend_config["mode"]``; call sites never instantiate these directly.
@@ -246,7 +246,7 @@ class ChromaCloudBackend(BaseVectorStoreBackend):
     """Chroma collection backed by a ``chromadb.CloudClient``.
 
     Credentials (API key, and optionally tenant / database) are resolved
-    through Langflow's variable service (or env vars as a fallback) via the
+    through EarthMind's variable service (or env vars as a fallback) via the
     variable-name keys stored in ``backend_config``.
     """
 

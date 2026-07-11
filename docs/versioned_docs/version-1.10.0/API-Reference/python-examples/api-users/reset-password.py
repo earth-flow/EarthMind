@@ -2,8 +2,8 @@ import os
 
 import requests
 
-base = os.environ.get("LANGFLOW_URL", "")
-api_key = os.environ.get("LANGFLOW_API_KEY", "")
+base = os.environ.get("EARTHMIND_URL", "")
+api_key = os.environ.get("EARTHMIND_API_KEY", "")
 
 headers = {"Content-Type": "application/json", "x-api-key": api_key}
 
@@ -11,7 +11,7 @@ who = requests.get(f"{base}/api/v1/users/whoami", headers=headers, timeout=30)
 who.raise_for_status()
 user_id = who.json()["id"]
 
-# Must differ from the current password (default superuser is often langflow/langflow).
+# Must differ from the current password (default superuser is often earthmind/earthmind).
 payload = {"password": "DocsExampleResetPass2025!"}
 
 response = requests.patch(

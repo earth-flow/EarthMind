@@ -21,7 +21,7 @@ interface BaseConfig {
   voice_mode_available: boolean;
   allow_custom_components: boolean;
   mcp_base_url: string;
-  // Mode A only: backend's ``LANGFLOW_ENABLE_EXTENSION_RELOAD`` mirrored
+  // Mode A only: backend's ``EARTHMIND_ENABLE_EXTENSION_RELOAD`` mirrored
   // through to the frontend so a packaged build can light up the palette
   // Reload button without a rebuild.  See utilityStore.enableExtensionReload.
   enable_extension_reload: boolean;
@@ -131,7 +131,7 @@ export const useGetConfig: useQueryFunctionType<
       const timeoutInMilliseconds = data.frontend_timeout
         ? data.frontend_timeout * 1000
         : DEFAULT_TIMEOUT;
-      axios.defaults.baseURL = "";
+      axios.defaults.baseURL = import.meta.env.BACKEND_URL ?? "";
       axios.defaults.timeout = timeoutInMilliseconds;
 
       // Set fields present in both public and full config

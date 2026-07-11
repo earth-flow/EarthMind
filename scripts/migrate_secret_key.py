@@ -8,7 +8,7 @@ This script handles the full key rotation lifecycle:
 5. Saves the new key
 
 Migrated database fields:
-- user.store_api_key: Langflow Store API keys
+- user.store_api_key: EarthMind Store API keys
 - variable.value: All encrypted variable values
 - folder.auth_settings: MCP oauth_client_secret and api_key fields
 
@@ -35,18 +35,18 @@ from sqlalchemy import create_engine, text
 
 MINIMUM_KEY_LENGTH = 32
 SENSITIVE_AUTH_FIELDS = ["oauth_client_secret", "api_key"]
-# Must match langflow.services.variable.constants.CREDENTIAL_TYPE
+# Must match earthmind.services.variable.constants.CREDENTIAL_TYPE
 CREDENTIAL_TYPE = "Credential"
 
 
 def get_default_config_dir() -> Path:
-    """Get the default Langflow config directory using platformdirs."""
-    return Path(user_cache_dir("langflow", "langflow"))
+    """Get the default EarthMind config directory using platformdirs."""
+    return Path(user_cache_dir("earthmind", "earthmind"))
 
 
 def get_config_dir() -> Path:
-    """Get the Langflow config directory from environment or default."""
-    config_dir = os.environ.get("LANGFLOW_CONFIG_DIR")
+    """Get the EarthMind config directory from environment or default."""
+    config_dir = os.environ.get("EARTHMIND_CONFIG_DIR")
     if config_dir:
         return Path(config_dir)
     return get_default_config_dir()
@@ -99,8 +99,8 @@ def ensure_valid_key(s: str) -> bytes:
     key by seeding random with the input string. For longer keys, pads with
     '=' to ensure valid base64 encoding.
 
-    NOTE: This function is duplicated from langflow.services.auth.utils.ensure_valid_key
-    to keep the migration script self-contained (can run without full Langflow installation).
+    NOTE: This function is duplicated from earthmind.services.auth.utils.ensure_valid_key
+    to keep the migration script self-contained (can run without full EarthMind installation).
     Keep in sync if encryption logic changes.
     """
     if len(s) < MINIMUM_KEY_LENGTH:
@@ -209,7 +209,7 @@ def verify_migration(conn, new_key: str) -> tuple[int, int]:
 
 def get_default_database_url(config_dir: Path) -> str | None:
     """Get database URL from default SQLite location."""
-    default_db = config_dir / "langflow.db"
+    default_db = config_dir / "earthmind.db"
     if default_db.exists():
         return f"sqlite:///{default_db}"
     return None
@@ -229,7 +229,7 @@ def migrate(
     """Run the secret key migration.
 
     Args:
-        config_dir: Path to Langflow config directory containing secret_key file.
+        config_dir: Path to EarthMind config directory containing secret_key file.
         database_url: SQLAlchemy database connection URL.
         old_key: Current secret key. If None, reads from config_dir/secret_key.
         new_key: New secret key. If None, generates a secure random key.
@@ -400,7 +400,7 @@ def migrate(
         print(f"\nMigrated {total_migrated} items, {total_failed} failures")
         print(f"\nBackup key location: {config_dir}/secret_key.backup.*")
         print("\nNext steps:")
-        print("1. Start Langflow and verify everything works")
+        print("1. Start EarthMind and verify everything works")
         print("2. Users must log in again (JWT sessions invalidated)")
         print("3. Once verified, you may delete the backup key file")
 
@@ -414,7 +414,7 @@ def main():
     default_config = get_config_dir()
 
     parser = argparse.ArgumentParser(
-        description="Migrate Langflow encrypted data to a new secret key",
+        description="Migrate EarthMind encrypted data to a new secret key",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -425,7 +425,7 @@ Examples:
   %(prog)s
 
   # Custom database and config
-  %(prog)s --database-url postgresql://user:pass@host/db --config-dir /etc/langflow  # pragma: allowlist secret
+  %(prog)s --database-url postgresql://user:pass@host/db --config-dir /etc/earthmind  # pragma: allowlist secret
 
   # Provide keys explicitly
   %(prog)s --old-key "current-key" --new-key "replacement-key"
@@ -442,7 +442,7 @@ Examples:
         type=Path,
         default=default_config,
         metavar="PATH",
-        help=f"Langflow config directory (default: {default_config})",
+        help=f"EarthMind config directory (default: {default_config})",
     )
     parser.add_argument(
         "--database-url",
@@ -472,7 +472,7 @@ Examples:
     database_url = args.database_url or get_default_database_url(args.config_dir)
     if not database_url:
         print("Error: Could not determine database URL.")
-        print(f"  No database found at {args.config_dir}/langflow.db")
+        print(f"  No database found at {args.config_dir}/earthmind.db")
         print("  Use --database-url to specify the database location")
         sys.exit(1)
 

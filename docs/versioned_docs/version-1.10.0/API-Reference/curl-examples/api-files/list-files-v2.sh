@@ -1,4 +1,4 @@
 curl -X GET \
-  "$LANGFLOW_URL/api/v2/files" \
+  "$EARTHMIND_URL/api/v2/files" \
   -H "accept: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY"
+  -H "x-api-key: $EARTHMIND_API_KEY"

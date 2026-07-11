@@ -1,4 +1,4 @@
-"""lfx validate -- structural and semantic validation of Langflow flow JSON.
+"""lfx validate -- structural and semantic validation of EarthMind flow JSON.
 
 Validation levels (each level implies all levels below it):
 
@@ -7,7 +7,7 @@ Validation levels (each level implies all levels below it):
         (``id``, ``name``, ``data``, ``data.nodes``, ``data.edges``).
         Also checks for orphaned nodes (no edges at all) and unused nodes
         (not reachable from any output node), and warns about version mismatches
-        (nodes built with a different Langflow version than the one installed).
+        (nodes built with a different EarthMind version than the one installed).
 
     Level 2 - components
         Every node's ``data.type`` references a component type that exists in

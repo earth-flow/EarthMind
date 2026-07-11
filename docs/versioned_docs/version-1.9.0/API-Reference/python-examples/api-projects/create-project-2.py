@@ -2,12 +2,12 @@ import os
 
 import requests
 
-url = f"{os.getenv('LANGFLOW_URL', '')}/api/v1/projects/"
+url = f"{os.getenv('EARTHMIND_URL', '')}/api/v1/projects/"
 
 headers = {
     "accept": "application/json",
     "Content-Type": "application/json",
-    "x-api-key": f"{os.getenv('LANGFLOW_API_KEY', '')}",
+    "x-api-key": f"{os.getenv('EARTHMIND_API_KEY', '')}",
 }
 
 payload = {

@@ -34,10 +34,24 @@ export interface CreateKnowledgeBaseRequest {
    * - ``"opensearch"``: ``{ url_variable?, username_variable?,
    *   password_variable?, index_name, vector_field?, text_field? }``
    *
-   * Credentials are referenced by Langflow-variable *name*, never
+   * Credentials are referenced by EarthMind-variable *name*, never
    * embedded as raw secrets.
    */
   backend_config?: Record<string, unknown>;
+  parser_strategy?: string;
+  chunk_strategy?: string;
+  embedding_api_key?: string;
+  embedding_api_base?: string;
+  mineru_api_token?: string;
+  mineru_api_base?: string;
+  mineru_lang?: string;
+  mineru_enable_formula?: boolean;
+  mineru_enable_table?: boolean;
+  mineru_is_ocr?: boolean;
+  mineru_model_version?: string;
+  mineru_timeout_s?: number;
+  mineru_poll_attempts?: number;
+  mineru_poll_interval_s?: number;
 }
 
 export const useCreateKnowledgeBase: useMutationFunctionType<

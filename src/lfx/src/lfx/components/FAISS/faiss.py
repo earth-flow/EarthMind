@@ -20,12 +20,12 @@ class FaissVectorStoreComponent(LCVectorStoreComponent):
         StrInput(
             name="index_name",
             display_name="Index Name",
-            value="langflow_index",
+            value="earthmind_index",
         ),
         StrInput(
             name="persist_directory",
             display_name="Persist Directory",
-            info="Path to save the FAISS index. It will be relative to where Langflow is running.",
+            info="Path to save the FAISS index. It will be relative to where EarthMind is running.",
         ),
         *LCVectorStoreComponent.inputs,
         BoolInput(
@@ -48,7 +48,7 @@ class FaissVectorStoreComponent(LCVectorStoreComponent):
 
     @staticmethod
     def resolve_path(path: str) -> str:
-        """Resolve the path relative to the Langflow root.
+        """Resolve the path relative to the EarthMind root.
 
         Args:
             path: The path to resolve

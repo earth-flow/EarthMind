@@ -89,14 +89,14 @@ component_management:
     - component_id: backend_components
       name: "Backend Components"
       paths:
-        - src/backend/base/langflow/components/**
+        - src/backend/base/earthmind/components/**
     # Note: Many components excluded by .coveragerc (bundled + legacy)
     # This tracks coverage of remaining "core" components only
 
 # Files/directories to exclude from coverage calculations
 ignore:
   # Database migrations - infrastructure code, not business logic
-  - "src/backend/base/langflow/alembic/**"
+  - "src/backend/base/earthmind/alembic/**"
   # Test files themselves don't need coverage
   - "src/backend/tests/**"
   - "src/frontend/tests/**"

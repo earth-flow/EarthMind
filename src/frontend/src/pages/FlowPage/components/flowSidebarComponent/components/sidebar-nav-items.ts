@@ -12,10 +12,12 @@ import type { SidebarSection } from "@/components/ui/sidebar";
 export interface SidebarNavItem {
   id: SidebarSection;
   icon: string;
-  /** i18n key — feed through ``t(...)`` at the call site. */
+  /** i18n key - feed through ``t(...)`` at the call site. */
   label: string;
-  /** i18n key — feed through ``t(...)`` at the call site. */
+  /** i18n key - feed through ``t(...)`` at the call site. */
   tooltip: string;
+  /** If set, clicking navigates to this URL instead of switching panels. */
+  href?: string;
 }
 
 export const NAV_ITEMS: SidebarNavItem[] = [
@@ -48,6 +50,12 @@ export const NAV_ITEMS: SidebarNavItem[] = [
     icon: "BrainCog",
     label: "memory.sidebarTitle",
     tooltip: "memory.sidebarTitle",
+  },
+  {
+    id: "knowledge",
+    icon: "Library",
+    label: "sidebar.knowledge",
+    tooltip: "sidebar.knowledge",
   },
   {
     id: "traces",

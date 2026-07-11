@@ -13,18 +13,18 @@ from platformdirs import user_cache_dir
 
 
 @pytest.fixture
-def langflow_cache_dir(tmp_path):
-    """Create a temporary langflow cache directory."""
-    cache_dir = tmp_path / "langflow"
+def earthmind_cache_dir(tmp_path):
+    """Create a temporary earthmind cache directory."""
+    cache_dir = tmp_path / "earthmind"
     cache_dir.mkdir(parents=True)
     return cache_dir
 
 
 @pytest.fixture
-def sample_image(langflow_cache_dir):
+def sample_image(earthmind_cache_dir):
     """Create a sample image file for testing."""
     # Create the test_flow directory in the cache
-    flow_dir = langflow_cache_dir / "test_flow"
+    flow_dir = earthmind_cache_dir / "test_flow"
     flow_dir.mkdir(parents=True, exist_ok=True)
 
     # Create the image in the flow directory
@@ -36,7 +36,7 @@ def sample_image(langflow_cache_dir):
     image_path.write_bytes(image_content)
 
     # Use platformdirs to get the cache directory
-    real_cache_dir = Path(user_cache_dir("langflow"))
+    real_cache_dir = Path(user_cache_dir("earthmind"))
     real_cache_dir.mkdir(parents=True, exist_ok=True)
     real_flow_dir = real_cache_dir / "test_flow"
     real_flow_dir.mkdir(parents=True, exist_ok=True)
@@ -50,8 +50,8 @@ def sample_image(langflow_cache_dir):
 
 def test_message_prompt_serialization():
     template = "Hello, {name}!"
-    message = Message.from_template(template, name="Langflow")
-    assert message.text == "Hello, Langflow!"
+    message = Message.from_template(template, name="EarthMind")
+    assert message.text == "Hello, EarthMind!"
 
     # The base Message class in lfx doesn't support prompt serialization
     # This functionality is only available in the enhanced message class
@@ -109,15 +109,15 @@ def test_message_with_single_image(sample_image):
     assert message.files == [file_path]
 
 
-def test_message_with_multiple_images(sample_image, langflow_cache_dir):
+def test_message_with_multiple_images(sample_image, earthmind_cache_dir):
     """Test creating a message with multiple images."""
     # Create a second image in the cache directory
-    flow_dir = langflow_cache_dir / "test_flow"
+    flow_dir = earthmind_cache_dir / "test_flow"
     second_image = flow_dir / "second_image.png"
     shutil.copy2(str(sample_image), str(second_image))
 
     # Use platformdirs for the real cache location
-    real_cache_dir = Path(user_cache_dir("langflow")) / "test_flow"
+    real_cache_dir = Path(user_cache_dir("earthmind")) / "test_flow"
     real_cache_dir.mkdir(parents=True, exist_ok=True)
     real_second_image = real_cache_dir / "second_image.png"
     shutil.copy2(str(sample_image), str(real_second_image))
@@ -398,7 +398,7 @@ def test_should_not_use_attachment_prefix_that_triggers_gemini_refusal_in_file_t
 def cleanup():
     yield
     # Clean up the real cache directory after tests
-    cache_dir = Path(user_cache_dir("langflow"))
+    cache_dir = Path(user_cache_dir("earthmind"))
     if cache_dir.exists():
         try:
             shutil.rmtree(str(cache_dir))

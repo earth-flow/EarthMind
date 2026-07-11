@@ -6,7 +6,7 @@ Covers:
   - load_models_dev_snapshot / save_models_dev_snapshot: round-trip,
     missing/corrupt disk states, atomic write cleanup.
   - apply_models_dev_overrides: translates fields, replaces covered providers,
-    preserves uncovered providers (IBM WatsonX), passes through Langflow-only
+    preserves uncovered providers (IBM WatsonX), passes through EarthMind-only
     providers (OpenRouter) unchanged at the static-list layer.
   - provider_queries.get_models_detailed cache invalidation when a snapshot
     installs.

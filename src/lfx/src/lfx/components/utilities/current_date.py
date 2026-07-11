@@ -10,7 +10,7 @@ from lfx.schema.message import Message
 class CurrentDateComponent(Component):
     display_name = "Current Date"
     description = "Returns the current date and time in the selected timezone."
-    documentation: str = "https://docs.langflow.org/current-date"
+    documentation: str = "https://docs.earthmind.org/current-date"
     icon = "clock"
     name = "CurrentDate"
 

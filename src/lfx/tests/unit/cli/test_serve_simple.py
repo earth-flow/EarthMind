@@ -9,7 +9,7 @@ from unittest.mock import patch
 import pytest
 from typer.testing import CliRunner
 
-# Tests that invoke `serve` with valid-looking input may hang while langflow
+# Tests that invoke `serve` with valid-looking input may hang while earthmind
 # initialises async server infrastructure.  Skip those in CI only; all
 # import/help/utility/fast-error tests run everywhere.
 _ci_env = os.environ.get("CI", "")
@@ -45,7 +45,7 @@ def test_serve_command_invalid_json():
 
     invalid_json = '{"invalid": json}'
 
-    with patch.dict(os.environ, {"LANGFLOW_API_KEY": "test-key"}):  # pragma: allowlist secret
+    with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}):  # pragma: allowlist secret
         runner = CliRunner()
         result = runner.invoke(app, ["serve", "--flow-json", invalid_json], catch_exceptions=False)
 
@@ -56,7 +56,7 @@ def test_serve_command_nonexistent_file():
     """Test serve command fails fast when the flow file does not exist."""
     from lfx.__main__ import app
 
-    with patch.dict(os.environ, {"LANGFLOW_API_KEY": "test-key"}):  # pragma: allowlist secret
+    with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}):  # pragma: allowlist secret
         runner = CliRunner()
         result = runner.invoke(app, ["serve", "/path/to/nonexistent/file.json"], catch_exceptions=False)
 
@@ -90,7 +90,7 @@ def test_cli_utility_functions():
 
 @_skip_in_ci
 def test_serve_command_missing_api_key():
-    """Serve command must exit 1 and mention LANGFLOW_API_KEY when no key is set."""
+    """Serve command must exit 1 and mention EARTHMIND_API_KEY when no key is set."""
     from lfx.__main__ import app
 
     flow_data = {"data": {"nodes": [], "edges": []}}
@@ -105,7 +105,7 @@ def test_serve_command_missing_api_key():
             result = runner.invoke(app, ["serve", temp_path])
 
             assert result.exit_code == 1
-            assert "LANGFLOW_API_KEY" in str(result.output or result.exception or "")
+            assert "EARTHMIND_API_KEY" in str(result.output or result.exception or "")
     finally:
         Path(temp_path).unlink()
 
@@ -117,7 +117,7 @@ def test_serve_command_with_flow_json():
 
     flow_json = '{"data": {"nodes": [], "edges": []}}'
 
-    env = {"LANGFLOW_API_KEY": "test-key"}  # pragma: allowlist secret
+    env = {"EARTHMIND_API_KEY": "test-key"}  # pragma: allowlist secret
     with patch.dict(os.environ, env), patch("uvicorn.run") as mock_uvicorn:
         runner = CliRunner()
         result = runner.invoke(app, ["serve", "--flow-json", flow_json])

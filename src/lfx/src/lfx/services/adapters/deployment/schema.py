@@ -52,8 +52,8 @@ IdLike = UUID | NormalizedId
 class DeploymentType(str, Enum):
     """Core deployment types recognized by LFX contracts.
 
-    **Cross-package coupling** — langflow's ``Deployment`` database model
-    (``langflow.services.database.models.deployment.model``) persists this
+    **Cross-package coupling** — earthmind's ``Deployment`` database model
+    (``earthmind.services.database.models.deployment.model``) persists this
     enum's ``.value`` as a ``NOT NULL`` string column and deserialises it
     back via ``DeploymentType(value)``.  Because of this:
 
@@ -194,7 +194,7 @@ class SnapshotDeploymentBindingUpdate(BaseModel, Generic[T_FlowProviderData]):
             raise ValueError(msg)
 
         # Overlap check covers add_ids vs remove_ids only.
-        # add_raw_payloads carry flow-artifact IDs (Langflow domain),
+        # add_raw_payloads carry flow-artifact IDs (EarthMind domain),
         # while add_ids/remove_ids carry snapshot IDs (provider domain).
         overlap = set(add_values).intersection(remove_values)
         if overlap:

@@ -67,7 +67,7 @@ done
 
 # Check if we're in the right directory
 if [ ! -f "src/lfx/pyproject.toml" ]; then
-    print_error "This script must be run from the root of the langflow repository"
+    print_error "This script must be run from the root of the earthmind repository"
     exit 1
 fi
 
@@ -105,13 +105,13 @@ fi
 
 print_info "Preparing to release LFX version $NEW_VERSION"
 
-# Soft check: warn if LFX minor doesn't match Langflow minor
-LANGFLOW_VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+# Soft check: warn if LFX minor doesn't match EarthMind minor
+EARTHMIND_VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
 LFX_MINOR=$(echo "$NEW_VERSION" | cut -d. -f1-2)
-LANGFLOW_MINOR=$(echo "$LANGFLOW_VERSION" | cut -d. -f1-2)
-if [ "$LFX_MINOR" != "$LANGFLOW_MINOR" ]; then
-    print_warning "LFX minor version ($LFX_MINOR) does not match Langflow minor version ($LANGFLOW_MINOR)."
-    print_warning "Per the compatibility policy, LFX X.Y.N must align with Langflow X.Y.M."
+EARTHMIND_MINOR=$(echo "$EARTHMIND_VERSION" | cut -d. -f1-2)
+if [ "$LFX_MINOR" != "$EARTHMIND_MINOR" ]; then
+    print_warning "LFX minor version ($LFX_MINOR) does not match EarthMind minor version ($EARTHMIND_MINOR)."
+    print_warning "Per the compatibility policy, LFX X.Y.N must align with EarthMind X.Y.M."
     print_warning "Proceed only if this is intentional (e.g., a patch-only LFX release)."
 fi
 
@@ -214,7 +214,7 @@ else
     echo "   git push origin $TAG_NAME"
     echo ""
     echo "2. Go to GitHub Actions and run the 'LFX Release' workflow:"
-    echo "   https://github.com/langflow-ai/langflow/actions/workflows/release-lfx.yml"
+    echo "   https://github.com/earthmind-ai/earthmind/actions/workflows/release-lfx.yml"
     echo ""
     echo "3. Enter version: $NEW_VERSION"
     echo ""

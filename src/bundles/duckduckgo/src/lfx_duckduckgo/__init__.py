@@ -1,7 +1,7 @@
 """lfx-duckduckgo: DuckDuckGo Search bundle.
 
 This package is the distribution unit ``lfx-duckduckgo``.  At runtime
-Langflow's loader discovers ``extension.json`` shipped alongside this
+EarthMind's loader discovers ``extension.json`` shipped alongside this
 ``__init__.py`` and registers ``DuckDuckGoSearchComponent`` under the
 namespaced ID ``ext:duckduckgo:DuckDuckGoSearchComponent@official``.
 

@@ -1,5 +1,5 @@
 ---
-title: Install Langflow
+title: Install EarthMind
 slug: /get-started-installation
 ---
 
@@ -9,78 +9,78 @@ import Cards from "@site/src/components/Cards";
 import Card from "@site/src/components/Card";
 import Icon from "@site/src/components/icon";
 
-Langflow can be installed in multiple ways. Choose an option below to jump to the steps.
+EarthMind can be installed in multiple ways. Choose an option below to jump to the steps.
 
 <Cards cols={2}>
-  <Card icon={<Icon name="Monitor" size={20} />} title="Langflow Desktop (recommended)" href="#install-and-run-langflow-desktop">
+  <Card icon={<Icon name="Monitor" size={20} />} title="EarthMind Desktop (recommended)" href="#install-and-run-earthmind-desktop">
     Standalone app with dependency management and simple upgrades.
   </Card>
-  <Card icon={<Icon name="Container" size={20} />} title="Docker" href="#install-and-run-langflow-docker">
-    Run Langflow in a container in isolation.
+  <Card icon={<Icon name="Container" size={20} />} title="Docker" href="#install-and-run-earthmind-docker">
+    Run EarthMind in a container in isolation.
   </Card>
-  <Card icon={<Icon name="Package" size={20} />} title="Python package" href="#install-and-run-the-langflow-oss-python-package">
+  <Card icon={<Icon name="Package" size={20} />} title="Python package" href="#install-and-run-the-earthmind-oss-python-package">
     Full control over environment, dependencies, and versioning.
   </Card>
-  <Card icon={<Icon name="GitFork" size={20} />} title="Install from source" href="/contributing-how-to-contribute#install-langflow-from-source">
-    Contribute to Langflow or work from a local clone.
+  <Card icon={<Icon name="GitFork" size={20} />} title="Install from source" href="/contributing-how-to-contribute#install-earthmind-from-source">
+    Contribute to EarthMind or work from a local clone.
   </Card>
 </Cards>
 
-## Install and run Langflow Desktop {#install-and-run-langflow-desktop}
+## Install and run EarthMind Desktop {#install-and-run-earthmind-desktop}
 
-Langflow Desktop is a desktop version of Langflow that simplifies dependency management and upgrades.
-However, some features aren't available for Langflow Desktop, such as the **Shareable Playground** and **Voice Mode**.
+EarthMind Desktop is a desktop version of EarthMind that simplifies dependency management and upgrades.
+However, some features aren't available for EarthMind Desktop, such as the **Shareable Playground** and **Voice Mode**.
 
 <Tabs>
 <TabItem value="macos" label="macOS" default>
 
-Langflow Desktop requires macOS 13 or later.
+EarthMind Desktop requires macOS 13 or later.
 
-1. Navigate to [Langflow Desktop](https://www.langflow.org/desktop).
-2. Click **Download Langflow**, enter your contact information, and then click **Download**.
-3. Mount and install the Langflow application.
-4. When the installation completes, open the Langflow application, and then create your first flow with the [Quickstart](/get-started-quickstart).
+1. Navigate to [EarthMind Desktop](https://www.earthmind.org/desktop).
+2. Click **Download EarthMind**, enter your contact information, and then click **Download**.
+3. Mount and install the EarthMind application.
+4. When the installation completes, open the EarthMind application, and then create your first flow with the [Quickstart](/get-started-quickstart).
 
 </TabItem>
 <TabItem value="Windows" label="Windows">
 
 
-1. Navigate to [Langflow Desktop](https://www.langflow.org/desktop).
-2. Click **Download Langflow**, enter your contact information, and then click **Download**.
+1. Navigate to [EarthMind Desktop](https://www.earthmind.org/desktop).
+2. Click **Download EarthMind**, enter your contact information, and then click **Download**.
 3. Open the **File Explorer**, and then navigate to **Downloads**.
-4. Double-click the downloaded `.msi` file, and then use the install wizard to install Langflow Desktop.
+4. Double-click the downloaded `.msi` file, and then use the install wizard to install EarthMind Desktop.
 
     :::tip
-    Windows installations of Langflow Desktop require a C++ compiler that may not be present on your system. If you receive a `C++ Build Tools Required!` error, follow the on-screen prompt to install Microsoft C++ Build Tools, or [install Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/).
+    Windows installations of EarthMind Desktop require a C++ compiler that may not be present on your system. If you receive a `C++ Build Tools Required!` error, follow the on-screen prompt to install Microsoft C++ Build Tools, or [install Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/).
     :::
 
-5. When the installation completes, open the Langflow application, and then create your first flow with the [Quickstart](/get-started-quickstart).
+5. When the installation completes, open the EarthMind application, and then create your first flow with the [Quickstart](/get-started-quickstart).
 
 </TabItem>
 </Tabs>
 
 For upgrade information, see the [Release notes](/release-notes).
 
-To manage dependencies in Langflow Desktop, see [Install custom dependencies in Langflow Desktop](/install-custom-dependencies#langflow-desktop).
+To manage dependencies in EarthMind Desktop, see [Install custom dependencies in EarthMind Desktop](/install-custom-dependencies#earthmind-desktop).
 
-## Install and run Langflow with Docker {#install-and-run-langflow-docker}
+## Install and run EarthMind with Docker {#install-and-run-earthmind-docker}
 
-You can use the Langflow Docker image to start a Langflow container.
-For more information, see [Deploy Langflow on Docker](/deployment-docker).
+You can use the EarthMind Docker image to start a EarthMind container.
+For more information, see [Deploy EarthMind on Docker](/deployment-docker).
 
 1. Install and start [Docker](https://docs.docker.com/).
 
-2. Pull the latest [Langflow Docker image](https://hub.docker.com/r/langflowai/langflow) and start it:
+2. Pull the latest [EarthMind Docker image](https://hub.docker.com/r/earthmindai/earthmind) and start it:
 
     ```bash
-    docker run -p 7860:7860 langflowai/langflow:latest
+    docker run -p 7860:7860 earthmindai/earthmind:latest
     ```
 
-3. To access Langflow, navigate to `http://localhost:7860/`.
+3. To access EarthMind, navigate to `http://localhost:7860/`.
 
 4. Create your first flow with the [Quickstart](/get-started-quickstart).
 
-## Install and run the Langflow OSS Python package {#install-and-run-the-langflow-oss-python-package}
+## Install and run the EarthMind OSS Python package {#install-and-run-the-earthmind-oss-python-package}
 
 1. Make sure you have the required dependencies and infrastructure:
 
@@ -97,7 +97,7 @@ For more information, see [Deploy Langflow on Docker](/deployment-docker).
     <details>
     <summary>Need help with virtual environments?</summary>
 
-    Virtual environments ensure Langflow is installed in an isolated, fresh environment.
+    Virtual environments ensure EarthMind is installed in an isolated, fresh environment.
     To create a new virtual environment, do the following.
 
         <Tabs>
@@ -120,7 +120,7 @@ For more information, see [Deploy Langflow on Docker](/deployment-docker).
             Your shell's prompt changes to display that you're currently working in a virtual environment:
 
             ```text
-            (VENV_NAME) ➜  langflow git:(main) ✗
+            (VENV_NAME) ➜  earthmind git:(main) ✗
             ```
 
         3. To deactivate the virtual environment and return to your regular shell, type `deactivate`.
@@ -151,7 +151,7 @@ For more information, see [Deploy Langflow on Docker](/deployment-docker).
             Your shell's prompt changes to display that you're currently working in a virtual environment:
 
             ```text
-            (VENV_NAME) PS C:/users/username/langflow-dir>
+            (VENV_NAME) PS C:/users/username/earthmind-dir>
             ```
 
         3. To deactivate the virtual environment and return to your regular shell, type `deactivate`.
@@ -167,36 +167,36 @@ For more information, see [Deploy Langflow on Docker](/deployment-docker).
 
     </details>
 
-3. In your virtual environment, install Langflow:
+3. In your virtual environment, install EarthMind:
 
     ```bash
-    uv pip install langflow
+    uv pip install earthmind
     ```
 
-4. Start Langflow:
+4. Start EarthMind:
 
     ```bash
-    uv run langflow run
+    uv run earthmind run
     ```
 
-    It can take a few minutes for Langflow to start.
+    It can take a few minutes for EarthMind to start.
 
-5. To confirm that a local Langflow instance is running, navigate to the default Langflow URL `http://127.0.0.1:7860`.
+5. To confirm that a local EarthMind instance is running, navigate to the default EarthMind URL `http://127.0.0.1:7860`.
 
 6. Create your first flow with the [Quickstart](/get-started-quickstart).
 
-### Manage the Langflow OSS version
+### Manage the EarthMind OSS version
 
-To upgrade Langflow to the latest version, run `uv pip install langflow -U`.
-However, the Langflow team recommends taking steps to backup your existing installation before you upgrade Langflow.
+To upgrade EarthMind to the latest version, run `uv pip install earthmind -U`.
+However, the EarthMind team recommends taking steps to backup your existing installation before you upgrade EarthMind.
 For more information, see [Prepare to upgrade](/release-notes#prepare-to-upgrade).
 
-To install a specific version of the Langflow package, add the required version to the command, such as `uv pip install langflow==1.4.22`.
+To install a specific version of the EarthMind package, add the required version to the command, such as `uv pip install earthmind==1.4.22`.
 
-To reinstall Langflow and all of its dependencies, run `uv pip install langflow --force-reinstall`.
+To reinstall EarthMind and all of its dependencies, run `uv pip install earthmind --force-reinstall`.
 
 ## Next steps
 
 * [Quickstart](/get-started-quickstart): Build and run your first flow in minutes.
 * [Build flows](/concepts-flows): Learn about building flows.
-* [Troubleshoot Langflow](/troubleshoot): Get help with common Langflow install and startup issues.
+* [Troubleshoot EarthMind](/troubleshoot): Get help with common EarthMind install and startup issues.

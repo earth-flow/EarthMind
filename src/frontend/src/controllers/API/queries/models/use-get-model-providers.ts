@@ -75,6 +75,7 @@ export const useGetModelProviders: useQueryFunctionType<
 const getProviderIcon = (providerName: string): string => {
   const iconMap: Record<string, string> = {
     OpenAI: "OpenAI",
+    SiliconFlow: "OpenAI",
     Anthropic: "Anthropic",
     "Google Generative AI": "GoogleGenerativeAI",
     Groq: "Groq",

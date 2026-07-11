@@ -1,1 +1,1 @@
-FROM langflowai/langflow:1.0-alpha
+FROM earthmindai/earthmind:1.0-alpha

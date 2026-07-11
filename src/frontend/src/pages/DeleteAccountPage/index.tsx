@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import LangflowLogo from "@/assets/LangflowLogo.svg?react";
+import EarthMindLogo from "@/assets/EarthMindLogo.svg?react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import BaseModal from "../../modals/baseModal";
@@ -20,7 +20,7 @@ export default function DeleteAccountPage() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-muted">
       <div className="flex w-72 flex-col items-center justify-center gap-2">
-        <LangflowLogo
+        <EarthMindLogo
           title={t("deleteAccount.logoTitle")}
           className="mb-4 h-10 w-10 scale-[1.5]"
         />

@@ -82,9 +82,9 @@ jest.mock("../HelpDropdown", () => ({
   default: () => <div data-testid="help-dropdown" />,
 }));
 
-jest.mock("@/assets/langflow_assistant.svg", () => "mock-assistant-icon.svg");
+jest.mock("@/assets/earthmind_assistant.svg", () => "mock-assistant-icon.svg");
 jest.mock(
-  "@/assets/langflow_assistant_idle.svg",
+  "@/assets/earthmind_assistant_idle.svg",
   () => "mock-assistant-idle-icon.svg",
 );
 

@@ -28,7 +28,7 @@ except (ImportError, OSError):
     # dependency (e.g. PyTorch's c10.dll on a Windows machine without the Microsoft
     # Visual C++ Redistributable) raises OSError: [WinError 126] while loading.
     # Without the OSError catch, this propagated up through transformers → torch
-    # and crashed `langflow --version` on fresh Windows installs.
+    # and crashed `earthmind --version` on fresh Windows installs.
     class AgentExecutor:
         pass
 

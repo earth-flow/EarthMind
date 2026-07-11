@@ -1,6 +1,6 @@
 """Unit tests for lfx.testing — the flow_runner pytest plugin.
 
-All tests mock ``_run_sync`` / ``_run_async`` so no real Langflow instance is needed.
+All tests mock ``_run_sync`` / ``_run_async`` so no real EarthMind instance is needed.
 """
 
 from __future__ import annotations

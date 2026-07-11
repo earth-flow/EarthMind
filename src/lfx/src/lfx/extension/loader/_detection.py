@@ -34,7 +34,7 @@ def is_component_subclass(obj: object) -> bool:
     here (the loader is part of lfx; importing the rich Component class
     pulls in graph/, vertex/, etc., which are not needed for registration).
 
-    The Langflow base classes themselves (``Component``, ``CustomComponent``,
+    The EarthMind base classes themselves (``Component``, ``CustomComponent``,
     ``BaseComponent``) are excluded by name so they don't self-register
     when a bundle re-exports them.
     """

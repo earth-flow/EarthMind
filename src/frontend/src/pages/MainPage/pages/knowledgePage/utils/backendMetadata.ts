@@ -14,6 +14,7 @@ import type { KnowledgeBaseInfo } from "@/controllers/API/queries/knowledge-base
 const BACKEND_LABELS: Record<string, string> = {
   chroma: "Chroma Local",
   opensearch: "OpenSearch",
+  milvus: "Milvus / Zilliz",
 };
 
 export const getKnowledgeBaseBackendLabel = (
@@ -46,6 +47,13 @@ export const getKnowledgeBaseBackendTarget = (
     const indexName = backendConfig.index_name;
     if (typeof indexName === "string") {
       return indexName;
+    }
+  }
+
+  if (backendType === "milvus") {
+    const collectionName = backendConfig.collection_name;
+    if (typeof collectionName === "string") {
+      return collectionName;
     }
   }
 

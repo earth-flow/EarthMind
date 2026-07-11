@@ -1,18 +1,18 @@
 from uuid import uuid4
 
 import pytest
-from langflow.services.database.models.deployment.crud import (
+from earthmind.services.database.models.deployment.crud import (
     count_deployments_by_provider,
     create_deployment,
     list_deployments_page,
 )
-from langflow.services.database.models.deployment_provider_account.model import DeploymentProviderAccount
-from langflow.services.database.models.deployment_provider_account.schemas import DeploymentProviderKey
-from langflow.services.database.models.flow.model import Flow
-from langflow.services.database.models.flow_version.model import FlowVersion
-from langflow.services.database.models.flow_version_deployment_attachment.crud import create_deployment_attachment
-from langflow.services.database.models.folder.model import Folder
-from langflow.services.database.models.user.model import User
+from earthmind.services.database.models.deployment_provider_account.model import DeploymentProviderAccount
+from earthmind.services.database.models.deployment_provider_account.schemas import DeploymentProviderKey
+from earthmind.services.database.models.flow.model import Flow
+from earthmind.services.database.models.flow_version.model import FlowVersion
+from earthmind.services.database.models.flow_version_deployment_attachment.crud import create_deployment_attachment
+from earthmind.services.database.models.folder.model import Folder
+from earthmind.services.database.models.user.model import User
 from lfx.services.adapters.deployment.schema import DeploymentType
 from sqlalchemy.ext.asyncio import AsyncSession
 

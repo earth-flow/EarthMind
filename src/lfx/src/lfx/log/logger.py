@@ -1,4 +1,4 @@
-"""Logging configuration for Langflow using structlog."""
+"""Logging configuration for EarthMind using structlog."""
 
 import contextlib
 import json
@@ -49,7 +49,7 @@ class SizedLogBuffer:
     ):
         """Initialize the buffer.
 
-        The buffer can be overwritten by an env variable LANGFLOW_LOG_RETRIEVER_BUFFER_SIZE
+        The buffer can be overwritten by an env variable EARTHMIND_LOG_RETRIEVER_BUFFER_SIZE
         because the logger is initialized before the settings_service are loaded.
         """
         self.buffer: deque = deque()
@@ -149,7 +149,7 @@ class SizedLogBuffer:
         """Get the maximum buffer size."""
         # Get it dynamically to allow for env variable changes
         if self._max == 0:
-            env_buffer_size = os.getenv("LANGFLOW_LOG_RETRIEVER_BUFFER_SIZE", "0")
+            env_buffer_size = os.getenv("EARTHMIND_LOG_RETRIEVER_BUFFER_SIZE", "0")
             if env_buffer_size.isdigit():
                 self._max = int(env_buffer_size)
         return self._max
@@ -190,9 +190,9 @@ def add_serialized(_logger: Any, _method_name: str, event_dict: dict[str, Any]) 
 
 def _get_service_info() -> dict[str, str]:
     """Read service metadata once so it can be injected into every log record."""
-    service = os.getenv("LANGFLOW_SERVICE_NAME", "langflow")
-    version = os.getenv("LANGFLOW_VERSION", "")
-    environment = os.getenv("LANGFLOW_ENVIRONMENT", "")
+    service = os.getenv("EARTHMIND_SERVICE_NAME", "earthmind")
+    version = os.getenv("EARTHMIND_VERSION", "")
+    environment = os.getenv("EARTHMIND_ENVIRONMENT", "")
     info = {"service": service}
     if version:
         info["version"] = version
@@ -308,7 +308,7 @@ def add_otel_trace_context(_logger: Any, _method_name: str, event_dict: dict[str
 
 
 def _apply_logger_level_overrides() -> None:
-    """Apply ``LANGFLOW_LOG_LEVELS`` env var: ``name=LEVEL,name=LEVEL,...``.
+    """Apply ``EARTHMIND_LOG_LEVELS`` env var: ``name=LEVEL,name=LEVEL,...``.
 
     Used to quiet noisy third-party loggers (``sqlalchemy.engine``, ``httpx``,
     ``httpcore``, ``urllib3``) in production without changing global defaults.
@@ -317,7 +317,7 @@ def _apply_logger_level_overrides() -> None:
     warning instead of being silently dropped so operators see typos like
     ``WARN`` instead of ``WARNING``.
     """
-    raw = os.getenv("LANGFLOW_LOG_LEVELS", "").strip()
+    raw = os.getenv("EARTHMIND_LOG_LEVELS", "").strip()
     if not raw:
         return
     for pair in raw.split(","):
@@ -326,7 +326,7 @@ def _apply_logger_level_overrides() -> None:
             continue
         if "=" not in entry:
             warnings.warn(
-                f"LANGFLOW_LOG_LEVELS: ignoring {entry!r} (expected 'name=LEVEL')",
+                f"EARTHMIND_LOG_LEVELS: ignoring {entry!r} (expected 'name=LEVEL')",
                 stacklevel=2,
             )
             continue
@@ -335,14 +335,14 @@ def _apply_logger_level_overrides() -> None:
         level_str = level.strip().upper()
         if not name:
             warnings.warn(
-                f"LANGFLOW_LOG_LEVELS: ignoring {entry!r} (empty logger name)",
+                f"EARTHMIND_LOG_LEVELS: ignoring {entry!r} (empty logger name)",
                 stacklevel=2,
             )
             continue
         numeric = LOG_LEVEL_MAP.get(level_str)
         if numeric is None:
             warnings.warn(
-                f"LANGFLOW_LOG_LEVELS: ignoring {entry!r} (unknown level {level_str!r}, "
+                f"EARTHMIND_LOG_LEVELS: ignoring {entry!r} (unknown level {level_str!r}, "
                 f"expected one of {sorted(LOG_LEVEL_MAP)})",
                 stacklevel=2,
             )
@@ -361,7 +361,7 @@ def buffer_writer(_logger: Any, _method_name: str, event_dict: dict[str, Any]) -
 
 
 def _forward_loguru_message(message) -> None:
-    """Forward Loguru messages through Langflow's configured structlog pipeline."""
+    """Forward Loguru messages through EarthMind's configured structlog pipeline."""
     record = message.record
     structlog_logger = structlog.get_logger(record["name"])
     level_name = record["level"].name.lower()
@@ -373,7 +373,7 @@ def _forward_loguru_message(message) -> None:
 
 
 def setup_loguru_logger(log_level: str, *, enqueue: bool = False) -> None:
-    """Route Loguru's default logger through Langflow logging."""
+    """Route Loguru's default logger through EarthMind logging."""
     global _loguru_handler_id  # noqa: PLW0603
 
     if _loguru_handler_id is not None:
@@ -392,7 +392,7 @@ def setup_loguru_logger(log_level: str, *, enqueue: bool = False) -> None:
 
 
 def setup_log_file(log_file: Path, *, max_bytes: int, formatter: logging.Formatter | None = None) -> None:
-    """Set up Langflow's rotating file handler.
+    """Set up EarthMind's rotating file handler.
 
     ``formatter`` lets JSON modes attach a ``structlog.stdlib.ProcessorFormatter``
     so third-party stdlib records (uvicorn, sqlalchemy, httpx, ...) are rendered
@@ -445,28 +445,28 @@ def configure(
     # was both a real footgun and a source of test-isolation flakiness (a prior
     # same-level configure() made a later file-mode configure() do nothing,
     # surfacing as FileNotFoundError when a test read the log file).
-    if log_level is None and os.getenv("LANGFLOW_LOG_LEVEL", "").upper() in VALID_LOG_LEVELS:
-        log_level = os.getenv("LANGFLOW_LOG_LEVEL")
+    if log_level is None and os.getenv("EARTHMIND_LOG_LEVEL", "").upper() in VALID_LOG_LEVELS:
+        log_level = os.getenv("EARTHMIND_LOG_LEVEL")
     if log_level is None or log_level.upper() not in LOG_LEVEL_MAP:
         log_level = "ERROR"
 
     if log_file is None:
-        env_log_file = os.getenv("LANGFLOW_LOG_FILE", "")
+        env_log_file = os.getenv("EARTHMIND_LOG_FILE", "")
         log_file = Path(env_log_file) if env_log_file else None
 
     if log_env is None:
-        log_env = os.getenv("LANGFLOW_LOG_ENV", "")
+        log_env = os.getenv("EARTHMIND_LOG_ENV", "")
 
     # Get log format from env if not provided
     if log_format is None:
-        log_format = os.getenv("LANGFLOW_LOG_FORMAT")
+        log_format = os.getenv("EARTHMIND_LOG_FORMAT")
 
     numeric_level = LOG_LEVEL_MAP.get(log_level.upper(), logging.ERROR)
 
     # Fingerprint of every caller-supplied input that changes the resulting
     # setup. Stored on the wrapper_class (below) so structlog.reset_defaults()
     # -- used between tests -- invalidates it automatically and the next call
-    # rebuilds from scratch. Env-only toggles (e.g. LANGFLOW_PRETTY_LOGS) are not
+    # rebuilds from scratch. Env-only toggles (e.g. EARTHMIND_PRETTY_LOGS) are not
     # part of the fingerprint: the four env-backed args above are already folded
     # into their resolved values, and the remainder are process-stable.
     config_fingerprint = (
@@ -492,7 +492,7 @@ def configure(
         return event_dict
 
     extra_redact = frozenset(
-        k.strip().lower() for k in os.getenv("LANGFLOW_LOG_REDACT_KEYS", "").split(",") if k.strip()
+        k.strip().lower() for k in os.getenv("EARTHMIND_LOG_REDACT_KEYS", "").split(",") if k.strip()
     )
     redact_processor = _build_redact_processor(extra_redact)
 
@@ -505,7 +505,7 @@ def configure(
         _add_service_info,
     ]
 
-    # Add callsite information only when LANGFLOW_DEV is set
+    # Add callsite information only when EARTHMIND_DEV is set
     if DEV:
         processors.append(
             structlog.processors.CallsiteParameterAdder(
@@ -533,8 +533,8 @@ def configure(
     #
     # `show_locals` is OFF by default in JSON output because frame locals can
     # leak secrets (API keys, env, request bodies). Opt in with
-    # LANGFLOW_LOG_TRACE_LOCALS=true when you need it for local debugging.
-    show_locals = os.getenv("LANGFLOW_LOG_TRACE_LOCALS", "false").lower() == "true"
+    # EARTHMIND_LOG_TRACE_LOCALS=true when you need it for local debugging.
+    show_locals = os.getenv("EARTHMIND_LOG_TRACE_LOCALS", "false").lower() == "true"
     json_traceback = structlog.processors.ExceptionRenderer(
         structlog.tracebacks.ExceptionDictTransformer(show_locals=show_locals, max_frames=50)
     )
@@ -590,7 +590,7 @@ def configure(
         processors.append(structlog.processors.KeyValueRenderer(key_order=key_order, drop_missing=True))
     else:
         # Use rich console for pretty printing based on environment variable
-        log_stdout_pretty = os.getenv("LANGFLOW_PRETTY_LOGS", "true").lower() == "true"
+        log_stdout_pretty = os.getenv("EARTHMIND_PRETTY_LOGS", "true").lower() == "true"
         if log_stdout_pretty:
             # If custom format is provided, use KeyValueRenderer with custom format
             if log_format:
@@ -632,8 +632,8 @@ def configure(
     # Set up file logging if needed
     if log_file:
         if not log_file.parent.exists():
-            cache_dir = Path(user_cache_dir("langflow"))
-            log_file = cache_dir / "langflow.log"
+            cache_dir = Path(user_cache_dir("earthmind"))
+            log_file = cache_dir / "earthmind.log"
 
         # Parse rotation settings
         if log_rotation:
@@ -668,7 +668,7 @@ def configure(
     # text. In non-JSON modes leave stdlib alone so dev console output stays
     # readable.
     json_mode = log_env.lower() in ("container", "container_json") or (
-        not log_env and os.getenv("LANGFLOW_PRETTY_LOGS", "true").lower() != "true"
+        not log_env and os.getenv("EARTHMIND_PRETTY_LOGS", "true").lower() != "true"
     )
     if json_mode and not log_file:
         _install_stdlib_intercept(numeric_level)

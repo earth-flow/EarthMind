@@ -1,14 +1,14 @@
 """Memory management for lfx with dynamic dispatch.
 
-Routes memory operations to either the full langflow implementation (when
-langflow is installed AND a real database service is registered) or the lfx
+Routes memory operations to either the full earthmind implementation (when
+earthmind is installed AND a real database service is registered) or the lfx
 stub implementation (standalone / noop DB).
 
 Dispatch is evaluated at call time, not import time, because the database
 service is typically registered *after* this module is first imported (e.g.,
 from Component class definitions loaded before graph setup). An import-time
-decision can't distinguish "langflow is importable" from "a real DB is wired",
-and picking the langflow backend with a NoopDatabaseService yields silent
+decision can't distinguish "earthmind is importable" from "a real DB is wired",
+and picking the earthmind backend with a NoopDatabaseService yields silent
 no-op inserts followed by spurious "Message with id X not found" errors on
 update.
 """
@@ -17,12 +17,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from lfx.utils.langflow_utils import has_langflow_db_backend
+from lfx.utils.earthmind_utils import has_earthmind_db_backend
 
 
 def _impl():
-    if has_langflow_db_backend():
-        from langflow import memory as impl
+    if has_earthmind_db_backend():
+        from earthmind import memory as impl
     else:
         from lfx.memory import stubs as impl
     return impl

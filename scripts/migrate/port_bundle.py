@@ -8,7 +8,7 @@ cross-cutting touchpoints (workspace ``pyproject.toml``,
 
 What this script does:
     1. Validates the candidate (provider directory exists, no ``from
-       langflow`` imports, no ``deactivated`` duplicate).
+       earthmind`` imports, no ``deactivated`` duplicate).
     2. Lays out ``src/bundles/<bundle>/{pyproject.toml,README.md,
        src/lfx_<bundle>/{__init__.py,extension.json,components/<bundle>/{__init__.py}}}``.
     3. Moves every ``*.py`` file from the in-tree provider directory into
@@ -18,7 +18,7 @@ What this script does:
        ``src/lfx/src/lfx/components/__init__.py``.
     6. Adds the dep, the workspace source, and the workspace member entry
        to the root ``pyproject.toml`` (uses the
-       ``# langflow-extensions:bundle-{deps,sources,members}-end`` marker
+       ``# earthmind-extensions:bundle-{deps,sources,members}-end`` marker
        pairs so the anchors survive dep reordering / pin bumps).
 
 What this script does NOT do (humans-only):
@@ -95,14 +95,14 @@ PYPROJECT_TEMPLATE = """\
 [project]
 name = "lfx-{bundle}"
 version = "0.1.0"
-description = "{display_name} component(s) as a standalone Langflow Extension Bundle."
+description = "{display_name} component(s) as a standalone EarthMind Extension Bundle."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
 license = {{ text = "MIT" }}
 authors = [
-    {{ name = "Langflow", email = "contact@langflow.org" }},
+    {{ name = "EarthMind", email = "contact@earthmind.org" }},
 ]
-keywords = ["langflow", "lfx", "extension", "bundle", "{bundle}"]
+keywords = ["earthmind", "lfx", "extension", "bundle", "{bundle}"]
 
 # Runtime deps: lfx (the BUNDLE_API surface) plus any third-party imports
 # the bundle's components rely on.  REVIEW THIS LIST -- the script ports
@@ -117,15 +117,15 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/langflow-ai/langflow"
-Documentation = "https://docs.langflow.org/extensions"
-Repository = "https://github.com/langflow-ai/langflow"
+Homepage = "https://github.com/earthmind-ai/earthmind"
+Documentation = "https://docs.earthmind.org/extensions"
+Repository = "https://github.com/earthmind-ai/earthmind"
 
 # Manifest-shipping distributions are discovered via the
-# ``langflow.extensions`` entry-point.  Editable installs whose
+# ``earthmind.extensions`` entry-point.  Editable installs whose
 # ``dist.files`` only surfaces dist-info entries fall back to this
 # entry-point to find the manifest.
-[project.entry-points."langflow.extensions"]
+[project.entry-points."earthmind.extensions"]
 lfx-{bundle} = "lfx_{bundle}"
 
 [build-system]
@@ -151,11 +151,11 @@ include = [
 
 EXTENSION_JSON_TEMPLATE = """\
 {{
-  "$schema": "https://schemas.langflow.org/extension/v1.json",
+  "$schema": "https://schemas.earthmind.org/extension/v1.json",
   "id": "lfx-{bundle}",
   "version": "0.1.0",
   "name": "{display_name}",
-  "description": "{display_name} component(s) as a standalone Langflow Extension Bundle.",
+  "description": "{display_name} component(s) as a standalone EarthMind Extension Bundle.",
   "lfx": {{
     "compat": ["1"]
   }},
@@ -172,7 +172,7 @@ EXTENSION_JSON_TEMPLATE = """\
 PACKAGE_INIT_TEMPLATE = '''\
 """lfx-{bundle}: {display_name} bundle.
 
-Distribution unit ``lfx-{bundle}``.  At runtime Langflow's loader
+Distribution unit ``lfx-{bundle}``.  At runtime EarthMind's loader
 discovers ``extension.json`` shipped alongside this ``__init__.py`` and
 registers the bundle's components under the namespaced IDs
 ``ext:{bundle}:<Class>@official``.
@@ -197,7 +197,7 @@ importable from here by name.
 README_TEMPLATE = """\
 # lfx-{bundle}
 
-{display_name} component(s) as a standalone Langflow Extension Bundle.
+{display_name} component(s) as a standalone EarthMind Extension Bundle.
 
 ## Install
 
@@ -205,8 +205,8 @@ README_TEMPLATE = """\
 pip install lfx-{bundle}
 ```
 
-The bundle is registered automatically via the `langflow.extensions`
-entry-point.  After install, restart your Langflow server; the bundle's
+The bundle is registered automatically via the `earthmind.extensions`
+entry-point.  After install, restart your EarthMind server; the bundle's
 components will appear in the palette under the `{bundle}` group.
 
 ## Develop
@@ -296,10 +296,10 @@ def _validate_candidate(bundle: str, *, display_name: str | None, migration_rele
         if not src.is_file() or src.suffix != ".py":
             continue
         text = src.read_text(encoding="utf-8")
-        if "from langflow" in text:
+        if "from earthmind" in text:
             msg = (
-                f"{src} imports from ``langflow`` -- the bundle is installed "
-                "against the public BUNDLE_API surface (lfx), not Langflow "
+                f"{src} imports from ``earthmind`` -- the bundle is installed "
+                "against the public BUNDLE_API surface (lfx), not EarthMind "
                 "internals.  Either rewrite the import or leave the component "
                 "in-tree.  See src/bundles/PORTING.md § 0."
             )
@@ -455,7 +455,7 @@ def _insert_before_marker(text: str, end_marker: str, payload: str, *, what: str
     """Insert ``payload`` immediately before the line containing ``end_marker``.
 
     ``end_marker`` is a literal substring expected on its own comment line
-    (e.g. ``# langflow-extensions:bundle-deps-end``).  Raises SystemExit
+    (e.g. ``# earthmind-extensions:bundle-deps-end``).  Raises SystemExit
     if the marker is absent so the porter notices that the maintenance-
     friendly anchors have drifted out of pyproject.toml.
     """
@@ -464,7 +464,7 @@ def _insert_before_marker(text: str, end_marker: str, payload: str, *, what: str
     if idx == -1:
         msg = (
             f"Could not locate the {what} end marker ({needle!r}) in "
-            "pyproject.toml.  Re-add the ``langflow-extensions:bundle-*`` "
+            "pyproject.toml.  Re-add the ``earthmind-extensions:bundle-*`` "
             "marker pair before re-running -- see src/bundles/PORTING.md."
         )
         raise SystemExit(msg)
@@ -493,19 +493,19 @@ def _patch_root_pyproject(plan: PortPlan, *, apply: bool) -> list[str]:
 
     new_text = _insert_before_marker(
         text,
-        "# langflow-extensions:bundle-deps-end",
+        "# earthmind-extensions:bundle-deps-end",
         dep_line,
         what="bundle-deps",
     )
     new_text = _insert_before_marker(
         new_text,
-        "# langflow-extensions:bundle-sources-end",
+        "# earthmind-extensions:bundle-sources-end",
         source_line,
         what="bundle-sources",
     )
     new_text = _insert_before_marker(
         new_text,
-        "# langflow-extensions:bundle-members-end",
+        "# earthmind-extensions:bundle-members-end",
         member_line,
         what="bundle-members",
     )
@@ -726,7 +726,7 @@ def test_lfx_{bundle}_ships_manifest() -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Port an in-tree provider directory into a standalone Langflow "
+            "Port an in-tree provider directory into a standalone EarthMind "
             "Extension Bundle.  Writes the skeleton, moves the source files, "
             "and patches the workspace; integration test and migration "
             "table edits are left to the human (see src/bundles/PORTING.md)."

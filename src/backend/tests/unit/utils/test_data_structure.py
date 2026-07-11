@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
-from langflow.schema.data import Data
-from langflow.utils.data_structure import (
+from earthmind.schema.data import Data
+from earthmind.utils.data_structure import (
     analyze_value,
     get_data_structure,
     get_sample_values,

@@ -12,9 +12,9 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from langflow.agentic.services.assistant_service import execute_flow_with_validation
+from earthmind.agentic.services.assistant_service import execute_flow_with_validation
 
-MODULE = "langflow.agentic.services.assistant_service"
+MODULE = "earthmind.agentic.services.assistant_service"
 
 
 class TestRetryLoopBoundary:

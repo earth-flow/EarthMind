@@ -1,6 +1,6 @@
 """Astra DB Data API component.
 
-A thin, modern Langflow component that exposes the full document-based
+A thin, modern EarthMind component that exposes the full document-based
 Data API surface of DataStax Astra DB using **only** the ``astrapy`` SDK.
 
 The component inherits :class:`lfx.base.datastax.astradb_base.AstraDBBaseComponent`
@@ -73,7 +73,7 @@ ALL_OPERATIONS: tuple[str, ...] = (
 )
 
 # Per-operation icons surfaced in the operation dropdown. Icon names mirror
-# those used elsewhere in Langflow for a consistent look.
+# those used elsewhere in EarthMind for a consistent look.
 OPERATION_ICONS: dict[str, str] = {
     OP_FIND: "Search",
     OP_FIND_ONE: "SearchCheck",

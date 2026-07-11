@@ -109,7 +109,7 @@ ALLOWED_HEADERS = {
     "x-api-key",
     "x-auth-token",
     "x-custom-header",
-    "x-langflow-session",
+    "x-earthmind-session",
     "x-mcp-client",
     "x-requested-with",
 }
@@ -359,8 +359,8 @@ def _is_pydantic_model_type(annotation: Any) -> bool:
     return isinstance(ann, type) and issubclass(ann, BaseModel)
 
 
-def _unwrap_langflow_json_value(value: Any) -> Any:
-    """Return the payload dict from Langflow JSON/Data values wired into MCP object parameters."""
+def _unwrap_earthmind_json_value(value: Any) -> Any:
+    """Return the payload dict from EarthMind JSON/Data values wired into MCP object parameters."""
     if isinstance(value, Data):
         return value.data
     return value
@@ -379,7 +379,7 @@ def _try_convert_value(value: Any, expected_type: type, field_name: str, tool_na
         raise _err(expected_type_desc, "but received None.")
 
     if expected_type in (dict, list):
-        value = _unwrap_langflow_json_value(value)
+        value = _unwrap_earthmind_json_value(value)
 
     # return correctly typed value, but handle the
     # special case of bool as this is a subclass of int
@@ -461,7 +461,7 @@ def _normalize_arguments_for_mcp(
         if expected is None:
             # Nested Pydantic model (object with properties): UI/API often sends as JSON string
             if _is_pydantic_model_type(model_field.annotation):
-                value = _unwrap_langflow_json_value(value)
+                value = _unwrap_earthmind_json_value(value)
                 if isinstance(value, str):
                     try:
                         parsed = json.loads(value)
@@ -653,10 +653,10 @@ def get_unique_name(base_name, max_length, existing_names):
 
 async def get_flow_snake_case(flow_name: str, user_id: str, session, *, is_action: bool | None = None):
     try:
-        from langflow.services.database.models.flow.model import Flow
+        from earthmind.services.database.models.flow.model import Flow
         from sqlmodel import select
     except ImportError as e:
-        msg = "Langflow Flow model is not available. This feature requires the full Langflow installation."
+        msg = "EarthMind Flow model is not available. This feature requires the full EarthMind installation."
         raise ImportError(msg) from e
 
     uuid_user_id = UUID(user_id) if isinstance(user_id, str) else user_id
@@ -863,7 +863,7 @@ class _ServerLockEntry(TypedDict):
     pins: int
 
 
-# TODO(langflow-ai/langflow#12541-followup): MCPSessionManager lives in this
+# TODO(earthmind-ai/earthmind#12541-followup): MCPSessionManager lives in this
 # 2k+ line module; extract it (and the concurrency primitives below) into a
 # dedicated ``mcp/session_manager.py`` so future edits stay small.
 class MCPSessionManager:

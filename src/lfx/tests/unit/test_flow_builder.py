@@ -376,7 +376,7 @@ class TestConnect:
         """Re-adding connections to a real UI-saved flow must not grow the edge list.
 
         Regression against an actual UI-exported fixture. UI-saved edges
-        from older Langflow versions use the `xy-edge__` id prefix
+        from older EarthMind versions use the `xy-edge__` id prefix
         instead of `reactflow__edge-`, so dedup must be structural
         (source, target, handle name, handle fieldName) rather than by
         edge id.
@@ -441,7 +441,7 @@ class TestConnect:
 
 
 # Registries dedicated to tool-mode behavior tests. They use the same
-# pattern as real Langflow components: tool_mode=True on an INPUT, plain
+# pattern as real EarthMind components: tool_mode=True on an INPUT, plain
 # data/message outputs. The shapes mirror what the API returns from /all
 # for components like FirecrawlScrapeApi, WebSearchTool, etc.
 
@@ -603,7 +603,7 @@ class TestConnectComponentAsTool:
         # The original outputs are preserved
         assert {o["name"] for o in src_node["data"]["node"]["outputs"]} == {"result"}
 
-    def test_synthesized_tool_output_matches_canonical_langflow_shape(self):
+    def test_synthesized_tool_output_matches_canonical_earthmind_shape(self):
         """The auto-flipped output must contain every field a real saved tool output has.
 
         Sample taken from starter_projects/Travel Planning Agents.json — when
@@ -620,7 +620,7 @@ class TestConnectComponentAsTool:
         src_node = next(n for n in flow["data"]["nodes"] if n["data"]["id"] == source)
         tool_output = next(o for o in src_node["data"]["node"]["outputs"] if o["name"] == "component_as_tool")
 
-        # Required keys present in every real Langflow tool output entry.
+        # Required keys present in every real EarthMind tool output entry.
         required_keys = {
             "allows_loop",
             "cache",
@@ -1075,7 +1075,7 @@ class TestCustomStringifyExtended:
         assert _custom_stringify("hello") == '"hello"'
 
     def test_scaped_round_trips_handle_format(self):
-        """A source handle dict should produce a string that matches Langflow's format."""
+        """A source handle dict should produce a string that matches EarthMind's format."""
         handle = {
             "dataType": "ChatInput",
             "id": "ChatInput-abc12",

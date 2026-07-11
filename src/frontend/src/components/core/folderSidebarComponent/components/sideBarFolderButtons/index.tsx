@@ -24,9 +24,8 @@ import { useGetDownloadFolders } from "@/controllers/API/queries/folders/use-get
 import { CustomStoreButton } from "@/customization/components/custom-store-button";
 import {
   ENABLE_CUSTOM_PARAM,
-  ENABLE_DATASTAX_LANGFLOW,
+  ENABLE_DATASTAX_EARTHMIND,
   ENABLE_FILE_MANAGEMENT,
-  ENABLE_KNOWLEDGE_BASES,
   ENABLE_MCP_NOTICE,
 } from "@/customization/feature-flags";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
@@ -141,7 +140,7 @@ const SideBarFoldersButtonsComponent = ({
 
       getObjectsFromFilelist<UploadedFlowFile>(files)
         .then((objects) => {
-          if (objects.every((flow) => flow.data?.nodes)) {
+          if (objects.every((flow) => "data" in flow && flow.data?.nodes)) {
             uploadFlow({ files })
               .then(() => {
                 setSuccessData({
@@ -379,10 +378,6 @@ const SideBarFoldersButtonsComponent = ({
     _navigate("/assets/files");
   };
 
-  const handleKnowledgeNavigation = () => {
-    _navigate("/assets/knowledge-bases");
-  };
-
   return (
     <Sidebar
       collapsible={isMobile ? "offcanvas" : "none"}
@@ -503,17 +498,7 @@ const SideBarFoldersButtonsComponent = ({
         <SidebarFooter className="border-t">
           <div className="grid w-full items-center gap-2 p-2">
             {/* TODO: Remove this on cleanup */}
-            {ENABLE_DATASTAX_LANGFLOW && <CustomStoreButton />}{" "}
-            {ENABLE_KNOWLEDGE_BASES && (
-              <SidebarMenuButton
-                onClick={handleKnowledgeNavigation}
-                size="md"
-                className="text-sm"
-              >
-                <ForwardedIconComponent name="Library" className="h-4 w-4" />
-                {t("sidebar.knowledge")}
-              </SidebarMenuButton>
-            )}
+            {ENABLE_DATASTAX_EARTHMIND && <CustomStoreButton />}{" "}
             <SidebarMenuButton
               onClick={handleFilesNavigation}
               size="md"

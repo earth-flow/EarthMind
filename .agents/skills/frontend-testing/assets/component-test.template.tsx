@@ -1,5 +1,5 @@
 /**
- * Test template for React components in Langflow.
+ * Test template for React components in EarthMind.
  *
  * Usage:
  * 1. Copy this file to `__tests__/ComponentName.test.tsx`

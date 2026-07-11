@@ -16,18 +16,18 @@ import exampleJavascriptApiLogsRetrieveLogsWithOptionalParameters from '!!raw-lo
 
 
 
-Retrieve logs for your Langflow flows and server.
+Retrieve logs for your EarthMind flows and server.
 
 ## Enable log retrieval
 
-The `/logs` endpoint requires log retrieval to be enabled in your Langflow instance.
+The `/logs` endpoint requires log retrieval to be enabled in your EarthMind instance.
 
-To enable log retrieval, set the following [environment variables](/environment-variables) in your Langflow `.env` file, and then start Langflow with `uv run langflow run --env-file .env`:
+To enable log retrieval, set the following [environment variables](/environment-variables) in your EarthMind `.env` file, and then start EarthMind with `uv run earthmind run --env-file .env`:
 
 ```text
-LANGFLOW_ENABLE_LOG_RETRIEVAL=True
-LANGFLOW_LOG_RETRIEVER_BUFFER_SIZE=10000 // Must be greater than 0
-LANGFLOW_LOG_LEVEL=DEBUG // Can be DEBUG, ERROR, INFO, WARNING, or CRITICAL
+EARTHMIND_ENABLE_LOG_RETRIEVAL=True
+EARTHMIND_LOG_RETRIEVER_BUFFER_SIZE=10000 // Must be greater than 0
+EARTHMIND_LOG_LEVEL=DEBUG // Can be DEBUG, ERROR, INFO, WARNING, or CRITICAL
 ```
 
 ## Stream logs

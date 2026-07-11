@@ -1,6 +1,6 @@
 """Framework-agnostic authentication exceptions for LFX auth service.
 
-Shared exception types so that both minimal (LFX) and full (Langflow) auth
+Shared exception types so that both minimal (LFX) and full (EarthMind) auth
 implementations can raise the same errors.
 """
 

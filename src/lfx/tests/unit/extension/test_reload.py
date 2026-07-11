@@ -642,7 +642,7 @@ def test_extra_slot_reload_uses_bundle_directory(tmp_path: Path) -> None:
     discovery does) instead of insisting on a manifest at the source path.
     Regression: before the @extra-aware branch, this returned
     ``manifest-not-found`` even for bundles surfaced from a valid
-    LANGFLOW_COMPONENTS_PATH entry.
+    EARTHMIND_COMPONENTS_PATH entry.
     """
     bundle_dir = _write_inline_bundle(
         tmp_path,
@@ -739,7 +739,7 @@ def test_swap_retag_survives_subsequent_reload(tmp_path: Path) -> None:
 def _isolated_post_swap_hooks() -> Iterable[None]:
     """Snapshot and restore the post-swap hook list.
 
-    When the full lfx test suite runs, langflow startup may have already
+    When the full lfx test suite runs, earthmind startup may have already
     registered ``_post_reload_refresh_cache`` -- which then raises on these
     synthetic Component stubs (they don't inherit from the real lfx
     ``Component``) and contaminates ``ReloadResult.warnings``.  Tests that

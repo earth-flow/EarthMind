@@ -9,36 +9,86 @@ interface DeleteKnowledgeBaseParams {
   kb_names: string | string[];
 }
 
+interface DeleteKnowledgeBaseResponse {
+  deleted_count?: number;
+  message?: string;
+}
+
 export const useDeleteKnowledgeBase: useMutationFunctionType<
   undefined,
-  DeleteKnowledgeBaseParams
+  DeleteKnowledgeBaseParams,
+  DeleteKnowledgeBaseResponse
 > = (options?) => {
   const { mutate, queryClient } = UseRequestProcessor();
 
   const deleteKnowledgeBaseFn = async (
     params: DeleteKnowledgeBaseParams,
-  ): Promise<any> => {
+  ): Promise<DeleteKnowledgeBaseResponse> => {
     const names = Array.isArray(params.kb_names)
       ? params.kb_names
       : [params.kb_names];
 
     // Use bulk endpoint for all deletes (works for single or multiple)
-    const response = await api.delete<any>(`${getURL("KNOWLEDGE_BASES")}/`, {
-      data: { kb_names: names },
-    });
+    const response = await api.delete<DeleteKnowledgeBaseResponse>(
+      `${getURL("KNOWLEDGE_BASES")}/`,
+      {
+        data: { kb_names: names },
+      },
+    );
     return response.data;
   };
 
-  const mutation: UseMutationResult<any, any, DeleteKnowledgeBaseParams> =
-    mutate(["useDeleteKnowledgeBase"], deleteKnowledgeBaseFn, {
-      onSettled: (data, error, variables, context, ...rest) => {
-        queryClient.invalidateQueries({
-          queryKey: ["useGetKnowledgeBases"],
-        });
-        options?.onSettled?.(data, error, variables, context, ...rest);
-      },
-      ...options,
-    });
+  const mutation: UseMutationResult<
+    DeleteKnowledgeBaseResponse,
+    Error,
+    DeleteKnowledgeBaseParams
+  > = mutate(["useDeleteKnowledgeBase"], deleteKnowledgeBaseFn, {
+    onMutate: async (variables) => {
+      const names = new Set(
+        Array.isArray(variables.kb_names)
+          ? variables.kb_names
+          : [variables.kb_names],
+      );
+
+      await queryClient.cancelQueries({
+        queryKey: ["useGetKnowledgeBases"],
+      });
+
+      const previousKnowledgeBases = queryClient.getQueryData<
+        KnowledgeBaseInfo[]
+      >(["useGetKnowledgeBases"]);
+
+      queryClient.setQueryData<KnowledgeBaseInfo[]>(
+        ["useGetKnowledgeBases"],
+        (old) =>
+          old?.filter((knowledgeBase) => !names.has(knowledgeBase.dir_name)),
+      );
+
+      const defaultContext = { previousKnowledgeBases };
+      const userContext = await options?.onMutate?.(variables);
+
+      return {
+        ...defaultContext,
+        ...(userContext && typeof userContext === "object" ? userContext : {}),
+      };
+    },
+    onError: (error, variables, context, ...rest) => {
+      if (context?.previousKnowledgeBases) {
+        queryClient.setQueryData(
+          ["useGetKnowledgeBases"],
+          context.previousKnowledgeBases,
+        );
+      }
+      options?.onError?.(error, variables, context, ...rest);
+    },
+    onSettled: (data, error, variables, context, ...rest) => {
+      queryClient.invalidateQueries({
+        queryKey: ["useGetKnowledgeBases"],
+      });
+      options?.onSettled?.(data, error, variables, context, ...rest);
+    },
+    ...options,
+  });
 
   return mutation;
 };

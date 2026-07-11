@@ -31,7 +31,7 @@ from lfx.utils.version import get_version_info
 class AstraDBVectorStoreComponent(AstraDBBaseComponent, LCVectorStoreComponent):
     display_name: str = "Astra DB"
     description: str = "Ingest and search documents in Astra DB"
-    documentation: str = "https://docs.langflow.org/bundles-datastax"
+    documentation: str = "https://docs.earthmind.org/bundles-datastax"
     name = "AstraDB"
     icon: str = "AstraDB"
 
@@ -341,11 +341,11 @@ class AstraDBVectorStoreComponent(AstraDBBaseComponent, LCVectorStoreComponent):
         # Get the additional parameters
         additional_params = self.astradb_vectorstore_kwargs or {}
 
-        # Get Langflow version and platform information
+        # Get EarthMind version and platform information
         __version__ = get_version_info()["version"]
-        langflow_prefix = ""
+        earthmind_prefix = ""
         # if os.getenv("AWS_EXECUTION_ENV") == "AWS_ECS_FARGATE":  # TODO: More precise way of detecting
-        #     langflow_prefix = "ds-"
+        #     earthmind_prefix = "ds-"
 
         # Get the database object
         database = self.get_database_object()
@@ -382,7 +382,7 @@ class AstraDBVectorStoreComponent(AstraDBBaseComponent, LCVectorStoreComponent):
                 # Hybrid Search Parameters
                 hybrid_search=hybrid_search_mode,
                 # Astra DB Usage Tracking Parameters
-                ext_callers=[(f"{langflow_prefix}langflow", __version__)],
+                ext_callers=[(f"{earthmind_prefix}earthmind", __version__)],
                 # Astra DB Vector Store Parameters
                 **autodetect_params,
                 **embedding_params,

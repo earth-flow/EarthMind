@@ -7,6 +7,7 @@ import CanvasControlButton from "@/components/core/canvasControlsComponent/Canva
 import CanvasControls from "@/components/core/canvasControlsComponent/CanvasControls";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { ENABLE_NEW_SIDEBAR } from "@/customization/feature-flags";
+import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import useFlowStore from "@/stores/flowStore";
 import { AllNodeType } from "@/types/flow";
 import { cn } from "@/utils/utils";
@@ -39,6 +40,7 @@ export const MemoizedCanvasControls = memo(
 export const MemoizedSidebarTrigger = memo(() => {
   const { t } = useTranslation();
   const { open, toggleSidebar, setActiveSection } = useSidebar();
+  const navigate = useCustomNavigate();
   if (ENABLE_NEW_SIDEBAR) {
     return (
       <Panel
@@ -56,6 +58,10 @@ export const MemoizedSidebarTrigger = memo(() => {
             key={item.id}
             tooltipText={item.tooltip}
             onClick={() => {
+              if (item.href) {
+                navigate(item.href);
+                return;
+              }
               setActiveSection(item.id);
               if (!open) {
                 toggleSidebar();

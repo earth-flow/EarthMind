@@ -2,9 +2,9 @@ from uuid import uuid4
 
 import pytest
 from httpx import AsyncClient
-from langflow.memory import aadd_messagetables
-from langflow.services.database.models.message.model import MessageTable
-from langflow.services.deps import session_scope
+from earthmind.memory import aadd_messagetables
+from earthmind.services.database.models.message.model import MessageTable
+from earthmind.services.deps import session_scope
 
 
 @pytest.fixture

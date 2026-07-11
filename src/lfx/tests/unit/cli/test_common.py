@@ -115,22 +115,22 @@ class TestApiKey:
 
     def test_get_api_key_success(self):
         """Test getting API key when it exists."""
-        with patch.dict(os.environ, {"LANGFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             assert get_api_key() == "test-api-key"
 
     def test_get_api_key_not_set(self):
         """Test error when API key is not set."""
         with (
             patch.dict(os.environ, {}, clear=True),
-            pytest.raises(ValueError, match="LANGFLOW_API_KEY environment variable is not set"),
+            pytest.raises(ValueError, match="EARTHMIND_API_KEY environment variable is not set"),
         ):
             get_api_key()
 
     def test_get_api_key_empty_string(self):
         """Test error when API key is empty string."""
         with (
-            patch.dict(os.environ, {"LANGFLOW_API_KEY": ""}),
-            pytest.raises(ValueError, match="LANGFLOW_API_KEY environment variable is not set"),
+            patch.dict(os.environ, {"EARTHMIND_API_KEY": ""}),
+            pytest.raises(ValueError, match="EARTHMIND_API_KEY environment variable is not set"),
         ):
             get_api_key()
 
@@ -358,7 +358,7 @@ class TestGraphExecution:
     async def test_execute_graph_does_not_overwrite_hardcoded_session_id(self):
         """Hardcoded session_id on a Memory component (set in flow JSON) wins over the request value.
 
-        Mirrors Langflow's playground precedence in ``build_graph_from_data``.
+        Mirrors EarthMind's playground precedence in ``build_graph_from_data``.
         """
 
         async def mock_async_start(inputs, **kwargs):  # noqa: ARG001
@@ -420,7 +420,7 @@ class TestGraphExecution:
         """Default settings (fallback_to_env_var=True) reach async_start.
 
         Lets components fall through to os.environ when a load_from_db variable
-        has no DB row — matching langflow's API path behavior.
+        has no DB row — matching earthmind's API path behavior.
         """
         captured: dict = {}
 

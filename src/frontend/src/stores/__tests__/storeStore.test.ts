@@ -3,7 +3,7 @@ import { useStoreStore } from "../storeStore";
 
 // Mock the feature flag
 jest.mock("@/customization/feature-flags", () => ({
-  ENABLE_LANGFLOW_STORE: true,
+  ENABLE_EARTHMIND_STORE: true,
 }));
 
 // Mock the API controllers - simplified without complex async operations

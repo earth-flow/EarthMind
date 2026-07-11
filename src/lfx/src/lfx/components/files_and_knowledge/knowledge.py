@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING, Any
 import pandas as pd
 from cryptography.fernet import InvalidToken
 from langchain_chroma import Chroma
-from langflow.services.auth.utils import decrypt_api_key, encrypt_api_key
+from earthmind.services.auth.utils import decrypt_api_key, encrypt_api_key
 
 from lfx.base.knowledge_bases.backends import BackendType, BaseVectorStoreBackend, create_backend
 from lfx.base.knowledge_bases.ingestion_sources.base import (
@@ -39,6 +39,7 @@ from lfx.base.knowledge_bases.ingestion_sources.base import (
 from lfx.base.knowledge_bases.ingestion_sources.flow_component import FlowComponentSource
 from lfx.base.knowledge_bases.knowledge_base_utils import get_knowledge_bases
 from lfx.base.models.unified_models import get_embedding_model_options, get_embeddings
+from earthmind.services.memory_base.embedding_helpers import infer_embedding_provider
 from lfx.base.vectorstores.chroma_security import chroma_langchain_collection_kwargs
 from lfx.components.files_and_knowledge._kb_paths import (
     get_knowledge_bases_root_path as _get_knowledge_bases_root_path,
@@ -99,7 +100,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 # Mode constants. Plain-text labels (no emoji) for consistency with the rest of
-# Langflow's TabInput palette — see ``MemoryComponent`` for the same convention.
+# EarthMind's TabInput palette — see ``MemoryComponent`` for the same convention.
 MODE_INGEST = "Ingest"
 MODE_RETRIEVE = "Retrieve"
 
@@ -136,7 +137,7 @@ _DEFAULT_CHROMA_CLOUD_CONFIG = {
 
 
 class KnowledgeComponent(Component):
-    """One component for both writing into and reading from a Langflow knowledge base.
+    """One component for both writing into and reading from a EarthMind knowledge base.
 
     A ``TabInput`` switches between ingestion and retrieval. The
     ``update_build_config`` / ``update_outputs`` hooks hide the inputs
@@ -145,7 +146,7 @@ class KnowledgeComponent(Component):
     """
 
     display_name = "Knowledge"
-    description = "Ingest into or retrieve from a Langflow knowledge base."
+    description = "Ingest into or retrieve from a EarthMind knowledge base."
     icon = "database"
     name = "Knowledge"
 
@@ -184,7 +185,7 @@ class KnowledgeComponent(Component):
                 "data": {
                     "node": {
                         "name": "create_knowledge_base",
-                        "description": "Create new knowledge in Langflow.",
+                        "description": "Create new knowledge in EarthMind.",
                         "display_name": "Create new Knowledge Base",
                         "field_order": [
                             "01_new_kb_name",
@@ -203,7 +204,7 @@ class KnowledgeComponent(Component):
                                 display_name="Choose Embedding Model",
                                 info=(
                                     "Select the embedding model to use for this knowledge base. "
-                                    "Langflow uses the configured credentials for that model provider."
+                                    "EarthMind uses the configured credentials for that model provider."
                                 ),
                                 required=True,
                                 model_type="embedding",
@@ -501,8 +502,8 @@ class KnowledgeComponent(Component):
         # component verbatim; relied on by both the canvas refresh button and the
         # dialog-submit path).
         if field_name == "knowledge_base":
-            # Lazy import keeps lfx importable without langflow installed.
-            from langflow.services.database.models.user.crud import get_user_by_id
+            # Lazy import keeps lfx importable without earthmind installed.
+            from earthmind.services.database.models.user.crud import get_user_by_id
 
             async with session_scope() as db:
                 if not self.user_id:
@@ -638,6 +639,10 @@ class KnowledgeComponent(Component):
         model_dict = model_selection[0] if isinstance(model_selection, list) else model_selection
         embedding_model = model_dict.get("name", "")
         embedding_provider = model_dict.get("provider", "Unknown")
+        inferred_provider = infer_embedding_provider(embedding_model) if embedding_model else ""
+        if inferred_provider and inferred_provider != "OpenAI" and embedding_provider in {"Unknown", "OpenAI", ""}:
+            embedding_provider = inferred_provider
+            model_dict["provider"] = inferred_provider
 
         api_key_to_save = None
         if api_key and hasattr(api_key, "get_secret_value"):
@@ -695,7 +700,7 @@ class KnowledgeComponent(Component):
     def _update_metadata_metrics(self, kb_path: Path, chroma: Chroma) -> None:
         """Update embedding_metadata.json with accurate chunk/word/character counts."""
         import chromadb.errors
-        from langflow.api.utils.kb_helpers import KBAnalysisHelper, KBStorageHelper
+        from earthmind.api.utils.kb_helpers import KBAnalysisHelper, KBStorageHelper
 
         metadata_path = kb_path / "embedding_metadata.json"
         if not metadata_path.exists():
@@ -902,9 +907,9 @@ class KnowledgeComponent(Component):
         backend_type: str,
         backend_config: dict[str, Any],
     ) -> None:
-        """Persist the component-created KB in the DB when Langflow is available."""
+        """Persist the component-created KB in the DB when EarthMind is available."""
         try:
-            from langflow.api.utils import knowledge_base_service
+            from earthmind.api.utils import knowledge_base_service
         except ImportError:
             return
 
@@ -1103,9 +1108,9 @@ class KnowledgeComponent(Component):
         if cached_path is not None:
             return cached_path
 
-        # Lazy import to keep ``lfx`` importable standalone — langflow's
+        # Lazy import to keep ``lfx`` importable standalone — earthmind's
         # user/DB models are not always available at module load time.
-        from langflow.services.database.models.user.crud import get_user_by_id
+        from earthmind.services.database.models.user.crud import get_user_by_id
 
         async with session_scope() as db:
             if not self.user_id:
@@ -1344,9 +1349,9 @@ class KnowledgeComponent(Component):
             return None, None, None, None
 
         try:
-            from langflow.api.utils import ingestion_run_service, knowledge_base_service
-            from langflow.services.database.models.jobs.model import JobStatus, JobType
-            from langflow.services.deps import get_job_service
+            from earthmind.api.utils import ingestion_run_service, knowledge_base_service
+            from earthmind.services.database.models.jobs.model import JobStatus, JobType
+            from earthmind.services.deps import get_job_service
         except ImportError as exc:
             self.log(f"Run-history wiring unavailable; ingestion will not be recorded ({exc}).")
             return None, None, None, None
@@ -1418,9 +1423,9 @@ class KnowledgeComponent(Component):
     ) -> None:
         """Persist the final summary and transition the parent Job."""
         try:
-            from langflow.api.utils import ingestion_run_service
-            from langflow.services.database.models.jobs.model import JobStatus
-            from langflow.services.deps import get_job_service
+            from earthmind.api.utils import ingestion_run_service
+            from earthmind.services.database.models.jobs.model import JobStatus
+            from earthmind.services.deps import get_job_service
         except ImportError as exc:
             self.log(f"Run-history wiring unavailable; ingestion-run finalize skipped ({exc}).")
             return
@@ -1433,7 +1438,12 @@ class KnowledgeComponent(Component):
                 error_message=error_message,
             )
             if job_id is not None:
-                terminal_status = JobStatus.COMPLETED if status is not IngestionRunStatus.FAILED else JobStatus.FAILED
+                if status is IngestionRunStatus.FAILED:
+                    terminal_status = JobStatus.FAILED
+                elif status is IngestionRunStatus.CANCELLED:
+                    terminal_status = JobStatus.CANCELLED
+                else:
+                    terminal_status = JobStatus.COMPLETED
                 await get_job_service().update_job_status(job_id, terminal_status, finished_timestamp=True)
         except Exception as exc:  # noqa: BLE001 — telemetry must never re-raise
             self.log(f"Could not finalize ingestion-run tracking: {exc}")
@@ -1447,8 +1457,8 @@ class KnowledgeComponent(Component):
     ) -> None:
         """Mirror Path A's KB-row status transitions."""
         try:
-            from langflow.api.utils import knowledge_base_service
-            from langflow.services.database.models.knowledge_base.model import KnowledgeBaseStatus
+            from earthmind.api.utils import knowledge_base_service
+            from earthmind.services.database.models.knowledge_base.model import KnowledgeBaseStatus
         except ImportError:
             return
         try:
@@ -1463,7 +1473,7 @@ class KnowledgeComponent(Component):
     async def _record_kb_stats(self, kb_record_id: uuid.UUID, kb_path: Path) -> None:
         """Push freshly-refreshed metrics from embedding_metadata.json onto the DB row."""
         try:
-            from langflow.api.utils import knowledge_base_service
+            from earthmind.api.utils import knowledge_base_service
         except ImportError:
             self.log("knowledge_base_service unavailable; KB stats will not sync to DB row.")
             return
@@ -1527,7 +1537,7 @@ class KnowledgeComponent(Component):
     async def _resolve_backend(self, *, kb_user: str) -> tuple[str, dict[str, Any]]:  # noqa: ARG002
         """Return ``(backend_type, backend_config)`` for this KB."""
         try:
-            from langflow.api.utils import knowledge_base_service
+            from earthmind.api.utils import knowledge_base_service
 
             user_uuid = self._user_uuid
             if user_uuid is None:
@@ -1610,11 +1620,11 @@ class KnowledgeComponent(Component):
             return await self.build_kb_info()
         raise_error_if_astra_cloud_disable_component(astra_error_msg)
 
-        # Lazy import: langflow's user/DB models aren't part of lfx's
+        # Lazy import: earthmind's user/DB models aren't part of lfx's
         # standalone install, so ``lfx run <starter>.json`` can't resolve
         # this symbol at module import time. Deferring to use keeps the
         # component importable in both environments.
-        from langflow.services.database.models.user.crud import get_user_by_id
+        from earthmind.services.database.models.user.crud import get_user_by_id
 
         async with session_scope() as db:
             if not self.user_id:

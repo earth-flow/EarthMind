@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("@/components/common/genericIconComponent", () => ({
@@ -45,6 +45,23 @@ describe("ChunkCard", () => {
         />,
       );
       expect(screen.getByText("Hello, world!")).toBeInTheDocument();
+    });
+  });
+
+  describe("Selection", () => {
+    it("calls onSelect when the card body is clicked", () => {
+      const onSelect = jest.fn();
+      render(
+        <ChunkCard
+          chunk={makeChunk()}
+          index={1}
+          onCopy={jest.fn()}
+          onSelect={onSelect}
+        />,
+      );
+
+      fireEvent.click(screen.getByText("This is some chunk content for testing."));
+      expect(onSelect).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -96,6 +113,21 @@ describe("ChunkCard", () => {
       expect(screen.getByTestId("chunk-card-file-name")).toHaveTextContent(
         "Desktop Guide.pdf",
       );
+    });
+
+    it("renders the section_path when available", () => {
+      render(
+        <ChunkCard
+          chunk={
+            makeChunk({
+              metadata: { section_path: "Chapter 1 > Introduction" },
+            })
+          }
+          index={1}
+          onCopy={jest.fn()}
+        />,
+      );
+      expect(screen.getByText("Chapter 1 > Introduction")).toBeInTheDocument();
     });
 
     it("renders user-supplied tags from source_metadata as chips", () => {

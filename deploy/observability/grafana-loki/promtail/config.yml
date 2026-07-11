@@ -9,13 +9,13 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: langflow
+  - job_name: earthmind
     static_configs:
       - targets:
           - localhost
         labels:
-          job: langflow
-          __path__: /var/log/langflow/*.log
+          job: earthmind
+          __path__: /var/log/earthmind/*.log
     pipeline_stages:
       # Parse the structlog JSON line and promote useful fields to labels.
       # Keep this set small; high-cardinality fields (user_id, flow_id,

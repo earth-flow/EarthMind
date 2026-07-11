@@ -9,9 +9,9 @@ both need to:
 2. Auto-generate a UUID when neither is supplied (so component prechecks and
    ``astore_message`` validation don't fail).
 3. Propagate ``session_id`` to ``Memory``/``MessageHistory`` vertices the way
-   ``langflow.api.utils.flow_utils.build_graph_from_data`` does — preserving
+   ``earthmind.api.utils.flow_utils.build_graph_from_data`` does — preserving
    any value already pinned in the flow JSON.
-4. Resolve ``fallback_to_env_vars`` from settings (mirrors the langflow API
+4. Resolve ``fallback_to_env_vars`` from settings (mirrors the earthmind API
    path in ``processing.process.run_graph_internal``).
 
 Both call sites used to inline these steps; consolidating them here prevents
@@ -100,7 +100,7 @@ def apply_run_defaults(
         )
     graph.session_id = session_id
 
-    # Mirror langflow's build_graph_from_data: only write when raw_params has no
+    # Mirror earthmind's build_graph_from_data: only write when raw_params has no
     # session_id (hardcoded values pinned in the flow JSON win). graph.async_start
     # bypasses the equivalent loop in Graph._run, so without this Memory components
     # would read "" from their input field even when --session-id is set.
@@ -117,7 +117,7 @@ def apply_run_defaults(
 def resolve_fallback_to_env_vars() -> bool:
     """Read ``fallback_to_env_var`` from settings, defaulting to True if the service is missing.
 
-    Mirrors the langflow API path (``processing.process.run_graph_internal``):
+    Mirrors the earthmind API path (``processing.process.run_graph_internal``):
     when a ``load_from_db`` variable misses (e.g. the ceremonial UUID has no
     Variable row), fall through to ``os.environ`` instead of failing the build.
     A missing settings_service is unusual — log a warning so the user can debug.

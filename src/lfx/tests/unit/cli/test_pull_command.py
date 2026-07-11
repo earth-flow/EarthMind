@@ -1,6 +1,6 @@
 """Unit tests for lfx pull -- pull_command and helpers.
 
-All tests run entirely in-process; no real Langflow instance or SDK required.
+All tests run entirely in-process; no real EarthMind instance or SDK required.
 The SDK module is replaced wholesale with MagicMock so only the pull logic
 (flow fetching, file writing, project resolution, result rendering)
 is under test.
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 # Shared constants
 # ---------------------------------------------------------------------------
 
-_BASE_URL = "http://langflow.test"
+_BASE_URL = "http://earthmind.test"
 _API_KEY = "test-key"  # pragma: allowlist secret
 _FLOW_ID = UUID("aaaaaaaa-0000-0000-0000-000000000001")
 _FLOW_ID_2 = UUID("aaaaaaaa-0000-0000-0000-000000000002")
@@ -70,7 +70,7 @@ def _fake_flow_obj(
     name: str = "My Flow",
     flow_dict: dict | None = None,
 ) -> MagicMock:
-    """Return a MagicMock that looks like a langflow_sdk Flow object."""
+    """Return a MagicMock that looks like a earthmind_sdk Flow object."""
     flow = MagicMock()
     flow.id = flow_id
     flow.name = name
@@ -83,7 +83,7 @@ def _fake_project(
     project_id: UUID = _PROJECT_ID,
     flows: list | None = None,
 ) -> MagicMock:
-    """Return a MagicMock that looks like a langflow_sdk Project object."""
+    """Return a MagicMock that looks like a earthmind_sdk Project object."""
     proj = MagicMock()
     proj.name = name
     proj.id = project_id
@@ -111,7 +111,7 @@ def _make_sdk_mock(
     client_mock: MagicMock | None = None,
     flow_json: str | None = None,
 ) -> MagicMock:
-    """Return a mock langflow_sdk module wired to client_mock."""
+    """Return a mock earthmind_sdk module wired to client_mock."""
     if client_mock is None:
         client_mock = _make_client_mock()
 
@@ -700,7 +700,7 @@ class TestPullCommandErrorHandling:
         from lfx.cli.pull import pull_command
 
         with (
-            patch("lfx.cli.pull.load_sdk", side_effect=typer.BadParameter("langflow-sdk is required")),
+            patch("lfx.cli.pull.load_sdk", side_effect=typer.BadParameter("earthmind-sdk is required")),
             pytest.raises(typer.BadParameter),
         ):
             pull_command(

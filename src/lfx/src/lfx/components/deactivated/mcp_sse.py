@@ -19,8 +19,8 @@ class MCPSse(Component):
     tools = types.ListToolsResult
     tool_names = [str]
     display_name = "MCP Tools (SSE) [DEPRECATED]"
-    description = "Connects to an MCP server over SSE and exposes it's tools as langflow tools to be used by an Agent."
-    documentation: str = "https://docs.langflow.org/components-custom-components"
+    description = "Connects to an MCP server over SSE and exposes it's tools as earthmind tools to be used by an Agent."
+    documentation: str = "https://docs.earthmind.org/components-custom-components"
     icon = "code"
     name = "MCPSse"
     legacy = True
@@ -30,7 +30,7 @@ class MCPSse(Component):
             name="url",
             display_name="mcp sse url",
             info="sse url",
-            value="http://localhost:7860/api/v1/mcp/sse",
+            value="http://10.171.205.153:7860/api/v1/mcp/sse",
             tool_mode=True,
         ),
     ]

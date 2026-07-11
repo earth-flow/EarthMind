@@ -1,6 +1,6 @@
 """Unit tests for lfx.config.environments — environment resolution.
 
-All tests run entirely in-process; no real Langflow instance or SDK required.
+All tests run entirely in-process; no real EarthMind instance or SDK required.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 from lfx.config.environments import (
     ConfigError,
-    LangflowEnvironment,
+    EarthMindEnvironment,
     _find_config_file,
     _load_config,
     _parse_env_block,
@@ -70,19 +70,19 @@ def _write(tmp_path: Path, name: str, content: str) -> Path:
 
 
 # ---------------------------------------------------------------------------
-# LangflowEnvironment
+# EarthMindEnvironment
 # ---------------------------------------------------------------------------
 
 
-class TestLangflowEnvironment:
+class TestEarthMindEnvironment:
     def test_fields_stored(self):
-        e = LangflowEnvironment(name="staging", url="https://x.com", api_key="key123")  # pragma: allowlist secret
+        e = EarthMindEnvironment(name="staging", url="https://x.com", api_key="key123")  # pragma: allowlist secret
         assert e.name == "staging"
         assert e.url == "https://x.com"
         assert e.api_key == "key123"  # pragma: allowlist secret
 
     def test_api_key_may_be_none(self):
-        e = LangflowEnvironment(name="local", url="http://localhost:7860", api_key=None)
+        e = EarthMindEnvironment(name="local", url="http://localhost:7860", api_key=None)
         assert e.api_key is None
 
 
@@ -228,7 +228,7 @@ class TestFindConfigFile:
 
     def test_toml_fallback_when_no_yaml(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
-        p = _write(tmp_path, "langflow-environments.toml", _MINIMAL_TOML)
+        p = _write(tmp_path, "earthmind-environments.toml", _MINIMAL_TOML)
         assert _find_config_file(None) == p
 
     def test_returns_none_when_nothing_found(self, tmp_path, monkeypatch):
@@ -371,7 +371,7 @@ class TestResolveConfigMode:
     def test_toml_file_also_works(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         monkeypatch.setenv("MY_LOCAL_KEY", "local-secret")  # pragma: allowlist secret
-        _write(tmp_path, "langflow-environments.toml", _MINIMAL_TOML)
+        _write(tmp_path, "earthmind-environments.toml", _MINIMAL_TOML)
         result = resolve_environment("local")
         assert result.url == "http://localhost:7860"
         assert result.api_key == "local-secret"  # pragma: allowlist secret
@@ -383,11 +383,11 @@ class TestResolveConfigMode:
 
 
 class TestResolveNoConfigFallbacks:
-    def test_langflow_url_env_var_used_as_fallback(self, tmp_path, monkeypatch):
+    def test_earthmind_url_env_var_used_as_fallback(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         (tmp_path / ".git").mkdir()  # stop file walk here
-        monkeypatch.setenv("LANGFLOW_URL", "http://fallback:7860")
-        monkeypatch.setenv("LANGFLOW_API_KEY", "fallback-key")  # pragma: allowlist secret
+        monkeypatch.setenv("EARTHMIND_URL", "http://fallback:7860")
+        monkeypatch.setenv("EARTHMIND_API_KEY", "fallback-key")  # pragma: allowlist secret
         result = resolve_environment(None)
         assert result.url == "http://fallback:7860"
         assert result.api_key == "fallback-key"  # pragma: allowlist secret
@@ -396,7 +396,7 @@ class TestResolveNoConfigFallbacks:
     def test_lfx_url_env_var_used_as_fallback(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         (tmp_path / ".git").mkdir()
-        monkeypatch.delenv("LANGFLOW_URL", raising=False)
+        monkeypatch.delenv("EARTHMIND_URL", raising=False)
         monkeypatch.setenv("LFX_URL", "http://lfx-fallback:7860")
         monkeypatch.setenv("LFX_API_KEY", "lfx-key")  # pragma: allowlist secret
         result = resolve_environment(None)
@@ -406,7 +406,7 @@ class TestResolveNoConfigFallbacks:
     def test_named_env_without_config_raises_clear_error(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         (tmp_path / ".git").mkdir()
-        monkeypatch.delenv("LANGFLOW_URL", raising=False)
+        monkeypatch.delenv("EARTHMIND_URL", raising=False)
         monkeypatch.delenv("LFX_URL", raising=False)
         with pytest.raises(ConfigError, match=r"'staging'.*no config file"):
             resolve_environment("staging")
@@ -414,7 +414,7 @@ class TestResolveNoConfigFallbacks:
     def test_no_env_no_config_no_env_vars_raises(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         (tmp_path / ".git").mkdir()
-        monkeypatch.delenv("LANGFLOW_URL", raising=False)
+        monkeypatch.delenv("EARTHMIND_URL", raising=False)
         monkeypatch.delenv("LFX_URL", raising=False)
         with pytest.raises(ConfigError, match="No --env"):
             resolve_environment(None)
@@ -427,8 +427,8 @@ class TestResolveNoConfigFallbacks:
     def test_inline_api_key_override_with_env_var_url(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         (tmp_path / ".git").mkdir()
-        monkeypatch.setenv("LANGFLOW_URL", "http://fallback:7860")
-        monkeypatch.delenv("LANGFLOW_API_KEY", raising=False)
+        monkeypatch.setenv("EARTHMIND_URL", "http://fallback:7860")
+        monkeypatch.delenv("EARTHMIND_API_KEY", raising=False)
         # api_key arg should override the env-var based key
         result = resolve_environment(None, api_key="override-key")  # pragma: allowlist secret
         # In fallback mode, api_key_inline takes precedence
@@ -451,7 +451,7 @@ class TestErrorMessages:
     def test_no_config_message_suggests_init(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         (tmp_path / ".git").mkdir()
-        monkeypatch.delenv("LANGFLOW_URL", raising=False)
+        monkeypatch.delenv("EARTHMIND_URL", raising=False)
         monkeypatch.delenv("LFX_URL", raising=False)
         with pytest.raises(ConfigError, match="lfx init"):
             resolve_environment("staging")

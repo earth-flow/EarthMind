@@ -5,15 +5,15 @@ import pytest
 from httpx import AsyncClient
 
 # Assuming you have these imports available
-from langflow.api.v1 import monitor as monitor_api
-from langflow.memory import aadd_messagetables
-from langflow.schema.validators import str_to_timestamp, timestamp_to_str
-from langflow.services.auth.utils import get_auth_service
-from langflow.services.database.models.flow.model import Flow
-from langflow.services.database.models.message import MessageCreate, MessageRead, MessageUpdate
-from langflow.services.database.models.message.model import MessageTable
-from langflow.services.database.models.user.model import User, UserRead
-from langflow.services.deps import session_scope
+from earthmind.api.v1 import monitor as monitor_api
+from earthmind.memory import aadd_messagetables
+from earthmind.schema.validators import str_to_timestamp, timestamp_to_str
+from earthmind.services.auth.utils import get_auth_service
+from earthmind.services.database.models.flow.model import Flow
+from earthmind.services.database.models.message import MessageCreate, MessageRead, MessageUpdate
+from earthmind.services.database.models.message.model import MessageTable
+from earthmind.services.database.models.user.model import User, UserRead
+from earthmind.services.deps import session_scope
 
 
 @pytest.fixture

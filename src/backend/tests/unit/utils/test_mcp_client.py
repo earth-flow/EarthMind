@@ -4,7 +4,7 @@ These test pure functions only (no network, no server).
 """
 
 import pytest
-from lfx.mcp.client import LangflowClient
+from lfx.mcp.client import EarthMindClient
 from lfx.mcp.redact import (
     is_sensitive_field,
     redact_node,
@@ -249,13 +249,13 @@ class TestDescribeComponent:
 
 
 # ---------------------------------------------------------------------------
-# LangflowClient — pure method tests (no network)
+# EarthMindClient — pure method tests (no network)
 # ---------------------------------------------------------------------------
 
 
 class TestClientHeaders:
     def test_no_credentials(self):
-        client = LangflowClient(server_url="http://test:7860")
+        client = EarthMindClient(server_url="http://test:7860")
         client.api_key = None
         client.access_token = None
         headers = client._headers()
@@ -264,13 +264,13 @@ class TestClientHeaders:
         assert "x-api-key" not in headers
 
     def test_api_key_only(self):
-        client = LangflowClient(server_url="http://test:7860", api_key="sk-test-key")
+        client = EarthMindClient(server_url="http://test:7860", api_key="sk-test-key")
         headers = client._headers()
         assert "Authorization" not in headers
         assert headers["x-api-key"] == "sk-test-key"
 
     def test_access_token_only(self):
-        client = LangflowClient(server_url="http://test:7860")
+        client = EarthMindClient(server_url="http://test:7860")
         token = "jwt-token-123"  # noqa: S105
         client.access_token = token
         headers = client._headers()
@@ -279,7 +279,7 @@ class TestClientHeaders:
 
     def test_both_token_and_api_key(self):
         """access_token takes precedence for Bearer, api_key still sent as x-api-key."""
-        client = LangflowClient(server_url="http://test:7860", api_key="sk-key")
+        client = EarthMindClient(server_url="http://test:7860", api_key="sk-key")
         token = "jwt-token"  # noqa: S105
         client.access_token = token
         headers = client._headers()
@@ -287,39 +287,39 @@ class TestClientHeaders:
         assert headers["x-api-key"] == "sk-key"
 
     def test_content_type_always_present(self):
-        client = LangflowClient(server_url="http://test:7860")
+        client = EarthMindClient(server_url="http://test:7860")
         headers = client._headers()
         assert headers["Content-Type"] == "application/json"
 
 
 class TestClientUrl:
     def test_basic_path(self):
-        client = LangflowClient(server_url="http://localhost:7860")
+        client = EarthMindClient(server_url="http://localhost:7860")
         assert client._url("/flows/") == "http://localhost:7860/api/v1/flows/"
 
     def test_trailing_slash_stripped(self):
-        client = LangflowClient(server_url="http://localhost:7860/")
+        client = EarthMindClient(server_url="http://localhost:7860/")
         assert client._url("/flows/") == "http://localhost:7860/api/v1/flows/"
 
     def test_nested_path(self):
-        client = LangflowClient(server_url="http://host:8000")
+        client = EarthMindClient(server_url="http://host:8000")
         assert client._url("/flows/abc-123") == "http://host:8000/api/v1/flows/abc-123"
 
     def test_default_server_url(self):
-        client = LangflowClient()
+        client = EarthMindClient()
         assert client._url("/test") == f"{client.server_url}/api/v1/test"
 
 
 class TestClientInit:
     def test_default_values(self):
-        client = LangflowClient()
+        client = EarthMindClient()
         assert client.server_url.startswith("http")
         assert client.access_token is None
 
     def test_custom_server_url(self):
-        client = LangflowClient(server_url="http://custom:9000")
+        client = EarthMindClient(server_url="http://custom:9000")
         assert client.server_url == "http://custom:9000"
 
     def test_http_client_starts_none(self):
-        client = LangflowClient()
+        client = EarthMindClient()
         assert client._http is None

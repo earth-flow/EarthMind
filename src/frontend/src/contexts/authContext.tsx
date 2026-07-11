@@ -1,9 +1,9 @@
 import { createContext, useEffect, useState } from "react";
 import {
-  LANGFLOW_ACCESS_TOKEN,
-  LANGFLOW_API_TOKEN,
-  LANGFLOW_AUTO_LOGIN_OPTION,
-  LANGFLOW_REFRESH_TOKEN,
+  EARTHMIND_ACCESS_TOKEN,
+  EARTHMIND_API_TOKEN,
+  EARTHMIND_AUTO_LOGIN_OPTION,
+  EARTHMIND_REFRESH_TOKEN,
 } from "@/constants/constants";
 import { useGetUserData } from "@/controllers/API/queries/auth";
 import { useGetGlobalVariablesMutation } from "@/controllers/API/queries/variables/use-get-mutation-global-variables";
@@ -69,12 +69,12 @@ export function AuthProvider({ children }): React.ReactElement {
     autoLogin: string,
     refreshToken?: string,
   ) {
-    cookieManager.set(LANGFLOW_ACCESS_TOKEN, newAccessToken);
-    cookieManager.set(LANGFLOW_AUTO_LOGIN_OPTION, autoLogin);
-    setLocalStorage(LANGFLOW_ACCESS_TOKEN, newAccessToken);
+    cookieManager.set(EARTHMIND_ACCESS_TOKEN, newAccessToken);
+    cookieManager.set(EARTHMIND_AUTO_LOGIN_OPTION, autoLogin);
+    setLocalStorage(EARTHMIND_ACCESS_TOKEN, newAccessToken);
 
     if (refreshToken) {
-      cookieManager.set(LANGFLOW_REFRESH_TOKEN, refreshToken);
+      cookieManager.set(EARTHMIND_REFRESH_TOKEN, refreshToken);
     }
     setAccessToken(newAccessToken);
 
@@ -130,9 +130,9 @@ export function AuthProvider({ children }): React.ReactElement {
 
   function clearAuthSession() {
     cookieManager.clearAuthCookies();
-    localStorage.removeItem(LANGFLOW_ACCESS_TOKEN);
-    localStorage.removeItem(LANGFLOW_API_TOKEN);
-    localStorage.removeItem(LANGFLOW_REFRESH_TOKEN);
+    localStorage.removeItem(EARTHMIND_ACCESS_TOKEN);
+    localStorage.removeItem(EARTHMIND_API_TOKEN);
+    localStorage.removeItem(EARTHMIND_REFRESH_TOKEN);
     setAccessToken(null);
     setApiKey(null);
     setUserData(null);

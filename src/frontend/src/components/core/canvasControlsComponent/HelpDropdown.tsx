@@ -7,7 +7,7 @@ import {
   DESKTOP_URL,
   DOCS_URL,
 } from "@/constants/constants";
-import { ENABLE_DATASTAX_LANGFLOW } from "@/customization/feature-flags";
+import { ENABLE_DATASTAX_EARTHMIND } from "@/customization/feature-flags";
 import useFlowStore from "@/stores/flowStore";
 
 const HelpDropdown = () => {
@@ -32,7 +32,7 @@ const HelpDropdown = () => {
     setInspectionPanelVisible(!inspectionPanelVisible);
   }, [inspectionPanelVisible]);
 
-  const docsUrl = ENABLE_DATASTAX_LANGFLOW ? DATASTAX_DOCS_URL : DOCS_URL;
+  const docsUrl = ENABLE_DATASTAX_EARTHMIND ? DATASTAX_DOCS_URL : DOCS_URL;
 
   return (
     <HelpDropdownView

@@ -16,10 +16,10 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from langflow.agentic.services.assistant_service import execute_flow_with_validation_streaming
-from langflow.agentic.services.flow_types import IntentResult
+from earthmind.agentic.services.assistant_service import execute_flow_with_validation_streaming
+from earthmind.agentic.services.flow_types import IntentResult
 
-MODULE = "langflow.agentic.services.assistant_service"
+MODULE = "earthmind.agentic.services.assistant_service"
 
 
 def _make_intent(

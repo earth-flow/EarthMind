@@ -4,8 +4,8 @@ import { ArrowRight, X } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
-import langflowAssistantIcon from "@/assets/langflow_assistant.svg";
-import langflowAssistantIdleIcon from "@/assets/langflow_assistant_idle.svg";
+import earthmindAssistantIcon from "@/assets/earthmind_assistant.svg";
+import earthmindAssistantIdleIcon from "@/assets/earthmind_assistant_idle.svg";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import {
   readAssistantDiscovered,
@@ -181,11 +181,11 @@ const CanvasControls = ({
                 onClick={handleAssistantClick}
               >
                 {/* Idle state — uses the design-tuned
-                    ``langflow_assistant_idle.svg`` (noise filter + brand tint
+                    ``earthmind_assistant_idle.svg`` (noise filter + brand tint
                     baked into the SVG). Hidden whenever the panel is open so
                     the button reads as "active" alongside the open panel. */}
                 <img
-                  src={langflowAssistantIdleIcon}
+                  src={earthmindAssistantIdleIcon}
                   alt="EarthMind Assistant"
                   className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${
                     assistantSidebarOpen ? "opacity-0" : "group-hover:opacity-0"
@@ -194,7 +194,7 @@ const CanvasControls = ({
                 {/* Brand-lit icon — surfaces on hover AND while the panel is
                     open; both states share the same active brand identity. */}
                 <img
-                  src={langflowAssistantIcon}
+                  src={earthmindAssistantIcon}
                   alt=""
                   aria-hidden="true"
                   className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${

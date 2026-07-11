@@ -7,8 +7,10 @@ import json
 import os
 import re
 from typing import Any
+from urllib.parse import urljoin
 from uuid import UUID
 
+import requests
 from lfx.log.logger import logger
 from lfx.services.deps import get_variable_service, session_scope
 from lfx.services.variable.request_scope import is_env_fallback_disabled
@@ -125,12 +127,12 @@ def get_api_key_for_provider(user_id: UUID | str | None, provider: str, api_key:
 
 
 def _env_value_for(var_key: str) -> str | None:
-    """Read a provider key from the environment, accepting a LANGFLOW_ alias.
+    """Read a provider key from the environment, accepting a EARTHMIND_ alias.
 
     Provider keys are conventionally bare (``GOOGLE_API_KEY``), but some .env
-    templates prefix everything with ``LANGFLOW_`` (matching how Langflow reads
-    its own settings). Accept ``LANGFLOW_<VAR>`` as a fallback so e.g.
-    ``LANGFLOW_GOOGLE_API_KEY`` enables Gemini exactly like ``GOOGLE_API_KEY``.
+    templates prefix everything with ``EARTHMIND_`` (matching how EarthMind reads
+    its own settings). Accept ``EARTHMIND_<VAR>`` as a fallback so e.g.
+    ``EARTHMIND_GOOGLE_API_KEY`` enables Gemini exactly like ``GOOGLE_API_KEY``.
     The bare name keeps precedence — no behavior change when it is set. The
     resolved value is always stored under the bare canonical key by callers, so
     downstream detection (available_model_providers, get_llm) is unaffected.
@@ -138,7 +140,7 @@ def _env_value_for(var_key: str) -> str | None:
     value = os.environ.get(var_key)
     if value and value.strip():
         return value
-    prefixed = os.environ.get(f"LANGFLOW_{var_key}")
+    prefixed = os.environ.get(f"EARTHMIND_{var_key}")
     if prefixed and prefixed.strip():
         return prefixed
     return None
@@ -229,8 +231,8 @@ def _validate_and_get_enabled_providers(
     skip_validation: bool = True,
 ) -> set[str]:
     """Return set of enabled providers based on credential existence."""
-    from langflow.services.auth import utils as auth_utils
-    from langflow.services.deps import get_settings_service
+    from earthmind.services.auth import utils as auth_utils
+    from earthmind.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     enabled = set()
@@ -318,7 +320,7 @@ async def _get_model_status(user_id: UUID | str) -> tuple[set[str], set[str]]:
         variable_service = get_variable_service()
         if variable_service is None:
             return set(), set()
-        from langflow.services.variable.service import DatabaseVariableService
+        from earthmind.services.variable.service import DatabaseVariableService
 
         if not isinstance(variable_service, DatabaseVariableService):
             return set(), set()
@@ -345,7 +347,7 @@ async def _fetch_enabled_providers_for_user(user_id: UUID | str) -> set[str]:
         if variable_service is None:
             return set()
 
-        from langflow.services.variable.service import DatabaseVariableService
+        from earthmind.services.variable.service import DatabaseVariableService
 
         if not isinstance(variable_service, DatabaseVariableService):
             return set()
@@ -421,14 +423,29 @@ def validate_model_provider_key(provider: str, variables: dict[str, str], model_
         return
 
     try:
-        if provider == "OpenAI":
-            from langchain_openai import ChatOpenAI  # type: ignore  # noqa: PGH003
-
-            api_key = variables.get("OPENAI_API_KEY")
+        if provider in {"OpenAI", "SiliconFlow"}:
+            key_var = "SILICONFLOW_API_KEY" if provider == "SiliconFlow" else "OPENAI_API_KEY"
+            base_var = "SILICONFLOW_API_BASE" if provider == "SiliconFlow" else "OPENAI_API_BASE"
+            api_key = variables.get(key_var)
+            api_base = variables.get(base_var)
             if not api_key:
                 return
-            llm = ChatOpenAI(api_key=api_key, model_name=validation_model, max_tokens=1)
-            llm.invoke("test")
+            # OpenAI-compatible providers are validated with a lightweight
+            # authenticated /models probe instead of an actual generation call.
+            # This keeps Save responsive while still verifying the base URL and
+            # bearer token are accepted by the provider.
+            if api_base:
+                models_url = urljoin(api_base.rstrip("/") + "/", "models")
+                response = requests.get(
+                    models_url,
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    timeout=5,
+                )
+                if response.status_code == 401:
+                    msg = f"Invalid API key for {provider}"
+                    logger.error(msg)
+                    raise ValueError(msg)
+                response.raise_for_status()
 
         elif provider == "Anthropic":
             from langchain_anthropic import ChatAnthropic  # type: ignore  # noqa: PGH003

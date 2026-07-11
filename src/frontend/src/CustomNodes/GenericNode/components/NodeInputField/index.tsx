@@ -197,6 +197,7 @@ export default function NodeInputField({
             editNode={false}
             handleNodeClass={handleNodeClass}
             showParameter={true}
+            inspectionPanel={false}
             nodeClass={data.node!}
             placeholder={
               isToolMode

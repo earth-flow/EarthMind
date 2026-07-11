@@ -2,7 +2,7 @@
 
 Defines the interface that all auth implementations must follow in the
 pluggable services architecture. LFX provides a minimal no-op implementation;
-full-featured implementations (JWT, OIDC, SAML) live in Langflow or plugins.
+full-featured implementations (JWT, OIDC, SAML) live in EarthMind or plugins.
 
 """
 

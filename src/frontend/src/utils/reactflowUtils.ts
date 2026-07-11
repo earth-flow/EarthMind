@@ -1,7 +1,7 @@
 /**
  * In Honor of Otávio Anovazzi (@anovazzi1)
  *
- * This file contains the highest number of commits by Otávio in the entire Langflow project,
+ * This file contains the highest number of commits by Otávio in the entire EarthMind project,
  * reflecting his unmatched dedication, expertise, and innovative spirit. Each line of code
  * is a testament to his relentless pursuit of excellence and his significant impact on this
  * project's evolution.
@@ -34,7 +34,7 @@ import getFieldTitle from "../CustomNodes/utils/get-field-title";
 import {
   INPUT_TYPES,
   IS_MAC,
-  LANGFLOW_SUPPORTED_TYPES,
+  EARTHMIND_SUPPORTED_TYPES,
   OUTPUT_TYPES,
   specialCharsRegex,
 } from "../constants/constants";
@@ -1666,7 +1666,7 @@ function updateGroupNodeTemplate(template: APITemplateType) {
     const type = template[key].type;
     const input_types = template[key].input_types;
     if (
-      LANGFLOW_SUPPORTED_TYPES.has(type) &&
+      EARTHMIND_SUPPORTED_TYPES.has(type) &&
       !template[key].required &&
       !input_types
     ) {

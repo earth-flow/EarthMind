@@ -16,7 +16,7 @@ class TestCORSConfiguration:
 
     def test_default_cors_settings_current_behavior(self):
         """Test current CORS settings behavior (warns about security implications)."""
-        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"LANGFLOW_CONFIG_DIR": temp_dir}):
+        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"EARTHMIND_CONFIG_DIR": temp_dir}):
             settings = Settings()
 
             # Current behavior: wildcard origins with credentials ENABLED (insecure).
@@ -33,9 +33,9 @@ class TestCORSConfiguration:
             warnings.warn(
                 "CRITICAL SECURITY WARNING: Current CORS configuration uses wildcard origins (*) "
                 "WITH CREDENTIALS ENABLED! This allows any website to make authenticated requests "
-                "to your Langflow instance and potentially steal user credentials. "
+                "to your EarthMind instance and potentially steal user credentials. "
                 "This will be changed to more secure defaults in v1.7. "
-                "Please configure LANGFLOW_CORS_ORIGINS with specific domains for production use.",
+                "Please configure EARTHMIND_CORS_ORIGINS with specific domains for production use.",
                 UserWarning,
                 stacklevel=2,
             )
@@ -44,7 +44,7 @@ class TestCORSConfiguration:
     def test_default_cors_settings_secure_future(self):
         """Test future default CORS settings that will be secure (skip until v1.7)."""
         # This test represents the behavior we want in v1.7
-        # with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"LANGFLOW_CONFIG_DIR": temp_dir}):
+        # with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"EARTHMIND_CONFIG_DIR": temp_dir}):
         #     settings = Settings()
         #     # Future secure defaults:
         #     assert settings.cors_origins == ["http://localhost:3000", "http://127.0.0.1:3000"]
@@ -59,8 +59,8 @@ class TestCORSConfiguration:
             patch.dict(
                 os.environ,
                 {
-                    "LANGFLOW_CONFIG_DIR": temp_dir,
-                    "LANGFLOW_CORS_ORIGINS": "https://app1.example.com,https://app2.example.com",
+                    "EARTHMIND_CONFIG_DIR": temp_dir,
+                    "EARTHMIND_CORS_ORIGINS": "https://app1.example.com,https://app2.example.com",
                 },
             ),
         ):
@@ -74,8 +74,8 @@ class TestCORSConfiguration:
             patch.dict(
                 os.environ,
                 {
-                    "LANGFLOW_CONFIG_DIR": temp_dir,
-                    "LANGFLOW_CORS_ORIGINS": "https://app.example.com",
+                    "EARTHMIND_CONFIG_DIR": temp_dir,
+                    "EARTHMIND_CORS_ORIGINS": "https://app.example.com",
                 },
             ),
         ):
@@ -89,14 +89,14 @@ class TestCORSConfiguration:
             patch.dict(
                 os.environ,
                 {
-                    "LANGFLOW_CONFIG_DIR": temp_dir,
-                    "LANGFLOW_CORS_ORIGINS": "*",
-                    "LANGFLOW_CORS_ALLOW_CREDENTIALS": "true",
+                    "EARTHMIND_CONFIG_DIR": temp_dir,
+                    "EARTHMIND_CORS_ORIGINS": "*",
+                    "EARTHMIND_CORS_ALLOW_CREDENTIALS": "true",
                 },
             ),
         ):
             settings = Settings()
-            # pydantic-settings parses LANGFLOW_CORS_ORIGINS="*" as the raw string
+            # pydantic-settings parses EARTHMIND_CORS_ORIGINS="*" as the raw string
             # on Python 3.13 and as ["*"] on Python 3.14+ (the str | list[str] union
             # resolves differently across versions). Accept either; both represent
             # the same "all origins" semantic.
@@ -121,9 +121,9 @@ class TestCORSConfiguration:
             patch.dict(
                 os.environ,
                 {
-                    "LANGFLOW_CONFIG_DIR": temp_dir,
-                    "LANGFLOW_CORS_ORIGINS": "https://app.example.com",
-                    "LANGFLOW_CORS_ALLOW_CREDENTIALS": "true",
+                    "EARTHMIND_CONFIG_DIR": temp_dir,
+                    "EARTHMIND_CORS_ORIGINS": "https://app.example.com",
+                    "EARTHMIND_CORS_ALLOW_CREDENTIALS": "true",
                 },
             ),
         ):
@@ -131,11 +131,11 @@ class TestCORSConfiguration:
             assert settings.cors_origins == ["https://app.example.com"]
             assert settings.cors_allow_credentials is True
 
-    @patch("langflow.main.add_sentry_middleware")  # Mock Sentry setup
-    @patch("langflow.main.get_settings_service")
+    @patch("earthmind.main.add_sentry_middleware")  # Mock Sentry setup
+    @patch("earthmind.main.get_settings_service")
     def test_cors_middleware_configuration(self, mock_get_settings, mock_add_sentry_middleware):
         """Test that CORS middleware is configured correctly in the app."""
-        from langflow.main import create_app
+        from earthmind.main import create_app
 
         # Mock settings
         mock_settings = MagicMock()
@@ -165,14 +165,14 @@ class TestCORSConfiguration:
         assert cors_middleware.kwargs["allow_methods"] == ["GET", "POST"]
         assert cors_middleware.kwargs["allow_headers"] == ["Content-Type"]
 
-    @patch("langflow.main.add_sentry_middleware")  # Mock Sentry setup
-    @patch("langflow.main.get_settings_service")
-    @patch("langflow.main.logger")
+    @patch("earthmind.main.add_sentry_middleware")  # Mock Sentry setup
+    @patch("earthmind.main.get_settings_service")
+    @patch("earthmind.main.logger")
     def test_cors_wildcard_credentials_runtime_check_current_behavior(
         self, mock_logger, mock_get_settings, mock_add_sentry_middleware
     ):
         """Test runtime validation prevents wildcard with credentials (current behavior)."""
-        from langflow.main import create_app
+        from earthmind.main import create_app
 
         # Mock settings with configuration that triggers current security measure
         mock_settings = MagicMock()
@@ -229,15 +229,15 @@ class TestRefreshTokenSecurity:
         NOTE: Currently the code doesn't validate that the token type is 'refresh'.
         It only checks if the token_type is empty. This should be enhanced.
         """
-        from langflow.services.deps import get_auth_service
+        from earthmind.services.deps import get_auth_service
 
         mock_db = MagicMock()
 
-        with patch("langflow.services.auth.utils.jwt.decode") as mock_decode:
+        with patch("earthmind.services.auth.utils.jwt.decode") as mock_decode:
             # Test with wrong token type - use a valid UUID string
             mock_decode.return_value = {"sub": "123e4567-e89b-12d3-a456-426614174000", "type": "access"}  # Wrong type
 
-            with patch("langflow.services.auth.utils.get_settings_service") as mock_settings:
+            with patch("earthmind.services.auth.utils.get_settings_service") as mock_settings:
                 mock_settings.return_value.auth_settings.SECRET_KEY.get_secret_value.return_value = "secret"
                 mock_settings.return_value.auth_settings.ALGORITHM = "HS256"
                 mock_settings.return_value.auth_settings.ACCESS_TOKEN_EXPIRE_SECONDS = 3600
@@ -258,22 +258,22 @@ class TestRefreshTokenSecurity:
         NOTE: This is a security enhancement that should be implemented.
         Currently, the system does not check if a user is active when refreshing tokens.
         """
-        from langflow.services.deps import get_auth_service
+        from earthmind.services.deps import get_auth_service
 
         mock_db = MagicMock()
         mock_user = MagicMock()
         mock_user.is_active = False  # Inactive user
 
-        with patch("langflow.services.auth.utils.jwt.decode") as mock_decode:
+        with patch("earthmind.services.auth.utils.jwt.decode") as mock_decode:
             mock_decode.return_value = {"sub": "user-123", "type": "refresh"}  # Correct type
 
-            with patch("langflow.services.auth.utils.get_settings_service") as mock_settings:
+            with patch("earthmind.services.auth.utils.get_settings_service") as mock_settings:
                 mock_settings.return_value.auth_settings.SECRET_KEY.get_secret_value.return_value = "secret"
                 mock_settings.return_value.auth_settings.ALGORITHM = "HS256"
                 mock_settings.return_value.auth_settings.ACCESS_TOKEN_EXPIRE_SECONDS = 3600  # 1 hour
                 mock_settings.return_value.auth_settings.REFRESH_TOKEN_EXPIRE_SECONDS = 86400  # 1 day
 
-                with patch("langflow.services.auth.utils.get_user_by_id") as mock_get_user:
+                with patch("earthmind.services.auth.utils.get_user_by_id") as mock_get_user:
                     mock_get_user.return_value = mock_user
 
                     # This SHOULD raise an exception for inactive users, but currently doesn't
@@ -288,8 +288,8 @@ class TestRefreshTokenSecurity:
         """Test that valid refresh tokens work correctly."""
         from uuid import uuid4
 
-        from langflow.services.auth.service import AuthService
-        from langflow.services.auth.utils import create_refresh_token
+        from earthmind.services.auth.service import AuthService
+        from earthmind.services.auth.utils import create_refresh_token
 
         mock_db = AsyncMock()
         mock_user = MagicMock()
@@ -297,20 +297,20 @@ class TestRefreshTokenSecurity:
         user_id = uuid4()
         mock_user.id = user_id
 
-        # Create a langflow AuthService instance (not lfx) with mocked settings
+        # Create a earthmind AuthService instance (not lfx) with mocked settings
         mock_settings_service = MagicMock()
         auth_service = AuthService(mock_settings_service)
 
         with (
-            patch("langflow.services.auth.utils._auth_service", return_value=auth_service),
-            patch("langflow.services.auth.service.jwt.decode") as mock_decode,
+            patch("earthmind.services.auth.utils._auth_service", return_value=auth_service),
+            patch("earthmind.services.auth.service.jwt.decode") as mock_decode,
         ):
             mock_decode.return_value = {"sub": str(user_id), "type": "refresh"}  # Correct type
 
-            with patch("langflow.services.auth.utils.get_jwt_verification_key") as mock_verification_key:
+            with patch("earthmind.services.auth.utils.get_jwt_verification_key") as mock_verification_key:
                 mock_verification_key.return_value = "secret"
 
-                with patch("langflow.services.auth.service.get_user_by_id", new_callable=AsyncMock) as mock_get_user:
+                with patch("earthmind.services.auth.service.get_user_by_id", new_callable=AsyncMock) as mock_get_user:
                     mock_get_user.return_value = mock_user
 
                     with patch.object(auth_service, "create_user_tokens", new_callable=AsyncMock) as mock_create_tokens:
@@ -332,7 +332,7 @@ class TestRefreshTokenSecurity:
         """Test current refresh token SameSite settings (warns about security)."""
         from lfx.services.settings.auth import AuthSettings
 
-        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"LANGFLOW_CONFIG_DIR": temp_dir}):
+        with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"EARTHMIND_CONFIG_DIR": temp_dir}):
             auth_settings = AuthSettings(CONFIG_DIR=temp_dir)
             # Current behavior: refresh token uses 'none' (allows cross-site)
             assert auth_settings.REFRESH_SAME_SITE == "none"  # Current: allows cross-site (less secure)
@@ -351,8 +351,8 @@ class TestRefreshTokenSecurity:
     def test_refresh_token_samesite_setting_future_secure(self):
         """Test future secure refresh token SameSite settings (skip until v1.7)."""
         # Future secure behavior (uncomment in v1.7):
-        # from langflow.services.settings.auth import AuthSettings
-        # with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"LANGFLOW_CONFIG_DIR": temp_dir}):
+        # from earthmind.services.settings.auth import AuthSettings
+        # with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"EARTHMIND_CONFIG_DIR": temp_dir}):
         #     auth_settings = AuthSettings(CONFIG_DIR=temp_dir)
         #     assert auth_settings.REFRESH_SAME_SITE == "lax"  # Secure default
         #     assert auth_settings.ACCESS_SAME_SITE == "lax"
@@ -362,12 +362,12 @@ class TestCORSIntegration:
     """Integration tests for CORS with actual HTTP requests."""
 
     @pytest.mark.asyncio
-    @patch("langflow.main.add_sentry_middleware")  # Mock Sentry setup
+    @patch("earthmind.main.add_sentry_middleware")  # Mock Sentry setup
     async def test_cors_headers_in_response_current_behavior(self, mock_add_sentry_middleware):
         """Test that CORS headers are properly set in responses (current behavior)."""
         from fastapi.testclient import TestClient
 
-        with patch("langflow.main.get_settings_service") as mock_get_settings:
+        with patch("earthmind.main.get_settings_service") as mock_get_settings:
             mock_settings = MagicMock()
             mock_settings.settings.cors_origins = ["https://app.example.com"]
             mock_settings.settings.cors_allow_credentials = True
@@ -379,7 +379,7 @@ class TestCORSIntegration:
             mock_settings.settings.root_path = ""
             mock_get_settings.return_value = mock_settings
 
-            from langflow.main import create_app
+            from earthmind.main import create_app
 
             mock_add_sentry_middleware.return_value = None  # Use the mock
             app = create_app()
@@ -411,12 +411,12 @@ class TestCORSIntegration:
         # This test represents the behavior we want in v1.7 with secure defaults
 
     @pytest.mark.asyncio
-    @patch("langflow.main.add_sentry_middleware")  # Mock Sentry setup
+    @patch("earthmind.main.add_sentry_middleware")  # Mock Sentry setup
     async def test_cors_blocks_unauthorized_origin_current_behavior(self, mock_add_sentry_middleware):
         """Test that CORS blocks requests from unauthorized origins."""
         from fastapi.testclient import TestClient
 
-        with patch("langflow.main.get_settings_service") as mock_get_settings:
+        with patch("earthmind.main.get_settings_service") as mock_get_settings:
             mock_settings = MagicMock()
             mock_settings.settings.cors_origins = ["https://app.example.com"]
             mock_settings.settings.cors_allow_credentials = True
@@ -428,7 +428,7 @@ class TestCORSIntegration:
             mock_settings.settings.root_path = ""
             mock_get_settings.return_value = mock_settings
 
-            from langflow.main import create_app
+            from earthmind.main import create_app
 
             mock_add_sentry_middleware.return_value = None  # Use the mock
             app = create_app()
@@ -462,7 +462,7 @@ class TestFutureSecureCORSBehavior:
     def test_future_secure_defaults(self):
         """Test that v1.7 will have secure CORS defaults."""
         # Future secure behavior (uncomment in v1.7):
-        # with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"LANGFLOW_CONFIG_DIR": temp_dir}):
+        # with tempfile.TemporaryDirectory() as temp_dir, patch.dict(os.environ, {"EARTHMIND_CONFIG_DIR": temp_dir}):
         #     settings = Settings()
         #     # v1.7 secure defaults:
         #     assert settings.cors_origins == ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:7860"]
@@ -479,8 +479,8 @@ class TestFutureSecureCORSBehavior:
         #     patch.dict(
         #         os.environ,
         #         {
-        #             "LANGFLOW_CONFIG_DIR": temp_dir,
-        #             "LANGFLOW_CORS_ORIGINS": "*",
+        #             "EARTHMIND_CONFIG_DIR": temp_dir,
+        #             "EARTHMIND_CORS_ORIGINS": "*",
         #         },
         #     ),
         # ):

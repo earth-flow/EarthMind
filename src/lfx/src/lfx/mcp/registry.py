@@ -9,10 +9,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from lfx.mcp.client import LangflowClient
+    from lfx.mcp.client import EarthMindClient
 
 
-async def load_registry(client: LangflowClient) -> dict[str, dict]:
+async def load_registry(client: EarthMindClient) -> dict[str, dict]:
     """Fetch all component templates from the server.
 
     Returns a flat dict: {component_type: template_dict}.

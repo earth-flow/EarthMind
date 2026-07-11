@@ -5,7 +5,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 import pytest
-from langflow.services.authorization.service import LangflowAuthorizationService
+from earthmind.services.authorization.service import EarthMindAuthorizationService
 from lfx.services.authorization.base import BaseAuthorizationService
 from lfx.services.authorization.service import AuthorizationService as LfxDefaultService
 
@@ -33,9 +33,9 @@ async def test_lfx_default_service_does_not_support_cross_user_fetch():
 
 
 @pytest.mark.anyio
-async def test_langflow_pass_through_does_not_support_cross_user_fetch():
+async def test_earthmind_pass_through_does_not_support_cross_user_fetch():
     """OSS pass-through must NOT opt in — that is the strict-pass-through contract."""
-    service = LangflowAuthorizationService(_settings())
+    service = EarthMindAuthorizationService(_settings())
     assert await service.supports_cross_user_fetch() is False
 
 
@@ -43,7 +43,7 @@ async def test_langflow_pass_through_does_not_support_cross_user_fetch():
 async def test_subclass_can_opt_in():
     """Authorization plugins flip ``SUPPORTS_CROSS_USER_FETCH=True``; the base accepts it."""
 
-    class _Plugin(LangflowAuthorizationService):
+    class _Plugin(EarthMindAuthorizationService):
         SUPPORTS_CROSS_USER_FETCH = True
 
     service = _Plugin(_settings())

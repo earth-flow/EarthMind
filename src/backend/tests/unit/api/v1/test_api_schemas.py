@@ -2,10 +2,10 @@ from datetime import datetime, timezone
 
 from hypothesis import HealthCheck, example, given, settings
 from hypothesis import strategies as st
-from langflow.api.v1.schemas import ResultDataResponse, VertexBuildResponse
-from langflow.schema.schema import OutputValue
-from langflow.serialization import serialize
-from langflow.services.tracing.schema import Log
+from earthmind.api.v1.schemas import ResultDataResponse, VertexBuildResponse
+from earthmind.schema.schema import OutputValue
+from earthmind.serialization import serialize
+from earthmind.services.tracing.schema import Log
 from lfx.schema.properties import Usage
 from pydantic import BaseModel
 

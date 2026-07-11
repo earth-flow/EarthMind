@@ -1,5 +1,5 @@
-//Langflow Desktop Base URL
-export const baseURL = "";
+//EarthMind Desktop Base URL
+export const baseURL = import.meta.env.BACKEND_URL || "";
 
 export const customDefaultShortcuts = [
   {

@@ -1,14 +1,14 @@
 [project]
 name = "lfx-docling"
 version = "0.1.1"
-description = "Docling document processing components as a standalone Langflow Extension Bundle."
+description = "Docling document processing components as a standalone EarthMind Extension Bundle."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
 license = { text = "MIT" }
 authors = [
-    { name = "Langflow", email = "contact@langflow.org" },
+    { name = "EarthMind", email = "contact@earthmind.org" },
 ]
-keywords = ["langflow", "lfx", "extension", "bundle", "docling", "documents"]
+keywords = ["earthmind", "lfx", "extension", "bundle", "docling", "documents"]
 
 # Keep the full local converter and OCR stack optional. docling-core remains a
 # base dependency because the bundle exchanges DoclingDocument objects even when
@@ -41,11 +41,11 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/langflow-ai/langflow"
-Documentation = "https://docs.langflow.org/bundles-docling"
-Repository = "https://github.com/langflow-ai/langflow"
+Homepage = "https://github.com/earthmind-ai/earthmind"
+Documentation = "https://docs.earthmind.org/bundles-docling"
+Repository = "https://github.com/earthmind-ai/earthmind"
 
-[project.entry-points."langflow.extensions"]
+[project.entry-points."earthmind.extensions"]
 lfx-docling = "lfx_docling"
 
 [build-system]

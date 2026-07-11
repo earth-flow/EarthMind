@@ -151,7 +151,7 @@ def test_list_appears_in_extension_help(runner: CliRunner) -> None:
 
 
 def test_list_text_output_includes_interpreter_info(runner: CliRunner, tmp_path: Path) -> None:
-    """Operators hit the wrong-venv footgun when ``lfx`` and ``langflow run`` diverge.
+    """Operators hit the wrong-venv footgun when ``lfx`` and ``earthmind run`` diverge.
 
     Printing the interpreter at the top of the listing turns "my bundle didn't
     install" into a one-glance fix.

@@ -11,16 +11,16 @@ const isProduction = process.env.NODE_ENV === "production";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Langflow Documentation",
+  title: "EarthMind Documentation",
   tagline:
-    "Langflow is a low-code app builder for RAG and multi-agent AI applications.",
+    "EarthMind is a low-code app builder for RAG and multi-agent AI applications.",
   favicon: "img/favicon.ico",
-  url: "https://docs.langflow.org",
+  url: "https://docs.earthmind.org",
   baseUrl: process.env.BASE_URL ? process.env.BASE_URL : "/",
   onBrokenLinks: "throw",
   onBrokenAnchors: "warn",
-  organizationName: "langflow-ai",
-  projectName: "langflow",
+  organizationName: "earthmind-ai",
+  projectName: "earthmind",
   trailingSlash: false,
   staticDirectories: ["static"],
   markdown: {
@@ -178,7 +178,7 @@ const config = {
           },
           {
             id: "workflow",
-            spec: "openapi/langflow-workflows-openapi.json",
+            spec: "openapi/earthmind-workflows-openapi.json",
             route: "/api/workflow",
           },
         ],
@@ -189,15 +189,15 @@ const config = {
     ],
   ],
   plugins: [
-    // Alias so MDX can import code from the Langflow repo with !!raw-loader!@langflow/src/...
-    function langflowCodeImportPlugin(context) {
+    // Alias so MDX can import code from the EarthMind repo with !!raw-loader!@earthmind/src/...
+    function earthmindCodeImportPlugin(context) {
       return {
-        name: "langflow-code-import",
+        name: "earthmind-code-import",
         configureWebpack() {
           return {
             resolve: {
               alias: {
-                "@langflow": path.resolve(context.siteDir, ".."),
+                "@earthmind": path.resolve(context.siteDir, ".."),
               },
             },
           };
@@ -214,11 +214,11 @@ const config = {
           {
             to: "/",
             from: [
-              "/whats-new-a-new-chapter-langflow",
-              "/👋 Welcome-to-Langflow",
-              "/getting-started-welcome-to-langflow",
+              "/whats-new-a-new-chapter-earthmind",
+              "/👋 Welcome-to-EarthMind",
+              "/getting-started-welcome-to-earthmind",
               "/guides-new-to-llms",
-              "/about-langflow",
+              "/about-earthmind",
             ],
           },
           {
@@ -364,13 +364,13 @@ const config = {
           {
             to: "/bundles-google",
             from: [
-              "/integrations-setup-google-oauth-langflow",
+              "/integrations-setup-google-oauth-earthmind",
               "/integrations-google-big-query",
             ],
           },
           {
             to: "/bundles-vertexai",
-            from: "/integrations-setup-google-cloud-vertex-ai-langflow",
+            from: "/integrations-setup-google-cloud-vertex-ai-earthmind",
           },
           {
             to: "/develop-application",
@@ -452,7 +452,7 @@ const config = {
       navbar: {
         hideOnScroll: false,
         logo: {
-          alt: "Langflow",
+          alt: "EarthMind",
           src: "img/lf-docs-light.svg",
           srcDark: "img/lf-docs-dark.svg",
         },
@@ -464,7 +464,7 @@ const config = {
           // right
           {
             position: "right",
-            href: "https://github.com/langflow-ai/langflow",
+            href: "https://github.com/earthmind-ai/earthmind",
             className: "header-github-link",
             target: "_blank",
             rel: null,
@@ -474,11 +474,11 @@ const config = {
             'data-channel': 'docs',
             'data-element-id': 'social-github',
             'data-namespace': 'header',
-            'data-platform-title': 'Langflow'
+            'data-platform-title': 'EarthMind'
           },
           {
             position: "right",
-            href: "https://twitter.com/langflow_ai",
+            href: "https://twitter.com/earthmind_ai",
             className: "header-twitter-link",
             target: "_blank",
             rel: null,
@@ -488,7 +488,7 @@ const config = {
             'data-channel': 'docs',
             'data-element-id': 'social-twitter',
             'data-namespace': 'header',
-            'data-platform-title': 'Langflow'
+            'data-platform-title': 'EarthMind'
           },
           {
             position: "right",
@@ -502,7 +502,7 @@ const config = {
             'data-channel': 'docs',
             'data-element-id': 'social-discord',
             'data-namespace': 'header',
-            'data-platform-title': 'Langflow'
+            'data-platform-title': 'EarthMind'
           },
         ],
       },
@@ -537,7 +537,7 @@ const config = {
             items: [
               {
                 html: `<div class="footer-links">
-                  <span>© ${new Date().getFullYear()} Langflow</span>
+                  <span>© ${new Date().getFullYear()} EarthMind</span>
                   <span id="preferenceCenterContainer"> ·&nbsp; <a href="#" onclick="if(typeof window !== 'undefined' && window.truste && window.truste.eu && window.truste.eu.clickListener) { window.truste.eu.clickListener(); } return false;" style="cursor: pointer;">Manage Privacy Choices</a></span>
                   </div>`,
               },
@@ -549,7 +549,7 @@ const config = {
         appId: "UZK6BDPCVY",
         // public key, safe to commit
         apiKey: "adbd7686dceb1cd510d5ce20d04bf74c",
-        indexName: "langflow",
+        indexName: "earthmind",
         contextualSearch: true,
         searchParameters: {},
         searchPagePath: "search",

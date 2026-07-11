@@ -7,7 +7,7 @@ const projectPath = process.env.PROJECT_IMPORT_FILE || defaultProjectZip;
 const projectBuf = fs.readFileSync(projectPath);
 const projectName = path.basename(projectPath);
 
-const url = `${process.env.LANGFLOW_URL ?? ""}/api/v1/projects/upload/`;
+const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/projects/upload/`;
 
 const formData = new FormData();
 formData.append("file", new Blob([projectBuf], { type: "application/zip" }), projectName);
@@ -16,7 +16,7 @@ const options = {
   method: "POST",
   headers: {
     accept: "application/json",
-    "x-api-key": `${process.env.LANGFLOW_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
   },
   body: formData,
 };

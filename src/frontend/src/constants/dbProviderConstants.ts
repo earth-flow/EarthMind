@@ -3,7 +3,7 @@ import type { GlobalVariable } from "@/types/global_variables";
 // The stored value (env-var key) intentionally keeps its legacy name so
 // existing user installations continue to read the same global variable
 // after the UI rename from "Knowledge Backends" to "DB Providers".
-export const ACTIVE_DB_PROVIDER_VARIABLE = "LANGFLOW_KNOWLEDGE_BACKEND";
+export const ACTIVE_DB_PROVIDER_VARIABLE = "EARTHMIND_KNOWLEDGE_BACKEND";
 
 export const OPENSEARCH_VARIABLES = {
   URL: "OPENSEARCH_URL",
@@ -26,17 +26,24 @@ export const CHROMA_CLOUD_VARIABLES = {
   REGION: "CHROMA_REGION",
 } as const;
 
+export const MILVUS_VARIABLES = {
+  URI: "MILVUS_URI",
+  TOKEN: "MILVUS_TOKEN", // pragma: allowlist secret
+  COLLECTION_NAME: "MILVUS_COLLECTION_NAME",
+} as const;
+
 export type DBProviderId =
   | "chroma"
   | "chroma_cloud"
   | "opensearch"
+  | "milvus"
   | "astra"
   | "mongodb"
   | "postgres";
 
 export type AvailableDBProviderId = Extract<
   DBProviderId,
-  "chroma" | "chroma_cloud" | "opensearch"
+  "chroma" | "chroma_cloud" | "opensearch" | "milvus"
 >;
 
 export interface DBProviderTextField {
@@ -162,7 +169,7 @@ export const DB_PROVIDER_OPTIONS: DBProviderOption[] = [
         variableKey: OPENSEARCH_VARIABLES.INDEX_NAME,
         required: true,
         isSecret: false,
-        placeholder: "langflow_knowledge",
+        placeholder: "earthmind_knowledge",
       },
       {
         // LangChain's OpenSearchVectorSearch stores KB embeddings under
@@ -199,6 +206,37 @@ export const DB_PROVIDER_OPTIONS: DBProviderOption[] = [
         helperText:
           "Disable for self-signed certificates (the default OpenSearch container ships one).",
         defaultValue: true,
+      },
+    ],
+  },
+  {
+    id: "milvus",
+    label: "Milvus / Zilliz",
+    description:
+      "Milvus or Zilliz Cloud serverless vector database. Connect via endpoint URI and token.",
+    icon: "Milvus",
+    status: "available",
+    configFields: [
+      {
+        label: "Endpoint URI",
+        variableKey: MILVUS_VARIABLES.URI,
+        required: true,
+        isSecret: false,
+        placeholder: "https://in03-xxxx.serverless.gcp-us-west1.cloud.zilliz.com",
+      },
+      {
+        label: "Token",
+        variableKey: MILVUS_VARIABLES.TOKEN,
+        required: true,
+        isSecret: true,
+        placeholder: "db-…",
+      },
+      {
+        label: "Default collection name",
+        variableKey: MILVUS_VARIABLES.COLLECTION_NAME,
+        required: true,
+        isSecret: false,
+        placeholder: "earthmind_knowledge",
       },
     ],
   },
@@ -276,6 +314,7 @@ export function getActiveDBProvider(
   );
   if (configuredProvider === "opensearch") return "opensearch";
   if (configuredProvider === "chroma_cloud") return "chroma_cloud";
+  if (configuredProvider === "milvus") return "milvus";
   return "chroma";
 }
 
@@ -303,6 +342,16 @@ export function getDBProviderConfig(
       cloud_region:
         getGlobalVariableValue(variables, CHROMA_CLOUD_VARIABLES.REGION) ??
         "us-east-1",
+    };
+  }
+
+  if (providerType === "milvus") {
+    return {
+      uri_variable: MILVUS_VARIABLES.URI,
+      token_variable: MILVUS_VARIABLES.TOKEN,
+      collection_name:
+        getGlobalVariableValue(variables, MILVUS_VARIABLES.COLLECTION_NAME) ??
+        "",
     };
   }
 
@@ -358,6 +407,7 @@ export function resolveUIBackendType(
   backendConfig: Record<string, unknown> | undefined,
 ): AvailableDBProviderId {
   if (backendType === "opensearch") return "opensearch";
+  if (backendType === "milvus") return "milvus";
   // Already a frontend UI ID — pass through directly.
   if (backendType === "chroma_cloud") return "chroma_cloud";
   // Server always stores "chroma" for both modes; mode discriminates.

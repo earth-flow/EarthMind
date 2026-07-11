@@ -2,8 +2,8 @@ import os
 
 import requests
 
-base = os.environ.get("LANGFLOW_URL", "")
-api_key = os.environ.get("LANGFLOW_API_KEY", "")
+base = os.environ.get("EARTHMIND_URL", "")
+api_key = os.environ.get("EARTHMIND_API_KEY", "")
 flow_id = os.environ.get("FLOW_ID", "")
 
 headers = {"accept": "application/json", "x-api-key": api_key}

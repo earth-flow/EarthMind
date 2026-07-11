@@ -18,8 +18,8 @@ load_dotenv()
 BASE_URL = "https://g11n-pipeline-api.straker.global/translate/rest"
 GP_USER_ID = os.getenv("GP_ADMIN_USER_ID")
 GP_PASSWORD = os.getenv("GP_ADMIN_PASSWORD")
-GP_INSTANCE = os.getenv("GP_INSTANCE", "langflow-test")
-GP_BUNDLE = os.getenv("GP_BUNDLE", "langflow-ui")
+GP_INSTANCE = os.getenv("GP_INSTANCE", "earthmind-test")
+GP_BUNDLE = os.getenv("GP_BUNDLE", "earthmind-ui")
 TARGET_LANGS = ["fr", "ja", "es", "de", "pt", "zh-Hans"]
 REQUEST_TIMEOUT = 30
 VERIFY_SSL = os.getenv("GP_VERIFY_SSL", "true").lower() != "false"

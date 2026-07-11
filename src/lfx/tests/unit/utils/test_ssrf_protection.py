@@ -409,7 +409,7 @@ class TestIntegrationScenarios:
 
             # Should all pass - mocked as public IPs
             validate_url_for_ssrf("https://api.openai.com/v1/chat/completions", warn_only=False)
-            validate_url_for_ssrf("https://api.github.com/repos/langflow-ai/langflow", warn_only=False)
+            validate_url_for_ssrf("https://api.github.com/repos/earthmind-ai/earthmind", warn_only=False)
             validate_url_for_ssrf("https://www.googleapis.com/auth/cloud-platform", warn_only=False)
 
     def test_docker_internal_networking_requires_allowlist(self):

@@ -221,7 +221,7 @@ class TestExplicitVarNameDbPrecedence:
 class TestGetAllVariablesForProviderDbFallback:
     """Tests for get_all_variables_for_provider when DB lookup yields nothing.
 
-    Bug: Langflow Assistant rejects requests with
+    Bug: EarthMind Assistant rejects requests with
     `400 Missing required configuration for OpenAI: OPENAI_API_KEY` even when
     the env var is set, whenever a Variable row exists in the DB but its
     ciphertext was encrypted with a different SECRET_KEY (Fernet

@@ -1,4 +1,4 @@
-from langflow.io.schema import create_input_schema_from_dict
+from earthmind.io.schema import create_input_schema_from_dict
 from lfx.schema.dotdict import dotdict
 
 

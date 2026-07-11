@@ -1,4 +1,4 @@
-"""Async HTTP client for Langflow REST API.
+"""Async HTTP client for EarthMind REST API.
 
 Adapted from the CLI's sync Backend class, using httpx.AsyncClient
 for non-blocking operations inside the MCP server.
@@ -20,8 +20,8 @@ if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
 
-class LangflowClient:
-    """Async HTTP client for Langflow's REST API.
+class EarthMindClient:
+    """Async HTTP client for EarthMind's REST API.
 
     Auth sends both headers on every request:
     - Authorization: Bearer <access_token or api_key>
@@ -36,8 +36,8 @@ class LangflowClient:
         api_key: str | None = None,
         access_token: str | None = None,
     ):
-        self.server_url = (server_url or os.environ.get("LANGFLOW_SERVER_URL", "http://localhost:7860")).rstrip("/")
-        self.api_key = api_key or os.environ.get("LANGFLOW_API_KEY")
+        self.server_url = (server_url or os.environ.get("EARTHMIND_SERVER_URL", "http://10.171.205.153:7860")).rstrip("/")
+        self.api_key = api_key or os.environ.get("EARTHMIND_API_KEY")
         self.access_token = access_token
         self._http: httpx.AsyncClient | None = None
         self._lock = asyncio.Lock()

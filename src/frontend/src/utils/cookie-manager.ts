@@ -1,9 +1,9 @@
 import { Cookies } from "react-cookie";
 import {
-  LANGFLOW_ACCESS_TOKEN,
-  LANGFLOW_API_TOKEN,
-  LANGFLOW_AUTO_LOGIN_OPTION,
-  LANGFLOW_REFRESH_TOKEN,
+  EARTHMIND_ACCESS_TOKEN,
+  EARTHMIND_API_TOKEN,
+  EARTHMIND_AUTO_LOGIN_OPTION,
+  EARTHMIND_REFRESH_TOKEN,
 } from "@/constants/constants";
 
 class CookieManager {
@@ -69,10 +69,10 @@ class CookieManager {
   }
 
   public clearAuthCookies(): void {
-    this.remove(LANGFLOW_ACCESS_TOKEN);
-    this.remove(LANGFLOW_API_TOKEN);
-    this.remove(LANGFLOW_REFRESH_TOKEN);
-    this.remove(LANGFLOW_AUTO_LOGIN_OPTION);
+    this.remove(EARTHMIND_ACCESS_TOKEN);
+    this.remove(EARTHMIND_API_TOKEN);
+    this.remove(EARTHMIND_REFRESH_TOKEN);
+    this.remove(EARTHMIND_AUTO_LOGIN_OPTION);
   }
 }
 

@@ -8,7 +8,7 @@ from lfx.schema.message import Message
 class TextInputComponent(TextComponent):
     display_name = "Text Input"
     description = "Get user text inputs."
-    documentation: str = "https://docs.langflow.org/text-input-and-output"
+    documentation: str = "https://docs.earthmind.org/text-input-and-output"
     icon = "type"
     name = "TextInput"
     legacy = True

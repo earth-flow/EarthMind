@@ -1,5 +1,5 @@
 import pytest
-from langflow.services.tracing.arize_phoenix import ArizePhoenixTracer
+from earthmind.services.tracing.arize_phoenix import ArizePhoenixTracer
 from lfx.schema.data import Data
 
 

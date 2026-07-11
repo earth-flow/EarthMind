@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Langflow Load Test Runner
+"""EarthMind Load Test Runner
 
-This script provides an easy way to run Langflow load tests.
-For first-time setup, use setup_langflow_test.py to create test credentials.
+This script provides an easy way to run EarthMind load tests.
+For first-time setup, use setup_earthmind_test.py to create test credentials.
 
 Usage:
     # First time setup (run once):
-    python setup_langflow_test.py --interactive
+    python setup_earthmind_test.py --interactive
 
     # Then run load tests:
     python run_load_test.py --help
@@ -40,8 +40,8 @@ def run_command(cmd, check=True, capture_output=False):
             sys.exit(1)
 
 
-def check_langflow_running(host):
-    """Check if Langflow is already running."""
+def check_earthmind_running(host):
+    """Check if EarthMind is already running."""
     try:
         import httpx
 
@@ -122,34 +122,34 @@ def test_single_request(host):
         return False
 
 
-def wait_for_langflow(host, timeout=60):
-    """Wait for Langflow to be ready."""
-    print(f"Waiting for Langflow to be ready at {host}...")
+def wait_for_earthmind(host, timeout=60):
+    """Wait for EarthMind to be ready."""
+    print(f"Waiting for EarthMind to be ready at {host}...")
     start_time = time.time()
 
     while time.time() - start_time < timeout:
-        if check_langflow_running(host):
-            print("✅ Langflow is ready!")
+        if check_earthmind_running(host):
+            print("✅ EarthMind is ready!")
             return True
         time.sleep(2)
 
-    print(f"❌ Langflow did not start within {timeout} seconds")
+    print(f"❌ EarthMind did not start within {timeout} seconds")
     return False
 
 
-def start_langflow(host, port):
-    """Start Langflow server if not already running."""
-    if check_langflow_running(host):
-        print(f"✅ Langflow is already running at {host}")
+def start_earthmind(host, port):
+    """Start EarthMind server if not already running."""
+    if check_earthmind_running(host):
+        print(f"✅ EarthMind is already running at {host}")
         return None
 
-    print(f"Starting Langflow server on port {port}...")
+    print(f"Starting EarthMind server on port {port}...")
 
-    # Start Langflow in the background
+    # Start EarthMind in the background
     cmd = [
         sys.executable,
         "-m",
-        "langflow",
+        "earthmind",
         "run",
         "--host",
         "0.0.0.0",
@@ -163,7 +163,7 @@ def start_langflow(host, port):
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     # Wait for it to be ready
-    if wait_for_langflow(host, timeout=60):
+    if wait_for_earthmind(host, timeout=60):
         return process
     process.terminate()
     return None
@@ -171,17 +171,17 @@ def start_langflow(host, port):
 
 def run_locust_test(args):
     """Run the Locust load test."""
-    locust_file = Path(__file__).parent / "langflow_locustfile.py"
+    locust_file = Path(__file__).parent / "earthmind_locustfile.py"
 
     # Check for required environment variables
     if not os.getenv("API_KEY"):
         print("❌ API_KEY environment variable not found!")
-        print("Run langflow_setup_test.py first to create test credentials.")
+        print("Run earthmind_setup_test.py first to create test credentials.")
         sys.exit(1)
 
     if not os.getenv("FLOW_ID"):
         print("❌ FLOW_ID environment variable not found!")
-        print("Run langflow_setup_test.py first to create test credentials.")
+        print("Run earthmind_setup_test.py first to create test credentials.")
         sys.exit(1)
 
     cmd = [
@@ -198,7 +198,7 @@ def run_locust_test(args):
         env["SHAPE"] = args.shape
 
     # Add other environment variables
-    env["LANGFLOW_HOST"] = args.host
+    env["EARTHMIND_HOST"] = args.host
 
     if args.headless:
         cmd.extend(
@@ -240,7 +240,7 @@ def run_locust_test(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run Langflow load tests with automatic setup",
+        description="Run EarthMind load tests with automatic setup",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -253,25 +253,25 @@ Examples:
   # Run with specific load shape
   python run_load_test.py --shape ramp100 --headless --users 100 --duration 180
 
-  # Run against existing Langflow instance
-  python run_load_test.py --host http://localhost:8000 --no-start-langflow
+  # Run against existing EarthMind instance
+  python run_load_test.py --host http://localhost:8000 --no-start-earthmind
 
   # Save results to CSV
   python run_load_test.py --headless --csv results --users 25 --duration 60
         """,
     )
 
-    # Langflow options
+    # EarthMind options
     parser.add_argument(
         "--host",
         default="http://localhost:7860",
-        help="Langflow host URL (default: http://localhost:7860, use https:// for remote instances)",
+        help="EarthMind host URL (default: http://localhost:7860, use https:// for remote instances)",
     )
-    parser.add_argument("--port", type=int, default=7860, help="Port to start Langflow on (default: 7860)")
+    parser.add_argument("--port", type=int, default=7860, help="Port to start EarthMind on (default: 7860)")
     parser.add_argument(
-        "--no-start-langflow",
+        "--no-start-earthmind",
         action="store_true",
-        help="Don't start Langflow automatically (assume it's already running)",
+        help="Don't start EarthMind automatically (assume it's already running)",
     )
 
     # Load test options
@@ -296,31 +296,31 @@ Examples:
         print("Install with: pip install locust httpx")
         sys.exit(1)
 
-    langflow_process = None
+    earthmind_process = None
 
     try:
-        # Start Langflow if needed
-        if not args.no_start_langflow:
+        # Start EarthMind if needed
+        if not args.no_start_earthmind:
             if args.host.startswith("https://") or not args.host.startswith("http://localhost"):
                 print(f"⚠️  Remote host detected: {args.host}")
-                print("   For remote instances, use --no-start-langflow flag")
-                print("   Example: --host https://your-remote-instance.com --no-start-langflow")
+                print("   For remote instances, use --no-start-earthmind flag")
+                print("   Example: --host https://your-remote-instance.com --no-start-earthmind")
                 sys.exit(1)
 
-            langflow_process = start_langflow(args.host, args.port)
-            if not langflow_process:
-                print("❌ Failed to start Langflow")
+            earthmind_process = start_earthmind(args.host, args.port)
+            if not earthmind_process:
+                print("❌ Failed to start EarthMind")
                 sys.exit(1)
         # Just check if it's running
-        elif not check_langflow_running(args.host):
-            print(f"❌ Langflow is not running at {args.host}")
+        elif not check_earthmind_running(args.host):
+            print(f"❌ EarthMind is not running at {args.host}")
             if args.host.startswith("https://"):
-                print("   Make sure your remote Langflow instance is accessible")
+                print("   Make sure your remote EarthMind instance is accessible")
             else:
-                print("Either start Langflow manually or remove --no-start-langflow flag")
+                print("Either start EarthMind manually or remove --no-start-earthmind flag")
             sys.exit(1)
         else:
-            print(f"🔗 Using existing Langflow instance at {args.host}")
+            print(f"🔗 Using existing EarthMind instance at {args.host}")
             if args.host.startswith("https://"):
                 print("   ✅ Remote instance mode")
 
@@ -338,15 +338,15 @@ Examples:
         print(f"❌ Error: {e}")
         sys.exit(1)
     finally:
-        # Clean up Langflow process
-        if langflow_process:
-            print("\nStopping Langflow server...")
-            langflow_process.terminate()
+        # Clean up EarthMind process
+        if earthmind_process:
+            print("\nStopping EarthMind server...")
+            earthmind_process.terminate()
             try:
-                langflow_process.wait(timeout=10)
+                earthmind_process.wait(timeout=10)
             except subprocess.TimeoutExpired:
-                langflow_process.kill()
-            print("✅ Langflow server stopped")
+                earthmind_process.kill()
+            print("✅ EarthMind server stopped")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
-"""Langflow API Locust Load Testing File.
+"""EarthMind API Locust Load Testing File.
 
-Comprehensive load testing for Langflow API with multiple user behaviors and performance analysis.
+Comprehensive load testing for EarthMind API with multiple user behaviors and performance analysis.
 Based on production-ready patterns with proper error handling, metrics tracking, and reporting.
 
 Usage:
@@ -17,7 +17,7 @@ Usage:
     locust -f locustfile.py --host http://localhost:7860 --worker --master-host=localhost
 
 Environment Variables:
-    - LANGFLOW_HOST: Base URL for the Langflow server (default: http://localhost:7860)
+    - EARTHMIND_HOST: Base URL for the EarthMind server (default: http://localhost:7860)
     - FLOW_ID: Flow ID to test (required)
     - API_KEY: API key for authentication (required)
     - MIN_WAIT: Minimum wait time between requests in ms (default: 2000)
@@ -46,7 +46,7 @@ TEST_MESSAGES = {
     "medium": "I need help understanding how machine learning works in this context.",
     "complex": "Please analyze this data: " + "x" * 500 + " and provide detailed insights.",
     "large": "Here's a complex scenario: " + "data " * 1000,
-    "realistic": "Hey, Could you check https://docs.langflow.org for me? Later, could you calculate 1390 / 192 ?",
+    "realistic": "Hey, Could you check https://docs.earthmind.org for me? Later, could you calculate 1390 / 192 ?",
 }
 
 # Weighted message distribution for realistic load
@@ -54,21 +54,21 @@ MESSAGE_WEIGHTS = [("simple", 40), ("realistic", 25), ("medium", 20), ("minimal"
 
 # Enhanced error logging setup
 ERROR_LOG_FILE = None
-LANGFLOW_LOG_FILE = None
+EARTHMIND_LOG_FILE = None
 DETAILED_ERRORS = []
 
 
 def setup_error_logging():
     """Set up detailed error logging for the load test."""
-    global ERROR_LOG_FILE, LANGFLOW_LOG_FILE
+    global ERROR_LOG_FILE, EARTHMIND_LOG_FILE
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Create detailed error log
-    ERROR_LOG_FILE = f"langflow_load_test_detailed_errors_{timestamp}.log"
+    ERROR_LOG_FILE = f"earthmind_load_test_detailed_errors_{timestamp}.log"
 
     # Set up error logger
-    error_logger = logging.getLogger("langflow_load_test_errors")
+    error_logger = logging.getLogger("earthmind_load_test_errors")
     error_logger.setLevel(logging.DEBUG)
 
     # Create file handler
@@ -81,20 +81,20 @@ def setup_error_logging():
 
     error_logger.addHandler(error_handler)
 
-    # Try to capture Langflow logs
-    langflow_log_paths = ["langflow.log", "logs/langflow.log", "../../../langflow.log", "../../../../langflow.log"]
+    # Try to capture EarthMind logs
+    earthmind_log_paths = ["earthmind.log", "logs/earthmind.log", "../../../earthmind.log", "../../../../earthmind.log"]
 
-    for log_path in langflow_log_paths:
+    for log_path in earthmind_log_paths:
         if Path(log_path).exists():
-            LANGFLOW_LOG_FILE = log_path
+            EARTHMIND_LOG_FILE = log_path
             break
 
     print("📝 Error logging setup:")
     print(f"   • Detailed errors: {ERROR_LOG_FILE}")
-    if LANGFLOW_LOG_FILE:
-        print(f"   • Langflow logs: {LANGFLOW_LOG_FILE}")
+    if EARTHMIND_LOG_FILE:
+        print(f"   • EarthMind logs: {EARTHMIND_LOG_FILE}")
     else:
-        print("   • Langflow logs: Not found (will monitor common locations)")
+        print("   • EarthMind logs: Not found (will monitor common locations)")
 
 
 def log_detailed_error(
@@ -103,7 +103,7 @@ def log_detailed_error(
     """Log detailed error information."""
     global DETAILED_ERRORS
 
-    error_logger = logging.getLogger("langflow_load_test_errors")
+    error_logger = logging.getLogger("earthmind_load_test_errors")
 
     error_info = {
         "timestamp": datetime.now().isoformat(),
@@ -140,7 +140,7 @@ def save_error_summary():
         return
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    summary_file = f"langflow_load_test_error_summary_{timestamp}.json"
+    summary_file = f"earthmind_load_test_error_summary_{timestamp}.json"
 
     # Group errors by type
     error_summary = {}
@@ -174,32 +174,32 @@ def save_error_summary():
     print(f"📊 Error summary saved: {summary_file}")
 
 
-def capture_langflow_logs():
-    """Capture recent Langflow logs if available."""
-    if not LANGFLOW_LOG_FILE or not Path(LANGFLOW_LOG_FILE).exists():
+def capture_earthmind_logs():
+    """Capture recent EarthMind logs if available."""
+    if not EARTHMIND_LOG_FILE or not Path(EARTHMIND_LOG_FILE).exists():
         return None
 
     try:
-        # Read last 1000 lines of Langflow log
-        with open(LANGFLOW_LOG_FILE) as f:
+        # Read last 1000 lines of EarthMind log
+        with open(EARTHMIND_LOG_FILE) as f:
             lines = f.readlines()
             recent_lines = lines[-1000:] if len(lines) > 1000 else lines
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        captured_log_file = f"langflow_server_logs_during_test_{timestamp}.log"
+        captured_log_file = f"earthmind_server_logs_during_test_{timestamp}.log"
 
         with open(captured_log_file, "w") as f:
-            f.write("# Langflow server logs captured during load test\n")
-            f.write(f"# Original log file: {LANGFLOW_LOG_FILE}\n")
+            f.write("# EarthMind server logs captured during load test\n")
+            f.write(f"# Original log file: {EARTHMIND_LOG_FILE}\n")
             f.write(f"# Capture time: {datetime.now().isoformat()}\n")
             f.write(f"# Lines captured: {len(recent_lines)}\n\n")
             f.writelines(recent_lines)
 
-        print(f"📋 Langflow logs captured: {captured_log_file}")
+        print(f"📋 EarthMind logs captured: {captured_log_file}")
         return captured_log_file
 
     except Exception as e:
-        print(f"⚠️  Could not capture Langflow logs: {e}")
+        print(f"⚠️  Could not capture EarthMind logs: {e}")
         return None
 
 
@@ -323,7 +323,7 @@ def on_test_stop(environment, **_kwargs):
         issues.append(f"p95 {p95 / 1000:.1f}s")
 
     print(f"\n{'=' * 60}")
-    print(f"LANGFLOW API LOAD TEST RESULTS - GRADE: {grade}")
+    print(f"EARTHMIND API LOAD TEST RESULTS - GRADE: {grade}")
     print(f"{'=' * 60}")
     print(f"Requests: {stats.num_requests:,} | Failures: {stats.num_failures:,} ({fail_ratio:.1%})")
     print(f"Response Times: p50={p50 / 1000:.2f}s p95={p95 / 1000:.2f}s p99={p99 / 1000:.2f}s")
@@ -345,8 +345,8 @@ def on_test_stop(environment, **_kwargs):
     # Save detailed error information
     save_error_summary()
 
-    # Capture Langflow logs
-    capture_langflow_logs()
+    # Capture EarthMind logs
+    capture_earthmind_logs()
 
     # Set exit code for CI/CD
     if fail_ratio > 0.01:
@@ -356,14 +356,14 @@ def on_test_stop(environment, **_kwargs):
     _env_bags.pop(environment, None)
 
 
-class BaseLangflowUser(FastHttpUser):
-    """Base class for all Langflow API load testing user types."""
+class BaseEarthMindUser(FastHttpUser):
+    """Base class for all EarthMind API load testing user types."""
 
     abstract = True
     REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT", "30.0"))
 
     # Use the host provided by environment variable or default
-    host = os.getenv("LANGFLOW_HOST", "http://localhost:7860")
+    host = os.getenv("EARTHMIND_HOST", "http://localhost:7860")
 
     def on_start(self):
         """Called when a user starts before any task is scheduled."""
@@ -372,10 +372,10 @@ class BaseLangflowUser(FastHttpUser):
         self.flow_id = os.getenv("FLOW_ID")
 
         if not self.api_key:
-            raise ValueError("API_KEY environment variable is required. Run setup_langflow_test.py first.")
+            raise ValueError("API_KEY environment variable is required. Run setup_earthmind_test.py first.")
 
         if not self.flow_id:
-            raise ValueError("FLOW_ID environment variable is required. Run setup_langflow_test.py first.")
+            raise ValueError("FLOW_ID environment variable is required. Run setup_earthmind_test.py first.")
 
         self.session_id = f"locust_{self.__class__.__name__}_{id(self)}_{int(time.time())}"
         self.request_count = 0
@@ -389,7 +389,7 @@ class BaseLangflowUser(FastHttpUser):
         """Make a request with proper error handling and timing."""
         message = TEST_MESSAGES.get(message_type, TEST_MESSAGES["simple"])
 
-        # Langflow API payload structure
+        # EarthMind API payload structure
         payload = {
             "input_value": message,
             "output_type": "chat",
@@ -426,7 +426,7 @@ class BaseLangflowUser(FastHttpUser):
                 if response.status_code == 200:
                     try:
                         data = response.json()
-                        # Langflow API success check - look for outputs
+                        # EarthMind API success check - look for outputs
                         if data.get("outputs"):
                             return response.success()
                         # Check for error messages in the response
@@ -504,7 +504,7 @@ class BaseLangflowUser(FastHttpUser):
             raise
 
 
-class NormalUser(BaseLangflowUser):
+class NormalUser(BaseEarthMindUser):
     """Normal user simulating typical API interactions."""
 
     weight = 3
@@ -529,7 +529,7 @@ class NormalUser(BaseLangflowUser):
         self.make_request(message_type="complex")
 
 
-class AggressiveUser(BaseLangflowUser):
+class AggressiveUser(BaseEarthMindUser):
     """Aggressive user with minimal wait times."""
 
     weight = 3
@@ -541,7 +541,7 @@ class AggressiveUser(BaseLangflowUser):
         self.make_request(message_type="simple", tag_suffix="-rapid")
 
 
-class SustainedLoadUser(BaseLangflowUser):
+class SustainedLoadUser(BaseEarthMindUser):
     """Maintains exactly 1 request/second for steady load testing."""
 
     weight = 3
@@ -553,7 +553,7 @@ class SustainedLoadUser(BaseLangflowUser):
         self.make_request(message_type="medium", tag_suffix="-steady")
 
 
-class TailLatencyHunter(BaseLangflowUser):
+class TailLatencyHunter(BaseEarthMindUser):
     """Mixed workload designed to expose tail latency issues."""
 
     weight = 3
@@ -568,7 +568,7 @@ class TailLatencyHunter(BaseLangflowUser):
             self.make_request(message_type="large", tag_suffix="-tail-heavy")
 
 
-class ScalabilityTestUser(BaseLangflowUser):
+class ScalabilityTestUser(BaseEarthMindUser):
     """Tests for scalability limits."""
 
     weight = 3
@@ -580,7 +580,7 @@ class ScalabilityTestUser(BaseLangflowUser):
         self.make_request(message_type="medium", tag_suffix="-scale")
 
 
-class BurstUser(BaseLangflowUser):
+class BurstUser(BaseEarthMindUser):
     """Sends bursts of requests to test connection pooling."""
 
     weight = 3

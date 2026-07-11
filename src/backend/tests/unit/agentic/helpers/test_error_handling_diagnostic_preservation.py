@@ -19,7 +19,7 @@ error keeps the meaningful detail.
 
 from __future__ import annotations
 
-from langflow.agentic.helpers.error_handling import (
+from earthmind.agentic.helpers.error_handling import (
     MAX_ERROR_MESSAGE_LENGTH,
     extract_friendly_error,
 )

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { InputFieldType } from "@/types/api";
 import GenericNode from "../index";
 
 const mockUpdateNodeInternals = jest.fn();
@@ -288,8 +289,9 @@ describe("GenericNode dismissed update recovery", () => {
           node: {
             display_name: "Prompt",
             description: "Prompt node",
+            documentation: "",
             template: {
-              code: { value: "old_code" },
+              code: { type: "code", value: "old_code", required: false, list: false, show: false, readonly: false } as InputFieldType,
             },
             outputs: [],
           },

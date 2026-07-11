@@ -1,4 +1,4 @@
-"""IBM Db2 Vector Store Component for Langflow."""
+"""IBM Db2 Vector Store Component for EarthMind."""
 
 import contextlib
 from pathlib import Path
@@ -36,7 +36,7 @@ class DB2VectorStoreComponent(LCVectorStoreComponent):
         StrInput(
             name="collection_name",
             display_name="Table Name",
-            value="LANGFLOW_VECTORS",
+            value="EARTHMIND_VECTORS",
             required=True,
             info="Name of the DB2 table to store vectors (will be created if it doesn't exist)",
         ),

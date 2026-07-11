@@ -7,7 +7,7 @@ from __future__ import annotations
 
 
 def empty_flow(name: str = "Untitled Flow", description: str = "") -> dict:
-    """Create a minimal valid Langflow flow structure."""
+    """Create a minimal valid EarthMind flow structure."""
     return {
         "name": name,
         "description": description,

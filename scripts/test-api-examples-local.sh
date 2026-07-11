@@ -4,19 +4,19 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-HOST="${LANGFLOW_HOST:-127.0.0.1}"
-PORT="${LANGFLOW_PORT:-7860}"
+HOST="${EARTHMIND_HOST:-127.0.0.1}"
+PORT="${EARTHMIND_PORT:-7860}"
 SUITES="${SUITES:-curl,python,javascript}"
 EXECUTE_MODE="${EXECUTE_MODE:-true}"
 
-export LANGFLOW_AUTO_LOGIN="${LANGFLOW_AUTO_LOGIN:-true}"
+export EARTHMIND_AUTO_LOGIN="${EARTHMIND_AUTO_LOGIN:-true}"
 # /api/v2/workflows (docs Python workflow examples) requires this. Always enable for this
-# harness so a user-wide LANGFLOW_DEVELOPER_API_ENABLED=false does not break the suite.
-export LANGFLOW_DEVELOPER_API_ENABLED=true
+# harness so a user-wide EARTHMIND_DEVELOPER_API_ENABLED=false does not break the suite.
+export EARTHMIND_DEVELOPER_API_ENABLED=true
 
 cleanup() {
-  if [[ -f /tmp/langflow-server.pid ]]; then
-    SERVER_PID="$(< /tmp/langflow-server.pid)"
+  if [[ -f /tmp/earthmind-server.pid ]]; then
+    SERVER_PID="$(< /tmp/earthmind-server.pid)"
     if kill -0 "$SERVER_PID" 2>/dev/null; then
       kill "$SERVER_PID" || true
       for _ in {1..15}; do
@@ -27,12 +27,12 @@ cleanup() {
       done
       kill -9 "$SERVER_PID" 2>/dev/null || true
     fi
-    rm -f /tmp/langflow-server.pid
+    rm -f /tmp/earthmind-server.pid
   fi
 }
 trap cleanup EXIT
 
-# If PORT is already taken, Langflow may bind to PORT+1 while this script still uses PORT for
+# If PORT is already taken, EarthMind may bind to PORT+1 while this script still uses PORT for
 # curl and examples — you then hit the wrong server (e.g. 403 on /api/v2/workflows without dev API).
 port_is_in_use() {
   local host="$1" port="$2"
@@ -71,16 +71,16 @@ PY
 REQUESTED_PORT="$PORT"
 if port_is_in_use "$HOST" "$PORT"; then
   PORT="$(pick_free_port)"
-  echo "Port $REQUESTED_PORT was in use; using $PORT for this run (set LANGFLOW_PORT to pin a port)."
+  echo "Port $REQUESTED_PORT was in use; using $PORT for this run (set EARTHMIND_PORT to pin a port)."
 fi
 
-echo "Starting Langflow on http://$HOST:$PORT (developer API enabled for /api/v2/workflows)"
+echo "Starting EarthMind on http://$HOST:$PORT (developer API enabled for /api/v2/workflows)"
 # Set on the command line so the server process always sees it (macOS launcher/exec paths).
-LANGFLOW_DEVELOPER_API_ENABLED=true uv run langflow run --backend-only --host "$HOST" --port "$PORT" >/tmp/langflow-server.log 2>&1 &
-echo $! >/tmp/langflow-server.pid
+EARTHMIND_DEVELOPER_API_ENABLED=true uv run earthmind run --backend-only --host "$HOST" --port "$PORT" >/tmp/earthmind-server.log 2>&1 &
+echo $! >/tmp/earthmind-server.pid
 
-echo "Waiting for Langflow readiness (DB + services via /health_check)..."
-# /health can respond before the Langflow app is fully up (uvicorn default).
+echo "Waiting for EarthMind readiness (DB + services via /health_check)..."
+# /health can respond before the EarthMind app is fully up (uvicorn default).
 for _ in {1..60}; do
   if curl -sf "http://$HOST:$PORT/health_check" >/dev/null; then
     break
@@ -89,8 +89,8 @@ for _ in {1..60}; do
 done
 
 if ! curl -sf "http://$HOST:$PORT/health_check" >/dev/null; then
-  echo "Langflow did not become ready in time."
-  echo "See /tmp/langflow-server.log for details."
+  echo "EarthMind did not become ready in time."
+  echo "See /tmp/earthmind-server.log for details."
   exit 1
 fi
 
@@ -98,7 +98,7 @@ echo "Creating API key for local examples..."
 # Use HTTP only: a second process opening the same SQLite DB while the server runs
 # causes "database is locked" during Alembic/initialize_services.
 export BASE_URL="http://$HOST:$PORT"
-LANGFLOW_API_KEY="$(
+EARTHMIND_API_KEY="$(
   uv run python - <<'PY'
 import os
 import time
@@ -108,8 +108,8 @@ from requests import RequestException
 
 base = os.environ["BASE_URL"]
 session = requests.Session()
-user = os.environ.get("LANGFLOW_SUPERUSER", "langflow")
-password = os.environ.get("LANGFLOW_SUPERUSER_PASSWORD", "langflow")
+user = os.environ.get("EARTHMIND_SUPERUSER", "earthmind")
+password = os.environ.get("EARTHMIND_SUPERUSER_PASSWORD", "earthmind")
 
 token = None
 last_status = None
@@ -152,14 +152,14 @@ print(key_resp.json()["api_key"])
 PY
 )"
 
-if [[ -z "$LANGFLOW_API_KEY" ]]; then
+if [[ -z "$EARTHMIND_API_KEY" ]]; then
   echo "Failed to create API key."
   exit 1
 fi
 
-export LANGFLOW_URL="http://$HOST:$PORT"
-export LANGFLOW_SERVER_URL="http://$HOST:$PORT"
-export LANGFLOW_API_KEY
+export EARTHMIND_URL="http://$HOST:$PORT"
+export EARTHMIND_SERVER_URL="http://$HOST:$PORT"
+export EARTHMIND_API_KEY
 
 if [[ "$EXECUTE_MODE" == "true" ]]; then
   echo "Bootstrapping PROJECT_ID/FLOW_ID/FOLDER_ID for examples..."
@@ -173,8 +173,8 @@ from pathlib import Path
 
 import requests
 
-base_url = os.environ["LANGFLOW_URL"]
-api_key = os.environ["LANGFLOW_API_KEY"]
+base_url = os.environ["EARTHMIND_URL"]
+api_key = os.environ["EARTHMIND_API_KEY"]
 headers = {"accept": "application/json", "Content-Type": "application/json", "x-api-key": api_key}
 
 try:
@@ -220,7 +220,7 @@ try:
     if not job_id:
         raise RuntimeError(f"Build start returned no job_id: {build_data}")
 
-    project_zip_path = Path("/tmp/langflow-project-import.zip")
+    project_zip_path = Path("/tmp/earthmind-project-import.zip")
     try:
         export_resp = requests.get(
             f"{base_url}/api/v1/projects/download/{project_id}",
@@ -282,4 +282,4 @@ for suite in "${SUITE_LIST[@]}"; do
   esac
 done
 
-echo "Done. Server log: /tmp/langflow-server.log"
+echo "Done. Server log: /tmp/earthmind-server.log"

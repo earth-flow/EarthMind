@@ -112,7 +112,7 @@ function updateComponentCode(
     const newImports = updates.imports.join(", ");
     updatedCode = updatedCode.replace(
       importPattern,
-      `from langflow.io import ${newImports}`,
+      `from earthmind.io import ${newImports}`,
     );
   }
 

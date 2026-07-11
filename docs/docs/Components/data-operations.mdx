@@ -10,7 +10,7 @@ import PartialParams from '@site/docs/_partial-hidden-params.mdx';
 import PartialCurlyBraces from '@site/docs/_partial-escape-curly-braces.mdx';
 
 :::tip
-Prior to Langflow 1.9.0, this component was named **Data Operations**.
+Prior to EarthMind 1.9.0, this component was named **Data Operations**.
 :::
 
 The **JSON Operations** component performs operations on [`JSON`](/data-types#json) objects, including extracting, filtering, and editing keys and values in the `JSON`.
@@ -50,9 +50,9 @@ Click <Icon name="Plus" aria-hidden="true" /> **Add more** to add a field for ea
 For more information about the webhook endpoint, see [Trigger flows with webhooks](/webhook).
 
     ```bash
-    curl -X POST "http://$LANGFLOW_SERVER_URL/api/v1/webhook/$FLOW_ID" \
+    curl -X POST "http://$EARTHMIND_SERVER_URL/api/v1/webhook/$FLOW_ID" \
     -H "Content-Type: application/json" \
-    -H "x-api-key: $LANGFLOW_API_KEY" \
+    -H "x-api-key: $EARTHMIND_API_KEY" \
     -d '{
       "id": 1,
       "name": "Leanne Graham",

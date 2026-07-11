@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
-from langflow.services.database.models.flow.model import FlowCreate
+from earthmind.services.database.models.flow.model import FlowCreate
 from lfx.components.flow_controls.run_flow import RunFlowComponent
 from lfx.components.input_output import ChatInput, ChatOutput, TextInputComponent, TextOutputComponent
 from lfx.graph.graph.base import Graph

@@ -18,6 +18,8 @@ export interface KnowledgeBaseInfo {
   chunk_size?: number;
   chunk_overlap?: number;
   separator?: string;
+  parser_strategy?: string;
+  chunk_strategy?: string;
   status?: string;
   failure_reason?: string | null;
   source_types?: string[];
@@ -28,6 +30,7 @@ export interface KnowledgeBaseInfo {
   }>;
   backend_type?: string;
   backend_config?: Record<string, unknown>;
+  connection_config?: Record<string, unknown>;
 }
 
 export const useGetKnowledgeBases: useQueryFunctionType<

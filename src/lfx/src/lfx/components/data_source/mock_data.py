@@ -11,13 +11,13 @@ class MockDataGeneratorComponent(Component):
     """Mock Data Generator Component.
 
     Generates sample data for testing and development purposes. Supports three main
-    Langflow output types: Message (text), Data (JSON), and DataFrame (tabular data).
+    EarthMind output types: Message (text), Data (JSON), and DataFrame (tabular data).
 
     This component is useful for:
     - Testing workflows without real data sources
     - Prototyping data processing pipelines
     - Creating sample data for demonstrations
-    - Development and debugging of Langflow components
+    - Development and debugging of EarthMind components
     """
 
     display_name = "Mock Data"
@@ -78,7 +78,7 @@ class MockDataGeneratorComponent(Component):
         """Generate DataFrame output specifically.
 
         Returns:
-            DataFrame: A Langflow DataFrame with sample data (50 records)
+            DataFrame: A EarthMind DataFrame with sample data (50 records)
         """
         try:
             record_count = 50  # Fixed to 50 records for DataFrame output
@@ -212,7 +212,7 @@ class MockDataGeneratorComponent(Component):
             record_count: Number of rows to generate
 
         Returns:
-            DataFrame: A Langflow DataFrame with sample data
+            DataFrame: A EarthMind DataFrame with sample data
         """
         try:
             import pandas as pd
@@ -239,7 +239,7 @@ class MockDataGeneratorComponent(Component):
                     col: [row[i] if i < len(row) else None for row in rows] for i, col in enumerate(columns)
                 }
 
-                # Return as DataFrame wrapper (Langflow will handle the display)
+                # Return as DataFrame wrapper (EarthMind will handle the display)
                 return DataFrame(simple_df_data)
             except (ValueError, TypeError):
                 # Ultimate fallback - return the Data as DataFrame
@@ -373,7 +373,7 @@ class MockDataGeneratorComponent(Component):
                 )
 
             self.log(f"Successfully generated DataFrame with shape: {df.shape}, columns: {list(df.columns)}")
-            # CRITICAL: Use DataFrame wrapper from Langflow
+            # CRITICAL: Use DataFrame wrapper from EarthMind
             # DO NOT set self.status when returning DataFrames - it interferes with display
             return DataFrame(df)
 
@@ -381,7 +381,7 @@ class MockDataGeneratorComponent(Component):
             error_msg = f"Error generating DataFrame: {e!s}"
             self.log(error_msg)
             # DO NOT set self.status when returning DataFrames - it interferes with display
-            # Return a fallback DataFrame with error info using Langflow wrapper
+            # Return a fallback DataFrame with error info using EarthMind wrapper
             try:
                 error_df = pd.DataFrame(
                     {

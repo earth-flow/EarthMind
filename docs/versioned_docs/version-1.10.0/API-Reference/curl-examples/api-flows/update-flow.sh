@@ -1,8 +1,8 @@
 curl -X PATCH \
-  "$LANGFLOW_URL/api/v1/flows/$FLOW_ID" \
+  "$EARTHMIND_URL/api/v1/flows/$FLOW_ID" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -d '{
   "name": "string",
   "description": "string",

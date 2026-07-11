@@ -3,7 +3,7 @@ import { adjustScreenView } from "../../utils/adjust-screen-view";
 import { openBlankFlow } from "../../utils/flow/open-blank-flow";
 
 test(
-  "LangflowShortcuts",
+  "EarthMindShortcuts",
   { tag: ["@release", "@workspace"] },
   async ({ page }) => {
     await openBlankFlow(page);

@@ -4,6 +4,6 @@ node_modules
 **/node_modules/
 dist/
 **/build/
-src/backend/langflow/frontend
-**/langflow-pre.db
-**/langflow.db
+src/backend/earthmind/frontend
+**/earthmind-pre.db
+**/earthmind.db

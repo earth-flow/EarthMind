@@ -173,6 +173,30 @@ OPENAI_EMBEDDING_MODELS_DETAILED = [
     for name in OPENAI_EMBEDDING_MODEL_NAMES
 ]
 
+SILICONFLOW_MODEL_NAMES = [
+    "Qwen/Qwen3-8B",
+    "Qwen/Qwen3-Embedding-8B",
+    "Qwen/Qwen3-Reranker-8B",
+]
+
+SILICONFLOW_MODELS_DETAILED = [
+    create_model_metadata(
+        provider="SiliconFlow",
+        name="Qwen/Qwen3-8B",
+        icon="OpenAI",
+        tool_calling=True,
+    ),
+]
+
+SILICONFLOW_EMBEDDING_MODELS_DETAILED = [
+    create_model_metadata(
+        provider="SiliconFlow",
+        name="Qwen/Qwen3-Embedding-8B",
+        icon="OpenAI",
+        model_type="embeddings",
+    ),
+]
+
 # Backwards compatibility
 MODEL_NAMES = OPENAI_CHAT_MODEL_NAMES
 OPENAI_MODEL_NAMES = OPENAI_CHAT_MODEL_NAMES

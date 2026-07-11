@@ -1,4 +1,4 @@
-"""Tests for dynamic import refactor in langflow components.
+"""Tests for dynamic import refactor in earthmind components.
 
 This module tests the new langchain-style dynamic import system to ensure:
 1. Lazy loading works correctly
@@ -144,7 +144,7 @@ class TestComponentDynamicImports:
 
     def test_backward_compatibility(self):
         """Test that existing import patterns work correctly."""
-        # These imports should work since langflow is installed with dependencies
+        # These imports should work since earthmind is installed with dependencies
         # Test that the import mechanism correctly handles the components
 
         from lfx.components.models_and_agents import AgentComponent

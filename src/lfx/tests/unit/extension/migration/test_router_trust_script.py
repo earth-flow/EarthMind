@@ -111,7 +111,7 @@ def test_typed_error_code_namespace_is_allowlisted(tmp_path: Path) -> None:
 
 def test_real_extensions_module_passes() -> None:
     """The shipped src/backend/.../v1/extensions.py must pass the guard."""
-    real_module = REPO_ROOT / "src" / "backend" / "base" / "langflow" / "api" / "v1" / "extensions.py"
+    real_module = REPO_ROOT / "src" / "backend" / "base" / "earthmind" / "api" / "v1" / "extensions.py"
     if not real_module.exists():
         pytest.skip("real extensions.py not present in this checkout")
 

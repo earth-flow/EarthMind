@@ -24,7 +24,7 @@ def _build_component(
     base_dir: Path,
     user_id: str,
 ) -> FileSystemToolComponent:
-    monkeypatch.setenv("LANGFLOW_FS_TOOL_BASE_DIR", str(base_dir))
+    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(base_dir))
     component = FileSystemToolComponent(root_path="", read_only=False)
     # Tool binding only matters when isolation is active (AUTO_LOGIN=False).
     component._resolve_auto_login = lambda: False  # type: ignore[method-assign]

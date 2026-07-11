@@ -1,10 +1,10 @@
-"""Manifest-first precedence over ``langflow.plugins`` entry-points.
+"""Manifest-first precedence over ``earthmind.plugins`` entry-points.
 
 This is the bridge between the new manifest-based loader and the legacy
-``langflow.plugins`` entry-point system that third parties already use to
+``earthmind.plugins`` entry-point system that third parties already use to
 register components.  The rule is simple: if a distribution ships an
 extension manifest, the manifest is the source of truth for its
-components; its ``langflow.plugins`` *component* entry-points are skipped
+components; its ``earthmind.plugins`` *component* entry-points are skipped
 to avoid double registration.  Non-component entry-points (services,
 routes) on the same distribution are unaffected -- the caller's loop is
 responsible for that distinction.
@@ -53,7 +53,7 @@ def _distribution_manifest_path(dist: importlib_metadata.Distribution) -> Path |
     """Return the manifest path shipped by ``dist`` (extension.json or pyproject.toml), or None.
 
     extension.json wins on collision; pyproject.toml is accepted only when
-    it declares ``[tool.langflow.extension]``.
+    it declares ``[tool.earthmind.extension]``.
 
     Editable installs (``pip install -e``, ``uv pip install --editable``)
     typically expose only dist-info files via ``dist.files`` -- the source
@@ -104,21 +104,21 @@ def _editable_manifest_path(dist: importlib_metadata.Distribution) -> Path | Non
 
     Tries two fallbacks in order:
 
-    1. The ``langflow.extensions`` entry-point group.  When a bundle
-       declares ``[project.entry-points."langflow.extensions"] foo = "lfx_foo"``
+    1. The ``earthmind.extensions`` entry-point group.  When a bundle
+       declares ``[project.entry-points."earthmind.extensions"] foo = "lfx_foo"``
        the entry-point's value is the dotted package path that ships
        ``extension.json``; importing that package gives us the source
        directory regardless of how the dist was installed.
 
     2. PEP 610 ``direct_url.json`` for ``editable=true`` distributions.
        The recorded URL points at the project root; we look for
-       ``extension.json`` (or a ``[tool.langflow.extension]`` pyproject)
+       ``extension.json`` (or a ``[tool.earthmind.extension]`` pyproject)
        directly there.
 
     Returns ``None`` if neither path yields a manifest.  Both paths are
     necessary because (a) installed wheels list the package's
     ``extension.json`` in ``dist.files`` so they don't reach this fallback,
-    and (b) editable installs that use ``langflow.extensions`` entry-points
+    and (b) editable installs that use ``earthmind.extensions`` entry-points
     point at the package, while editable installs that don't may still
     have a top-level manifest.
     """
@@ -129,7 +129,7 @@ def _editable_manifest_path(dist: importlib_metadata.Distribution) -> Path | Non
 
 
 def _manifest_via_entry_point(dist: importlib_metadata.Distribution) -> Path | None:
-    """Find a manifest via this distribution's ``langflow.extensions`` entry-point.
+    """Find a manifest via this distribution's ``earthmind.extensions`` entry-point.
 
     Locates the package directory via ``importlib.util.find_spec`` rather
     than importing the package, so a manifest-discovery pass at startup
@@ -146,7 +146,7 @@ def _manifest_via_entry_point(dist: importlib_metadata.Distribution) -> Path | N
 
     candidate_modules: list[str] = []
     for ep in eps:
-        if getattr(ep, "group", None) == "langflow.extensions":
+        if getattr(ep, "group", None) == "earthmind.extensions":
             value = (getattr(ep, "value", "") or "").split(":", 1)[0].strip()
             if value:
                 candidate_modules.append(value)
@@ -210,10 +210,10 @@ def _manifest_via_direct_url(dist: importlib_metadata.Distribution) -> Path | No
 
 
 def _pyproject_has_extension_section(pyproject_path: Path) -> bool:
-    """Return True iff ``pyproject_path`` declares ``[tool.langflow.extension]``.
+    """Return True iff ``pyproject_path`` declares ``[tool.earthmind.extension]``.
 
     Detects section *presence* only -- intentionally does NOT run schema
-    validation. A pyproject whose ``[tool.langflow.extension]`` section
+    validation. A pyproject whose ``[tool.earthmind.extension]`` section
     exists but has missing/invalid required fields still returns True so
     the caller registers it as a manifest-shipping distribution; the
     typed ``manifest-invalid`` error is then surfaced by
@@ -237,11 +237,11 @@ def _pyproject_has_extension_section(pyproject_path: Path) -> bool:
     try:
         section = _read_pyproject_extension(pyproject_path)
     except ValueError:
-        # Unparseable TOML: not specifically a langflow extension issue,
+        # Unparseable TOML: not specifically a earthmind extension issue,
         # let the rest of the system treat it as a regular package.
         return False
     except TypeError:
-        # [tool.langflow.extension] exists but isn't a table. The author
+        # [tool.earthmind.extension] exists but isn't a table. The author
         # intended to declare an extension; let load_extension produce
         # the typed manifest-invalid error rather than silently drop.
         return True
@@ -343,7 +343,7 @@ def filter_plugin_entry_points(
     *,
     skip: Iterable[str] | None = None,
 ) -> tuple[list[importlib_metadata.EntryPoint], list[importlib_metadata.EntryPoint]]:
-    """Partition ``langflow.plugins`` entry-points by manifest precedence.
+    """Partition ``earthmind.plugins`` entry-points by manifest precedence.
 
     Args:
         entry_points: Entry points from ``importlib.metadata.entry_points``.

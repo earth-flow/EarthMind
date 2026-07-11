@@ -1,4 +1,4 @@
-"""Langflow Extension System (foundation).
+"""EarthMind Extension System (foundation).
 
 Public surface for this milestone:
     - ``ExtensionManifest``, ``BundleRef``, ``LfxCompat`` -- Pydantic models for

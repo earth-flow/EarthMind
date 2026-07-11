@@ -1,4 +1,4 @@
-"""lfx environment configuration — resolve Langflow instance URL and API key.
+"""lfx environment configuration — resolve EarthMind instance URL and API key.
 
 Config file lookup order
 ------------------------
@@ -6,8 +6,8 @@ Config file lookup order
 2.  ``.lfx/environments.yaml`` in the current working directory, then each
     parent directory up to the first ``.git`` boundary (project root discovery).
 3.  ``~/.lfx/environments.yaml`` (user-level config).
-4.  ``langflow-environments.toml`` in the current working directory
-    (backward-compatible with the langflow-sdk TOML format).
+4.  ``earthmind-environments.toml`` in the current working directory
+    (backward-compatible with the earthmind-sdk TOML format).
 
 YAML file format
 ----------------
@@ -15,21 +15,21 @@ YAML file format
 
     environments:
       local:
-        url: http://localhost:7860
-        api_key_env: LANGFLOW_LOCAL_API_KEY
+        url: http://10.171.205.153:7860
+        api_key_env: EARTHMIND_LOCAL_API_KEY
 
       staging:
-        url: https://staging.langflow.example.com
-        api_key_env: LANGFLOW_STAGING_API_KEY
+        url: https://staging.earthmind.example.com
+        api_key_env: EARTHMIND_STAGING_API_KEY
 
       production:
-        url: https://langflow.example.com
-        api_key_env: LANGFLOW_PROD_API_KEY
+        url: https://earthmind.example.com
+        api_key_env: EARTHMIND_PROD_API_KEY
 
     defaults:
       environment: local
 
-TOML format is also accepted (``langflow-environments.toml`` or any ``.toml``
+TOML format is also accepted (``earthmind-environments.toml`` or any ``.toml``
 file passed via ``--environments-file``).
 
 The ``api_key_env`` field names an *environment variable* that holds the API
@@ -52,19 +52,19 @@ class ConfigError(Exception):
     """Raised when the config file is missing, malformed, or an environment name cannot be resolved.
 
     Note: a missing API key env var is *not* a ``ConfigError`` — ``api_key``
-    will simply be ``None`` on the returned :class:`LangflowEnvironment`.
+    will simply be ``None`` on the returned :class:`EarthMindEnvironment`.
     Commands that require a key validate it themselves and raise an appropriate
     error with actionable guidance.
     """
 
 
 @dataclass
-class LangflowEnvironment:
-    """A fully-resolved Langflow target instance.
+class EarthMindEnvironment:
+    """A fully-resolved EarthMind target instance.
 
     Attributes:
         name:    Human-readable label (environment name or ``"__inline__"``).
-        url:     Base URL of the Langflow instance.
+        url:     Base URL of the EarthMind instance.
         api_key: Resolved API key value, or ``None`` if not configured.
     """
 
@@ -78,7 +78,7 @@ class LangflowEnvironment:
 # ---------------------------------------------------------------------------
 
 _YAML_NAMES: tuple[str, ...] = ("environments.yaml", "environments.yml")
-_TOML_FALLBACK = "langflow-environments.toml"
+_TOML_FALLBACK = "earthmind-environments.toml"
 _LFX_DIR = ".lfx"
 
 
@@ -119,7 +119,7 @@ def _find_config_file(override: Path | None) -> Path | None:
         if user_yaml.is_file():
             return user_yaml
 
-    # Backward-compat: langflow-environments.toml in cwd
+    # Backward-compat: earthmind-environments.toml in cwd
     toml_fallback = cwd / _TOML_FALLBACK
     if toml_fallback.is_file():
         return toml_fallback
@@ -183,7 +183,7 @@ def _load_raw(path: Path) -> dict[str, Any]:
         return _parse_toml(path)
 
 
-def _parse_env_block(name: str, block: Any, config_path: Path) -> LangflowEnvironment:
+def _parse_env_block(name: str, block: Any, config_path: Path) -> EarthMindEnvironment:
     if not isinstance(block, dict):
         msg = f"Environment {name!r} in {config_path} must be a mapping, got {type(block).__name__}"
         raise ConfigError(msg)
@@ -208,10 +208,10 @@ def _parse_env_block(name: str, block: Any, config_path: Path) -> LangflowEnviro
         )
         api_key = str(block["api_key"])
 
-    return LangflowEnvironment(name=name, url=url, api_key=api_key)
+    return EarthMindEnvironment(name=name, url=url, api_key=api_key)
 
 
-def _load_config(path: Path) -> tuple[dict[str, LangflowEnvironment], str | None]:
+def _load_config(path: Path) -> tuple[dict[str, EarthMindEnvironment], str | None]:
     """Return ``(environments_dict, default_env_name)`` from the config at *path*."""
     raw = _load_raw(path)
 
@@ -220,7 +220,7 @@ def _load_config(path: Path) -> tuple[dict[str, LangflowEnvironment], str | None
         msg = f"'environments' in {path} must be a mapping, got {type(raw_envs).__name__}"
         raise ConfigError(msg)
 
-    envs: dict[str, LangflowEnvironment] = {}
+    envs: dict[str, EarthMindEnvironment] = {}
     for env_name, block in raw_envs.items():
         envs[str(env_name)] = _parse_env_block(str(env_name), block, path)
 
@@ -241,8 +241,8 @@ def resolve_environment(
     target: str | None = None,
     api_key: str | None = None,
     environments_file: str | None = None,
-) -> LangflowEnvironment:
-    """Resolve an environment name (or inline flags) to a :class:`LangflowEnvironment`.
+) -> EarthMindEnvironment:
+    """Resolve an environment name (or inline flags) to a :class:`EarthMindEnvironment`.
 
     Precedence
     ----------
@@ -252,7 +252,7 @@ def resolve_environment(
     2. **Named env** — look up *env* (or the configured default) in the config
        file discovered by the lookup order described in this module's docstring.
     3. **Env-var fallback** — if no config file exists and no *env* was
-       requested, fall back to ``LANGFLOW_URL`` / ``LANGFLOW_API_KEY`` (or
+       requested, fall back to ``EARTHMIND_URL`` / ``EARTHMIND_API_KEY`` (or
        ``LFX_URL`` / ``LFX_API_KEY``) env vars before raising.
 
     Parameters
@@ -270,7 +270,7 @@ def resolve_environment(
 
     Returns:
     -------
-    LangflowEnvironment:
+    EarthMindEnvironment:
         Fully-resolved environment with ``url`` and ``api_key``.
 
     Raises:
@@ -284,7 +284,7 @@ def resolve_environment(
     # -----------------------------------------------------------------------
     if target is not None:
         name = env or "__inline__"
-        return LangflowEnvironment(name=name, url=target, api_key=api_key)
+        return EarthMindEnvironment(name=name, url=target, api_key=api_key)
 
     # -----------------------------------------------------------------------
     # Mode 2: config file
@@ -294,10 +294,10 @@ def resolve_environment(
 
     if config_path is None:
         # No config file found — try env-var fallback before giving up
-        lf_url = os.environ.get("LANGFLOW_URL") or os.environ.get("LFX_URL")
+        lf_url = os.environ.get("EARTHMIND_URL") or os.environ.get("LFX_URL")
         if lf_url and env is None:
-            lf_key = api_key or os.environ.get("LANGFLOW_API_KEY") or os.environ.get("LFX_API_KEY")
-            return LangflowEnvironment(name="__env__", url=lf_url, api_key=lf_key)
+            lf_key = api_key or os.environ.get("EARTHMIND_API_KEY") or os.environ.get("LFX_API_KEY")
+            return EarthMindEnvironment(name="__env__", url=lf_url, api_key=lf_key)
 
         if env is not None:
             msg = (
@@ -313,7 +313,7 @@ def resolve_environment(
             "Options:\n"
             "  • lfx <cmd> --env <name>              (requires .lfx/environments.yaml)\n"
             "  • lfx <cmd> --target <url>             (inline, no config file needed)\n"
-            "  • export LANGFLOW_URL=<url>            (env-var fallback)\n"
+            "  • export EARTHMIND_URL=<url>            (env-var fallback)\n"
             "  • lfx init                             (scaffold a project with a template)"
         )
         raise ConfigError(msg)
@@ -339,6 +339,6 @@ def resolve_environment(
 
     # --api-key overrides the key resolved from the config file
     if api_key is not None:
-        resolved = LangflowEnvironment(name=resolved.name, url=resolved.url, api_key=api_key)
+        resolved = EarthMindEnvironment(name=resolved.name, url=resolved.url, api_key=api_key)
 
     return resolved

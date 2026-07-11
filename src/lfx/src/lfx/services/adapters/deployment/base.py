@@ -44,7 +44,7 @@ class BaseDeploymentService(Service, ABC):
     """Abstract base class for deployment provider services.
 
     Defines the minimal interface that all deployment service implementations
-    must provide, whether minimal (LFX) or full-featured (Langflow).
+    must provide, whether minimal (LFX) or full-featured (EarthMind).
 
     Note:
         ``db`` parameters are typed as ``AsyncSession`` to align with current

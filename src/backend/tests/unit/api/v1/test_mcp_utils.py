@@ -2,9 +2,9 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
-from langflow.api.utils.core import extract_global_variables_from_headers
-from langflow.api.v1 import mcp_utils
-from langflow.helpers import flow as flow_helpers
+from earthmind.api.utils.core import extract_global_variables_from_headers
+from earthmind.api.v1 import mcp_utils
+from earthmind.helpers import flow as flow_helpers
 from lfx.interface.components import component_cache
 
 
@@ -149,15 +149,15 @@ class TestExtractGlobalVariablesFromHeaders:
     and ``authorization`` should be captured under their lowercase names when
     (and only when) ``include_auth_headers=True`` is passed. The default
     behavior must remain backwards-compatible for non-MCP routes, where
-    ``x-api-key`` is Langflow's own auth key and must not leak into the graph
+    ``x-api-key`` is EarthMind's own auth key and must not leak into the graph
     context.
     """
 
-    def test_langflow_global_var_prefix_still_extracted(self):
-        """Regression guard: ``X-LANGFLOW-GLOBAL-VAR-*`` extraction is preserved."""
+    def test_earthmind_global_var_prefix_still_extracted(self):
+        """Regression guard: ``X-EARTHMIND-GLOBAL-VAR-*`` extraction is preserved."""
         headers = {
-            "X-LANGFLOW-GLOBAL-VAR-API-KEY": "secret-value",
-            "X-LANGFLOW-GLOBAL-VAR-DB-URL": "postgres://host/db",
+            "X-EARTHMIND-GLOBAL-VAR-API-KEY": "secret-value",
+            "X-EARTHMIND-GLOBAL-VAR-DB-URL": "postgres://host/db",
             "Content-Type": "application/json",
         }
 
@@ -168,9 +168,9 @@ class TestExtractGlobalVariablesFromHeaders:
     def test_auth_headers_not_extracted_by_default(self):
         """Non-MCP call sites: ``x-api-key`` / ``authorization`` must not leak through."""
         headers = {
-            "x-api-key": "langflow-auth-key",
+            "x-api-key": "earthmind-auth-key",
             "authorization": "Bearer token",
-            "X-LANGFLOW-GLOBAL-VAR-MY-VAR": "value",
+            "X-EARTHMIND-GLOBAL-VAR-MY-VAR": "value",
         }
 
         result = extract_global_variables_from_headers(headers)
@@ -202,9 +202,9 @@ class TestExtractGlobalVariablesFromHeaders:
         assert result == {"x-api-key": "mixed-case-value", "authorization": "Bearer UPPER"}
 
     def test_both_categories_extracted_together(self):
-        """``X-LANGFLOW-GLOBAL-VAR-*`` and auth headers coexist when opted in."""
+        """``X-EARTHMIND-GLOBAL-VAR-*`` and auth headers coexist when opted in."""
         headers = {
-            "X-LANGFLOW-GLOBAL-VAR-API-KEY": "global-secret",
+            "X-EARTHMIND-GLOBAL-VAR-API-KEY": "global-secret",
             "x-api-key": "incoming-mcp-key",
             "Authorization": "Bearer mcp-token",
             "Content-Type": "application/json",

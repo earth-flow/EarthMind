@@ -33,7 +33,7 @@ async def test_frozen_vertex_rebuilds_when_no_cache_service(frozen_chat_flow):
     get_cache_func should return CacheMiss so frozen vertices fall through
     to the build path instead of crashing with TypeError.
 
-    Reproduces: https://github.com/langflow-ai/langflow/issues/12408
+    Reproduces: https://github.com/earthmind-ai/earthmind/issues/12408
     """
     graph = Graph.from_payload(frozen_chat_flow)
 

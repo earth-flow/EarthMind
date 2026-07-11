@@ -1,13 +1,13 @@
 """Update the canonical ``lfx`` package (and its SDK dep) for nightly builds.
 
-The nightly publishes ``lfx`` and ``langflow-sdk`` under their CANONICAL names as ``.devN``
-pre-releases -- it does NOT rename them to ``lfx-nightly`` / ``langflow-sdk-nightly``, and it does
+The nightly publishes ``lfx`` and ``earthmind-sdk`` under their CANONICAL names as ``.devN``
+pre-releases -- it does NOT rename them to ``lfx-nightly`` / ``earthmind-sdk-nightly``, and it does
 NOT give the ``src/bundles/*`` packages their own nightly track. The stable ``lfx-*`` bundles
 (pinning ``lfx>=X.Y.0,<(X+1).0.0``) then resolve against the single canonical ``lfx`` distribution,
 so there is no ``lfx`` vs ``lfx-nightly`` install collision. See ``src/bundles/NIGHTLY.md``.
 
 This script therefore only (a) sets ``lfx``'s version to the nightly ``.devN`` and (b) re-pins
-lfx's ``langflow-sdk`` dependency to the exact canonical dev version.
+lfx's ``earthmind-sdk`` dependency to the exact canonical dev version.
 """
 
 import re
@@ -24,17 +24,17 @@ BASE_DIR = Path(__file__).parent.parent.parent
 
 
 def update_sdk_dependency_in_lfx(pyproject_path: str, sdk_version: str) -> None:
-    """Pin lfx's ``langflow-sdk`` dependency to the exact canonical dev version.
+    """Pin lfx's ``earthmind-sdk`` dependency to the exact canonical dev version.
 
     An exact ``==<dev>`` pin keeps the SDK in lockstep with the lfx built in the same run and,
-    because it names a pre-release explicitly, enables pre-release resolution for ``langflow-sdk``
+    because it names a pre-release explicitly, enables pre-release resolution for ``earthmind-sdk``
     down the dependency tree without requiring ``--pre``.
     """
     filepath = BASE_DIR / pyproject_path
     content = filepath.read_text(encoding="utf-8")
 
-    pattern = re.compile(r'"langflow-sdk(?:-nightly)?(?:==|~=|>=)[\d.]+(?:\.(?:post|dev|a|b|rc)\d+)*"')
-    replacement = f'"langflow-sdk=={sdk_version}"'
+    pattern = re.compile(r'"earthmind-sdk(?:-nightly)?(?:==|~=|>=)[\d.]+(?:\.(?:post|dev|a|b|rc)\d+)*"')
+    replacement = f'"earthmind-sdk=={sdk_version}"'
 
     if not pattern.search(content):
         msg = f"SDK dependency not found in {filepath}"

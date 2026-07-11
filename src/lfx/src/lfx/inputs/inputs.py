@@ -78,7 +78,7 @@ class TableInput(BaseInputMixin, MetadataTraceMixin, TableMixin, ListableInputMi
                 "- A list of dictionaries (each dict is a row)\n"
                 "- A pandas DataFrame\n"
                 "- A single dictionary (will become a one-row table)\n"
-                "- A Data object (Langflow's internal data structure)\n"
+                "- A Data object (EarthMind's internal data structure)\n"
             )
             raise ValueError(msg)  # noqa: TRY004
         # Ensure each item in the list is either a dict or a Data instance.
@@ -87,7 +87,7 @@ class TableInput(BaseInputMixin, MetadataTraceMixin, TableMixin, ListableInputMi
                 msg = (
                     f"Row {i + 1} in your table has an invalid format. Each row must be either:\n"
                     "- A dictionary containing column name/value pairs\n"
-                    "- A Data object (Langflow's internal data structure for passing data between components)\n"
+                    "- A Data object (EarthMind's internal data structure for passing data between components)\n"
                     f"Instead, got a {type(item).__name__}. Please check the format of your input data."
                 )
                 raise ValueError(msg)  # noqa: TRY004
@@ -126,7 +126,7 @@ class ToolsInput(BaseInputMixin, ListableInputMixin, MetadataTraceMixin, ToolMod
 class JSONInput(HandleInput, InputTraceMixin, ListableInputMixin, ToolModeMixin):
     """Represents an Input that has a Handle that receives a JSON object.
 
-    This is the new standard input for Langflow data structures.
+    This is the new standard input for EarthMind data structures.
     DataInput is maintained as an alias for backwards compatibility.
 
     Attributes:
@@ -353,7 +353,7 @@ class MessageInput(StrInput, InputTraceMixin):
             return Message(**v)
         # Duck-typed Message check - works across module boundaries
         if isinstance(v, Message):
-            # If it's from a different module (e.g., langflow.schema.Message),
+            # If it's from a different module (e.g., earthmind.schema.Message),
             # convert it to ensure we have the right type
             if type(v).__module__ != Message.__module__:
                 return Message(**v.model_dump())
@@ -365,9 +365,9 @@ class MessageInput(StrInput, InputTraceMixin):
 
 
 class MessageTextInput(StrInput, MetadataTraceMixin, InputTraceMixin, ToolModeMixin):
-    """Represents a text input component for the Langflow system.
+    """Represents a text input component for the EarthMind system.
 
-    This component is used to handle text inputs in the Langflow system.
+    This component is used to handle text inputs in the EarthMind system.
     It provides methods for validating and processing text values.
 
     Attributes:
@@ -681,7 +681,7 @@ class BoolInput(BaseInputMixin, ListableInputMixin, MetadataTraceMixin, ToolMode
     def coerce_message_or_data(cls, v: Any):
         # Allow BoolInput to receive Message/Data connections (e.g. from MCP tool
         # schema-generated inputs) by extracting a comparable text value before
-        # CoalesceBool runs. See https://github.com/langflow-ai/langflow/issues/9424
+        # CoalesceBool runs. See https://github.com/earthmind-ai/earthmind/issues/9424
         if isinstance(v, Message):
             return v.text
         if isinstance(v, Data):
@@ -759,7 +759,7 @@ class DictInput(BaseInputMixin, ListableInputMixin, InputTraceMixin, ToolModeMix
     def validate_value(cls, v: Any, info):
         # Allow DictInput to receive Data/Message connections (e.g. from MCP tool
         # schema-generated inputs) and coerce JSON strings to dicts.
-        # See https://github.com/langflow-ai/langflow/issues/9424
+        # See https://github.com/earthmind-ai/earthmind/issues/9424
         if isinstance(v, dict):
             return v
         if isinstance(v, Message):

@@ -68,6 +68,8 @@ export default function TableNodeCellRender({
           name={parameterId}
           templateValue={parameter.value}
           editNode={true}
+          showParameter={true}
+          inspectionPanel={false}
           handleNodeClass={handleNodeClass}
           nodeClass={node?.data.node}
           disabled={disabled}

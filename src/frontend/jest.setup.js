@@ -36,7 +36,7 @@ global.import = {
       MODE: "test",
       DEV: false,
       PROD: false,
-      VITE_API_URL: "http://localhost:7860",
+      VITE_API_URL: "",
     },
   },
 };

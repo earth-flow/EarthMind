@@ -1,14 +1,14 @@
-# Langflow Demo Codespace Readme
+# EarthMind Demo Codespace Readme
 
-These instructions will walk you through the process of running a Langflow demo via GitHub Codespaces.
+These instructions will walk you through the process of running a EarthMind demo via GitHub Codespaces.
 
-If you want a faster and easier demo experience with Langflow, download and install [Langflow Desktop](https://docs.langflow.org/get-started-installation#install-and-run-langflow-desktop) for the least complicated setup experience.
+If you want a faster and easier demo experience with EarthMind, download and install [EarthMind Desktop](https://docs.earthmind.org/get-started-installation#install-and-run-earthmind-desktop) for the least complicated setup experience.
 
 ## Create a Codespace in GitHub
 
 To setup the demo in Codespace:
 
-1. Navigate to the Langflow repo
+1. Navigate to the EarthMind repo
 2. On the "Code <>" button, select the "Codespaces" tab
 3. Click the green "Create codespace on..." button (or "+" icon if you want more options) to create a new Codespace
 
@@ -17,12 +17,12 @@ To setup the demo in Codespace:
 After the codespace is opened, there will be two phases to the process. It will take ≈5-10 minutes to complete.
 
 * **Phase 1**: Building Container; you can click on the "Building Codespace" link to watch the logs
-* **Phase 2**: Building Langflow; the terminal will now show `Running postCreateCommand...`, similar to:
+* **Phase 2**: Building EarthMind; the terminal will now show `Running postCreateCommand...`, similar to:
 
 ```
 ✔ Finishing up...
 ⠸ Running postCreateCommand...
-  › sudo chown -R langflow .venv .mypy_cache src/frontend/node_modules src/frontend/build src/backend/base/langflow/frontend && make install_frontend && mak…
+  › sudo chown -R earthmind .venv .mypy_cache src/frontend/node_modules src/frontend/build src/backend/base/earthmind/frontend && make install_frontend && mak…
 ```
 
 Once completed, this terminal window will close.
@@ -39,21 +39,21 @@ Installation is now complete.
 
 ## Start up the Service
 
-Open a new Terminal, and type `uv run langflow run`.
+Open a new Terminal, and type `uv run earthmind run`.
 
 The service will start, and you will may notice a dialog in the lower right indicating there is a port available to connect to. However, the service will not be ready until you see the welcome banner:
 
 ```
 ╭───────────────────────────────────────────────────────────────────────╮
-│ Welcome to Langflow                                                   │
+│ Welcome to EarthMind                                                   │
 │                                                                       │
-│ 🌟 GitHub: Star for updates → https://github.com/langflow-ai/langflow  │
+│ 🌟 GitHub: Star for updates → https://github.com/earthmind-ai/earthmind  │
 │ 💬 Discord: Join for support → https://discord.com/invite/EqksyE2EX9   │
 │                                                                       │
-│ We collect anonymous usage data to improve Langflow.                  │
+│ We collect anonymous usage data to improve EarthMind.                  │
 │ To opt out, set: DO_NOT_TRACK=true in your environment.               │
 │                                                                       │
-│ 🟢 Open Langflow → http://localhost:7860                               │
+│ 🟢 Open EarthMind → http://localhost:7860                               │
 ╰───────────────────────────────────────────────────────────────────────╯
 ```
 

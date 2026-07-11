@@ -8,9 +8,9 @@ import sys
 import time
 
 import pytest
-from langflow.components.data import APIRequestComponent
-from langflow.components.models_and_agents import AgentComponent  # Backwards compatibility alias
-from langflow.components.openai import OpenAIModelComponent
+from earthmind.components.data import APIRequestComponent
+from earthmind.components.models_and_agents import AgentComponent  # Backwards compatibility alias
+from earthmind.components.openai import OpenAIModelComponent
 
 
 class TestDynamicImportIntegration:
@@ -20,7 +20,7 @@ class TestDynamicImportIntegration:
         """Test that component discovery mechanisms still work after refactor."""
         # This tests that the existing component discovery logic
         # can still find and load components
-        from langflow import components
+        from earthmind import components
 
         # Test that we can discover components through the main module
         openai_module = components.openai
@@ -32,10 +32,10 @@ class TestDynamicImportIntegration:
     def test_existing_import_patterns_work(self):
         """Test that all existing import patterns continue to work."""
         # Test direct imports
-        import langflow.components.data as data_comp
+        import earthmind.components.data as data_comp
 
         # Test module imports
-        import langflow.components.openai as openai_comp
+        import earthmind.components.openai as openai_comp
 
         # All should work
         assert OpenAIModelComponent is not None
@@ -49,7 +49,7 @@ class TestDynamicImportIntegration:
         # Test that we can create component instances
         # (Note: Some components may require specific initialization parameters)
 
-        from langflow.components.helpers import CalculatorComponent
+        from earthmind.components.helpers import CalculatorComponent
 
         # Should be able to access the class
         assert CalculatorComponent is not None
@@ -82,12 +82,12 @@ class TestDynamicImportIntegration:
     def test_multiple_import_styles_same_result(self):
         """Test that different import styles yield the same component."""
         # Import the same component in different ways
-        from langflow import components
-        from langflow.components.openai import OpenAIModelComponent as DirectImport
+        from earthmind import components
+        from earthmind.components.openai import OpenAIModelComponent as DirectImport
 
         dynamic_import = components.openai.OpenAIModelComponent
 
-        import langflow.components.openai as openai_module
+        import earthmind.components.openai as openai_module
 
         module_import = openai_module.OpenAIModelComponent
 
@@ -101,9 +101,9 @@ class TestDynamicImportIntegration:
         # This test measures the difference in import time
         # Fresh modules to test startup behavior
         modules_to_clean = [
-            "langflow.components.vectorstores",
-            "langflow.components.tools",
-            "langflow.components.langchain_utilities",
+            "earthmind.components.vectorstores",
+            "earthmind.components.tools",
+            "earthmind.components.langchain_utilities",
         ]
 
         for module_name in modules_to_clean:
@@ -112,7 +112,7 @@ class TestDynamicImportIntegration:
 
         # Time the import of a large module
         start_time = time.time()
-        from langflow.components import chroma
+        from earthmind.components import chroma
 
         import_time = time.time() - start_time
 
@@ -133,7 +133,7 @@ class TestDynamicImportIntegration:
 
     def test_memory_usage_efficiency(self):
         """Test that memory usage is more efficient with lazy loading."""
-        from langflow.components import processing
+        from earthmind.components import processing
 
         # Count currently loaded components
         initial_component_count = len([k for k in processing.__dict__ if k.endswith("Component")])
@@ -156,7 +156,7 @@ class TestDynamicImportIntegration:
 
     def test_error_handling_in_realistic_scenarios(self):
         """Test error handling in realistic usage scenarios."""
-        from langflow import components
+        from earthmind import components
 
         # Test accessing non-existent component category
         with pytest.raises(AttributeError):
@@ -168,8 +168,8 @@ class TestDynamicImportIntegration:
 
     def test_ide_autocomplete_support(self):
         """Test that IDE autocomplete support still works."""
-        import langflow.components.openai as openai_components
-        from langflow import components
+        import earthmind.components.openai as openai_components
+        from earthmind import components
 
         # __dir__ should return all available components/modules
         main_dir = dir(components)
@@ -185,7 +185,7 @@ class TestDynamicImportIntegration:
         """Test that concurrent access to components works correctly."""
         import threading
 
-        from langflow.components import helpers
+        from earthmind.components import helpers
 
         results = []
         errors = []
@@ -223,8 +223,8 @@ class TestDynamicImportIntegration:
         # circular dependency issues
 
         # These imports should work without circular import errors
-        from langflow import components
-        from langflow.components import openai
+        from earthmind import components
+        from earthmind.components import openai
 
         # Access components in different orders
         model1 = components.openai.OpenAIModelComponent
@@ -236,7 +236,7 @@ class TestDynamicImportIntegration:
 
     def test_large_scale_component_access(self):
         """Test accessing many components doesn't cause issues."""
-        from langflow.components import datastax
+        from earthmind.components import datastax
 
         # Access multiple components rapidly
         components_accessed = []
@@ -274,16 +274,16 @@ class TestDynamicImportIntegration:
         # Test all major import patterns that should still work
 
         # 1. Direct component imports
-        from langflow.components.data import APIRequestComponent
+        from earthmind.components.data import APIRequestComponent
 
         assert AgentComponent is not None
         assert APIRequestComponent is not None
 
         # 2. Module imports
         # 3. Main module access
-        import langflow.components as comp
-        import langflow.components.helpers as helpers_mod
-        import langflow.components.openai as openai_mod
+        import earthmind.components as comp
+        import earthmind.components.helpers as helpers_mod
+        import earthmind.components.openai as openai_mod
 
         # 4. Nested access
         nested_component = comp.openai.OpenAIModelComponent
@@ -296,7 +296,7 @@ class TestDynamicImportIntegration:
 
     def test_deprecated_astra_assistants_removed(self):
         """Test that deprecated Astra Assistants components are no longer importable."""
-        from langflow.components import datastax
+        from earthmind.components import datastax
 
         removed_components = [
             "AssistantsCreateAssistant",
@@ -312,7 +312,7 @@ class TestDynamicImportIntegration:
 
     def test_datastax_remaining_components_accessible(self):
         """Test that all non-deprecated datastax components are still accessible."""
-        from langflow.components import datastax
+        from earthmind.components import datastax
 
         expected_components = [
             "AstraDBVectorStoreComponent",
@@ -371,7 +371,7 @@ class TestDynamicImportIntegration:
 
     def test_datastax_dir_excludes_deprecated(self):
         """Test that dir(datastax) does not list deprecated components."""
-        from langflow.components import datastax
+        from earthmind.components import datastax
 
         exported = dir(datastax)
         deprecated = {

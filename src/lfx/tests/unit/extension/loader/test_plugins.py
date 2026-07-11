@@ -1,4 +1,4 @@
-"""Tests for manifest-first precedence over ``langflow.plugins``.
+"""Tests for manifest-first precedence over ``earthmind.plugins``.
 
 Covers the AC item: "package with manifest + legacy component entry-point
 loads its components ONCE via the manifest, not twice."  We model "loaded
@@ -94,7 +94,7 @@ def test_handles_files_none(tmp_path: Path) -> None:
 
 
 def test_finds_pyproject_only_distribution(tmp_path: Path) -> None:
-    """A distribution shipping pyproject.toml with [tool.langflow.extension] is found."""
+    """A distribution shipping pyproject.toml with [tool.earthmind.extension] is found."""
     dist = make_installed_pyproject_extension(tmp_path, "lfx-pyproject")
     roots = installed_extension_roots(distributions=[dist])
     assert "lfx-pyproject" in roots
@@ -102,7 +102,7 @@ def test_finds_pyproject_only_distribution(tmp_path: Path) -> None:
 
 
 def test_pyproject_without_extension_section_is_ignored(tmp_path: Path) -> None:
-    """A pyproject.toml without [tool.langflow.extension] is NOT treated as a manifest.
+    """A pyproject.toml without [tool.earthmind.extension] is NOT treated as a manifest.
 
     Defensive: many regular packages ship pyproject.toml; we must only
     accept it as a manifest source when the section actually exists.
@@ -113,7 +113,7 @@ def test_pyproject_without_extension_section_is_ignored(tmp_path: Path) -> None:
 
 
 def test_malformed_pyproject_section_surfaces_manifest_invalid(tmp_path: Path) -> None:
-    """A pyproject with [tool.langflow.extension] missing required fields surfaces manifest-invalid.
+    """A pyproject with [tool.earthmind.extension] missing required fields surfaces manifest-invalid.
 
     Detection MUST be presence-only: if the section exists but pydantic
     validation fails, the distribution is still discovered as a
@@ -150,7 +150,7 @@ def test_malformed_pyproject_section_suppresses_legacy_component_entry_point(tmp
     """Manifest-first precedence applies even when the pyproject manifest is malformed.
 
     If the section exists, the distribution is manifest-shipping by intent;
-    its legacy ``langflow.plugins`` component entry-points must be
+    its legacy ``earthmind.plugins`` component entry-points must be
     suppressed regardless of whether the manifest itself validates --
     otherwise the AC's "loaded once via manifest" promise breaks for any
     pyproject author who typo'd a field.
@@ -177,7 +177,7 @@ def test_extension_json_wins_over_pyproject(tmp_path: Path) -> None:
     }
     (pkg_dir / "extension.json").write_text(__import__("json").dumps(manifest), encoding="utf-8")
     (pkg_dir / "pyproject.toml").write_text(
-        '[project]\nname = "lfx-both"\n[tool.langflow.extension]\nid = "lfx-both"\n',
+        '[project]\nname = "lfx-both"\n[tool.earthmind.extension]\nid = "lfx-both"\n',
         encoding="utf-8",
     )
     dist = FakeDist(
@@ -195,7 +195,7 @@ def test_extension_json_wins_over_pyproject(tmp_path: Path) -> None:
 def test_pyproject_only_extension_loads_at_official_slot(tmp_path: Path) -> None:
     """End-to-end: a pyproject-only Extension is discovered by load_installed_extensions.
 
-    Without this path the AC's "extension.json or [tool.langflow.extension]"
+    Without this path the AC's "extension.json or [tool.earthmind.extension]"
     wording is half-implemented.
     """
     from lfx.extension import load_installed_extensions
@@ -223,7 +223,7 @@ def test_pyproject_only_extension_loads_at_official_slot(tmp_path: Path) -> None
 def test_pyproject_only_distribution_suppresses_legacy_component_entry_point(tmp_path: Path) -> None:
     """Manifest-first precedence applies to pyproject-form Extensions too.
 
-    A legacy ``langflow.plugins`` component entry-point on a pyproject-form
+    A legacy ``earthmind.plugins`` component entry-point on a pyproject-form
     manifest-shipping distribution must be skipped exactly like the JSON
     form, otherwise the same-distribution double-registration the AC
     forbids would still occur.
@@ -297,7 +297,7 @@ def test_uses_real_distributions_by_default(tmp_path: Path) -> None:
     """When ``skip`` is omitted, the filter consults the real environment.
 
     The default value calls into ``importlib.metadata.distributions``;
-    Langflow itself does not ship an extension manifest today, but if a
+    EarthMind itself does not ship an extension manifest today, but if a
     transitive test-only dep ever does, ``kept`` / ``skipped`` could pick
     up additional entries we don't control. Robust assertion: pin the
     synthetic ``ep``'s placement (kept, not skipped) without requiring the
@@ -359,7 +359,7 @@ def test_component_filter_skips_only_component_entry_points(tmp_path: Path) -> N
 def test_component_filter_keeps_components_on_non_manifest_distribution(tmp_path: Path) -> None:
     """A component EP on a distribution that does NOT ship a manifest stays kept.
 
-    The legacy ``langflow.plugins`` path is still the registration channel
+    The legacy ``earthmind.plugins`` path is still the registration channel
     for those distributions; filtering them would silently drop them.
     """
     other_dist = FakeDist("legacy-pkg", tmp_path, files=[Path("legacy_pkg/__init__.py")])

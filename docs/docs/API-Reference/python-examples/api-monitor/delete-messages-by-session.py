@@ -2,11 +2,11 @@ import os
 
 import requests
 
-url = f"{os.getenv('LANGFLOW_URL', '')}/api/v1/monitor/messages/session/different_session_id_2"
+url = f"{os.getenv('EARTHMIND_URL', '')}/api/v1/monitor/messages/session/different_session_id_2"
 
 headers = {
     "accept": "*/*",
-    "x-api-key": f"{os.getenv('LANGFLOW_API_KEY', '')}",
+    "x-api-key": f"{os.getenv('EARTHMIND_API_KEY', '')}",
 }
 
 response = requests.request("DELETE", url, headers=headers)

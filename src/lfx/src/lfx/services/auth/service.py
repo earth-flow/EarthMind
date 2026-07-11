@@ -1,4 +1,4 @@
-"""Default auth service for LFX (no database/JWT; use Langflow auth for full auth)."""
+"""Default auth service for LFX (no database/JWT; use EarthMind auth for full auth)."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ class AuthService(BaseAuthService):
     """Default LFX auth service.
 
     No database, JWT, or API key validation. For full auth, configure
-    auth_service = "langflow.services.auth.service:AuthService" in lfx.toml.
+    auth_service = "earthmind.services.auth.service:AuthService" in lfx.toml.
     """
 
     def __init__(self) -> None:

@@ -63,7 +63,7 @@ def activate_request_variables(variables: dict[str, str] | None) -> contextvars.
     """Bind *variables* for the current async task / thread.
 
     Pass ``None`` to mean "no active scope" — lookups then fall back to the
-    ``LANGFLOW_REQUEST_VARIABLES`` env var. An empty ``{}`` is an *active* empty
+    ``EARTHMIND_REQUEST_VARIABLES`` env var. An empty ``{}`` is an *active* empty
     scope that suppresses that env fallback, so callers normalizing an empty
     result should pass ``... or None`` to preserve it.
     """

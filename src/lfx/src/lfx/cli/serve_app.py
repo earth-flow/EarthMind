@@ -46,7 +46,7 @@ if TYPE_CHECKING:
     from lfx.cli.flow_store import FlowStore
     from lfx.graph import Graph
 
-# Security - use the same pattern as Langflow main API
+# Security - use the same pattern as EarthMind main API
 API_KEY_NAME = "x-api-key"
 
 # Constants for app factory env vars (used by uvicorn worker processes)
@@ -421,7 +421,7 @@ class UploadFlowRequest(BaseModel):
     name: str = Field(..., description="Human-readable name for the flow")
     data: dict = Field(..., description="Flow graph data — nodes and edges")
     description: str | None = Field(default=None, description="Optional flow description")
-    id: str | None = Field(default=None, description="Stable flow ID from Langflow export (must be a valid UUID)")
+    id: str | None = Field(default=None, description="Stable flow ID from EarthMind export (must be a valid UUID)")
     replace: bool = Field(default=False, description="Overwrite the existing flow if the ID already exists")
 
     @field_validator("id", mode="before")

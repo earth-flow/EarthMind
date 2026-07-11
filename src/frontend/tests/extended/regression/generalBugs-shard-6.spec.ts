@@ -29,16 +29,16 @@ test(
     await page.getByTestId("code-button-modal").last().click();
 
     const customCodeWithError = `
-# from langflow.field_typing import Data
-from langflow.custom import Component
-from langflow.io import MessageTextInput, Output
-from langflow.schema import Data
+# from earthmind.field_typing import Data
+from earthmind.custom import Component
+from earthmind.io import MessageTextInput, Output
+from earthmind.schema import Data
 import pytorch
 
 class CustomComponent(Component):
     display_name = "Custom Component"
     description = "Use as a template to create your own component."
-    documentation: str = "https://docs.langflow.org/components-custom-components"
+    documentation: str = "https://docs.earthmind.org/components-custom-components"
     icon = "custom_components"
     name = "CustomComponent"
 

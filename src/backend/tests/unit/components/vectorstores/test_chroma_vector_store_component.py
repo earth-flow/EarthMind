@@ -380,7 +380,7 @@ class TestChromaVectorStoreComponent(ComponentTestBaseWithoutClient):
         self, component_class: type[ChromaVectorStoreComponent], default_kwargs: dict[str, Any]
     ) -> None:
         """Test that complex metadata is properly filtered and simple types are preserved."""
-        from langflow.base.vectorstores.utils import chroma_collection_to_data
+        from earthmind.base.vectorstores.utils import chroma_collection_to_data
 
         # Create test data that covers the original error scenario and validation
         test_data = [

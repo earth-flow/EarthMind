@@ -2,7 +2,7 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
-from langflow.custom import Component
+from earthmind.custom import Component
 from lfx.components.cuga import CugaComponent
 from lfx.components.tools.calculator import CalculatorToolComponent
 

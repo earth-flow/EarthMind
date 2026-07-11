@@ -2,11 +2,11 @@ import os
 
 import requests
 
-url = f"{os.getenv('LANGFLOW_URL', '')}/api/v2/files/{os.getenv('FILE_ID', '')}"
+url = f"{os.getenv('EARTHMIND_URL', '')}/api/v2/files/{os.getenv('FILE_ID', '')}"
 
 headers = {
     "accept": "application/json",
-    "x-api-key": f"{os.getenv('LANGFLOW_API_KEY', '')}",
+    "x-api-key": f"{os.getenv('EARTHMIND_API_KEY', '')}",
 }
 
 response = requests.request("DELETE", url, headers=headers)

@@ -27,19 +27,19 @@ from lfx.graph.flow_builder.flow import empty_flow
 def _load_registry_user_aware() -> dict[str, dict]:
     """Return the base registry merged with the calling user's overlay.
 
-    Tries the langflow-side overlay (which reads the current_user_id
+    Tries the earthmind-side overlay (which reads the current_user_id
     ContextVar and walks ``<sandbox>/.components/*.py`` for that user).
     Falls back to the bare base registry when:
-        - the langflow package isn't installed alongside lfx (e.g., the
+        - the earthmind package isn't installed alongside lfx (e.g., the
           MCP server is running standalone),
         - no user is bound to the context.
 
-    Keeps the lfx package free of a hard dependency on the langflow
+    Keeps the lfx package free of a hard dependency on the earthmind
     code path while letting the agent's tools see user-registered
     Components when both packages are co-installed.
     """
     try:
-        from langflow.agentic.services.user_components_overlay import (
+        from earthmind.agentic.services.user_components_overlay import (
             load_registry_for_current_user,
         )
     except ImportError:

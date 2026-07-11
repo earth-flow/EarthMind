@@ -22,7 +22,7 @@
 ## 1. Overview
 
 ### Summary
-This feature provides automatic event loop configuration for Windows systems running Langflow with PostgreSQL databases, resolving incompatibility between psycopg (PostgreSQL async driver) and Windows' default ProactorEventLoop.
+This feature provides automatic event loop configuration for Windows systems running EarthMind with PostgreSQL databases, resolving incompatibility between psycopg (PostgreSQL async driver) and Windows' default ProactorEventLoop.
 
 ### Business Context
 Windows users experience application startup failures when using PostgreSQL as the database backend due to an incompatibility between the psycopg driver and Windows' default event loop implementation. This prevents Windows users from leveraging PostgreSQL's advanced features and scalability, limiting them to SQLite which may not meet enterprise requirements.
@@ -46,7 +46,7 @@ Platform Infrastructure - Database Connectivity Layer
 | SelectorEventLoop | Alternative Windows event loop using select() system call, compatible with psycopg | `asyncio.WindowsSelectorEventLoopPolicy` |
 | psycopg | PostgreSQL adapter for Python with async support | `postgresql+psycopg://` |
 | Event Loop Policy | Strategy pattern implementation controlling which event loop type is created | `asyncio.set_event_loop_policy()` |
-| Database URL | Connection string specifying database type, credentials, and location | `LANGFLOW_DATABASE_URL` |
+| Database URL | Connection string specifying database type, credentials, and location | `EARTHMIND_DATABASE_URL` |
 | Platform Detection | Runtime identification of the operating system | `platform.system()` |
 
 ---
@@ -59,7 +59,7 @@ Platform Infrastructure - Database Connectivity Layer
 - **Root Entity**: `WindowsPostgresHelper`
 - **Entities**: None (stateless helper)
 - **Value Objects**: 
-  - `LANGFLOW_DATABASE_URL` (constant)
+  - `EARTHMIND_DATABASE_URL` (constant)
   - `POSTGRESQL_PREFIXES` (tuple constant)
 - **Invariants**: 
   - Event loop policy must be set before any async database operations
@@ -80,7 +80,7 @@ Platform Infrastructure - Database Connectivity Layer
 ### Feature: Automatic Event Loop Configuration for Windows PostgreSQL
 
 **As a** Windows user  
-**I want** Langflow to automatically configure the correct event loop  
+**I want** EarthMind to automatically configure the correct event loop  
 **So that** I can use PostgreSQL without encountering startup errors
 
 ### Background
@@ -89,7 +89,7 @@ Platform Infrastructure - Database Connectivity Layer
 
 ### Scenario: Windows with PostgreSQL - Apply Fix
 - **Given** the operating system is "Windows"
-- **And** LANGFLOW_DATABASE_URL starts with "postgresql" or "postgres"
+- **And** EARTHMIND_DATABASE_URL starts with "postgresql" or "postgres"
 - **And** the current event loop policy is WindowsProactorEventLoopPolicy
 - **When** configure_windows_postgres_event_loop() is called
 - **Then** WindowsSelectorEventLoopPolicy is set as the event loop policy
@@ -98,7 +98,7 @@ Platform Infrastructure - Database Connectivity Layer
 
 ### Scenario: Windows with PostgreSQL - Already Configured
 - **Given** the operating system is "Windows"
-- **And** LANGFLOW_DATABASE_URL starts with "postgresql"
+- **And** EARTHMIND_DATABASE_URL starts with "postgresql"
 - **And** the current event loop policy is already WindowsSelectorEventLoopPolicy
 - **When** configure_windows_postgres_event_loop() is called
 - **Then** no changes are made to the event loop policy
@@ -106,14 +106,14 @@ Platform Infrastructure - Database Connectivity Layer
 
 ### Scenario: Windows with SQLite - No Fix Needed
 - **Given** the operating system is "Windows"
-- **And** LANGFLOW_DATABASE_URL is "sqlite:///test.db"
+- **And** EARTHMIND_DATABASE_URL is "sqlite:///test.db"
 - **When** configure_windows_postgres_event_loop() is called
 - **Then** no changes are made to the event loop policy
 - **And** the function returns False
 
 ### Scenario: Linux with PostgreSQL - No Fix Needed
 - **Given** the operating system is "Linux"
-- **And** LANGFLOW_DATABASE_URL starts with "postgresql"
+- **And** EARTHMIND_DATABASE_URL starts with "postgresql"
 - **When** configure_windows_postgres_event_loop() is called
 - **Then** no changes are made to the event loop policy
 - **And** the function returns False
@@ -121,14 +121,14 @@ Platform Infrastructure - Database Connectivity Layer
 ### Scenario: Docker Container - No Fix Applied
 - **Given** the operating system is "Linux" (typical in Docker)
 - **And** DOCKER_CONTAINER environment variable is set
-- **And** LANGFLOW_DATABASE_URL starts with "postgresql"
+- **And** EARTHMIND_DATABASE_URL starts with "postgresql"
 - **When** configure_windows_postgres_event_loop() is called
 - **Then** no changes are made to the event loop policy
 - **And** the function returns False
 
 ### Scenario: Missing Database URL
 - **Given** the operating system is "Windows"
-- **And** LANGFLOW_DATABASE_URL is not set
+- **And** EARTHMIND_DATABASE_URL is not set
 - **When** configure_windows_postgres_event_loop() is called
 - **Then** no changes are made to the event loop policy
 - **And** the function returns False
@@ -171,12 +171,12 @@ Create a centralized helper function `configure_windows_postgres_event_loop()` t
 **Status**: Accepted
 
 #### Context
-The event loop must be configured before any async operations or database imports. Langflow has multiple entry points: package import, launcher, main module, and service initialization.
+The event loop must be configured before any async operations or database imports. EarthMind has multiple entry points: package import, launcher, main module, and service initialization.
 
 #### Decision
-Apply configuration at all critical entry points to ensure coverage regardless of how Langflow is started:
+Apply configuration at all critical entry points to ensure coverage regardless of how EarthMind is started:
 - `__init__.py` - Package initialization
-- `langflow_launcher.py` - CLI launcher
+- `earthmind_launcher.py` - CLI launcher
 - `__main__.py` - Direct module execution
 - `DatabaseService.__init__` - Service initialization
 - `initialize_services()` - Service orchestration
@@ -306,7 +306,7 @@ False  # Configuration not needed or already configured
 - None required - this is a client-side connection configuration
 
 ### 8.3 Rollback Plan
-1. Revert to previous version of Langflow
+1. Revert to previous version of EarthMind
 2. Windows + PostgreSQL users must manually set event loop via environment configuration
 3. Or use SQLite as temporary workaround
 
@@ -328,14 +328,14 @@ False  # Configuration not needed or already configured
 C4Context
   title System Context diagram for Windows PostgreSQL Event Loop Fix
   
-  Person(dev, "Developer", "Windows user running Langflow")
-  System(langflow, "Langflow", "AI application development platform")
+  Person(dev, "Developer", "Windows user running EarthMind")
+  System(earthmind, "EarthMind", "AI application development platform")
   System_Ext(postgres, "PostgreSQL", "Database server")
   System_Ext(sqlite, "SQLite", "File-based database")
   
-  Rel(dev, langflow, "Develops AI apps")
-  Rel(langflow, postgres, "Stores data (with event loop fix)")
-  Rel(langflow, sqlite, "Alternative storage (no fix needed)")
+  Rel(dev, earthmind, "Develops AI apps")
+  Rel(earthmind, postgres, "Stores data (with event loop fix)")
+  Rel(earthmind, sqlite, "Alternative storage (no fix needed)")
 ```
 
 ### 9.2 Container Diagram (Level 2)
@@ -407,15 +407,15 @@ graph TB
 ### For Windows + PostgreSQL Users
 No action required. The fix is automatically applied when:
 1. Operating system is Windows
-2. `LANGFLOW_DATABASE_URL` starts with `postgresql://` or `postgres://`
+2. `EARTHMIND_DATABASE_URL` starts with `postgresql://` or `postgres://`
 
 ### For Other Configurations
 No changes or impact. The fix only activates for Windows + PostgreSQL combinations.
 
 ### Environment Variables
-Ensure `LANGFLOW_DATABASE_URL` is properly set in your `.env` file:
+Ensure `EARTHMIND_DATABASE_URL` is properly set in your `.env` file:
 ```env
-LANGFLOW_DATABASE_URL=postgresql://user:password@localhost:5432/langflow
+EARTHMIND_DATABASE_URL=postgresql://user:password@localhost:5432/earthmind
 ```
 
 ---
@@ -428,7 +428,7 @@ LANGFLOW_DATABASE_URL=postgresql://user:password@localhost:5432/langflow
 
 **Solutions**:
 1. Ensure you're using the latest version with this fix
-2. Check that `LANGFLOW_DATABASE_URL` is properly set before application start
+2. Check that `EARTHMIND_DATABASE_URL` is properly set before application start
 3. Verify no other code is resetting the event loop policy
 
 ### Issue: Performance Degradation on Windows

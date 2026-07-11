@@ -4,7 +4,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
-from langflow.custom import Component
+from earthmind.custom import Component
 from lfx.base.models.anthropic_constants import ANTHROPIC_MODELS
 from lfx.base.models.openai_constants import (
     OPENAI_CHAT_MODEL_NAMES,

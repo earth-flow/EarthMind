@@ -4,7 +4,7 @@ The route is always mounted (no import-time dependency on the env file
 having been loaded yet); a per-request dependency reads the live
 ``settings.enable_extension_reload`` and returns ``404`` when off.  This
 keeps Mode B/C deployments indistinguishable from "not mounted" while
-allowing ``--env-file LANGFLOW_ENABLE_EXTENSION_RELOAD=true`` to opt
+allowing ``--env-file EARTHMIND_ENABLE_EXTENSION_RELOAD=true`` to opt
 into the route at runtime.
 """
 
@@ -14,7 +14,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from fastapi import HTTPException, status
-from langflow.api.v1.extensions import _require_extension_reload_enabled
+from earthmind.api.v1.extensions import _require_extension_reload_enabled
 
 
 def _make_settings(*, enable: bool):
@@ -34,7 +34,7 @@ def test_guard_raises_404_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None
     drop the hint that tells the user how to enable the flag.
     """
     monkeypatch.setattr(
-        "langflow.api.v1.extensions.get_settings_service",
+        "earthmind.api.v1.extensions.get_settings_service",
         lambda: _make_settings(enable=False),
     )
 
@@ -47,7 +47,7 @@ def test_guard_raises_404_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None
     # Full ExtensionError envelope -- code + hint + docs link must all
     # survive the trip through HTTPException.
     assert detail["code"] == "extension-reload-disabled"
-    assert "LANGFLOW_ENABLE_EXTENSION_RELOAD" in detail["message"]
+    assert "EARTHMIND_ENABLE_EXTENSION_RELOAD" in detail["message"]
     assert detail["hint"]
     assert detail["ref_url"].endswith("#extension-reload-disabled")
 
@@ -55,7 +55,7 @@ def test_guard_raises_404_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None
 def test_guard_passes_when_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
     """Guard must be a no-op when the flag is on."""
     monkeypatch.setattr(
-        "langflow.api.v1.extensions.get_settings_service",
+        "earthmind.api.v1.extensions.get_settings_service",
         lambda: _make_settings(enable=True),
     )
 
@@ -69,7 +69,7 @@ def test_guard_treats_missing_attribute_as_disabled(monkeypatch: pytest.MonkeyPa
     service = MagicMock()
     service.settings = settings
     monkeypatch.setattr(
-        "langflow.api.v1.extensions.get_settings_service",
+        "earthmind.api.v1.extensions.get_settings_service",
         lambda: service,
     )
 
@@ -82,12 +82,12 @@ def test_guard_treats_missing_attribute_as_disabled(monkeypatch: pytest.MonkeyPa
 def test_route_is_mounted_unconditionally() -> None:
     """The reload route must be registered regardless of env-var state.
 
-    Regression: an earlier implementation read ``LANGFLOW_ENABLE_EXTENSION_RELOAD``
+    Regression: an earlier implementation read ``EARTHMIND_ENABLE_EXTENSION_RELOAD``
     at import time, which meant ``--env-file`` could not turn the route on
-    because ``langflow.__main__`` imports the router before ``load_dotenv``
+    because ``earthmind.__main__`` imports the router before ``load_dotenv``
     runs.  Mounting unconditionally + runtime guard fixes this.
     """
-    from langflow.api.router import router
+    from earthmind.api.router import router
 
     def collect_paths(routes, prefix: str = "") -> list[str]:
         out: list[str] = []
@@ -113,9 +113,9 @@ def test_no_runtime_mutation_routes() -> None:
     Fix hint:
       Mode B/C (Docker/self-hosted): rebuild the image with the new package.
       Mode A (local dev): use ``lfx extension dev`` which sets
-      LANGFLOW_ENABLE_EXTENSION_RELOAD=true.
+      EARTHMIND_ENABLE_EXTENSION_RELOAD=true.
     """
-    from langflow.api.router import router
+    from earthmind.api.router import router
 
     def collect_paths(routes, prefix: str = "") -> list[str]:
         out: list[str] = []
@@ -134,5 +134,5 @@ def test_no_runtime_mutation_routes() -> None:
         "Runtime install/uninstall/registry mutation is not permitted on a live server. "
         "Fix hint — Mode B/C (Docker/self-hosted): rebuild the image with the new package. "
         "Mode A (local dev): use `lfx extension dev` which sets "
-        "LANGFLOW_ENABLE_EXTENSION_RELOAD=true."
+        "EARTHMIND_ENABLE_EXTENSION_RELOAD=true."
     )

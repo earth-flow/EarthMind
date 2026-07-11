@@ -6,7 +6,7 @@ slug: /api-openai-responses
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Langflow includes an endpoint that is compatible with the [OpenAI Responses API](https://platform.openai.com/docs/api-reference/responses).
+EarthMind includes an endpoint that is compatible with the [OpenAI Responses API](https://platform.openai.com/docs/api-reference/responses).
 It is available at `POST /api/v1/responses`.
 
 This endpoint allows you to use existing OpenAI client libraries with minimal code changes.
@@ -15,7 +15,7 @@ You can find Flow IDs in the code snippets on the [**API access** pane](/concept
 
 ## Prerequisites
 
-To be compatible with Langflow's OpenAI Responses API endpoint, your flow and request must adhere to the following requirements:
+To be compatible with EarthMind's OpenAI Responses API endpoint, your flow and request must adhere to the following requirements:
 
 - **Chat Input**: Your flow must contain a **Chat Input** component.
 Flows without this component return an error when passed to this endpoint.
@@ -28,11 +28,11 @@ For more information, see [API keys and authentication](/api-keys-and-authentica
 ### Additional configuration for OpenAI client libraries
 
 This endpoint is compatible with OpenAI's API, but requires special configuration when using OpenAI client libraries.
-Langflow uses `x-api-key` headers for authentication, while OpenAI uses `Authorization: Bearer` headers.
-When sending requests to Langflow with OpenAI client libraries, you must configure custom headers and include an `api_key` configuration.
+EarthMind uses `x-api-key` headers for authentication, while OpenAI uses `Authorization: Bearer` headers.
+When sending requests to EarthMind with OpenAI client libraries, you must configure custom headers and include an `api_key` configuration.
 The `api_key` parameter can have any value, such as `"dummy-api-key"` in the client examples, as the actual authentication is handled through the `default_headers` configuration.
 
-In the following examples, replace the values for `LANGFLOW_SERVER_URL`, `LANGFLOW_API_KEY`, and `FLOW_ID` with values from your deployment.
+In the following examples, replace the values for `EARTHMIND_SERVER_URL`, `EARTHMIND_API_KEY`, and `FLOW_ID` with values from your deployment.
 <Tabs groupId="client">
 <TabItem value="Python" label="OpenAI Python Client" default>
 
@@ -40,9 +40,9 @@ In the following examples, replace the values for `LANGFLOW_SERVER_URL`, `LANGFL
 from openai import OpenAI
 
 client = OpenAI(
-  base_url="LANGFLOW_SERVER_URL/api/v1/",
-  default_headers={"x-api-key": "LANGFLOW_API_KEY"},
-  api_key="dummy-api-key" # Required by OpenAI SDK but not used by Langflow
+  base_url="EARTHMIND_SERVER_URL/api/v1/",
+  default_headers={"x-api-key": "EARTHMIND_API_KEY"},
+  api_key="dummy-api-key" # Required by OpenAI SDK but not used by EarthMind
 )
 
 response = client.responses.create(
@@ -60,11 +60,11 @@ print(response.output_text)
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "LANGFLOW_SERVER_URL/api/v1/",
+  baseURL: "EARTHMIND_SERVER_URL/api/v1/",
   defaultHeaders: {
-    "x-api-key": "LANGFLOW_API_KEY"
+    "x-api-key": "EARTHMIND_API_KEY"
   },
-  apiKey: "dummy-api-key" // Required by OpenAI SDK but not used by Langflow
+  apiKey: "dummy-api-key" // Required by OpenAI SDK but not used by EarthMind
 });
 
 const response = await client.responses.create({
@@ -102,8 +102,8 @@ If you need these in a different format or want a downloadable calendar, let me 
 
 ```bash
 curl -X POST \
-  "$LANGFLOW_SERVER_URL/api/v1/responses" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  "$EARTHMIND_SERVER_URL/api/v1/responses" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "$YOUR_FLOW_ID",
@@ -116,9 +116,9 @@ curl -X POST \
 
 | Header | Required | Description | Example |
 |--------|----------|-------------|---------|
-| `x-api-key` | Yes | Your Langflow API key for authentication | `"sk-..."` |
+| `x-api-key` | Yes | Your EarthMind API key for authentication | `"sk-..."` |
 | `Content-Type` | Yes | Specifies the JSON format | `"application/json"` |
-| `X-LANGFLOW-GLOBAL-VAR-*` | No | Global variables for the flow | `"X-LANGFLOW-GLOBAL-VAR-API_KEY: sk-..."` For more, see [Pass global variables to your flows in headers](#global-var). |
+| `X-EARTHMIND-GLOBAL-VAR-*` | No | Global variables for the flow | `"X-EARTHMIND-GLOBAL-VAR-API_KEY: sk-..."` For more, see [Pass global variables to your flows in headers](#global-var). |
 
 ### Request body
 
@@ -174,7 +174,7 @@ curl -X POST \
 
 ### Response body
 
-The response contains fields that Langflow sets dynamically and fields that use OpenAI-compatible defaults.
+The response contains fields that EarthMind sets dynamically and fields that use OpenAI-compatible defaults.
 
 The OpenAI-compatible default values shown above are currently fixed and cannot be modified via the request.
 They are included to maintain API compatibility and provide a consistent response format.
@@ -182,7 +182,7 @@ They are included to maintain API compatibility and provide a consistent respons
 For your requests, you will only be setting the dynamic fields.
 The default values are documented here for completeness and to show the full response structure.
 
-Fields set dynamically by Langflow:
+Fields set dynamically by EarthMind:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -225,8 +225,8 @@ When you set `"stream": true` with your request, the API returns a stream where 
 
 ```bash
 curl -X POST \
-  "$LANGFLOW_SERVER_URL/api/v1/responses" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  "$EARTHMIND_SERVER_URL/api/v1/responses" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "$FLOW_ID",
@@ -291,8 +291,8 @@ First Message:
 
 ```bash
 curl -X POST \
-  "http://$LANGFLOW_SERVER_URL/api/v1/responses" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  "http://$EARTHMIND_SERVER_URL/api/v1/responses" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "$FLOW_ID",
@@ -335,8 +335,8 @@ Follow-up message:
 
 ```bash
 curl -X POST \
-  "http://$LANGFLOW_SERVER_URL/api/v1/responses" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  "http://$EARTHMIND_SERVER_URL/api/v1/responses" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "ced2ec91-f325-4bf0-8754-f3198c2b1563",
@@ -380,8 +380,8 @@ Optionally, you can use your own session ID values for the `previous_response_id
 
 ```bash
 curl -X POST \
-  "http://$LANGFLOW_SERVER_URL/api/v1/responses" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  "http://$EARTHMIND_SERVER_URL/api/v1/responses" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "ced2ec91-f325-4bf0-8754-f3198c2b1563",
@@ -444,9 +444,9 @@ To get the raw `results` of each tool execution, add  `include: ["tool_call.resu
 
 ```bash
 curl -X POST \
-  "http://$LANGFLOW_SERVER_URL/api/v1/responses" \
+  "http://$EARTHMIND_SERVER_URL/api/v1/responses" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -d '{
     "model": "FLOW_ID",
     "input": "Calculate 23 * 15 and show me the result",
@@ -539,20 +539,20 @@ For example:
 Global variables allow you to pass dynamic values to your flows that can be used by components within that flow run.
 This is useful for passing API keys, user IDs, or any other configuration that might change between requests.
 
-The `/responses` endpoint accepts global variables as custom HTTP headers with the format `X-LANGFLOW-GLOBAL-VAR-{VARIABLE_NAME}`.
+The `/responses` endpoint accepts global variables as custom HTTP headers with the format `X-EARTHMIND-GLOBAL-VAR-{VARIABLE_NAME}`.
 Variables are only available during this specific request execution and aren't persisted.
 Variable names are automatically converted to uppercase.
 
-This example demonstrates passing an `OPENAI_API_KEY` variable, which is a variable Langflow automatically detects from environment variables, with two custom variables for `USER_ID` and `ENVIRONMENT`. The variables don't have to be created in Langflow's Global Variables section - you can pass any variable name in the `X-LANGFLOW-GLOBAL-VAR-{VARIABLE_NAME}` header format.
+This example demonstrates passing an `OPENAI_API_KEY` variable, which is a variable EarthMind automatically detects from environment variables, with two custom variables for `USER_ID` and `ENVIRONMENT`. The variables don't have to be created in EarthMind's Global Variables section - you can pass any variable name in the `X-EARTHMIND-GLOBAL-VAR-{VARIABLE_NAME}` header format.
 
 ```bash
 curl -X POST \
-  "$LANGFLOW_SERVER_URL/api/v1/responses" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  "$EARTHMIND_SERVER_URL/api/v1/responses" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -H "Content-Type: application/json" \
-  -H "X-LANGFLOW-GLOBAL-VAR-OPENAI_API_KEY: sk-..." \
-  -H "X-LANGFLOW-GLOBAL-VAR-USER_ID: user123" \
-  -H "X-LANGFLOW-GLOBAL-VAR-ENVIRONMENT: production" \
+  -H "X-EARTHMIND-GLOBAL-VAR-OPENAI_API_KEY: sk-..." \
+  -H "X-EARTHMIND-GLOBAL-VAR-USER_ID: user123" \
+  -H "X-EARTHMIND-GLOBAL-VAR-ENVIRONMENT: production" \
   -d '{
     "model": "your-flow-id",
     "input": "Hello"
@@ -590,9 +590,9 @@ curl -X POST \
 
 </details>
 
-Variables passed with `X-LANGFLOW-GLOBAL-VAR-{VARIABLE_NAME}` are always available to your flow, regardless of whether they exist in the database.
+Variables passed with `X-EARTHMIND-GLOBAL-VAR-{VARIABLE_NAME}` are always available to your flow, regardless of whether they exist in the database.
 
-If your flow components reference variables that aren't provided in headers or your Langflow database, the flow fails by default.
+If your flow components reference variables that aren't provided in headers or your EarthMind database, the flow fails by default.
 To avoid this, you can set the `FALLBACK_TO_ENV_VARS` environment variable is `true`, which allows the flow to use values from the `.env` file if they aren't otherwise specified.
 
 In the above example, `OPENAI_API_KEY` will fall back to the database variable if not provided in the header.
@@ -616,8 +616,8 @@ The `usage` field is always present in the response, either with token counts or
 from openai import OpenAI
 
 client = OpenAI(
-  base_url="LANGFLOW_SERVER_URL/api/v1/",
-  default_headers={"x-api-key": "LANGFLOW_API_KEY"},
+  base_url="EARTHMIND_SERVER_URL/api/v1/",
+  default_headers={"x-api-key": "EARTHMIND_API_KEY"},
   api_key="dummy-api-key"
 )
 
@@ -642,9 +642,9 @@ else:
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "LANGFLOW_SERVER_URL/api/v1/",
+  baseURL: "EARTHMIND_SERVER_URL/api/v1/",
   defaultHeaders: {
-    "x-api-key": "LANGFLOW_API_KEY"
+    "x-api-key": "EARTHMIND_API_KEY"
   },
   apiKey: "dummy-api-key"
 });
@@ -669,8 +669,8 @@ if (response.usage) {
 
 ```bash
 curl -X POST \
-  "$LANGFLOW_SERVER_URL/api/v1/responses" \
-  -H "x-api-key: $LANGFLOW_API_KEY" \
+  "$EARTHMIND_SERVER_URL/api/v1/responses" \
+  -H "x-api-key: $EARTHMIND_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "FLOW_ID",

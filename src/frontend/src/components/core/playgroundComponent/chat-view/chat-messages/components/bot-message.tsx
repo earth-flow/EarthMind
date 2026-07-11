@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import LangflowLogo from "@/assets/LangflowLogo.svg?react";
+import EarthMindLogo from "@/assets/EarthMindLogo.svg?react";
 import IconComponent, {
   ForwardedIconComponent,
 } from "@/components/common/genericIconComponent";
@@ -148,7 +148,7 @@ export const BotMessage = memo(
                   }
                 >
                   <div className="flex h-5 w-5 items-center justify-center">
-                    <LangflowLogo className="h-4 w-4 text-black" />
+                    <EarthMindLogo className="h-4 w-4 text-black" />
                   </div>
                 </div>
               )}

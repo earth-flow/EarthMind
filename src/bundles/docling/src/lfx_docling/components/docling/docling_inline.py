@@ -151,7 +151,7 @@ class DoclingInlineComponent(BaseFileComponent):
                                 "ok": False,
                                 "error": (
                                     "langchain-docling is not installed. Install it with "
-                                    "`uv pip install 'langflow[docling-image-description]'` or "
+                                    "`uv pip install 'earthmind[docling-image-description]'` or "
                                     "`uv pip install 'lfx-docling[image-description]'`."
                                 )
                             }))
@@ -248,7 +248,7 @@ class DoclingInlineComponent(BaseFileComponent):
 
         if importlib.util.find_spec("docling") is None:
             msg = (
-                "Docling is an optional dependency. Install with `uv pip install 'langflow[docling]'` or "
+                "Docling is an optional dependency. Install with `uv pip install 'earthmind[docling]'` or "
                 "`uv pip install 'lfx-docling[local]'`."
             )
             raise ImportError(msg)

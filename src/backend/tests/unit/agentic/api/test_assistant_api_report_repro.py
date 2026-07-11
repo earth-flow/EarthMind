@@ -1,4 +1,4 @@
-"""Reproduction tests for the F2 Langflow Assistant API bug report (2026-06-02).
+"""Reproduction tests for the F2 EarthMind Assistant API bug report (2026-06-02).
 
 Each test pins the CURRENT behavior of a reported issue so the fix has a
 failing test to flip:
@@ -7,7 +7,7 @@ failing test to flip:
             even though configured_providers is populated.
   Issue 2 — POST /agentic/assist runs the LLM (HTTP 200) on an unknown or
             cross-user flow_id instead of rejecting with 404/403.
-  Issue 3 — POST /agentic/execute/LangflowAssistant returns HTTP 500 for a
+  Issue 3 — POST /agentic/execute/EarthMindAssistant returns HTTP 500 for a
             valid assistant flow file (missing provider/model context).
 
 The endpoint tests need at least one configured provider; OPENAI_API_KEY from
@@ -20,7 +20,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 import pytest
-from langflow.services.database.models.flow.model import Flow
+from earthmind.services.database.models.flow.model import Flow
 from lfx.services.deps import session_scope
 
 from tests.api_keys import has_api_key
@@ -95,6 +95,6 @@ async def test_assist_rejects_cross_user_flow_id(client, active_user, user_two_a
 @_NEEDS_KEY
 async def test_execute_named_assistant_flow_is_graceful_not_500(client, logged_in_headers):
     """Issue 3: executing the built-in assistant flow must not 500."""
-    body = {"flow_id": str(uuid4()), "input_value": "In one short sentence, what is Langflow?"}
-    response = await client.post("api/v1/agentic/execute/LangflowAssistant", json=body, headers=logged_in_headers)
+    body = {"flow_id": str(uuid4()), "input_value": "In one short sentence, what is EarthMind?"}
+    response = await client.post("api/v1/agentic/execute/EarthMindAssistant", json=body, headers=logged_in_headers)
     assert response.status_code != 500, response.text

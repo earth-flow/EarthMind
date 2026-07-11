@@ -21,12 +21,12 @@ uv run python src/backend/tests/stress/stress_telemetry_writes.py \
 
 ```bash
 # Start a throwaway Postgres
-docker run --rm -d --name langflow-pg-test -p 55432:5432 \
-    -e POSTGRES_PASSWORD=langflow -e POSTGRES_USER=langflow \
-    -e POSTGRES_DB=langflow postgres:16
+docker run --rm -d --name earthmind-pg-test -p 55432:5432 \
+    -e POSTGRES_PASSWORD=earthmind -e POSTGRES_USER=earthmind \
+    -e POSTGRES_DB=earthmind postgres:16
 
-export DB_URL="postgresql+psycopg://langflow:langflow@localhost:55432/langflow"  # pragma: allowlist secret
-# (or any standard postgres DSN, e.g. "$LANGFLOW_DATABASE_URL" if set)
+export DB_URL="postgresql+psycopg://earthmind:earthmind@localhost:55432/earthmind"  # pragma: allowlist secret
+# (or any standard postgres DSN, e.g. "$EARTHMIND_DATABASE_URL" if set)
 uv run python src/backend/tests/stress/stress_telemetry_writes.py \
     --concurrency 200 --seconds 15
 ```
@@ -34,8 +34,8 @@ uv run python src/backend/tests/stress/stress_telemetry_writes.py \
 ## Toggle the writer off to reproduce the legacy failure mode
 
 ```bash
-LANGFLOW_TELEMETRY_WRITER_ENABLED=false \
-LANGFLOW_DB_CONNECTION_SETTINGS='{"pool_size":5,"max_overflow":5,"pool_timeout":3}' \
+EARTHMIND_TELEMETRY_WRITER_ENABLED=false \
+EARTHMIND_DB_CONNECTION_SETTINGS='{"pool_size":5,"max_overflow":5,"pool_timeout":3}' \
     uv run python src/backend/tests/stress/stress_telemetry_writes.py \
         --concurrency 500 --seconds 15
 ```

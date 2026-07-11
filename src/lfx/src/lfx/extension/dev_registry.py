@@ -2,13 +2,13 @@
 
 When an author types ``lfx extension dev <path>``, we don't ship the
 Extension via pip; instead we record the absolute path in a small JSON
-state file, then hand off to ``langflow run``.  At server startup, the
+state file, then hand off to ``earthmind run``.  At server startup, the
 loader reads this state file and registers each surviving directory at
 the ``official`` slot via :func:`lfx.extension.loader.load_extension`.
 Paths that have moved or been deleted surface as
 ``local-extension-missing`` warnings rather than aborting startup.
 
-State file shape (kebab-case path under the langflow user-cache dir)::
+State file shape (kebab-case path under the earthmind user-cache dir)::
 
     <user_cache_dir>/extensions/dev_extensions.json
 
@@ -28,7 +28,7 @@ writer is the ``extension dev`` CLI invoked synchronously by a developer.
 Scope notes:
 
     - This module only writes / reads / lists the state file; the actual
-      registration is consumed by Langflow's startup hook.  The runtime
+      registration is consumed by EarthMind's startup hook.  The runtime
       "remove" path (``extension dev --unregister``) is a deliberate
       non-goal for v0; authors clean up by deleting the state file or
       the directory.
@@ -36,7 +36,7 @@ Scope notes:
       the @official slot mid-run; the reload UX itself ships there.
     - Installed-package discovery keeps its own primitives and is
       orthogonal -- both flows produce ``LoadResult`` lists that
-      Langflow startup merges in the same step.
+      EarthMind startup merges in the same step.
 """
 
 from __future__ import annotations
@@ -77,23 +77,23 @@ def _default_state_dir() -> Path:
     """Return the directory in which the dev registry lives.
 
     Resolution order:
-        1. ``LANGFLOW_DEV_EXTENSIONS_DIR`` (test seam + override).
-        2. ``LANGFLOW_CONFIG_DIR/extensions`` if ``LANGFLOW_CONFIG_DIR`` is set.
-        3. ``platformdirs.user_cache_dir("langflow", "langflow")/extensions``.
+        1. ``EARTHMIND_DEV_EXTENSIONS_DIR`` (test seam + override).
+        2. ``EARTHMIND_CONFIG_DIR/extensions`` if ``EARTHMIND_CONFIG_DIR`` is set.
+        3. ``platformdirs.user_cache_dir("earthmind", "earthmind")/extensions``.
 
     Created lazily on first write.
     """
-    override = os.environ.get("LANGFLOW_DEV_EXTENSIONS_DIR")
+    override = os.environ.get("EARTHMIND_DEV_EXTENSIONS_DIR")
     if override:
         return Path(override)
 
-    config_dir = os.environ.get("LANGFLOW_CONFIG_DIR")
+    config_dir = os.environ.get("EARTHMIND_CONFIG_DIR")
     if config_dir:
         return Path(config_dir) / "extensions"
 
     from platformdirs import user_cache_dir
 
-    return Path(user_cache_dir("langflow", "langflow")) / "extensions"
+    return Path(user_cache_dir("earthmind", "earthmind")) / "extensions"
 
 
 def state_file_path(state_dir: Path | None = None) -> Path:
@@ -139,7 +139,7 @@ def _read_state(state_path: Path) -> list[DevExtensionEntry]:
     * **File absent** -- legitimate empty registry, return ``[]`` silently.
     * **File present but unreadable** (permission error etc.) -- log a
       WARNING so the operator does not silently lose every registered dev
-      extension on the next ``langflow run`` with no diagnostic.  A
+      extension on the next ``earthmind run`` with no diagnostic.  A
       ``PermissionError`` does NOT self-heal; treating it as an empty
       registry was burning real debug cycles in practice.
     * **File present but corrupt JSON / wrong shape** -- log a WARNING
@@ -204,7 +204,7 @@ def _write_state(state_path: Path, entries: Iterable[DevExtensionEntry]) -> None
     The state file is created with mode 0600 (owner read/write only).
     The file feeds arbitrary ``path`` strings straight into the loader's
     code-loading path at startup, so any process able to write
-    ``dev_extensions.json`` gets code loaded at the next ``langflow run``;
+    ``dev_extensions.json`` gets code loaded at the next ``earthmind run``;
     restricting permissions to the owning developer is the trust boundary
     we can enforce at the filesystem level.
     """
@@ -358,7 +358,7 @@ def dev_extension_component_paths(*, state_dir: Path | None = None) -> tuple[lis
           Callers should log these but should NOT abort startup.
 
     Kept for callers that only need bundle directories (tools that walk
-    paths, IDE integrations).  The Langflow startup path itself uses
+    paths, IDE integrations).  The EarthMind startup path itself uses
     :func:`load_dev_extensions` so dev extensions land in the
     BundleRegistry alongside installed extensions and become reloadable.
     """
@@ -366,7 +366,7 @@ def dev_extension_component_paths(*, state_dir: Path | None = None) -> tuple[lis
     errors: list[ExtensionError] = []
     for result in load_dev_extensions(state_dir=state_dir):
         # Forward EVERY warning, not just local-extension-missing: the
-        # caller (Langflow's lifespan hook) is the only thing that turns
+        # caller (EarthMind's lifespan hook) is the only thing that turns
         # these into a log line, so dropping any of them silences a real
         # signal (e.g. duplicate-component-name, duplicate-inline-bundle).
         errors.extend(result.warnings)

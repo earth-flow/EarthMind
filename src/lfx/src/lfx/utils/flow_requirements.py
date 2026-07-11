@@ -1,4 +1,4 @@
-"""Generate requirements.txt from a Langflow flow JSON.
+"""Generate requirements.txt from a EarthMind flow JSON.
 
 Analyzes a flow's component code and configuration to determine the minimal
 set of PyPI packages needed to run that flow on a standalone LFX runner.
@@ -75,9 +75,9 @@ MODULE_EXTRA_DEPS: dict[str, list[str]] = {
     "bs4": ["lxml", "tabulate"],
 }
 
-# Import names that are internal to the lfx/langflow runtime and should
+# Import names that are internal to the lfx/earthmind runtime and should
 # never appear as separate requirements.
-_INTERNAL_IMPORT_NAMES: frozenset[str] = frozenset({"lfx", "langflow", "langflow_base"})
+_INTERNAL_IMPORT_NAMES: frozenset[str] = frozenset({"lfx", "earthmind", "earthmind_base"})
 
 # Fields in a component template that may contain provider selection info
 # NOTE: Look back into how the dynamic components (LanguageModel, EmbeddingModel) are handled.
@@ -452,7 +452,7 @@ def _extract_component_requirements(node: dict) -> tuple[set[str], set[str]]:
                 # Skip stdlib
                 if imp in STDLIB_MODULES:
                     continue
-                # Skip lfx / langflow internal imports - lfx provides these
+                # Skip lfx / earthmind internal imports - lfx provides these
                 # interfaces at runtime so they should never be listed as
                 # separate requirements.
                 if imp in _INTERNAL_IMPORT_NAMES:
@@ -490,10 +490,10 @@ def generate_requirements_from_flow(
     include_lfx: bool = True,
     pin_versions: bool = True,
 ) -> list[str]:
-    """Generate a requirements list from a Langflow flow JSON.
+    """Generate a requirements list from a EarthMind flow JSON.
 
     Args:
-        flow: Parsed Langflow flow JSON (dict).
+        flow: Parsed EarthMind flow JSON (dict).
         lfx_package: Name of the LFX package to include (e.g. ``"lfx"`` or
             ``"lfx-nightly"``).
         include_lfx: Whether to include the LFX package itself.
@@ -542,10 +542,10 @@ def generate_requirements_txt(
     include_lfx: bool = True,
     pin_versions: bool = True,
 ) -> str:
-    """Generate requirements.txt content from a Langflow flow JSON.
+    """Generate requirements.txt content from a EarthMind flow JSON.
 
     Args:
-        flow: Parsed Langflow flow JSON (dict).
+        flow: Parsed EarthMind flow JSON (dict).
         lfx_package: Name of the LFX package to include.
         include_lfx: Whether to include the LFX package itself.
         pin_versions: If True, pin each package to the currently installed
@@ -561,7 +561,7 @@ def generate_requirements_txt(
         pin_versions=pin_versions,
     )
     lines = [
-        "# Auto-generated requirements for Langflow flow",
+        "# Auto-generated requirements for EarthMind flow",
         "# This file contains only the dependencies needed for this specific flow",
         "",
     ]
@@ -580,7 +580,7 @@ def generate_requirements_from_file(
     """Generate requirements list from a flow JSON file path.
 
     Args:
-        flow_path: Path to a Langflow flow JSON file.
+        flow_path: Path to a EarthMind flow JSON file.
         lfx_package: Name of the LFX package to include.
         include_lfx: Whether to include the LFX package itself.
         pin_versions: If True, pin each package to the currently installed

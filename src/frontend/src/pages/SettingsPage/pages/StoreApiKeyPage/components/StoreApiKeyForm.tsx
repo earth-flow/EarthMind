@@ -73,11 +73,11 @@ const StoreApiKeyFormComponent = ({
                 {t("store.createApiKey")}{" "}
                 <a
                   className="text-high-indigo underline"
-                  href="https://langflow.store/"
+                  href="https://earthmind.store/"
                   target="_blank"
                   rel="noopener"
                 >
-                  langflow.store
+                  earthmind.store
                 </a>
               </span>
             </div>

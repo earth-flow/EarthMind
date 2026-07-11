@@ -9,7 +9,7 @@ Commands shipped here:
     - ``validate``  -- static manifest + AST checker.
     - ``schema``    -- emit the manifest JSON Schema.
     - ``init``      -- scaffold a basic single-Bundle extension.
-    - ``dev``       -- register a local extension and launch Langflow with
+    - ``dev``       -- register a local extension and launch EarthMind with
                        it loaded.
 
 Each command is implemented as a thin shell over the helpers in
@@ -31,7 +31,7 @@ import typer
 
 extension_app = typer.Typer(
     name="extension",
-    help="Author and inspect Langflow Extensions.",
+    help="Author and inspect EarthMind Extensions.",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -79,7 +79,7 @@ def validate_command(
       3. AST-level inspection of every Python source file in each bundle.
 
     With ``--execute-imports``, additionally imports each bundle module in a
-    subprocess with a temporary Langflow state directory.
+    subprocess with a temporary EarthMind state directory.
     """
     from lfx.extension import format_extension_error, validate_extension
 
@@ -129,7 +129,7 @@ def list_command(
         None,
         "--seed-dir",
         help=(
-            "Override $LANGFLOW_SEED_DIR for this invocation. "
+            "Override $EARTHMIND_SEED_DIR for this invocation. "
             "Use os.pathsep (':' on POSIX) to pass multiple roots. "
             "Pass an empty string to skip the seed-directory pass entirely."
         ),
@@ -213,7 +213,7 @@ def list_command(
 
     # Print interpreter info up front so an operator who sees an empty
     # listing can immediately spot a wrong-venv mismatch between ``lfx``
-    # and ``langflow run`` without a separate "did my bundle install?"
+    # and ``earthmind run`` without a separate "did my bundle install?"
     # debug cycle.
     typer.echo(f"python:     {sys.executable}")
     typer.echo(f"sys.prefix: {sys.prefix}")
@@ -291,12 +291,12 @@ def reload_command(
     target: str | None = typer.Option(
         None,
         "--target",
-        help=("Langflow server URL (default: $LANGFLOW_HOST / http://localhost:7860)."),
+        help=("EarthMind server URL (default: $EARTHMIND_HOST / http://10.171.205.153:7860)."),
     ),
     api_key: str | None = typer.Option(
         None,
         "--api-key",
-        help="API key for the Langflow server (default: $LANGFLOW_API_KEY).",
+        help="API key for the EarthMind server (default: $EARTHMIND_API_KEY).",
     ),
     output_format: str = typer.Option(
         "text",
@@ -561,7 +561,7 @@ def schema_command(
 
     Use to vendor a copy under ``schemas/`` or to confirm the canonical shape
     for editor tooling.  The schema's ``$id`` always points at
-    ``schemas.langflow.org/extension/v1.json``; the release pipeline uploads
+    ``schemas.earthmind.org/extension/v1.json``; the release pipeline uploads
     this same artifact.
     """
     from lfx.extension.schema import build_schema_json
@@ -612,7 +612,7 @@ def init_command(
     name: str | None = typer.Option(
         None,
         "--name",
-        help=("Human-readable display name shown in Langflow.  Defaults to the title-cased extension id."),
+        help=("Human-readable display name shown in EarthMind.  Defaults to the title-cased extension id."),
     ),
 ) -> None:
     """Create a runnable extension skeleton you can iterate on with ``dev``.
@@ -666,19 +666,19 @@ def init_command(
 # ---------------------------------------------------------------------------
 
 
-def _resolve_langflow_executable() -> str | None:
-    """Find the ``langflow`` binary on PATH, if any.
+def _resolve_earthmind_executable() -> str | None:
+    """Find the ``earthmind`` binary on PATH, if any.
 
-    Returns ``None`` when langflow isn't installed; the dev command then
-    falls back to ``python -m langflow.__main__`` so an author with the
+    Returns ``None`` when earthmind isn't installed; the dev command then
+    falls back to ``python -m earthmind.__main__`` so an author with the
     ``lfx`` package alone still gets a usable error message.
     """
-    return shutil.which("langflow")
+    return shutil.which("earthmind")
 
 
 @extension_app.command(
     name="dev",
-    help="Register a local extension and launch Langflow with it loaded.",
+    help="Register a local extension and launch EarthMind with it loaded.",
 )
 def dev_command(
     target: str = typer.Argument(
@@ -686,7 +686,7 @@ def dev_command(
         help=(
             "Path to the extension root (defaults to the current "
             "directory).  Must contain extension.json or "
-            "[tool.langflow.extension] in pyproject.toml."
+            "[tool.earthmind.extension] in pyproject.toml."
         ),
     ),
     *,
@@ -704,30 +704,30 @@ def dev_command(
         "--skip-launch",
         help=(
             "Register the extension in the dev registry but don't exec "
-            "``langflow run``.  Useful for tests and for embedding in "
+            "``earthmind run``.  Useful for tests and for embedding in "
             "external dev-server scripts."
         ),
     ),
     extra_args: list[str] | None = typer.Argument(
         None,
-        help="Extra arguments forwarded to ``langflow run`` (after a ``--`` separator).",
+        help="Extra arguments forwarded to ``earthmind run`` (after a ``--`` separator).",
     ),
 ) -> None:
-    """Register the extension and launch a Langflow dev server.
+    """Register the extension and launch a EarthMind dev server.
 
     Flow:
         1. Resolve the absolute path of the target extension.
         2. (Default) Run ``validate`` and abort on errors.
         3. Register the absolute path in the dev registry state file.
         4. Print reload instructions.
-        5. ``exec``-style hand-off to ``langflow run`` (or
-           ``python -m langflow``) with the env var
-           ``LANGFLOW_LAZY_LOAD_COMPONENTS=false`` so dev-extensions are
+        5. ``exec``-style hand-off to ``earthmind run`` (or
+           ``python -m earthmind``) with the env var
+           ``EARTHMIND_LAZY_LOAD_COMPONENTS=false`` so dev-extensions are
            visible in the palette immediately.
 
-    AC #4 ("boots Langflow with the new Extension visible in the palette
+    AC #4 ("boots EarthMind with the new Extension visible in the palette
     within 5s") is delivered jointly by this command and the startup
-    hook in ``langflow.main`` that consults the dev registry.
+    hook in ``earthmind.main`` that consults the dev registry.
     """
     from lfx.extension import format_extension_error, register_dev_extension, validate_extension
 
@@ -752,20 +752,20 @@ def dev_command(
     typer.echo(f"Registered dev extension: {entry.path}")
     typer.echo("Reload instructions:")
     typer.echo("  - Edit any file under components/ in the registered directory.")
-    typer.echo("  - Click 'Reload' on the bundle header in the Langflow palette.")
+    typer.echo("  - Click 'Reload' on the bundle header in the EarthMind palette.")
 
     if skip_launch:
         return
 
     extras = list(extra_args or [])
-    cmd = _build_langflow_run_argv(extras)
+    cmd = _build_earthmind_run_argv(extras)
     typer.echo("")
     typer.echo("Launching: " + " ".join(shlex.quote(part) for part in cmd))
 
     env = _build_dev_launch_env(os.environ)
 
-    # Replace the current process so Ctrl-C in the launched langflow
-    # propagates without an extra pty/job-control hop.  When ``langflow``
+    # Replace the current process so Ctrl-C in the launched earthmind
+    # propagates without an extra pty/job-control hop.  When ``earthmind``
     # isn't on PATH we fall back to python -m via subprocess so the
     # author still gets a meaningful exit code.
     if cmd[0] == sys.executable:
@@ -775,37 +775,37 @@ def dev_command(
 
 
 def _build_dev_launch_env(base_env: os._Environ[str] | dict[str, str]) -> dict[str, str]:
-    """Build the env dict handed to the launched ``langflow run`` process.
+    """Build the env dict handed to the launched ``earthmind run`` process.
 
     Centralizes the per-flag rationale so the contract is testable in one
     place and a missing flag is caught by a focused unit test rather than
     only manifesting as a runtime UX gap.
 
     Flags set:
-        - ``LANGFLOW_LAZY_LOAD_COMPONENTS=false`` (always, overriding the
+        - ``EARTHMIND_LAZY_LOAD_COMPONENTS=false`` (always, overriding the
           author's shell): dev components must appear in the palette
           eagerly so the AC's 5-second budget holds.
-        - ``LANGFLOW_ENABLE_EXTENSION_RELOAD=true`` (setdefault): turns on
+        - ``EARTHMIND_ENABLE_EXTENSION_RELOAD=true`` (setdefault): turns on
           the in-process Bundle reload route AND the ``/config`` flag the
           packaged frontend reads at runtime to surface the palette
           Reload button.  ``setdefault`` so an author intentionally
           testing the off path can pre-export ``=false``.
     """
     env = dict(base_env)
-    env["LANGFLOW_LAZY_LOAD_COMPONENTS"] = "false"
-    env.setdefault("LANGFLOW_ENABLE_EXTENSION_RELOAD", "true")
+    env["EARTHMIND_LAZY_LOAD_COMPONENTS"] = "false"
+    env.setdefault("EARTHMIND_ENABLE_EXTENSION_RELOAD", "true")
     return env
 
 
-def _build_langflow_run_argv(extra_args: list[str]) -> list[str]:
-    """Build the argv list that exec's ``langflow run``.
+def _build_earthmind_run_argv(extra_args: list[str]) -> list[str]:
+    """Build the argv list that exec's ``earthmind run``.
 
-    Falls back to ``python -m langflow`` when the ``langflow`` binary is
+    Falls back to ``python -m earthmind`` when the ``earthmind`` binary is
     not on PATH so the dev loop still works inside an ``lfx``-only
     install (author hits a clear failure mode rather than a confusing
     one).
     """
-    binary = _resolve_langflow_executable()
+    binary = _resolve_earthmind_executable()
     if binary is not None:
         return [binary, "run", *extra_args]
-    return [sys.executable, "-m", "langflow", "run", *extra_args]
+    return [sys.executable, "-m", "earthmind", "run", *extra_args]

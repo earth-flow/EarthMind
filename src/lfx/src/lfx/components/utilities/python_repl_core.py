@@ -11,7 +11,7 @@ from lfx.utils.python_repl_security import safe_builtins, validate_code_safety
 class PythonREPLComponent(Component):
     display_name = "Python Interpreter"
     description = "Run Python code with optional imports. Use print() to see the output."
-    documentation: str = "https://docs.langflow.org/python-interpreter"
+    documentation: str = "https://docs.earthmind.org/python-interpreter"
     icon = "square-terminal"
 
     inputs = [

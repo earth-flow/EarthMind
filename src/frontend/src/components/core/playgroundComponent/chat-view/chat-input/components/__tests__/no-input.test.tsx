@@ -77,7 +77,7 @@ describe("NoInputView", () => {
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute(
       "href",
-      "https://docs.langflow.org/components-io#chat-input",
+      "https://docs.earthmind.org/components-io#chat-input",
     );
     expect(link).toHaveAttribute("target", "_blank");
   });

@@ -1,4 +1,4 @@
-from langflow.memory import aget_messages
+from earthmind.memory import aget_messages
 from lfx.components.input_output import ChatOutput
 from lfx.schema.message import Message
 

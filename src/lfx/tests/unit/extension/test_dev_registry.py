@@ -44,11 +44,11 @@ def isolated_state_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
     The registry would otherwise persist across tests under the user
     cache dir; this fixture isolates each test by forcing
-    ``LANGFLOW_DEV_EXTENSIONS_DIR`` to a tmp_path subdirectory.
+    ``EARTHMIND_DEV_EXTENSIONS_DIR`` to a tmp_path subdirectory.
     """
     state_dir = tmp_path / "_state"
     state_dir.mkdir()
-    monkeypatch.setenv("LANGFLOW_DEV_EXTENSIONS_DIR", str(state_dir))
+    monkeypatch.setenv("EARTHMIND_DEV_EXTENSIONS_DIR", str(state_dir))
     return state_dir
 
 
@@ -345,15 +345,15 @@ def test_dev_extension_component_paths_uses_relative_depth_for_bundle_root(
 
 def test_state_dir_env_var_takes_precedence(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     override = tmp_path / "custom"
-    monkeypatch.setenv("LANGFLOW_DEV_EXTENSIONS_DIR", str(override))
+    monkeypatch.setenv("EARTHMIND_DEV_EXTENSIONS_DIR", str(override))
     assert state_file_path().parent == override
-    # The override is honored even when LANGFLOW_CONFIG_DIR is also set.
-    monkeypatch.setenv("LANGFLOW_CONFIG_DIR", str(tmp_path / "ignore-me"))
+    # The override is honored even when EARTHMIND_CONFIG_DIR is also set.
+    monkeypatch.setenv("EARTHMIND_CONFIG_DIR", str(tmp_path / "ignore-me"))
     assert state_file_path().parent == override
 
 
 def test_config_dir_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("LANGFLOW_DEV_EXTENSIONS_DIR", raising=False)
+    monkeypatch.delenv("EARTHMIND_DEV_EXTENSIONS_DIR", raising=False)
     cfg = tmp_path / "cfg"
-    monkeypatch.setenv("LANGFLOW_CONFIG_DIR", str(cfg))
+    monkeypatch.setenv("EARTHMIND_CONFIG_DIR", str(cfg))
     assert state_file_path() == cfg / "extensions" / "dev_extensions.json"

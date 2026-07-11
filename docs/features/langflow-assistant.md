@@ -1,4 +1,4 @@
-# Feature: Langflow Assistant
+# Feature: EarthMind Assistant
 
 > Generated on: 2026-01-21
 > Updated on: 2026-03-30
@@ -69,7 +69,7 @@
 
 > **Companion docs**: end-to-end architecture (with Mermaid sequence/flow
 > diagrams) lives at
-> `src/backend/base/langflow/agentic/ARCHITECTURE.md`. This document covers the
+> `src/backend/base/earthmind/agentic/ARCHITECTURE.md`. This document covers the
 > product/feature-level model; refer to ARCHITECTURE.md for the internal
 > single-agent-loop and MCP tool wiring.
 
@@ -92,15 +92,15 @@
 
 ### Summary
 
-The Langflow Assistant is an AI-powered chat interface that helps users generate custom Langflow components through natural language prompts. It provides real-time streaming feedback during component generation, automatic code validation with retry logic, and seamless integration with the Langflow canvas.
+The EarthMind Assistant is an AI-powered chat interface that helps users generate custom EarthMind components through natural language prompts. It provides real-time streaming feedback during component generation, automatic code validation with retry logic, and seamless integration with the EarthMind canvas.
 
 ### Business Context
 
-Building custom components in Langflow requires knowledge of the component architecture, Python programming, and understanding of inputs/outputs. The Langflow Assistant removes this barrier by allowing users to describe what they want in natural language, and the AI generates validated, ready-to-use component code that can be added directly to their flow.
+Building custom components in EarthMind requires knowledge of the component architecture, Python programming, and understanding of inputs/outputs. The EarthMind Assistant removes this barrier by allowing users to describe what they want in natural language, and the AI generates validated, ready-to-use component code that can be added directly to their flow.
 
 ### Bounded Context
 
-**Context**: `Agentic` - AI-assisted development capabilities within Langflow
+**Context**: `Agentic` - AI-assisted development capabilities within EarthMind
 
 This context owns:
 - AI assistant interactions and chat management
@@ -123,9 +123,9 @@ This context owns:
 
 | Term | Definition | Code Reference |
 |------|------------|----------------|
-| **Assistant** | AI-powered chat interface that generates Langflow components from natural language | `AssistantPanel`, `AssistantService` |
+| **Assistant** | AI-powered chat interface that generates EarthMind components from natural language | `AssistantPanel`, `AssistantService` |
 | **AssistantMessage** | A single message in the chat, either from user or assistant | `AssistantMessage` interface |
-| **ComponentCode** | Python code that defines a Langflow component with inputs, outputs, and processing logic | `component_code` field, `extract_component_code()` |
+| **ComponentCode** | Python code that defines a EarthMind component with inputs, outputs, and processing logic | `component_code` field, `extract_component_code()` |
 | **IntentClassification** | LLM-based detection of whether user wants to generate a component, ask a question, or is off-topic | `classify_intent()`, `IntentResult` |
 | **ProgressStep** | A discrete stage in the component generation pipeline (generating, validating, etc.) | `StepType`, `AgenticStepType` |
 | **SSE** | Server-Sent Events - Protocol for streaming real-time progress updates from server to client | `StreamingResponse`, `postAssistStream()` |
@@ -135,12 +135,12 @@ This context owns:
 | **FloatingPanel** | The assistant panel displayed as a floating overlay centered on the canvas | `AssistantPanel` |
 | **ModelProvider** | External LLM service (OpenAI, Anthropic, etc.) used for generation | `provider`, `PREFERRED_PROVIDERS` |
 | **EnabledProvider** | A model provider that has been configured with valid API credentials | `get_enabled_providers_for_user()` |
-| **FlowExecutor** | Service that runs Langflow flows programmatically for assistant operations | `FlowExecutor`, `execute_flow_file()` |
+| **FlowExecutor** | Service that runs EarthMind flows programmatically for assistant operations | `FlowExecutor`, `execute_flow_file()` |
 | **TranslationFlow** | Pre-built flow that translates user input and classifies intent | `TranslationFlow.json`, `TRANSLATION_FLOW` |
-| **LangflowAssistantFlow** | Pre-built flow containing the main assistant prompt and component generation logic | `LangflowAssistant.json`, `LANGFLOW_ASSISTANT_FLOW` |
+| **EarthMindAssistantFlow** | Pre-built flow containing the main assistant prompt and component generation logic | `EarthMindAssistant.json`, `EARTHMIND_ASSISTANT_FLOW` |
 | **ReasoningUI** | Animated typing display showing "thinking" messages during component generation | `AssistantLoadingState` |
 | **ApproveAction** | User action to add a validated component to the canvas | `handleApprove()`, `addComponent()` |
-| **OffTopic** | Intent classification for questions unrelated to Langflow (other tools, general knowledge) | `"off_topic"`, `OFF_TOPIC_REFUSAL_MESSAGE` |
+| **OffTopic** | Intent classification for questions unrelated to EarthMind (other tools, general knowledge) | `"off_topic"`, `OFF_TOPIC_REFUSAL_MESSAGE` |
 | **RuntimeValidation** | Second-phase validation that instantiates the component class to catch import/runtime errors | `validate_component_runtime()`, `build_custom_component_template()` |
 | **AgenticSessionPrefix** | `agentic_` prefix on session IDs to isolate Assistant sessions from Playground | `AGENTIC_SESSION_PREFIX` |
 | **SingleAgentLoop** | The assistant is one agent (`flow_builder_assistant.py`) plus an MCP toolkit; the same loop chains tools for multi-thing prompts instead of spawning sub-agents (Claude Code / Codex pattern) | `flow_builder_assistant.py`, `src/lfx/src/lfx/mcp/flow_builder_tools/` |
@@ -172,7 +172,7 @@ This context owns:
 | **BuiltinCodeExemption** | `run_working_flow`'s AST scan (`_scan_flow_component_code`) now skips a node whose inline `code` is byte-identical (after `_normalize_code` whitespace strip) to the registry's canonical template for that `type`. Built-ins like `URLComponent` legitimately use `importlib.util.find_spec` and `os.environ.get` — patterns the LLM-code-scanner forbids — so without this exemption every run of a trusted built-in was a false-positive block. Registry-lookup failure falls back to scan-all | `_get_canonical_code_map`, `_normalize_code` in `agentic/services/flow_run.py` |
 | **GenericToolNameFallback** | `_derive_tool_name` rule in `lfx/base/tools/component_tool.py`: when a Component has exactly ONE tool-exposed Output and that Output's method name is generic (`output`, `process`, `build_output`, `run`, `execute`, `main`, `handler`, `build_result`), the LLM-facing tool name is derived from the snake_cased component class name (`RandomMenuItem` → `random_menu_item`) — the class name is the user's stated intent and is always more informative than `output`/`process`. Multi-output components keep method-derived names so tools don't collide | `_GENERIC_OUTPUT_METHOD_NAMES`, `_class_name_to_tool_name`, `_derive_tool_name` |
 | **ReservedOutputName** | The two synthetic-tool sentinels the wiring layer auto-creates when a Component is flipped to Tool Mode: `Output.name = "component_as_tool"` + `Output.method = "to_toolkit"`. Generation-time validator (`validate_component_code`) rejects code that declares either with a hint to pick a value-descriptive name; runtime `_should_skip_output` was tightened to require name + method + types ALL match the synthetic so a user-declared `component_as_tool` is no longer dropped | `_RESERVED_OUTPUT_NAME`, `_RESERVED_OUTPUT_METHOD` in `helpers/validation.py`; `_should_skip_output` in `lfx/base/tools/component_tool.py` |
-| **AgentToolCompatibilitySection** | "Agent Tool Compatibility" block in the `LangflowAssistant.json` system prompt teaching the generator (1) action `verb_noun` method naming, (2) class-level `description` as the LLM-facing tool description, (3) `tool_mode=True` discipline + clear `info=`, (4) NEVER use the reserved `component_as_tool`/`to_toolkit` names. The complementary defense to the runtime guardrails | `LangflowAssistant.json` system prompt |
+| **AgentToolCompatibilitySection** | "Agent Tool Compatibility" block in the `EarthMindAssistant.json` system prompt teaching the generator (1) action `verb_noun` method naming, (2) class-level `description` as the LLM-facing tool description, (3) `tool_mode=True` discipline + clear `info=`, (4) NEVER use the reserved `component_as_tool`/`to_toolkit` names. The complementary defense to the runtime guardrails | `EarthMindAssistant.json` system prompt |
 | **OpenProviderModalEmptyState** | The "No Models Configured" empty-state button now opens a `ModelProviderModal` dialog inline (`modelType="llm"`) instead of navigating to `/settings/model-providers`. Lets the user configure providers without leaving the assistant panel | `AssistantNoModelsState` in `assistant-no-models-state.tsx`; `data-testid="assistant-no-models-configure-providers"` |
 | **MaxFlowVerificationAttempts** | Hard cost ceiling (`MAX_FLOW_VERIFICATION_ATTEMPTS = 3`) for the post-build flow-verification loop. Each attempt costs one full execution plus at most one agent fix turn — so the cap doubles as the user-visible "after N attempt(s)" caveat string | `flow_types.MAX_FLOW_VERIFICATION_ATTEMPTS` |
 | **ComponentMention** | Typing `@` in the assistant input opens a filterable list of the canvas components; arrow/Tab navigate, Enter confirms, Esc cancels, and the highlighted component is selected on the canvas as a live preview. Confirming inserts a quoted, space-free token `'<componentId>'` the agent resolves to that component's details/code | `detectMention`, `formatMentionToken` in `mention-parsing.ts`; `use-component-mentions.ts`; `assistant-mention-popover.tsx` |
@@ -237,7 +237,7 @@ Configuration for available LLM providers.
 The frontend implements automatic model selection to ensure a valid model is always sent to the backend:
 
 - **Auto-selection**: When no model is explicitly selected, or when the persisted model's provider is no longer available, the first available model from enabled providers is automatically selected
-- **Persistence**: Selected model is stored in localStorage (`langflow-assistant-selected-model`)
+- **Persistence**: Selected model is stored in localStorage (`earthmind-assistant-selected-model`)
 - **Validation**: On load, persisted model is validated against current enabled providers. If the provider or model no longer exists, the selection is cleared and auto-selection triggers
 - **Provider icon**: The model selector trigger displays the provider's icon (e.g., Anthropic, OpenAI) instead of a generic label
 - **Invariant**: A request must never be sent without a valid model selection to prevent backend fallback to unexpected providers
@@ -268,14 +268,14 @@ The frontend implements automatic model selection to ensure a valid model is alw
 
 ## 4. Behavior Specifications
 
-### Feature: Langflow Assistant
+### Feature: EarthMind Assistant
 
-**As a** Langflow user
+**As a** EarthMind user
 **I want** to generate custom components using natural language
 **So that** I can build flows without writing Python code manually
 
 ### Background
-- Given a user with an active Langflow session
+- Given a user with an active EarthMind session
 - And at least one model provider is configured with a valid API key
 - And the user has a flow open in the canvas
 
@@ -291,7 +291,7 @@ The frontend implements automatic model selection to ensure a valid model is alw
 - **And** I should see the generated component code
 - **And** I should see an "Add to Canvas" button
 
-### Scenario: Ask a question about Langflow
+### Scenario: Ask a question about EarthMind
 - **Given** the assistant panel is open
 - **When** I enter "How do I connect two components?"
 - **And** I click send
@@ -378,9 +378,9 @@ The frontend implements automatic model selection to ensure a valid model is alw
 
 ### Scenario: Ask about unrelated tools (off-topic guardrail)
 - **Given** the assistant panel is open
-- **When** I ask "how does n8n work?" or any question unrelated to Langflow
+- **When** I ask "how does n8n work?" or any question unrelated to EarthMind
 - **Then** the intent should be classified as "off_topic"
-- **And** I should see a refusal message redirecting me to Langflow-related topics
+- **And** I should see a refusal message redirecting me to EarthMind-related topics
 - **And** the LLM should NOT be called for the main response (saves API cost)
 
 ### Scenario: No model provider configured
@@ -724,7 +724,7 @@ Automatically validate generated code by instantiating the component class. On f
 **Status**: Accepted (supersedes previous floating+sidebar decision)
 
 #### Context
-The initial design supported both floating and sidebar view modes. However, the floating panel with dynamic open/close and size expansion worked well as a standalone solution — it stays out of the way, doesn't conflict with other areas of Langflow (sidebar, playground, canvas), and the open/close/resize behavior feels natural. The sidebar mode added complexity (spacer divs, negative margins, conditional styling) for a view that wasn't needed.
+The initial design supported both floating and sidebar view modes. However, the floating panel with dynamic open/close and size expansion worked well as a standalone solution — it stays out of the way, doesn't conflict with other areas of EarthMind (sidebar, playground, canvas), and the open/close/resize behavior feels natural. The sidebar mode added complexity (spacer divs, negative margins, conditional styling) for a view that wasn't needed.
 
 #### Decision
 Remove the sidebar view mode entirely. The assistant always uses the floating panel. Removed: view mode toggle, `AssistantViewMode` type, `useAssistantViewMode` hook, sidebar spacer div, and all sidebar-conditional CSS from FlowPage.
@@ -778,7 +778,7 @@ The frontend generates a `session_id` once (via `useRef`) when the `useAssistant
 **Status**: Accepted
 
 #### Context
-The TranslationFlow (intent classification) and LangflowAssistant flow shared the same `session_id`. This caused cross-flow contamination: the TranslationFlow's JSON intent responses were stored alongside the assistant's messages. On subsequent requests, the TranslationFlow's LLM saw messages from both flows in its history, causing intent classification to fail and default to `"question"`.
+The TranslationFlow (intent classification) and EarthMindAssistant flow shared the same `session_id`. This caused cross-flow contamination: the TranslationFlow's JSON intent responses were stored alongside the assistant's messages. On subsequent requests, the TranslationFlow's LLM saw messages from both flows in its history, causing intent classification to fail and default to `"question"`.
 
 #### Decision
 1. Pass `session_id=None` when calling `classify_intent` — the TranslationFlow is stateless and does not need conversation memory.
@@ -900,7 +900,7 @@ Add a second validation phase (`validate_component_runtime`) that attempts to in
 
 **Key Files:**
 - `src/backend/.../agentic/helpers/validation.py` — `validate_component_runtime()`
-- `src/backend/.../agentic/helpers/code_security.py` — `scan_code_security()` denylist (shared with the run-time gate; see ADR-MCP-040 in `langflow-assistant-mcp.md` — `run_working_flow` re-scans every node's inline code before `exec` to close the bypass for code that skipped generation-time scanning)
+- `src/backend/.../agentic/helpers/code_security.py` — `scan_code_security()` denylist (shared with the run-time gate; see ADR-MCP-040 in `earthmind-assistant-mcp.md` — `run_working_flow` re-scans every node's inline code before `exec` to close the bypass for code that skipped generation-time scanning)
 - `src/backend/.../agentic/services/assistant_service.py` — calls runtime validation after AST passes
 
 ---
@@ -988,7 +988,7 @@ Thread `provider_vars` (resolved from database) through `flow_executor` → `flo
 Users expect assistant session history to persist. A decision was needed on whether to store sessions in the database (like the Playground) or in browser localStorage.
 
 #### Decision
-Session history is stored in browser `localStorage` (key: `langflow-assistant-sessions`), limited to 10 sessions. Sessions are serialized/deserialized with `progress` state stripped and in-flight messages marked as `"cancelled"`.
+Session history is stored in browser `localStorage` (key: `earthmind-assistant-sessions`), limited to 10 sessions. Sessions are serialized/deserialized with `progress` state stripped and in-flight messages marked as `"cancelled"`.
 
 #### Consequences
 
@@ -1036,7 +1036,7 @@ Collapse the assistant into ONE agent (`flow_builder_assistant.py`) plus an MCP 
 **Key Files:**
 - `src/backend/.../agentic/flows/flow_builder_assistant.py` — the single agent
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — `GenerateComponent`, `DescribeFlowIO`, `RunFlow`
-- `src/backend/base/langflow/agentic/ARCHITECTURE.md` — end-to-end diagrams
+- `src/backend/base/earthmind/agentic/ARCHITECTURE.md` — end-to-end diagrams
 
 ---
 
@@ -1262,7 +1262,7 @@ Add an **inner** `while swap_requested:` loop inside the streaming attempt:
 
 ### ADR-025: Built-in Component Code Exemption for the Run-Time Security Gate
 
-**Status**: Accepted (extends ADR-MCP-040 from `langflow-assistant-mcp.md`)
+**Status**: Accepted (extends ADR-MCP-040 from `earthmind-assistant-mcp.md`)
 
 #### Context
 `run_working_flow` AST-scans every node's inline `code` before `exec` to
@@ -1270,7 +1270,7 @@ close the bypass for component code that skipped the generation-time
 scanner (ADR-MCP-040). The denylist is tuned for LLM-generated code and
 correctly blocks secret-env exfiltration, raw file access, and dunder
 sandbox escapes. But trusted built-ins legitimately use forbidden patterns:
-`URLComponent` calls `importlib.util.find_spec("langflow")` for optional
+`URLComponent` calls `importlib.util.find_spec("earthmind")` for optional
 dependency detection and `os.environ.get("HTTPS_PROXY")` for proxy config.
 The result was a flood of false-positive "refused to run" errors on flows
 that only ever contained built-ins the agent had copied from the registry.
@@ -1322,7 +1322,7 @@ output and the agent got an empty tool list; (b) the runtime's
 1. **Generic-method fallback** (`lfx/base/tools/component_tool.py`): `_derive_tool_name(component, output_method, outputs)` checks an `_GENERIC_OUTPUT_METHOD_NAMES` frozenset (`"output"`, `"process"`, `"build_output"`, `"run"`, `"execute"`, `"main"`, `"handler"`, `"build_result"`). When a Component has exactly ONE tool-exposed output AND the method is generic, the tool name is the snake_cased class name via `_class_name_to_tool_name(class_name)` (acronym-preserving — `HTTPClient` → `http_client`, `S3Bucket` → `s3_bucket`). Multi-output components keep method-derived names so tools don't collide.
 2. **Validator guardrails** (`agentic/helpers/validation.py`): `validate_component_code` adds two checks — `_RESERVED_OUTPUT_NAME = "component_as_tool"` and `_RESERVED_OUTPUT_METHOD = "to_toolkit"` — and returns an actionable `ValidationResult(is_valid=False, ...)` whose error explains the synthetic collision and suggests a value-descriptive name (`item`, `price`, `result`).
 3. **Runtime precision** (`lfx/base/tools/component_tool.py::_should_skip_output`): the synthetic check now requires name + method + types ALL match the synthetic. Anything less is a user-declared output that happens to share the name and must be kept.
-4. **Prompt guidance**: a new "Agent Tool Compatibility" section in the `LangflowAssistant.json` system prompt teaches the generator (a) action `verb_noun` method naming, (b) class-level `description` as tool description, (c) `tool_mode=True` discipline with clear `info=`, (d) NEVER use `component_as_tool`/`to_toolkit`.
+4. **Prompt guidance**: a new "Agent Tool Compatibility" section in the `EarthMindAssistant.json` system prompt teaches the generator (a) action `verb_noun` method naming, (b) class-level `description` as tool description, (c) `tool_mode=True` discipline with clear `info=`, (d) NEVER use `component_as_tool`/`to_toolkit`.
 
 #### Consequences
 
@@ -1338,7 +1338,7 @@ output and the agent got an empty tool list; (b) the runtime's
 **Key Files:**
 - `src/lfx/src/lfx/base/tools/component_tool.py` — `_GENERIC_OUTPUT_METHOD_NAMES`, `_class_name_to_tool_name`, `_derive_tool_name`, tightened `_should_skip_output`
 - `src/backend/.../agentic/helpers/validation.py` — `_RESERVED_OUTPUT_NAME`, `_RESERVED_OUTPUT_METHOD`
-- `src/backend/.../agentic/flows/LangflowAssistant.json` — "Agent Tool Compatibility" prompt section
+- `src/backend/.../agentic/flows/EarthMindAssistant.json` — "Agent Tool Compatibility" prompt section
 
 ---
 
@@ -1680,7 +1680,7 @@ Event: `cancelled`
 |------------|-----------|--------------|-----------------|
 | `400` | No provider configured | "No model provider is configured. Please configure at least one model provider in Settings." | Navigate to Settings > Model Providers |
 | `400` | Provider not available | "Provider 'X' is not configured. Available providers: [list]" | Select a different provider or configure the requested one |
-| `400` | Missing API key | "OPENAI_API_KEY is required for the Langflow Assistant with openai. Please configure it in Settings > Model Providers." | Add API key in Settings |
+| `400` | Missing API key | "OPENAI_API_KEY is required for the EarthMind Assistant with openai. Please configure it in Settings > Model Providers." | Add API key in Settings |
 | `400` | Unknown provider | "Unknown provider: X" | Use a supported provider |
 | `404` | Flow file not found | "Flow file 'X.json' not found" | Ensure agentic flows are deployed |
 | `500` | Flow execution error | Friendly error extracted from the actual error (e.g., "Rate limit exceeded. Please wait a moment and try again.") | Retry request; check server logs |
@@ -1816,27 +1816,27 @@ No dedicated feature flags are currently implemented. The assistant is always en
 
 ```mermaid
 C4Context
-  title System Context diagram for Langflow Assistant
+  title System Context diagram for EarthMind Assistant
 
-  Person(user, "Langflow User", "Builds AI workflows using visual canvas")
+  Person(user, "EarthMind User", "Builds AI workflows using visual canvas")
 
-  System(assistant, "Langflow Assistant", "AI-powered component generation through natural language")
+  System(assistant, "EarthMind Assistant", "AI-powered component generation through natural language")
 
   System_Ext(llm_providers, "LLM Providers", "OpenAI, Anthropic, Azure, Google - text generation")
-  System_Ext(langflow_core, "Langflow Core", "Flow execution, component validation, canvas")
+  System_Ext(earthmind_core, "EarthMind Core", "Flow execution, component validation, canvas")
 
   Rel(user, assistant, "Sends prompts, receives components")
   Rel(assistant, llm_providers, "Generates text via API")
-  Rel(assistant, langflow_core, "Validates code, adds to canvas")
+  Rel(assistant, earthmind_core, "Validates code, adds to canvas")
 ```
 
 ### 9.2 Container Diagram (Level 2)
 
 ```mermaid
 C4Container
-  title Container diagram for Langflow Assistant
+  title Container diagram for EarthMind Assistant
 
-  Person(user, "User", "Langflow user")
+  Person(user, "User", "EarthMind user")
 
   Container_Boundary(frontend, "Frontend") {
     Container(assistant_panel, "AssistantPanel", "React", "Chat UI with progress indicators")
@@ -1851,7 +1851,7 @@ C4Container
     Container(validation_service, "ValidationService", "Python", "Validates component code")
   }
 
-  Container_Ext(flows, "Assistant Flows", "JSON/Python", "LangflowAssistant.json, translation_flow.py")
+  Container_Ext(flows, "Assistant Flows", "JSON/Python", "EarthMindAssistant.json, translation_flow.py")
   System_Ext(llm, "LLM Provider", "External API")
 
   Rel(user, assistant_panel, "Enters prompts")
@@ -1873,15 +1873,15 @@ C4Container
 > describes the feature-level intent → generate → validate → run flow (which is
 > byte-identical for single-thing requests); for multi-thing/compound prompts
 > the SAME loop chains the tools. The full single-agent-loop + MCP wiring
-> diagrams live in `src/backend/base/langflow/agentic/ARCHITECTURE.md` — the
+> diagrams live in `src/backend/base/earthmind/agentic/ARCHITECTURE.md` — the
 > existing diagrams here are intentionally left as-is.
 
 ```mermaid
 flowchart TD
     A[User Input] --> B{Intent Classification<br/>TranslationFlow - stateless}
     B -->|off_topic| Z[Return Refusal Message<br/>no LLM call]
-    B -->|generate_component| C[Execute LangflowAssistant Flow]
-    B -->|question| D[Execute LangflowAssistant Flow<br/>with token streaming]
+    B -->|generate_component| C[Execute EarthMindAssistant Flow]
+    B -->|question| D[Execute EarthMindAssistant Flow<br/>with token streaming]
 
     D --> F[Complete Response<br/>plain text / Q&A]
 

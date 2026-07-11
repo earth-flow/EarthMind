@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
-from langflow.schema.data import Data
-from langflow.schema.dataframe import DataFrame
-from langflow.schema.message import Message
+from earthmind.schema.data import Data
+from earthmind.schema.dataframe import DataFrame
+from earthmind.schema.message import Message
 from lfx.base.knowledge_bases import get_knowledge_bases
 from lfx.components.files_and_knowledge import KnowledgeIngestionComponent
 

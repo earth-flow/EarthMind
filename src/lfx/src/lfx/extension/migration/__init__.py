@@ -5,7 +5,7 @@ A flow saved before a bundle was extracted contains legacy component
 references in three shapes:
 
     * bare class name (``"OpenAIEmbeddings"``)
-    * old import path (``"langflow.components.openai.OpenAIEmbeddings"``)
+    * old import path (``"earthmind.components.openai.OpenAIEmbeddings"``)
     * pre-Phase-A namespaced ID (``"ext:openai:OpenAIEmbeddings@official-pre-a"``)
 
 The migration table maps each legacy form to the post-Phase-A canonical

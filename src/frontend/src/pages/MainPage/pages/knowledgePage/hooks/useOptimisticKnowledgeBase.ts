@@ -35,10 +35,24 @@ export const useOptimisticKnowledgeBase = () => {
         if (exists) {
           // KB already in cache (add sources mode or refetch arrived early)
           return list.map((kb) =>
-            kb.dir_name === dirName ? { ...kb, status: newStatus } : kb,
+            kb.dir_name === dirName
+              ? {
+                  ...kb,
+                  status: newStatus,
+                  parser_strategy: submitted.parserStrategy || kb.parser_strategy,
+                  chunk_strategy: submitted.chunkStrategy || kb.chunk_strategy,
+                }
+              : kb,
           );
         }
         // New KB — append optimistic entry
+        // Do not synthesize a brand-new optimistic KB row for file uploads.
+        // When the backend create/list path lags or the row creation fails, this
+        // phantom entry can sit in status=ingesting forever because polling only
+        // sees server rows. Let the server source of truth add the row instead.
+        if (hasFiles) {
+          return list;
+        }
         return [
           ...list,
           {
@@ -53,6 +67,8 @@ export const useOptimisticKnowledgeBase = () => {
             characters: 0,
             chunks: 0,
             avg_chunk_size: 0,
+            parser_strategy: submitted.parserStrategy || "auto",
+            chunk_strategy: submitted.chunkStrategy || "heading_markdown",
             status: newStatus,
             column_config: submitted.columnConfig,
             backend_type: submitted.backendType || "chroma",

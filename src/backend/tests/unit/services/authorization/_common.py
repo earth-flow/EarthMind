@@ -3,9 +3,9 @@
 After the ``utils.py`` refactor on PR #13153, the runtime helpers live in
 three modules:
 
-* ``langflow.services.authorization.audit``   — batched audit pipeline
-* ``langflow.services.authorization.guards``  — ``ensure_*_permission`` family
-* ``langflow.services.authorization.listing`` — ``filter_visible_resources``
+* ``earthmind.services.authorization.audit``   — batched audit pipeline
+* ``earthmind.services.authorization.guards``  — ``ensure_*_permission`` family
+* ``earthmind.services.authorization.listing`` — ``filter_visible_resources``
 
 Each module imports ``get_settings_service`` / ``get_authorization_service``
 at import time, so a test that wants to stub the live services must patch the
@@ -20,9 +20,9 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from langflow.services.authorization import audit as authz_audit
-from langflow.services.authorization import guards as authz_guards
-from langflow.services.authorization import listing as authz_listing
+from earthmind.services.authorization import audit as authz_audit
+from earthmind.services.authorization import guards as authz_guards
+from earthmind.services.authorization import listing as authz_listing
 
 
 class _StubAuthorizationService:

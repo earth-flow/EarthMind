@@ -1,5 +1,5 @@
 {
-  "name": "langflow",
+  "name": "earthmind",
   "version": "1.10.0",
   "private": true,
   "engines": {
@@ -65,8 +65,11 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "d3-force": "^3.0.0",
     "dompurify": "^3.2.4",
     "dotenv": "^16.4.5",
+    "echarts": "^6.1.0",
+    "echarts-for-react": "^3.0.6",
     "elkjs": "^0.9.3",
     "emoji-regex": "^10.3.0",
     "esbuild": "^0.25.0",

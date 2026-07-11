@@ -1,10 +1,10 @@
-const url = `${process.env.LANGFLOW_SERVER_URL ?? ""}/api/v2/workflows?job_id=job_id_1234567890`;
+const url = `${process.env.EARTHMIND_SERVER_URL ?? ""}/api/v2/workflows?job_id=job_id_1234567890`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.LANGFLOW_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
   },
 };
 

@@ -39,7 +39,7 @@ class TwelveLabsPegasus(Component):
     description = "Chat with videos using TwelveLabs Pegasus API."
     icon = "TwelveLabs"
     name = "TwelveLabsPegasus"
-    documentation = "https://github.com/twelvelabs-io/twelvelabs-developer-experience/blob/main/integrations/Langflow/TWELVE_LABS_COMPONENTS_README.md"
+    documentation = "https://github.com/twelvelabs-io/twelvelabs-developer-experience/blob/main/integrations/EarthMind/TWELVE_LABS_COMPONENTS_README.md"
 
     inputs = [
         DataInput(name="videodata", display_name="Video Data", info="Video Data", is_list=True),

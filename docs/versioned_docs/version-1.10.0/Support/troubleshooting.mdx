@@ -1,5 +1,5 @@
 ---
-title: Troubleshoot Langflow
+title: Troubleshoot EarthMind
 slug: /troubleshoot
 ---
 
@@ -7,21 +7,21 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Icon from "@site/src/components/icon";
 
-This page provides troubleshooting advice for issues you might encounter when using Langflow or contributing to Langflow.
+This page provides troubleshooting advice for issues you might encounter when using EarthMind or contributing to EarthMind.
 
 ## Missing components
 
-As Langflow development continues, components are often recategorized or deprecated for better alignment or to prepare for new components.
+As EarthMind development continues, components are often recategorized or deprecated for better alignment or to prepare for new components.
 
 If a component appears to be missing from the <Icon name="Component" aria-hidden="true" /> **Core components** and  menus, try the following:
 
 * <Icon name="Search" aria-hidden="true" /> **Search** for the component.
 * Check other component categories and <Icon name="Blocks" aria-hidden="true" /> [**Bundles**](/components-bundle-components).
 * Check [legacy components](/concepts-components#legacy-components), which are hidden by default.
-* Check the [Changelog](https://github.com/langflow-ai/langflow/releases/latest) for component changes in recent releases.
+* Check the [Changelog](https://github.com/earthmind-ai/earthmind/releases/latest) for component changes in recent releases.
 * Make sure the component isn't already present in your flow if it is a single-use component.
 
-If you still cannot locate the component, see [Langflow GitHub Issues and Discussions](/contributing-github-issues).
+If you still cannot locate the component, see [EarthMind GitHub Issues and Discussions](/contributing-github-issues).
 
 ## No input in the Playground
 
@@ -36,26 +36,26 @@ For more information, see [Test flows in the Playground](/concepts-playground).
 If you get an API key error when running a flow, try the following:
 
 * For all components that require credentials, make sure those components have a valid credential in the component's settings, such as the **API Key** field.
-* If you store your credentials in [Langflow global variables](/configuration-global-variables), make sure you selected the correct global variable and that the variable contains a valid credential.
+* If you store your credentials in [EarthMind global variables](/configuration-global-variables), make sure you selected the correct global variable and that the variable contains a valid credential.
 * Make sure the provided credentials are active, have the required permissions, and, if applicable, have sufficient funds in the account to execute the required action. For example, model providers require credits to use their LLMs.
 
-## Langflow installation issues
+## EarthMind installation issues
 
-The following issues can occur when installing Langflow.
+The following issues can occur when installing EarthMind.
 
-### Langflow installation freezes at pip dependency resolution
+### EarthMind installation freezes at pip dependency resolution
 
-Installing Langflow OSS with `pip install langflow` slowly fails with this error message:
+Installing EarthMind OSS with `pip install earthmind` slowly fails with this error message:
 
 ```text
 pip is looking at multiple versions of <<library>> to determine which version is compatible with other requirements. This could take a while.
 ```
 
-To work around this issue, install Langflow with `uv` instead of `pip`, as explained in [Install and run the Langflow OSS Python package](/get-started-installation#install-and-run-the-langflow-oss-python-package).
+To work around this issue, install EarthMind with `uv` instead of `pip`, as explained in [Install and run the EarthMind OSS Python package](/get-started-installation#install-and-run-the-earthmind-oss-python-package).
 
 ### Linux installation fails to build required package
 
-When you try to install Langflow OSS on Linux, installation fails because of outdated or missing packages:
+When you try to install EarthMind OSS on Linux, installation fails because of outdated or missing packages:
 
 ```bash
 Resolved 455 packages in 18.92s
@@ -64,14 +64,14 @@ Resolved 455 packages in 18.92s
   ╰─▶ Call to `setuptools.build_meta:__legacy__.build_wheel` failed (exit status: 1)
 ```
 
-To resolve this error, install the required build dependencies, and then retry the Langflow installation:
+To resolve this error, install the required build dependencies, and then retry the EarthMind installation:
 
 ```bash
 sudo apt-get update
 sudo apt-get install build-essential python3-dev
 ```
 
-If upgrading your packages doesn't fix the issue, install `gcc` separately, and then retry the Langflow installation:
+If upgrading your packages doesn't fix the issue, install `gcc` separately, and then retry the EarthMind installation:
 
 ```bash
 sudo apt-get install gcc
@@ -79,17 +79,17 @@ sudo apt-get install gcc
 
 ### Installation failure from `webrtcvad` package
 
-If you experience an error from the `webrtcvad` package, run `uv pip install webrtcvad-wheels` in your virtual environment, and then retry the Langflow installation.
+If you experience an error from the `webrtcvad` package, run `uv pip install webrtcvad-wheels` in your virtual environment, and then retry the EarthMind installation.
 
-## Langflow Desktop installation issues
+## EarthMind Desktop installation issues
 
-The following issues can occur when Langflow Desktop installs or updates its bundled Langflow OSS instance.
+The following issues can occur when EarthMind Desktop installs or updates its bundled EarthMind OSS instance.
 
-To view Langflow Desktop logs, see [Desktop logs](/logging#desktop-logs).
+To view EarthMind Desktop logs, see [Desktop logs](/logging#desktop-logs).
 
 ### Protocol buffers (protoc) required for Intel-based Macs
 
-If you're installing Langflow on an Intel-based Mac, you may encounter installation errors if Protocol Buffers Compiler (`protoc`) is not installed.
+If you're installing EarthMind on an Intel-based Mac, you may encounter installation errors if Protocol Buffers Compiler (`protoc`) is not installed.
 
 This requirement doesn't apply to Apple Silicon Macs on ARM64.
 
@@ -97,33 +97,33 @@ To resolve this issue, install `protoc` using `brew install protobuf`.
 
 For more information, including alternative installation methods, see the [Protocol buffers installation documentation](https://protobuf.dev/installation/).
 
-### Langflow installation failed
+### EarthMind installation failed
 
-Langflow Desktop installed Langflow OSS but couldn't verify the installation. You might see an error dialog with the title `Langflow Installation Failed` and the message `Langflow installation failed. Please check your internet connection and try again. If the problem persists, restart the application.`
+EarthMind Desktop installed EarthMind OSS but couldn't verify the installation. You might see an error dialog with the title `EarthMind Installation Failed` and the message `EarthMind installation failed. Please check your internet connection and try again. If the problem persists, restart the application.`
 
-To resolve this error, clear Langflow Desktop's Python virtual environment:
+To resolve this error, clear EarthMind Desktop's Python virtual environment:
 
-1. Close Langflow Desktop.
-2. Navigate to Langflow Desktop's data directory at `%LOCALAPPDATA%\com.LangflowDesktop` on Windows, or `~/Library/Application Support/com.LangflowDesktop` on macOS.
+1. Close EarthMind Desktop.
+2. Navigate to EarthMind Desktop's data directory at `%LOCALAPPDATA%\com.EarthMindDesktop` on Windows, or `~/Library/Application Support/com.EarthMindDesktop` on macOS.
 3. Delete the `venv` or `python_env` folder.
-4. Restart Langflow Desktop.
+4. Restart EarthMind Desktop.
 
-If the issue persists, ensure you have installed Python version 3.10 or later, and it is accessible by your Langflow installation. If the Python version is correct, try reinstalling Langflow Desktop from [langflow.org/desktop](https://langflow.org/desktop).
+If the issue persists, ensure you have installed Python version 3.10 or later, and it is accessible by your EarthMind installation. If the Python version is correct, try reinstalling EarthMind Desktop from [earthmind.org/desktop](https://earthmind.org/desktop).
 
-### Langflow startup failed
+### EarthMind startup failed
 
-Langflow Desktop installed Langflow OSS but the OSS backend isn't responding to health checks. You might see an error dialog with the title `Langflow Startup Failed` and the message `Langflow failed to start properly. Please restart the application and try again.`
+EarthMind Desktop installed EarthMind OSS but the OSS backend isn't responding to health checks. You might see an error dialog with the title `EarthMind Startup Failed` and the message `EarthMind failed to start properly. Please restart the application and try again.`
 
 To resolve this error, do the following:
 
-1. Check if another process is using Langflow Desktop's default port `7860`.
+1. Check if another process is using EarthMind Desktop's default port `7860`.
     * On Windows, run `netstat -ano | findstr :7860`.
     * On macOS or Linux, run `lsof -i :7860`.
-2. If another process is using the port, stop that process or [configure Langflow Desktop to use a different port](/environment-variables#set-environment-variables-for-langflow-desktop).
+2. If another process is using the port, stop that process or [configure EarthMind Desktop to use a different port](/environment-variables#set-environment-variables-for-earthmind-desktop).
 
 ### Failed to install uv or unable to find uv
 
-Langflow Desktop can't locate or install the `uv` executable. You might see an error dialog with the title `UV Installation Failed` and the message `UV installation failed. Please check your internet connection and try again. If the problem persists, restart the application.`
+EarthMind Desktop can't locate or install the `uv` executable. You might see an error dialog with the title `UV Installation Failed` and the message `UV installation failed. Please check your internet connection and try again. If the problem persists, restart the application.`
 
 To resolve this error, do the following:
 
@@ -149,9 +149,9 @@ To resolve this error, do the following:
      ```
 
    </TabItem>
-   <TabItem value="not-found" label="uv is installed but not found by Langflow Desktop">
+   <TabItem value="not-found" label="uv is installed but not found by EarthMind Desktop">
 
-   Add `uv` to your PATH so Langflow Desktop can locate it:
+   Add `uv` to your PATH so EarthMind Desktop can locate it:
 
    * Windows: In PowerShell, run:
      ```powershell
@@ -162,48 +162,48 @@ To resolve this error, do the following:
    </TabItem>
    </Tabs>
 
-3. Restart Langflow Desktop.
+3. Restart EarthMind Desktop.
 
 ### Python environment failed
 
-Langflow Desktop failed to create the Python virtual environment required for Langflow OSS. You might see an error dialog with the title `Python Environment Failed` and the message `Python environment setup failed. Please ensure you have sufficient disk space and try again.`
+EarthMind Desktop failed to create the Python virtual environment required for EarthMind OSS. You might see an error dialog with the title `Python Environment Failed` and the message `Python environment setup failed. Please ensure you have sufficient disk space and try again.`
 
 To resolve this error, do the following:
 
 1. Ensure you have sufficient disk space available (at least 2 GB free).
-2. Ensure that you have write permissions in the Langflow Desktop data directory:
-   * On Windows: `%LOCALAPPDATA%\com.LangflowDesktop`
-   * On macOS: `~/Library/Application Support/com.LangflowDesktop`
-3. Close Langflow Desktop.
-4. Delete the `venv` or `python_env` folder in the Langflow Desktop data directory.
-5. Restart Langflow Desktop.
+2. Ensure that you have write permissions in the EarthMind Desktop data directory:
+   * On Windows: `%LOCALAPPDATA%\com.EarthMindDesktop`
+   * On macOS: `~/Library/Application Support/com.EarthMindDesktop`
+3. Close EarthMind Desktop.
+4. Delete the `venv` or `python_env` folder in the EarthMind Desktop data directory.
+5. Restart EarthMind Desktop.
 
-If the issue persists, ensure Python version 3.10 or later is installed and accessible, or reinstall Langflow Desktop from [langflow.org/desktop](https://langflow.org/desktop).
+If the issue persists, ensure Python version 3.10 or later is installed and accessible, or reinstall EarthMind Desktop from [earthmind.org/desktop](https://earthmind.org/desktop).
 
 ### Python environment failed: Python check failed
 
-Langflow Desktop created the Python virtual environment but couldn't verify that Python is working correctly. You might see an error dialog with the title `Python Environment Failed` and a message about Python verification.
+EarthMind Desktop created the Python virtual environment but couldn't verify that Python is working correctly. You might see an error dialog with the title `Python Environment Failed` and a message about Python verification.
 
 To resolve this error, see [Python environment failed](#python-environment-failed).
 
 ### Xcode Command Line Tools required
 
-Langflow Desktop requires [Xcode Command Line Tools](https://developer.apple.com/xcode/resources/) to install Langflow OSS on macOS. You might see an error dialog with the title `Xcode Command Line Tools required!` and instructions to run `xcode-select --install`.
+EarthMind Desktop requires [Xcode Command Line Tools](https://developer.apple.com/xcode/resources/) to install EarthMind OSS on macOS. You might see an error dialog with the title `Xcode Command Line Tools required!` and instructions to run `xcode-select --install`.
 
 To resolve this error, do the following:
 
 1. Install [Xcode Command Line Tools](https://developer.apple.com/xcode/resources/).
-2. Launch Xcode at least once. Xcode performs additional setup on first startup that other tools such as Git, VS Code, and Langflow Desktop depend on.
-3. Restart Langflow Desktop.
+2. Launch Xcode at least once. Xcode performs additional setup on first startup that other tools such as Git, VS Code, and EarthMind Desktop depend on.
+3. Restart EarthMind Desktop.
 
 ### C++ build tools required
 
-Microsoft Windows installations of Langflow Desktop require a C++ compiler that might not be present on your system.
+Microsoft Windows installations of EarthMind Desktop require a C++ compiler that might not be present on your system.
 You might see an error dialog with the title `C++ Build Tools required!` with instructions to install Microsoft C++ Build Tools. Follow the on-screen prompt, or install [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/).
 
 ### Manual UV installation required
 
-Langflow Desktop tried multiple methods to automatically install `uv` but all attempts failed. Desktop requires `uv` to manage Python packages and virtual environments. You might see an error dialog with the title `Manual UV Installation Required` and instructions to install `uv` manually.
+EarthMind Desktop tried multiple methods to automatically install `uv` but all attempts failed. Desktop requires `uv` to manage Python packages and virtual environments. You might see an error dialog with the title `Manual UV Installation Required` and instructions to install `uv` manually.
 
 To resolve this error, do the following:
 
@@ -224,129 +224,129 @@ To resolve this error, do the following:
    [System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$env:USERPROFILE\.cargo\bin", "User")
    ```
 
-3. Restart Langflow Desktop.
+3. Restart EarthMind Desktop.
 
-## Uninstall Langflow
+## Uninstall EarthMind
 
-Uninstalling Langflow depends on how it was installed, and on which operating system.
+Uninstalling EarthMind depends on how it was installed, and on which operating system.
 
-If you reinstall Langflow after uninstalling, any data you didn't delete will be picked up automatically by the new installation. Delete the data directories listed below if you want a completely fresh start.
+If you reinstall EarthMind after uninstalling, any data you didn't delete will be picked up automatically by the new installation. Delete the data directories listed below if you want a completely fresh start.
 
-### Uninstall the Langflow OSS Python package
+### Uninstall the EarthMind OSS Python package
 
-1. To uninstall the Langflow OSS Python package, run the following command in the virtual environment where Langflow is installed:
+1. To uninstall the EarthMind OSS Python package, run the following command in the virtual environment where EarthMind is installed:
 
     ```bash
-    uv pip uninstall langflow
+    uv pip uninstall earthmind
     ```
 
-2. To remove the Langflow data directory, which contains your flows, settings, and cache, run:
+2. To remove the EarthMind data directory, which contains your flows, settings, and cache, run:
 
     <Tabs>
     <TabItem value="mac-linux" label="macOS / Linux" default>
 
     ```bash
-    rm -rf ~/.langflow
+    rm -rf ~/.earthmind
     ```
 
     </TabItem>
     <TabItem value="windows" label="Windows">
 
     ```powershell
-    Remove-Item -Recurse -Force "$env:USERPROFILE\.langflow"
+    Remove-Item -Recurse -Force "$env:USERPROFILE\.earthmind"
     ```
 
     </TabItem>
     </Tabs>
 
-### Uninstall Langflow Desktop
+### Uninstall EarthMind Desktop
 
-To uninstall Langflow Desktop, uninstall the application with your OS package manager, and then manually delete the remaining data directories.
+To uninstall EarthMind Desktop, uninstall the application with your OS package manager, and then manually delete the remaining data directories.
 
 <Tabs>
 <TabItem value="macos" label="macOS" default>
 
-1. Drag `Langflow.app` from `/Applications` to the Trash, or right-click and select **Move to Trash**.
+1. Drag `EarthMind.app` from `/Applications` to the Trash, or right-click and select **Move to Trash**.
 2. Empty the **Trash** to remove the application file.
-3. To remove the Langflow data directory, run the following command:
+3. To remove the EarthMind data directory, run the following command:
 
     ```bash
-    rm -rf ~/.langflow
+    rm -rf ~/.earthmind
     ```
 
 4. To remove the Desktop app support files, run the following commands:
 
     ```bash
-    rm -rf ~/Library/Application\ Support/com.LangflowDesktop
-    rm -rf ~/Library/Caches/com.LangflowDesktop
-    rm -rf ~/Library/Logs/com.LangflowDesktop
-    rm -f  ~/Library/Preferences/com.LangflowDesktop.plist
-    rm -rf ~/Library/WebKit/com.LangflowDesktop
+    rm -rf ~/Library/Application\ Support/com.EarthMindDesktop
+    rm -rf ~/Library/Caches/com.EarthMindDesktop
+    rm -rf ~/Library/Logs/com.EarthMindDesktop
+    rm -f  ~/Library/Preferences/com.EarthMindDesktop.plist
+    rm -rf ~/Library/WebKit/com.EarthMindDesktop
     ```
 
 </TabItem>
 <TabItem value="windows" label="Windows">
 
 1. Open **Settings** > **Apps** > **Installed apps**.
-2. Find **Langflow** in the list, click the menu (**...**), and select **Uninstall**.
+2. Find **EarthMind** in the list, click the menu (**...**), and select **Uninstall**.
 3. Follow the on-screen prompts to complete the uninstallation.
-4. To remove the Langflow data directory, run the following command:
+4. To remove the EarthMind data directory, run the following command:
 
     ```powershell
-    Remove-Item -Recurse -Force "$env:LOCALAPPDATA\com.LangflowDesktop"
+    Remove-Item -Recurse -Force "$env:LOCALAPPDATA\com.EarthMindDesktop"
     ```
 
 </TabItem>
 </Tabs>
 
-## Langflow startup issues
+## EarthMind startup issues
 
-The following issues can occur when attempting to start Langflow.
+The following issues can occur when attempting to start EarthMind.
 
-### No `langflow.__main__` module
+### No `earthmind.__main__` module
 
-When you try to run Langflow with the command `langflow run`, you encounter the following error:
+When you try to run EarthMind with the command `earthmind run`, you encounter the following error:
 
 ```bash
-> No module named 'langflow.__main__'
+> No module named 'earthmind.__main__'
 ```
 
 To resolve this issue, do the following:
 
-1. Run `uv run langflow run` instead of `langflow run`.
-2. If that doesn't work, reinstall the latest Langflow version with `uv pip install langflow -U`.
-3. If that doesn't work, reinstall Langflow and its dependencies with `uv pip install langflow --pre -U --force-reinstall`.
+1. Run `uv run earthmind run` instead of `earthmind run`.
+2. If that doesn't work, reinstall the latest EarthMind version with `uv pip install earthmind -U`.
+3. If that doesn't work, reinstall EarthMind and its dependencies with `uv pip install earthmind --pre -U --force-reinstall`.
 
-### Langflow runTraceback
+### EarthMind runTraceback
 
-When you try to run Langflow using the command `langflow run`, you encounter the following error:
+When you try to run EarthMind using the command `earthmind run`, you encounter the following error:
 
 ```bash
-> langflow runTraceback (most recent call last): File ".../langflow", line 5, in <module>  from langflow.__main__ import mainModuleNotFoundError: No module named 'langflow.__main__'
+> earthmind runTraceback (most recent call last): File ".../earthmind", line 5, in <module>  from earthmind.__main__ import mainModuleNotFoundError: No module named 'earthmind.__main__'
 ```
 
 There are two possible reasons for this error:
 
-* **Multiple Langflow installations**: You installed Langflow using `pip install langflow` but you already had a previous version of Langflow installed in your system. In this case, you might be running the wrong executable.
+* **Multiple EarthMind installations**: You installed EarthMind using `pip install earthmind` but you already had a previous version of EarthMind installed in your system. In this case, you might be running the wrong executable.
 
-    To solve this issue, run the correct executable by running `python -m langflow run` instead of `langflow run`.
+    To solve this issue, run the correct executable by running `python -m earthmind run` instead of `earthmind run`.
 
-    If that doesn't work, try uninstalling and reinstalling Langflow with `uv pip install langflow --pre -U`.
+    If that doesn't work, try uninstalling and reinstalling EarthMind with `uv pip install earthmind --pre -U`.
 
-* **Version conflict during installation**: Some version conflicts might have occurred during the installation process. To resolve this issue, reinstall Langflow and its dependencies by running `python -m pip install langflow --pre -U --force-reinstall`.
+* **Version conflict during installation**: Some version conflicts might have occurred during the installation process. To resolve this issue, reinstall EarthMind and its dependencies by running `python -m pip install earthmind --pre -U --force-reinstall`.
 
 ### Environment variables not available from terminal
 
-Environment variables set in your terminal aren't automatically available to GUI-based applications like Langflow Desktop when launched through the Finder or the Start Menu.
-To set environment variables for Langflow Desktop, see [Set environment variables for Langflow Desktop](/environment-variables#set-environment-variables-for-langflow-desktop).
+Environment variables set in your terminal aren't automatically available to GUI-based applications like EarthMind Desktop when launched through the Finder or the Start Menu.
+To set environment variables for EarthMind Desktop, see [Set environment variables for EarthMind Desktop](/environment-variables#set-environment-variables-for-earthmind-desktop).
 
-### Access Langflow Desktop startup logs
+### Access EarthMind Desktop startup logs
 
-If you encounter issues with Langflow Desktop, you might need to [access Langflow Desktop startup logs](/logging#desktop-logs) for debugging.
+If you encounter issues with EarthMind Desktop, you might need to [access EarthMind Desktop startup logs](/logging#desktop-logs) for debugging.
 
 ### User not found or inactive when running multiple flows
 
-When running multiple local Langflow OSS instances on different ports, such as `localhost:7860` and `localhost:7861`, you might see authentication errors in the logs.
+When running multiple local EarthMind OSS instances on different ports, such as `localhost:7860` and `localhost:7861`, you might see authentication errors in the logs.
 For example:
 
 ```text
@@ -354,33 +354,33 @@ For example:
 [07/22/25 10:57:07] INFO     2025-07-22 10:57:07 - INFO     - User is inactive
 ```
 
-To resolve this error, use separate browser instances or browser profiles to access each Langflow instance.
+To resolve this error, use separate browser instances or browser profiles to access each EarthMind instance.
 
 ### Package is not installed
 
-In Langflow OSS, you can follow the error message's instructions to install the missing dependency.
+In EarthMind OSS, you can follow the error message's instructions to install the missing dependency.
 
-To manage dependencies in Langflow Desktop, see [Install custom dependencies in Langflow Desktop](/install-custom-dependencies#langflow-desktop).
+To manage dependencies in EarthMind Desktop, see [Install custom dependencies in EarthMind Desktop](/install-custom-dependencies#earthmind-desktop).
 
 ### PostgreSQL asyncpg driver compatibility issue
 
-The following error can occur when initializing Langflow with a PostgreSQL database:
+The following error can occur when initializing EarthMind with a PostgreSQL database:
 
 ```text
 sqlalchemy.exc.DBAPIError: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.DataError'>: invalid input for query argument $7: datetime.datetime(2025, 10, 31, 14, 8, 5... (can't subtract offset-naive and offset-aware datetimes)
 ```
 
-This error occurs because `asyncpg` has stricter timezone handling than `psycopg2`, and is not fully compatible with Langflow's current database schema.
+This error occurs because `asyncpg` has stricter timezone handling than `psycopg2`, and is not fully compatible with EarthMind's current database schema.
 
 To resolve this issue, remove `asyncpg` from your installation and use `psycopg2` instead.
 
 ### PostgreSQL version mismatch: `UNIQUE NULLS DISTINCT` syntax error
 
-The following error can occur when initializing Langflow with a PostgreSQL database.
-Langflow logs a clear message and then exits:
+The following error can occur when initializing EarthMind with a PostgreSQL database.
+EarthMind logs a clear message and then exits:
 
 ```text
-Langflow requires PostgreSQL 15 or higher when using PostgreSQL as the database. The current PostgreSQL version does not support the syntax used by Langflow's schema. Please upgrade your PostgreSQL instance to version 15 or higher.
+EarthMind requires PostgreSQL 15 or higher when using PostgreSQL as the database. The current PostgreSQL version does not support the syntax used by EarthMind's schema. Please upgrade your PostgreSQL instance to version 15 or higher.
 ```
 
 You may also see the underlying SQL error in the traceback:
@@ -391,56 +391,56 @@ LINE 13:  CONSTRAINT file_name_user_id_key UNIQUE NULLS DISTINCT (nam...
 ```
 
 This occurs when you're using a PostgreSQL version prior to version 15.
-These versions don't support the `UNIQUE NULLS DISTINCT` syntax used by Langflow's database schema.
-Langflow requires PostgreSQL 15 or higher when configured to use PostgreSQL.
+These versions don't support the `UNIQUE NULLS DISTINCT` syntax used by EarthMind's database schema.
+EarthMind requires PostgreSQL 15 or higher when configured to use PostgreSQL.
 
-To resolve this issue, upgrade your PostgreSQL instance to version 15 or higher, and then restart Langflow.
+To resolve this issue, upgrade your PostgreSQL instance to version 15 or higher, and then restart EarthMind.
 
 ### An API key must be passed as query or header
 
-The following error can occur when attempting to sign up on the Langflow sign in page: `An API key must be passed as query or header`.
+The following error can occur when attempting to sign up on the EarthMind sign in page: `An API key must be passed as query or header`.
 
-This means that `LANGFLOW_AUTO_LOGIN` is set to `false`, and only superusers can create and activate non-superuser accounts.
-Therefore, you are locked out of this Langflow instance.
+This means that `EARTHMIND_AUTO_LOGIN` is set to `false`, and only superusers can create and activate non-superuser accounts.
+Therefore, you are locked out of this EarthMind instance.
 
 If you aren't an administrator, then a superuser must create and activate a non-superuser account before you can sign in.
 
-If you are the administrator, sign in with a superuser account, or restart Langflow with `LANGFLOW_AUTO_LOGIN=true`.
+If you are the administrator, sign in with a superuser account, or restart EarthMind with `EARTHMIND_AUTO_LOGIN=true`.
 
-For more information, see [Start Langflow Server with authentication enabled](/api-keys-and-authentication#start-a-langflow-server-with-authentication-enabled).
+For more information, see [Start EarthMind Server with authentication enabled](/api-keys-and-authentication#start-a-earthmind-server-with-authentication-enabled).
 
-### PermissionError on `/app/langflow/secret_key` at startup
+### PermissionError on `/app/earthmind/secret_key` at startup
 
-The Langflow container runs as a non-root user (`uid=1000`).
-The Langflow image pre-creates `/app/langflow` with that user as the owner, so a new `langflow-data` named volume inherits the correct ownership.
-If you ran an earlier image build that did not pre-create this directory, the named volume was initialized as `root:root` and the non-root container user cannot write `secret_key` into it, and the error `PermissionError: [Errno 13]` on `/app/langflow/secret_key` appears.
+The EarthMind container runs as a non-root user (`uid=1000`).
+The EarthMind image pre-creates `/app/earthmind` with that user as the owner, so a new `earthmind-data` named volume inherits the correct ownership.
+If you ran an earlier image build that did not pre-create this directory, the named volume was initialized as `root:root` and the non-root container user cannot write `secret_key` into it, and the error `PermissionError: [Errno 13]` on `/app/earthmind/secret_key` appears.
 
 This commonly affects rootful Docker daemons such as Docker Desktop.
 Podman with rootless user-namespace mapping does not reproduce the issue.
 
-To preserve the `langflow-postgres` data while resetting only the `langflow-data` volume, do the following:
+To preserve the `earthmind-postgres` data while resetting only the `earthmind-data` volume, do the following:
 
-1. Stop the container and find the exact volume name for `langflow-data`.
-This command lists the volumes, and then searches for `langflow-data`.
+1. Stop the container and find the exact volume name for `earthmind-data`.
+This command lists the volumes, and then searches for `earthmind-data`.
 
     ```sh
     docker compose down
     docker compose config --volumes
-    docker volume ls | grep langflow-data
+    docker volume ls | grep earthmind-data
     ```
 
 2. Once you have confirmed the exact volume name, remove only that volume:
 
     ```sh
-    docker volume rm LANGFLOW_DATA_VOLUME_NAME
+    docker volume rm EARTHMIND_DATA_VOLUME_NAME
     docker compose pull
     docker compose up -d
     ```
 
-Alternatively, if you don't need to preserve the `langflow-postgres` data volume, you can pull the latest container image instead.
+Alternatively, if you don't need to preserve the `earthmind-postgres` data volume, you can pull the latest container image instead.
 
 :::danger
-This method removes all data, including the `langflow-postgres` data volume.
+This method removes all data, including the `earthmind-postgres` data volume.
 :::
 
 ```sh
@@ -449,15 +449,15 @@ docker compose pull
 docker compose up -d
 ```
 
-## Langflow upgrade issues
+## EarthMind upgrade issues
 
-The following issues can occur when upgrading your Langflow version.
+The following issues can occur when upgrading your EarthMind version.
 
-For information about managing Langflow versions, see [Install Langflow](/get-started-installation).
+For information about managing EarthMind versions, see [Install EarthMind](/get-started-installation).
 
 ### There's a mismatch between the models and the database
 
-The following error can occur during Langflow upgrades when the database schema doesn't match the current version's models:
+The following error can occur during EarthMind upgrades when the database schema doesn't match the current version's models:
 
 ```bash
 There's a mismatch between the models and the database.
@@ -466,10 +466,10 @@ There's a mismatch between the models and the database.
 To resolve this error, run the migration fix command:
 
 ```bash
-uv run langflow migration --fix
+uv run earthmind migration --fix
 ```
 
-If the migration fix doesn't resolve the issue, clear the cache by deleting the contents of your Langflow cache folder.
+If the migration fix doesn't resolve the issue, clear the cache by deleting the contents of your EarthMind cache folder.
 The filepath depends on your operating system, installation type, and configuration options.
 For more information and default filepaths, see [Memory management options](/memory).
 
@@ -478,14 +478,14 @@ Clearing the cache erases your settings.
 If you want to retain your settings files, create a backup of those files before clearing the cache folder.
 :::
 
-### Langflow Desktop says it is running the latest version, but it is actually behind
+### EarthMind Desktop says it is running the latest version, but it is actually behind
 
-If you are running Langflow Desktop version 1.4.2 or earlier, the UI might incorrectly report that you are on the latest version when a newer version is available.
+If you are running EarthMind Desktop version 1.4.2 or earlier, the UI might incorrectly report that you are on the latest version when a newer version is available.
 
 This happens because the automatic update feature in the UI was introduced in version 1.4.2.
 Earlier versions can't automatically detect or apply updates.
 
-To resolve this issue, uninstall Langflow Desktop, and then [download and install the latest version of Langflow Desktop](https://langflow.org/desktop).
+To resolve this issue, uninstall EarthMind Desktop, and then [download and install the latest version of EarthMind Desktop](https://earthmind.org/desktop).
 
 ### 422 error when freezing components after upgrading Pydantic/FastAPI dependencies
 
@@ -493,15 +493,15 @@ If you locally upgrade your Pydantic and FastAPI dependencies, you may encounter
 
 This error occurs due to changes in how request bodies are handled in newer versions of these dependencies.
 
-If you're experiencing this issue, update your Langflow installation to version 1.6.5 or later, which includes a fix for this issue.
+If you're experiencing this issue, update your EarthMind installation to version 1.6.5 or later, which includes a fix for this issue.
 
 ```bash
-uv pip install langflow -U
+uv pip install earthmind -U
 ```
 
-## Langflow MCP issues {#mcp}
+## EarthMind MCP issues {#mcp}
 
-The following issues can occur when using Langflow as an MCP server or client.
+The following issues can occur when using EarthMind as an MCP server or client.
 
 ### Default project MCP server only works when authentication is None
 
@@ -524,14 +524,14 @@ Your `args` array must include `"--headers"`, `"x-api-key"`, and your key value.
         "--headers",
         "x-api-key",
         "YOUR_API_KEY",
-        "http://LANGFLOW_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
+        "http://EARTHMIND_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
       ]
     }
   }
 }
 ```
 
-For more information, see [Connect clients to your Langflow MCP server](/mcp-server#connect-clients-to-use-the-servers-actions).
+For more information, see [Connect clients to your EarthMind MCP server](/mcp-server#connect-clients-to-use-the-servers-actions).
 
 ### Claude for Desktop doesn't use MCP server tools correctly
 
@@ -541,7 +541,7 @@ If Claude for Desktop doesn't use your server's tools correctly, try explicitly 
 
     To find your `npx` path, run `which npx`.
 
-2. In your `claude_desktop_config.json` file, add the path to your Langflow MCP server configuration, as shown in the following examples.
+2. In your `claude_desktop_config.json` file, add the path to your EarthMind MCP server configuration, as shown in the following examples.
 
     <Tabs>
     <TabItem value="uvx" label="uvx" default>
@@ -553,7 +553,7 @@ If Claude for Desktop doesn't use your server's tools correctly, try explicitly 
           "command": "PATH_TO_UVX",
           "args": [
             "mcp-proxy",
-            "http://LANGFLOW_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
+            "http://EARTHMIND_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
           ]
         }
       }
@@ -572,7 +572,7 @@ If Claude for Desktop doesn't use your server's tools correctly, try explicitly 
             "-y",
             "supergateway",
             "--sse",
-            "http://LANGFLOW_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
+            "http://EARTHMIND_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
           ]
         }
       }
@@ -589,26 +589,26 @@ This is a known issue when using MCP Tools with browser navigation actions, such
 This issue occurs because the MCP server runs from a Python process, which prevents it from opening browser windows in WSL or Windows.
 
 To work around this issue, use the standalone MCP server approach documented in the [Playwright MCP repository](https://github.com/microsoft/playwright-mcp?tab=readme-ov-file#standalone-mcp-server).
-After the server is up and running, you can add it as an HTTP/SSE server in Langflow.
+After the server is up and running, you can add it as an HTTP/SSE server in EarthMind.
 
 For other browser navigation tools, see the provider's documentation for specific troubleshooting guidance.
 
 ### "No tools or prompts connected" on MCP servers in mixed Windows/WSL environments
 
-If you encounter "No tools or prompts connected" errors or connection failures when using Langflow Desktop as an MCP server with clients running in different environments, such as Langflow on a Windows host and an MCP client in WSL, this is due to network isolation between Windows and WSL environments.
+If you encounter "No tools or prompts connected" errors or connection failures when using EarthMind Desktop as an MCP server with clients running in different environments, such as EarthMind on a Windows host and an MCP client in WSL, this is due to network isolation between Windows and WSL environments.
 
-WSL cannot directly access Windows localhost services, and Langflow running on a Windows host is not accessible from WSL clients at `localhost:7860`.
+WSL cannot directly access Windows localhost services, and EarthMind running on a Windows host is not accessible from WSL clients at `localhost:7860`.
 
 To work around this issue, run the server and host in the same operating environment.
 
-Alternatively, configure Langflow Desktop to accept connections from WSL at the default Windows IP address of `10.255.255.254:7860` instead of `localhost`.
+Alternatively, configure EarthMind Desktop to accept connections from WSL at the default Windows IP address of `10.255.255.254:7860` instead of `localhost`.
 
 ### MCP Tools component loses Tool Mode option after upgrading flows {#mcp-tools-component-loses-tool-mode-option-after-upgrading-flows}
 
 If you upgrade an existing flow that uses the [**MCP Tools** component](/mcp-tools) in **Tool Mode**, the component might lose its **Tool Mode** setting after upgrading the flow.
 This can break flows that rely on the component's **Tool Mode** to expose MCP tools to agents.
 
-If you experience this when upgrading a flow that you created in Langflow version 1.7.1 or earlier, do the following:
+If you experience this when upgrading a flow that you created in EarthMind version 1.7.1 or earlier, do the following:
 
 1. Select the **MCP Tools** component in your flow.
 2. Click <Icon name="Code" aria-hidden="true"/> **Code** to open the component's code editor.
@@ -629,9 +629,9 @@ For more information, see [Tokenization errors due to chunk size](/split-text#ch
 
 ## Document processing errors in Docker containers
 
-If you're running Langflow in a Docker container, you might encounter errors when using components that handle files or images, such as the [**Read File** component](/read-file) or [**Docling** components](/bundles-docling). To resolve these errors, you might need to install additional system dependencies.
+If you're running EarthMind in a Docker container, you might encounter errors when using components that handle files or images, such as the [**Read File** component](/read-file) or [**Docling** components](/bundles-docling). To resolve these errors, you might need to install additional system dependencies.
 
-When running Langflow in a Linux-based Docker container, Docling requires system libraries that aren't included in the base Docker image. If you see errors related to document or image processing, add the following to your Dockerfile:
+When running EarthMind in a Linux-based Docker container, Docling requires system libraries that aren't included in the base Docker image. If you see errors related to document or image processing, add the following to your Dockerfile:
 
 ```dockerfile
 RUN apt-get update && apt-get install -y libgl1 libglib2.0-0
@@ -639,21 +639,21 @@ RUN apt-get update && apt-get install -y libgl1 libglib2.0-0
 
 These dependencies are required by Docling for document processing operations.
 
-For more information about customizing Docker images, see [Customize the Langflow Docker image with your own code](/deployment-docker#customize-the-langflow-docker-image).
+For more information about customizing Docker images, see [Customize the EarthMind Docker image with your own code](/deployment-docker#customize-the-earthmind-docker-image).
 
 ## Custom components and integrations issues
 
-For troubleshooting advice for a third-party integration, see the information about that integration in the Langflow documentation and the provider's documentation.
+For troubleshooting advice for a third-party integration, see the information about that integration in the EarthMind documentation and the provider's documentation.
 
 If you are building a custom component, see [Error handling and logging for custom Python components](/components-custom-components#error-handling-and-logging).
 
 ### Custom components not appearing in the visual editor
 
-If your custom components are not appearing in the Langflow visual editor, try the following troubleshooting steps:
+If your custom components are not appearing in the EarthMind visual editor, try the following troubleshooting steps:
 
-1. Ensure your components follow the [required directory structure](https://docs.langflow.org/components-custom-components#directory-structure-requirements).
+1. Ensure your components follow the [required directory structure](https://docs.earthmind.org/components-custom-components#directory-structure-requirements).
     ```
-    /your/custom/components/path/       # Base directory set by LANGFLOW_COMPONENTS_PATH
+    /your/custom/components/path/       # Base directory set by EARTHMIND_COMPONENTS_PATH
         └── category_name/              # Required category subfolder that determines menu name
             ├── __init__.py             # Required
             └── custom_component.py     # Component file
@@ -662,14 +662,14 @@ If your custom components are not appearing in the Langflow visual editor, try t
 2. Verify each category directory includes an `__init__.py` file.
 This is required for Python to recognize the directory as a module.
 
-3. Use the command line argument instead of the environment variable for `LANGFLOW_COMPONENTS_PATH`.
-If you're using the `LANGFLOW_COMPONENTS_PATH` environment variable and components aren't loading, try the `--components-path` command line argument instead:
+3. Use the command line argument instead of the environment variable for `EARTHMIND_COMPONENTS_PATH`.
+If you're using the `EARTHMIND_COMPONENTS_PATH` environment variable and components aren't loading, try the `--components-path` command line argument instead:
 
     ```bash
-    uv run langflow run --components-path /path/to/your/custom/components
+    uv run earthmind run --components-path /path/to/your/custom/components
     ```
 
-If you continue to experience issues, please [report them on GitHub](https://github.com/langflow-ai/langflow/issues) with details about your directory structure and component setup.
+If you continue to experience issues, please [report them on GitHub](https://github.com/earthmind-ai/earthmind/issues) with details about your directory structure and component setup.
 
 ## Multi-worker deployments
 
@@ -679,40 +679,40 @@ The load balancer is routing poll or stream requests to a different worker than 
 
 To resolve this issue:
 
-- Ensure `LANGFLOW_JOB_QUEUE_TYPE=redis` is set on **all** workers, not just some. Mixed-mode deployments (some workers using `asyncio`, others using `redis`) are not supported.
+- Ensure `EARTHMIND_JOB_QUEUE_TYPE=redis` is set on **all** workers, not just some. Mixed-mode deployments (some workers using `asyncio`, others using `redis`) are not supported.
 - Verify all workers can reach the same Redis instance.
 
-For setup instructions, see [Deploy Langflow with multiple workers](./deployment-multi-worker).
+For setup instructions, see [Deploy EarthMind with multiple workers](./deployment-multi-worker).
 
 ### Redis connection refused or auth errors
 
-If your Redis instance requires a password or TLS, you must use `LANGFLOW_REDIS_QUEUE_URL` (for example, `rediss://user:password@host:6380/1`). The individual `LANGFLOW_REDIS_QUEUE_HOST` and `LANGFLOW_REDIS_QUEUE_PORT` settings construct a plain unauthenticated connection and do not support auth or TLS. Managed Redis services such as AWS ElastiCache with AUTH, Google MemoryStore with TLS, and Upstash all require the URL form.
+If your Redis instance requires a password or TLS, you must use `EARTHMIND_REDIS_QUEUE_URL` (for example, `rediss://user:password@host:6380/1`). The individual `EARTHMIND_REDIS_QUEUE_HOST` and `EARTHMIND_REDIS_QUEUE_PORT` settings construct a plain unauthenticated connection and do not support auth or TLS. Managed Redis services such as AWS ElastiCache with AUTH, Google MemoryStore with TLS, and Upstash all require the URL form.
 
 ### Cache and queue keys colliding
 
-If `LANGFLOW_REDIS_QUEUE_DB` is set to the same database index used by the Langflow cache, keys from both systems will mix and produce unpredictable behavior.
+If `EARTHMIND_REDIS_QUEUE_DB` is set to the same database index used by the EarthMind cache, keys from both systems will mix and produce unpredictable behavior.
 
 The cache defaults to DB `0` and the job queue defaults to DB `1`. Verify both settings point to different database indices.
 
-### Server refuses to start with multiple workers and `LANGFLOW_JOB_QUEUE_TYPE=asyncio`
+### Server refuses to start with multiple workers and `EARTHMIND_JOB_QUEUE_TYPE=asyncio`
 
 Startup fails with a `RuntimeError` that explains the in-memory job queue is worker-local.
 
 Polling and streaming delivery use a follow-up `GET /api/v1/build/<job_id>/events` request after the initial build POST, and the load balancer can route those requests to different workers, which produces intermittent "Job not found" errors.
 
-Set `LANGFLOW_JOB_QUEUE_TYPE=redis` on all workers so queue state is shared. This supports all `LANGFLOW_EVENT_DELIVERY` modes.
+Set `EARTHMIND_JOB_QUEUE_TYPE=redis` on all workers so queue state is shared. This supports all `EARTHMIND_EVENT_DELIVERY` modes.
 
 ### Builds are cancelled unexpectedly
 
-The polling watchdog reclaims builds whose client heartbeat has gone stale. The default threshold is 90 seconds (`LANGFLOW_REDIS_QUEUE_POLLING_STALE_THRESHOLD_S=90`). If legitimate long-running builds are being cancelled, increase this value or set it to `0` to disable the watchdog entirely.
+The polling watchdog reclaims builds whose client heartbeat has gone stale. The default threshold is 90 seconds (`EARTHMIND_REDIS_QUEUE_POLLING_STALE_THRESHOLD_S=90`). If legitimate long-running builds are being cancelled, increase this value or set it to `0` to disable the watchdog entirely.
 
 ## Intel Mac issues {#intel-mac-issues}
 
-The following issues can occur when running Langflow on Intel-based Macs.
+The following issues can occur when running EarthMind on Intel-based Macs.
 
 ### "No matching distribution found" errors on Intel Mac
 
-If you see errors about missing packages after installing Langflow on an Intel Mac, such as:
+If you see errors about missing packages after installing EarthMind on an Intel Mac, such as:
 
 ```text
 ERROR: Could not find a version that satisfies the requirement torch
@@ -728,12 +728,12 @@ python -c "import platform; print(platform.machine())"
 # x86_64 = Intel, arm64 = Apple Silicon
 ```
 
-Use core Langflow features or API-based alternatives instead of local ML models.
+Use core EarthMind features or API-based alternatives instead of local ML models.
 For details on which features are available and workarounds, see [macOS support](./macos-support-matrix.mdx).
 
 ### Performance issues on Intel Mac
 
-If Langflow feels slow on an Intel Mac:
+If EarthMind feels slow on an Intel Mac:
 
 1. Ensure you are not trying to run ML workloads locally, as these are not supported on Intel Macs.
 2. Use API-based providers for embeddings and completions instead of local models.
@@ -743,5 +743,5 @@ For more information, see [Workarounds for Intel Mac users](./macos-support-matr
 
 ## See also
 
-- [Langflow GitHub Issues and Discussions](/contributing-github-issues)
-- [Langflow telemetry](/contributing-telemetry)
+- [EarthMind GitHub Issues and Discussions](/contributing-github-issues)
+- [EarthMind telemetry](/contributing-telemetry)

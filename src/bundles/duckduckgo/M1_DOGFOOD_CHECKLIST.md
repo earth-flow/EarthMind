@@ -50,16 +50,16 @@ in advance. A pre-checked checklist is not evidence.
 | --- | --- |
 | Run by | _engineer name + handle_ |
 | Date | _YYYY-MM-DD_ |
-| Pre-migration Langflow version | `1.9.x` (last release before the pilot landed) |
-| Post-migration Langflow version | this branch / `1.10.x` |
+| Pre-migration EarthMind version | `1.9.x` (last release before the pilot landed) |
+| Post-migration EarthMind version | this branch / `1.10.x` |
 | Result | _pass / fail_ |
 | Notes | _free text_ |
 
 ### Steps
 
 1. **Pre-migration save.**
-   - [ ] `pip install langflow==<pre-migration version>` in a clean venv
-   - [ ] `langflow run` and open the UI
+   - [ ] `pip install earthmind==<pre-migration version>` in a clean venv
+   - [ ] `earthmind run` and open the UI
    - [ ] Drag a **DuckDuckGo Search** component onto the canvas, set
          `query` to a string that produces deterministic-enough output
          (e.g. `"site:wikipedia.org claude shannon"`)
@@ -72,13 +72,13 @@ in advance. A pre-checked checklist is not evidence.
          a file alongside the saved flow JSON
 
 3. **Upgrade.**
-   - [ ] In a separate clean venv: `pip install langflow==<this branch>`
+   - [ ] In a separate clean venv: `pip install earthmind==<this branch>`
          (which transitively pulls in `lfx-duckduckgo`)
    - [ ] Confirm `lfx extension list --format=json` shows
          `lfx-duckduckgo` at slot `@official`
 
 4. **Post-migration load.**
-   - [ ] `langflow run`, open the saved flow JSON from step 1
+   - [ ] `earthmind run`, open the saved flow JSON from step 1
    - [ ] Confirm the canvas renders the DuckDuckGo node intact
          (no red placeholder; no "component not found" toast)
    - [ ] Inspect the loaded node's `data.type` field — it should be

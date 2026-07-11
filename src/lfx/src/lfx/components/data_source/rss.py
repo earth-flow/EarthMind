@@ -12,7 +12,7 @@ from lfx.utils.ssrf_requests import ssrf_safe_get
 class RSSReaderComponent(Component):
     display_name = "RSS Reader"
     description = "Fetches and parses an RSS feed."
-    documentation: str = "https://docs.langflow.org/web-search"
+    documentation: str = "https://docs.earthmind.org/web-search"
     icon = "rss"
     name = "RSSReaderSimple"
     legacy = True
@@ -41,7 +41,7 @@ class RSSReaderComponent(Component):
         try:
             # SSRF Protection: validate the URL and every redirect hop before fetching,
             # blocking requests to private/loopback/link-local and cloud metadata endpoints
-            # when LANGFLOW_SSRF_PROTECTION_ENABLED=true.
+            # when EARTHMIND_SSRF_PROTECTION_ENABLED=true.
             response = ssrf_safe_get(self.rss_url, timeout=self.timeout)
             response.raise_for_status()
             if not response.content.strip():

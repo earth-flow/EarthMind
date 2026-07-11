@@ -1,18 +1,18 @@
-"""Production-install discovery for the Langflow Extension System.
+"""Production-install discovery for the EarthMind Extension System.
 
 This module owns the two production install sources for Modes A, B, and C:
 
     1. **Installed Python distributions** -- the primary path. ``pip install
-       langflow lfx-<provider>`` puts a manifest-shipping distribution on
+       earthmind lfx-<provider>`` puts a manifest-shipping distribution on
        ``importlib.metadata.distributions()``; we walk that iterator at
        server startup and surface every distribution that ships an
-       ``extension.json`` or a ``[tool.langflow.extension]`` section in its
+       ``extension.json`` or a ``[tool.earthmind.extension]`` section in its
        ``pyproject.toml``.
 
     2. **Seed directories** -- an optional filesystem source for Docker
        images or k8s deployments that prefer an explicit on-disk layout.
-       Defaults to ``/opt/langflow/bundles/`` when present; the
-       ``LANGFLOW_SEED_DIR`` environment variable overrides this with one
+       Defaults to ``/opt/earthmind/bundles/`` when present; the
+       ``EARTHMIND_SEED_DIR`` environment variable overrides this with one
        or more paths joined by ``os.pathsep``.
 
 Both sources produce :class:`DiscoveredExtension` records.  Discovery is
@@ -63,17 +63,17 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-DEFAULT_SEED_DIR: Path = Path("/opt/langflow/bundles")
-"""Default filesystem seed directory used when ``LANGFLOW_SEED_DIR`` is unset.
+DEFAULT_SEED_DIR: Path = Path("/opt/earthmind/bundles")
+"""Default filesystem seed directory used when ``EARTHMIND_SEED_DIR`` is unset.
 
 Chosen to match the path operators bake into Mode B/C Docker images.
 Outside Docker the directory typically does not exist, in which case
 discovery silently skips it -- the absence is normal, not an error."""
 
-SEED_DIR_ENV_VAR: str = "LANGFLOW_SEED_DIR"
+SEED_DIR_ENV_VAR: str = "EARTHMIND_SEED_DIR"
 """Environment variable that overrides :data:`DEFAULT_SEED_DIR`.  Accepts a
 single directory or several joined by ``os.pathsep`` (``:`` on POSIX,
-``;`` on Windows), mirroring ``LANGFLOW_COMPONENTS_PATH``."""
+``;`` on Windows), mirroring ``EARTHMIND_COMPONENTS_PATH``."""
 
 SourceKind = Literal["installed", "seed"]
 
@@ -121,7 +121,7 @@ class DiscoveredExtension:
         Property rather than a stored field so the invariant (slot ==
         ``official`` for every discovery record in this milestone) cannot
         drift.  The @extra slot is reserved for loose
-        ``LANGFLOW_COMPONENTS_PATH`` folders; nothing in this module
+        ``EARTHMIND_COMPONENTS_PATH`` folders; nothing in this module
         produces it.
         """
         return "official"
@@ -211,11 +211,11 @@ def _distribution_manifest_path(dist: importlib_metadata.Distribution) -> Path |
 
     Acceptance order matches :func:`load_manifest`: ``extension.json`` wins
     if present; otherwise we fall back to a ``pyproject.toml`` that
-    declares a ``[tool.langflow.extension]`` table.
+    declares a ``[tool.earthmind.extension]`` table.
 
     For editable installs whose ``dist.files`` only surfaces ``dist-info/``
     entries (the ``pip install -e`` / ``uv pip install -e`` case), we fall
-    back to the ``langflow.extensions`` entry-point group declared in the
+    back to the ``earthmind.extensions`` entry-point group declared in the
     distribution's ``pyproject.toml``.
 
     A missing or unreadable file iteration is treated as "no manifest"
@@ -266,7 +266,7 @@ def _distribution_manifest_path_via_entry_points(
     ``dist-info/`` entries in ``dist.files``: the package's source tree lives
     behind a ``.pth`` file rather than under a wheel-installed directory, so
     the ``files`` scan above never sees ``extension.json``.  The
-    ``langflow.extensions`` entry-point points at the package that ships the
+    ``earthmind.extensions`` entry-point points at the package that ships the
     manifest; we resolve it via :func:`importlib.util.find_spec` (which runs
     the import-system finders but **never executes the module's body**) and
     look for the manifest in the resulting package directory.
@@ -285,11 +285,11 @@ def _distribution_manifest_path_via_entry_points(
         return None
 
     try:
-        selected = list(eps.select(group="langflow.extensions"))
+        selected = list(eps.select(group="earthmind.extensions"))
     except AttributeError:
         # Older importlib.metadata returns a plain tuple of EntryPoint with
         # no .select() helper; filter manually.
-        selected = [ep for ep in eps if getattr(ep, "group", None) == "langflow.extensions"]
+        selected = [ep for ep in eps if getattr(ep, "group", None) == "earthmind.extensions"]
 
     for ep in selected:
         module_name = (getattr(ep, "value", "") or "").split(":", 1)[0].strip()
@@ -323,7 +323,7 @@ def _distribution_manifest_path_via_entry_points(
 
 
 def _pyproject_declares_extension(pyproject_path: Path) -> bool:
-    """Return ``True`` iff *pyproject_path* contains ``[tool.langflow.extension]``.
+    """Return ``True`` iff *pyproject_path* contains ``[tool.earthmind.extension]``.
 
     Detects section *presence* only; intentionally does NOT validate the
     schema.  A pyproject whose section exists but is malformed must still
@@ -337,11 +337,11 @@ def _pyproject_declares_extension(pyproject_path: Path) -> bool:
     try:
         section = _read_pyproject_extension(pyproject_path)
     except ValueError:
-        # Unparseable TOML: not specifically a Langflow concern, treat as
+        # Unparseable TOML: not specifically a EarthMind concern, treat as
         # "not a manifest-shipping package" and keep scanning.
         return False
     except TypeError:
-        # [tool.langflow.extension] exists but isn't a table.  The author
+        # [tool.earthmind.extension] exists but isn't a table.  The author
         # clearly intended to declare an extension, so surface the package
         # to discovery; the typed manifest-invalid will fire downstream.
         return True
@@ -494,7 +494,7 @@ def _resolve_seed_paths(
           ``seed-directory-not-found`` error (the operator explicitly
           configured a directory; absence is a misconfiguration).
         * If ``seed_dir_env`` is unset/empty, fall back to ``default``.
-          A missing default path is silently skipped: ``/opt/langflow/
+          A missing default path is silently skipped: ``/opt/earthmind/
           bundles`` rarely exists outside Docker and absence is normal.
     """
     errors: list[ExtensionError] = []
@@ -513,8 +513,8 @@ def _resolve_seed_paths(
                         location=str(candidate),
                         content=stripped,
                         hint=(
-                            "Set LANGFLOW_SEED_DIR to a directory that exists, "
-                            "or unset it to fall back to /opt/langflow/bundles."
+                            "Set EARTHMIND_SEED_DIR to a directory that exists, "
+                            "or unset it to fall back to /opt/earthmind/bundles."
                         ),
                     )
                 )
@@ -603,7 +603,7 @@ def _build_seed_record(seed_subdir: Path) -> tuple[DiscoveredExtension | None, E
             message=str(exc),
             location=str(seed_subdir),
             content=seed_subdir.name,
-            hint="Ship an extension.json or a pyproject.toml with [tool.langflow.extension].",
+            hint="Ship an extension.json or a pyproject.toml with [tool.earthmind.extension].",
         )
     except (ValueError, TypeError, OSError) as exc:
         return None, ExtensionError(
@@ -640,11 +640,11 @@ def discover_seed_extensions(
     """Scan one or more seed directories for manifest-shipping bundles.
 
     Args:
-        seed_dir_env: Explicit override for ``$LANGFLOW_SEED_DIR``.  Pass
+        seed_dir_env: Explicit override for ``$EARTHMIND_SEED_DIR``.  Pass
             ``None`` to read the live environment variable; pass an empty
             string to force "unset" behaviour without touching the env.
         default: Path checked when ``seed_dir_env`` is empty.  Defaults to
-            :data:`DEFAULT_SEED_DIR` (``/opt/langflow/bundles``).  Pass
+            :data:`DEFAULT_SEED_DIR` (``/opt/earthmind/bundles``).  Pass
             ``None`` to disable the default entirely.
 
     Returns:

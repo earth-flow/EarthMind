@@ -88,8 +88,8 @@ export const HelpDropdownView = ({
         {false && (
           <DropdownControlButton
             iconName="download"
-            testId="canvas_controls_dropdown_get_langflow_desktop"
-            label={t("help.getLangflowDesktop")}
+            testId="canvas_controls_dropdown_get_earthmind_desktop"
+            label={t("help.getEarthMindDesktop")}
             externalLink
             onClick={() => openLink(urls.desktop)}
           />
