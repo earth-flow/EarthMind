@@ -11,14 +11,23 @@ EarthMind is based on Langflow and provides the workflow and agent orchestration
 layer. Terrabox provides the geospatial tool backend: tool registration, JSON
 Schema definitions, REST execution, runtime files, API keys, and MCP exposure.
 
-The integration implemented here keeps the boundary narrow:
+The two projects stay independently deployed and versioned. EarthMind depends
+on Terrabox in two distinct ways:
 
-- Change only EarthMind source code.
-- Do not modify the installed conda `base` Langflow package.
-- Do not modify Terrabox source code.
-- Load Terrabox tool metadata from the local Terrabox source tree.
-- Wrap Terrabox tools as Langflow components at the EarthMind/LFX component
-  cache layer.
+- **Component generation (build-time):** `terrabox[geo]` is a regular pinned
+  package dependency (see `terrabox` in the root `pyproject.toml`'s
+  `[tool.uv.sources]`, pinned to a tagged release on
+  `github.com/earth-flow/terrabox`). `lfx` imports `terrabox.core.registry` and
+  the `terrabox.toolkits.*` modules directly, the same as any other dependency
+  — no separate Terrabox checkout or `PYTHONPATH`/`sys.path` setup is needed.
+- **Tool execution (runtime):** generated components call a *live* Terrabox
+  REST API over HTTP at `TERRALINK_BASE_URL`. This still requires Terrabox to
+  be running as its own service, since it owns its own database, auth, and API
+  key issuance independently of EarthMind.
+
+Bumping the Terrabox toolkit registry (adding/removing tools) means cutting a
+new Terrabox release tag and updating the pin in EarthMind's `pyproject.toml`
+(`uv lock` afterwards) — the same workflow as updating any other dependency.
 
 ## Implementation Overview
 
@@ -125,6 +134,13 @@ export TERRALINK_BASE_URL=http://127.0.0.1:8000
 Do not commit real Terrabox API keys. Configure the API key in the component
 secret field or via a local environment variable only when running the workflow.
 
+Local Terrabox development override (only needed if you're developing against
+an editable Terrabox checkout instead of the pinned dependency):
+
+```bash
+export EARTHFLOW_TERRABOX_SRC=/path/to/local/terrabox/src
+```
+
 ## UI Verification
 
 The screenshot below shows the filtered EarthMind Langflow UI with the
@@ -148,21 +164,18 @@ The screenshot below shows a lightweight Agent workflow using the Distance tool.
 
 ![Agent tool result](../static/img/earthmind-terrabox/figure-4-agent-tool-result.png)
 
-## Running EarthMind with Local Source
+## Running EarthMind
 
-Start EarthMind Langflow with the EarthMind source paths before the installed
-conda packages:
+`terrabox[geo]` installs like any other dependency via `uv sync`
+(`make init`/`make backend`/`make run_clic`); no separate Terrabox checkout or
+`PYTHONPATH` setup is required for component generation. Terrabox still needs
+to be running as its own live service for tool execution:
 
 ```bash
-source /root/miniconda3/bin/activate base
-cd /root/autodl-tmp/EarthMind
-
-export PYTHONPATH=/root/autodl-tmp/EarthMind/src/backend/base:/root/autodl-tmp/EarthMind/src/lfx/src
 export EARTHFLOW_COMPONENTS_ENABLED=1
 export TERRALINK_BASE_URL=http://127.0.0.1:8000
-export OMP_NUM_THREADS=1
 
-langflow run --host 0.0.0.0 --port 6006
+uv run earthmind run --host 0.0.0.0 --port 7860
 ```
 
 Terrabox should be running separately on the configured `TERRALINK_BASE_URL`.
@@ -172,7 +185,7 @@ Terrabox should be running separately on the configured `TERRALINK_BASE_URL`.
 The focused Earthflow component tests can be run with:
 
 ```bash
-cd /root/autodl-tmp/EarthMind/src/lfx
+cd src/lfx
 LFX_TEST_ALLOW_LANGFLOW=1 PYTHONPATH=src python -m pytest tests/unit/interface/test_earthflow_components.py -q
 ```
 
@@ -194,8 +207,9 @@ The Terrabox schema-loading smoke test confirmed:
 
 ## Current Limitations
 
-- This integration depends on the local Terrabox source path:
-  `/root/autodl-tmp/terrabox/src`.
+- Component generation is pinned to a specific Terrabox release tag (see
+  `terrabox` in `[tool.uv.sources]`); picking up newly added Terrabox tools
+  requires bumping that pin, not just restarting EarthMind.
 - Running a Terrabox component requires a live Terrabox backend and a valid
   Terrabox API key.
 - Heavy perception tools are intentionally excluded by default because the

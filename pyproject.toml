@@ -87,6 +87,7 @@ lfx-docling = { workspace = true }
 # earthmind-extensions:bundle-sources-end
 torch = { index = "pytorch-cpu" }
 torchvision = { index = "pytorch-cpu" }
+terrabox = { git = "ssh://git@github.com/earth-flow/terrabox.git", tag = "v0.1.1" }
 
 [tool.uv.workspace]
 members = [

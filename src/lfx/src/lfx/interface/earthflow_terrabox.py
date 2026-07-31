@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 EARTHFLOW_TOOLS_CATEGORY = "earthflow_tools"
 DEFAULT_TERRABOX_BASE_URL = "http://localhost:8000"
-DEFAULT_TERRABOX_SRC = Path("/root/autodl-tmp/terrabox/src")
 DEFAULT_TERRABOX_TOOLKITS: frozenset[str] = frozenset(
     {
         "geo_basic",
@@ -499,9 +498,18 @@ def load_terrabox_tool_specs(
     include_tools: set[str] | None = None,
     exclude_tools: set[str] | None = None,
 ) -> list[TerraboxToolSpec]:
+    """Load Terrabox tool specs and convert them into Langflow component templates.
+
+    Terrabox is a regular pinned dependency (see ``terrabox`` in pyproject.toml),
+    so in normal operation this just imports it like any other package. The
+    ``terrabox_src``/``EARTHFLOW_TERRABOX_SRC`` override below exists only for
+    tests and for local development against an editable Terrabox checkout that
+    isn't installed in this environment.
+    """
     import os
 
-    src = terrabox_src or Path(os.getenv("EARTHFLOW_TERRABOX_SRC", str(DEFAULT_TERRABOX_SRC)))
+    env_src = os.getenv("EARTHFLOW_TERRABOX_SRC")
+    src = terrabox_src or (Path(env_src) if env_src else None)
     include = (
         include_toolkits
         if include_toolkits is not None
@@ -524,21 +532,30 @@ def load_terrabox_tool_specs(
     if env_exclude_tools:
         tool_denylist.update(env_exclude_tools)
 
-    if not src.exists():
-        logger.warning("Terrabox source directory not found: %s", src)
-        return []
-
-    src_str = str(src)
+    src_str: str | None = None
     inserted = False
-    if src_str not in sys.path:
-        sys.path.insert(0, src_str)
-        inserted = True
+    if src is not None:
+        if not src.exists():
+            logger.warning("Terrabox source directory not found: %s", src)
+            return []
+        src_str = str(src)
+        if src_str not in sys.path:
+            sys.path.insert(0, src_str)
+            inserted = True
 
     try:
         from importlib import import_module
 
-        from terrabox.core.registry import list_tools, registry
-        from terrabox.extensions import Registrar
+        try:
+            from terrabox.core.registry import list_tools, registry
+            from terrabox.extensions import Registrar
+        except ImportError:
+            logger.exception(
+                "Terrabox is not importable. Install it (see the `terrabox` dependency "
+                "in pyproject.toml) or set EARTHFLOW_TERRABOX_SRC/terrabox_src to an "
+                "editable checkout for local development."
+            )
+            return []
 
         registry.clear()
         registrar = Registrar()
