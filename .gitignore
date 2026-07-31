@@ -19,6 +19,10 @@ qdrant_storage
 .ruff_cache
 opendsstar_cache
 
+# Local runtime data accidentally committed in the past (default lives in ~/.earthmind)
+data/knowledge_bases/
+data/*/_mcp_servers_*.json
+
 # PyCharm
 .idea/
 

@@ -1,8 +1,0 @@
-[
-  {
-    "column_name": "text",
-    "vectorize": true,
-    "identifier": true,
-    "data_type": "string"
-  }
-]
