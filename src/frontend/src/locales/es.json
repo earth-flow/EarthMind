@@ -1782,7 +1782,6 @@
   "sidebar.nav.traces": "Rastreos",
   "sidebar.nav.versionHistory": "Historial de versiones",
   "sidebar.nav.versions": "Versiones",
-  "sidebar.newCustomComponent": "Nuevo componente personalizado",
   "sidebar.noComponentsFound": "No se han encontrado componentes.",
   "sidebar.projectUploadError": "Se ha producido un error al cargar tu proyecto; prueba a arrastrarlo a un proyecto ya existente.",
   "sidebar.projectUploadSuccess": "El proyecto se ha subido correctamente.",

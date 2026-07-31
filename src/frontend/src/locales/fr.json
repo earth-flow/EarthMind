@@ -1782,7 +1782,6 @@
   "sidebar.nav.traces": "Traces",
   "sidebar.nav.versionHistory": "Historique des versions",
   "sidebar.nav.versions": "Versions",
-  "sidebar.newCustomComponent": "Nouveau composant personnalisé",
   "sidebar.noComponentsFound": "Aucun composant trouvé.",
   "sidebar.projectUploadError": "Une erreur s'est produite lors du téléchargement de votre projet. Essayez de le glisser-déposer dans un projet existant.",
   "sidebar.projectUploadSuccess": "Le projet a été téléchargé avec succès.",

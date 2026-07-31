@@ -766,7 +766,6 @@
   "sidebar.mcp.empty": "No MCP Servers Added",
   "sidebar.mcp.add": "Add MCP Server",
   "sidebar.mcp.manage": "Manage Servers",
-  "sidebar.newCustomComponent": "New Custom Component",
   "sidebar.download": "Download",
   "sidebar.delete": "Delete",
   "canvas.lockFlow": "Lock flow",

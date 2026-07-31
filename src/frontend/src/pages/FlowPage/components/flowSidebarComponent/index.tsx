@@ -28,7 +28,6 @@ import {
   ENABLE_KNOWLEDGE_BASES,
   ENABLE_NEW_SIDEBAR,
 } from "@/customization/feature-flags";
-import { useAddComponent } from "@/hooks/use-add-component";
 import { useShortcutsStore } from "@/stores/shortcuts";
 import { setLocalStorage } from "@/utils/local-storage-util";
 import {
@@ -210,7 +209,6 @@ export function FlowSidebarComponent({ isLoading }: FlowSidebarComponentProps) {
     setActiveSection,
     open: sidebarOpen,
   } = useSidebar();
-  const addComponent = useAddComponent();
 
   // Get MCP servers for search functionality (only when new sidebar is enabled)
   const {
@@ -323,10 +321,6 @@ export function FlowSidebarComponent({ isLoading }: FlowSidebarComponentProps) {
   }, [data, mcpSuccess, mcpServers]);
 
   const [dataFilter, setFilterData] = useState(baseData);
-
-  const customComponent = useMemo(() => {
-    return data?.["custom_component"]?.["CustomComponent"] ?? null;
-  }, [data]);
 
   const searchResults = useMemo(() => {
     if (!debouncedSearch || !fuse) return null;
@@ -860,11 +854,7 @@ export function FlowSidebarComponent({ isLoading }: FlowSidebarComponentProps) {
                 activeSection === "mcp" &&
                 !hasMcpServers) ? null : (
                 <SidebarFooter className="border-t group-data-[collapsible=icon]:hidden p-1 gap-1 empty:hidden empty:border-0">
-                  <SidebarMenuButtons
-                    customComponent={customComponent}
-                    addComponent={addComponent}
-                    isLoading={isLoading}
-                  />
+                  <SidebarMenuButtons isLoading={isLoading} />
                 </SidebarFooter>
               )}
             </>

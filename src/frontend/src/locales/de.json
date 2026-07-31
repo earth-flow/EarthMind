@@ -1782,7 +1782,6 @@
   "sidebar.nav.traces": "Spuren",
   "sidebar.nav.versionHistory": "Versionsprotokoll",
   "sidebar.nav.versions": "Versionen",
-  "sidebar.newCustomComponent": "Neue benutzerdefinierte Komponente",
   "sidebar.noComponentsFound": "Es wurden keine Komponenten gefunden.",
   "sidebar.projectUploadError": "Beim Hochladen deines Projekts ist ein Fehler aufgetreten. Versuche, es in ein bestehendes Projekt zu ziehen.",
   "sidebar.projectUploadSuccess": "Das Projekt wurde erfolgreich hochgeladen.",

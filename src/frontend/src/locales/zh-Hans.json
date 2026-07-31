@@ -1782,7 +1782,6 @@
   "sidebar.nav.traces": "轨迹",
   "sidebar.nav.versionHistory": "版本历史记录",
   "sidebar.nav.versions": "版本",
-  "sidebar.newCustomComponent": "新建自定义组件",
   "sidebar.noComponentsFound": "未找到任何组件。",
   "sidebar.projectUploadError": "上传项目时发生错误，请尝试将其拖放到现有项目中。",
   "sidebar.projectUploadSuccess": "项目已成功上传。",

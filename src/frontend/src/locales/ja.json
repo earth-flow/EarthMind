@@ -1782,7 +1782,6 @@
   "sidebar.nav.traces": "トレース",
   "sidebar.nav.versionHistory": "バージョン履歴",
   "sidebar.nav.versions": "バージョン",
-  "sidebar.newCustomComponent": "新しいカスタムコンポーネント",
   "sidebar.noComponentsFound": "コンポーネントが見つかりませんでした。",
   "sidebar.projectUploadError": "プロジェクトのアップロード中にエラーが発生しました。既存のプロジェクトにドラッグして追加してみてください。",
   "sidebar.projectUploadSuccess": "プロジェクトのアップロードに成功しました。",
