@@ -166,7 +166,7 @@ jobs:
       - name: Find Comment
         id: fc
         if: success()
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: Build successful!
