@@ -178,7 +178,7 @@ def get_llm(
             pass  # Skip invalid max_tokens (e.g. empty string from form input)
 
     # Enable streaming usage for providers that support it
-    if provider in ["OpenAI", "SiliconFlow", "Anthropic"]:
+    if provider in ["OpenAI", "SiliconFlow", "DeepSeek", "Qwen", "Anthropic"]:
         kwargs["stream_usage"] = True
 
     # Add provider-specific parameters
@@ -234,17 +234,37 @@ def get_llm(
         )
         if ollama_base_url_value:
             kwargs[base_url_param] = ollama_base_url_value
-    elif provider == "OpenRouter":
-        # OpenRouter speaks the OpenAI wire format. Point ChatOpenAI at the
-        # OpenRouter base URL (declared in MODEL_PROVIDER_METADATA) and forward
-        # any configured attribution headers (HTTP-Referer, X-Title) so usage
-        # shows up correctly in the OpenRouter dashboard.
+    elif provider in {"OpenRouter", "DeepSeek", "Qwen"}:
+        # These providers all speak the OpenAI wire format. Point ChatOpenAI at
+        # the provider's base URL (declared in MODEL_PROVIDER_METADATA) and
+        # forward any configured attribution headers (OpenRouter's HTTP-Referer
+        # / X-Title) so usage shows up correctly in its dashboard.
         provider_meta = model_provider_metadata.get(provider, {})
+        provider_vars = unified_models_module.get_all_variables_for_provider(user_id, provider)
+
+        # The declared base_url is only a default. A user-configured API Base
+        # (DEEPSEEK_API_BASE, or DASHSCOPE_API_BASE for the Singapore region)
+        # must win. This path builds kwargs by hand rather than from
+        # ``langchain_param``, so the override is resolved explicitly here:
+        # database first, then environment.
         base_url_value = provider_meta.get("base_url")
+        base_url_variable_key = next(
+            (
+                var["variable_key"]
+                for var in provider_meta.get("variables", [])
+                if var.get("langchain_param") == "base_url"
+            ),
+            None,
+        )
+        if base_url_variable_key:
+            configured_base = _to_str(provider_vars.get(base_url_variable_key)) or _to_str(
+                _env_if_allowed(base_url_variable_key)
+            )
+            if configured_base:
+                base_url_value = configured_base
         if base_url_value:
             kwargs["base_url"] = base_url_value
 
-        provider_vars = unified_models_module.get_all_variables_for_provider(user_id, provider)
         default_headers: dict[str, str] = {}
         for var in provider_meta.get("variables", []):
             if not var.get("is_header"):
@@ -328,6 +348,12 @@ def get_embeddings(
         )
     if provider == "SiliconFlow" and not api_base_value:
         api_base_value = _to_str(os.environ.get("SILICONFLOW_API_BASE"))
+    if provider == "Qwen" and not api_base_value:
+        # Env override first, then the compatible-mode default declared in
+        # MODEL_PROVIDER_METADATA, so embeddings work without configuring a base.
+        api_base_value = _to_str(os.environ.get("DASHSCOPE_API_BASE")) or _to_str(
+            model_provider_metadata.get("Qwen", {}).get("base_url")
+        )
 
     # --- resolve API key -----------------------------------------------------
     api_key = unified_models_module.get_api_key_for_provider(user_id, provider, api_key)

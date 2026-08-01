@@ -118,7 +118,7 @@ MODEL_PROVIDER_METADATA: dict[str, Any] = {
                     "advanced": True,
                     "info": "Optional OpenAI-compatible API base URL, e.g. SiliconFlow.",
                 },
-            }
+            },
         ],
         "api_docs_url": "https://platform.openai.com/docs/overview",
         "mapping": {
@@ -159,9 +159,104 @@ MODEL_PROVIDER_METADATA: dict[str, Any] = {
                     "advanced": True,
                     "info": "OpenAI-compatible base URL for SiliconFlow, e.g. https://api.siliconflow.cn/v1.",
                 },
-            }
+            },
         ],
         "api_docs_url": "https://siliconflow.cn/",
+        "mapping": {
+            "model_class": "ChatOpenAI",
+            "model_param": "model",
+        },
+    },
+    "DeepSeek": {
+        "icon": "DeepSeek",
+        "max_tokens_field_name": "max_tokens",
+        # DeepSeek speaks the OpenAI wire format. ``base_url`` is the default
+        # applied at instantiation when the user has not overridden it via the
+        # DEEPSEEK_API_BASE variable below.
+        "base_url": "https://api.deepseek.com",
+        "variables": [
+            {
+                "variable_name": "DeepSeek API Key",
+                "variable_key": "DEEPSEEK_API_KEY",
+                "required": True,
+                "is_secret": True,
+                "is_list": False,
+                "options": [],
+                "langchain_param": "api_key",
+                "component_metadata": {
+                    "mapping_field": "api_key",
+                    "required": False,
+                    "advanced": True,
+                    "info": "Falls back to the DEEPSEEK_API_KEY environment variable.",
+                },
+            },
+            {
+                "variable_name": "DeepSeek API Base",
+                "variable_key": "DEEPSEEK_API_BASE",
+                "required": False,
+                "is_secret": False,
+                "is_list": False,
+                "options": [],
+                "langchain_param": "base_url",
+                "component_metadata": {
+                    "mapping_field": "api_base",
+                    "required": False,
+                    "advanced": True,
+                    "info": "Optional override. Defaults to https://api.deepseek.com.",
+                },
+            },
+        ],
+        "api_docs_url": "https://api-docs.deepseek.com/",
+        "mapping": {
+            "model_class": "ChatOpenAI",
+            "model_param": "model",
+        },
+    },
+    "Qwen": {
+        # No Qwen-specific icon ships with the frontend yet; reuse the OpenAI
+        # mark, matching how SiliconFlow (also OpenAI-compatible) is handled.
+        "icon": "OpenAI",
+        "max_tokens_field_name": "max_tokens",
+        # Alibaba Cloud DashScope compatible-mode endpoint. The Singapore
+        # region (dashscope-intl) needs a different host *and* a different API
+        # key, hence the overridable API Base below.
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "variables": [
+            {
+                "variable_name": "Qwen API Key",
+                "variable_key": "DASHSCOPE_API_KEY",
+                "required": True,
+                "is_secret": True,
+                "is_list": False,
+                "options": [],
+                "langchain_param": "api_key",
+                "component_metadata": {
+                    "mapping_field": "api_key",
+                    "required": False,
+                    "advanced": True,
+                    "info": "DashScope API key. Falls back to the DASHSCOPE_API_KEY environment variable.",
+                },
+            },
+            {
+                "variable_name": "Qwen API Base",
+                "variable_key": "DASHSCOPE_API_BASE",
+                "required": False,
+                "is_secret": False,
+                "is_list": False,
+                "options": [],
+                "langchain_param": "base_url",
+                "component_metadata": {
+                    "mapping_field": "api_base",
+                    "required": False,
+                    "advanced": True,
+                    "info": (
+                        "Optional override. Defaults to the Beijing endpoint; use "
+                        "https://dashscope-intl.aliyuncs.com/compatible-mode/v1 for the Singapore region."
+                    ),
+                },
+            },
+        ],
+        "api_docs_url": "https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope",
         "mapping": {
             "model_class": "ChatOpenAI",
             "model_param": "model",

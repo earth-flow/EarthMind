@@ -27,6 +27,10 @@ export interface ProviderVariable {
 export const PROVIDER_VARIABLE_MAPPING: Record<string, string> = {
   OpenAI: "OPENAI_API_KEY",
   SiliconFlow: "SILICONFLOW_API_KEY",
+  DeepSeek: "DEEPSEEK_API_KEY",
+  // Qwen is served by Alibaba Cloud DashScope, whose key variable keeps the
+  // DashScope name rather than the provider's display name.
+  Qwen: "DASHSCOPE_API_KEY",
   Anthropic: "ANTHROPIC_API_KEY",
   "Google Generative AI": "GOOGLE_API_KEY",
   Google: "GOOGLE_API_KEY",

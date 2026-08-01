@@ -373,6 +373,15 @@ MODEL_DYNAMIC_UPDATE_FIELDS = [
 
 MODELS_METADATA = {name: {"icon": prov["icon"]} for name, prov in ACTIVE_MODEL_PROVIDERS_DICT.items()}
 
-MODEL_PROVIDERS_LIST = ["Anthropic", "Google Generative AI", "OpenAI", "SiliconFlow", "IBM watsonx.ai", "Ollama"]
+MODEL_PROVIDERS_LIST = [
+    "Anthropic",
+    "Google Generative AI",
+    "OpenAI",
+    "SiliconFlow",
+    "DeepSeek",
+    "Qwen",
+    "IBM watsonx.ai",
+    "Ollama",
+]
 
 MODEL_OPTIONS_METADATA = [MODELS_METADATA[key] for key in MODEL_PROVIDERS_LIST if key in MODELS_METADATA]

@@ -76,6 +76,10 @@ const getProviderIcon = (providerName: string): string => {
   const iconMap: Record<string, string> = {
     OpenAI: "OpenAI",
     SiliconFlow: "OpenAI",
+    DeepSeek: "DeepSeek",
+    // No Qwen mark ships with the frontend yet; reuse the OpenAI icon, as
+    // SiliconFlow (also OpenAI-compatible) already does.
+    Qwen: "OpenAI",
     Anthropic: "Anthropic",
     "Google Generative AI": "GoogleGenerativeAI",
     Groq: "Groq",

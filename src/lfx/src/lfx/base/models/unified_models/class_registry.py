@@ -51,6 +51,10 @@ _EMBEDDING_CLASS_IMPORTS: dict[str, tuple[str, str, str | None]] = {
 EMBEDDING_PROVIDER_CLASS_MAPPING: dict[str, str] = {
     "OpenAI": "OpenAIEmbeddings",
     "SiliconFlow": "OpenAIEmbeddings",
+    # DashScope's compatible-mode endpoint serves embeddings over the OpenAI
+    # wire format. DeepSeek publishes no embedding endpoint, so it is
+    # intentionally absent here.
+    "Qwen": "OpenAIEmbeddings",
     "Google Generative AI": "GoogleGenerativeAIEmbeddings",
     "Ollama": "OllamaEmbeddings",
     "IBM WatsonX": "WatsonxEmbeddings",
@@ -77,6 +81,17 @@ EMBEDDING_PARAM_MAPPINGS: dict[str, dict[str, str]] = {
         "model_kwargs": "model_kwargs",
     },
     "SiliconFlow": {
+        "model": "model",
+        "api_key": "api_key",
+        "api_base": "base_url",
+        "dimensions": "dimensions",
+        "chunk_size": "chunk_size",
+        "request_timeout": "timeout",
+        "max_retries": "max_retries",
+        "show_progress_bar": "show_progress_bar",
+        "model_kwargs": "model_kwargs",
+    },
+    "Qwen": {
         "model": "model",
         "api_key": "api_key",
         "api_base": "base_url",

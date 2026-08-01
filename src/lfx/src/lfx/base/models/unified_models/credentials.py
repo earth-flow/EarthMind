@@ -11,6 +11,7 @@ from urllib.parse import urljoin
 from uuid import UUID
 
 import requests
+
 from lfx.log.logger import logger
 from lfx.services.deps import get_variable_service, session_scope
 from lfx.services.variable.request_scope import is_env_fallback_disabled
@@ -20,7 +21,18 @@ from lfx.utils.secrets import secret_value_to_str
 from .provider_queries import (
     get_model_provider_variable_mapping,
     get_provider_all_variables,
+    model_provider_metadata,
 )
+
+# Providers that speak the OpenAI wire format, mapped to their
+# (API key variable, API base variable). All share the lightweight
+# authenticated ``/models`` probe used to validate credentials on Save.
+OPENAI_COMPATIBLE_CREDENTIAL_VARS: dict[str, tuple[str, str]] = {
+    "OpenAI": ("OPENAI_API_KEY", "OPENAI_API_BASE"),
+    "SiliconFlow": ("SILICONFLOW_API_KEY", "SILICONFLOW_API_BASE"),
+    "DeepSeek": ("DEEPSEEK_API_KEY", "DEEPSEEK_API_BASE"),
+    "Qwen": ("DASHSCOPE_API_KEY", "DASHSCOPE_API_BASE"),
+}
 
 
 def get_api_key_for_provider(user_id: UUID | str | None, provider: str, api_key: Any = None) -> str | None:
@@ -423,11 +435,13 @@ def validate_model_provider_key(provider: str, variables: dict[str, str], model_
         return
 
     try:
-        if provider in {"OpenAI", "SiliconFlow"}:
-            key_var = "SILICONFLOW_API_KEY" if provider == "SiliconFlow" else "OPENAI_API_KEY"
-            base_var = "SILICONFLOW_API_BASE" if provider == "SiliconFlow" else "OPENAI_API_BASE"
+        if provider in OPENAI_COMPATIBLE_CREDENTIAL_VARS:
+            key_var, base_var = OPENAI_COMPATIBLE_CREDENTIAL_VARS[provider]
             api_key = variables.get(key_var)
-            api_base = variables.get(base_var)
+            # Fall back to the provider's declared default endpoint so
+            # providers with a well-known base (DeepSeek, Qwen) are still
+            # probed when the user leaves API Base blank.
+            api_base = variables.get(base_var) or model_provider_metadata.get(provider, {}).get("base_url")
             if not api_key:
                 return
             # OpenAI-compatible providers are validated with a lightweight
