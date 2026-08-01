@@ -24,6 +24,7 @@ import useFlowBuilderWelcomeStore from "@/stores/flowBuilderWelcomeStore";
 import { usePlaygroundStore } from "@/stores/playgroundStore";
 import { useShortcutsStore } from "@/stores/shortcuts";
 import { useTypesStore } from "@/stores/typesStore";
+import { isSiblingFlowView } from "@/utils/flow-view-routing";
 import { customStringify } from "@/utils/reactflowUtils";
 import { cn } from "@/utils/utils";
 import useFlowStore from "../../stores/flowStore";
@@ -129,11 +130,20 @@ export default function FlowPage({ view }: { view?: boolean }): JSX.Element {
     (currentFlow?.data?.nodes?.length ?? 0) > 0;
 
   const isBuilding = useFlowStore((state) => state.isBuilding);
-  const blocker = useBlocker(changesNotSaved || isBuilding);
 
   const setOnFlowPage = useFlowStore((state) => state.setOnFlowPage);
   const { id } = useParams();
   const navigate = useCustomNavigate();
+
+  // The App view is a sibling of the canvas, not a destination away from it:
+  // both read the same flow out of the same stores. Blocking that transition
+  // would auto-save on every toggle, because ReactFlow marks the flow dirty
+  // as soon as it measures nodes and fits the viewport.
+  const blocker = useBlocker(
+    ({ nextLocation }) =>
+      (changesNotSaved || isBuilding) &&
+      !isSiblingFlowView(nextLocation.pathname, id),
+  );
   const saveFlow = useSaveFlow();
 
   const flows = useFlowsManagerStore((state) => state.flows);
@@ -221,7 +231,12 @@ export default function FlowPage({ view }: { view?: boolean }): JSX.Element {
 
     return () => {
       setOnFlowPage(false);
-      setCurrentFlow(undefined);
+      // Keep the flow loaded when switching to its App view: the two views
+      // share one in-memory copy. Clearing it here would make AppPage refetch
+      // from the server and silently drop unsaved edits.
+      if (!isSiblingFlowView(window.location.pathname, id)) {
+        setCurrentFlow(undefined);
+      }
       // Reset playground state when leaving the flow
       setSlidingContainerOpen(false);
       setIsFullscreen(false);

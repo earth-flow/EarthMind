@@ -2059,5 +2059,10 @@
   "voiceAssistant.apiKeyError": "Vérifiez votre clé API et réessayez",
   "voiceAssistant.connected": "Connecté",
   "voiceAssistant.connectionError": "Erreur de connexion",
-  "voiceAssistant.connectionFailed": "Echec de la connexion"
+  "voiceAssistant.connectionFailed": "Echec de la connexion",
+  "app.viewToggle.editor": "Éditeur",
+  "app.viewToggle.app": "App",
+  "app.chat.show": "Afficher le chat",
+  "app.widgets.emptyTitle": "Aucun widget pour l'instant",
+  "app.widgets.emptyDescription": "Les composants visuels liés aux sorties de votre workflow apparaîtront ici."
 }

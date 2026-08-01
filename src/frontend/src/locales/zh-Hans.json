@@ -2059,5 +2059,10 @@
   "voiceAssistant.apiKeyError": "请检查您的 API 密钥，然后重试",
   "voiceAssistant.connected": "已连接",
   "voiceAssistant.connectionError": "连接错误",
-  "voiceAssistant.connectionFailed": "连接失败"
+  "voiceAssistant.connectionFailed": "连接失败",
+  "app.viewToggle.editor": "编辑器",
+  "app.viewToggle.app": "应用",
+  "app.chat.show": "显示对话",
+  "app.widgets.emptyTitle": "暂无组件",
+  "app.widgets.emptyDescription": "与工作流输出绑定的可视化组件将显示在这里。"
 }

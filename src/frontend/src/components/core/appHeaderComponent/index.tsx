@@ -14,6 +14,7 @@ import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import useTheme from "@/customization/hooks/use-custom-theme";
 import useAlertStore from "@/stores/alertStore";
 import FlowMenu from "./components/FlowMenu";
+import FlowViewToggle from "./components/FlowViewToggle";
 
 export default function AppHeader(): JSX.Element {
   const { t } = useTranslation();
@@ -81,6 +82,7 @@ export default function AppHeader(): JSX.Element {
         data-testid="header_right_section_wrapper"
       >
         {false && <ModelProviderCount />}
+        <FlowViewToggle />
         <div className="hidden pr-2 whitespace-nowrap lg:inline-flex lg:items-center">
           <CustomEarthMindCounts />
         </div>
