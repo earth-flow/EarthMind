@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getURL } from "@/controllers/API/helpers/constants";
 import { getFetchCredentials } from "@/customization/utils/get-fetch-credentials";
+import type { ResolvedFileRef } from "@/types/appPage/widget";
 
 /**
  * EarthMind has two independent file storage systems, discovered while
@@ -13,10 +14,10 @@ import { getFetchCredentials } from "@/customization/utils/get-fetch-credentials
  *    Terrabox file bridge (see GeneratedFileRef / bridge_generated_files).
  * Widgets need to render either kind identically, so every widget goes
  * through this one abstraction rather than hard-coding a URL scheme.
+ * (Type lives in types/appPage/widget.ts so AttachmentWidgetLayoutItem can
+ * share it too.)
  */
-export type ResolvedFileRef =
-  | { source: "v1"; path: string; name: string }
-  | { source: "v2"; fileId: string; name: string };
+export type { ResolvedFileRef };
 
 export function getFileRefUrl(
   ref: ResolvedFileRef,

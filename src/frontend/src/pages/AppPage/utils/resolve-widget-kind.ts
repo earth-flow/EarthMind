@@ -1,6 +1,9 @@
 import type { OutputLogType } from "@/types/api";
-import type { GeneratedFileRef, WidgetKind } from "@/types/appPage/widget";
-import type { ResolvedFileRef } from "./file-ref";
+import type {
+  GeneratedFileRef,
+  ResolvedFileRef,
+  WidgetKind,
+} from "@/types/appPage/widget";
 
 const RECORD_TYPES = new Set(["array", "message"]);
 const JSON_TYPES = new Set(["data", "object"]);
@@ -18,17 +21,21 @@ const GEOJSON_MESSAGE_TYPES = new Set([
 
 const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "gif", "webp", "bmp"]);
 const SPREADSHEET_EXTENSIONS = new Set(["xlsx", "xls", "csv"]);
+/** Mesh formats only (glTF/GLB, OBJ, STL) -- point cloud formats (LAS/LAZ, PLY, PCD) are a deliberately deferred fast-follow. */
+const MESH_EXTENSIONS = new Set(["gltf", "glb", "obj", "stl"]);
 
-function extensionOf(name: string): string {
+/** Exported for widget-host.tsx, which needs to resolve a kind for attachment items that have no flowPool output to read a `type` from. */
+export function extensionOf(name: string): string {
   return name.split(".").pop()?.toLowerCase() ?? "";
 }
 
-function kindForExtension(extension: string): WidgetKind {
+export function kindForExtension(extension: string): WidgetKind {
   if (IMAGE_EXTENSIONS.has(extension)) return "image";
   if (extension === "pdf") return "pdf";
   if (extension === "docx") return "docx";
   if (SPREADSHEET_EXTENSIONS.has(extension)) return "xlsx";
   if (extension === "geojson") return "geojson";
+  if (MESH_EXTENSIONS.has(extension)) return "mesh";
   return "file";
 }
 
@@ -53,6 +60,32 @@ function isChatFileEntry(value: unknown): value is ChatFileEntry {
   );
 }
 
+function resolveChatFileEntry(
+  entry: ChatFileEntry,
+): { source: "v1"; path: string; name: string } {
+  if (typeof entry === "string") {
+    return { source: "v1", path: entry, name: entry.split("/").pop() ?? entry };
+  }
+  return {
+    source: "v1",
+    path: entry.path,
+    name: entry.name ?? entry.path.split("/").pop() ?? entry.path,
+  };
+}
+
+/**
+ * Resolves every entry in a chat-style `files` array (the same idiom as
+ * Message.files) to a v1 file ref, unlike extractFileRef below which only
+ * returns the first -- a node output realistically produces one file, but a
+ * chat message can carry several attachments at once, so derive-widget-layout
+ * needs all of them.
+ */
+export function extractAllChatFileRefs(
+  files: unknown[],
+): { source: "v1"; path: string; name: string }[] {
+  return files.filter(isChatFileEntry).map(resolveChatFileEntry);
+}
+
 /**
  * Extracts the first file reference out of an output's message payload, if
  * any, checking (in priority order) the bridged-file idiom this feature
@@ -74,23 +107,31 @@ export function extractFileRef(message: unknown): ResolvedFileRef | null {
   }
 
   const files = payload.files;
-  if (Array.isArray(files) && files.length > 0 && isChatFileEntry(files[0])) {
-    const first = files[0] as ChatFileEntry;
-    if (typeof first === "string") {
-      return {
-        source: "v1",
-        path: first,
-        name: first.split("/").pop() ?? first,
-      };
-    }
-    return {
-      source: "v1",
-      path: first.path,
-      name: first.name ?? first.path.split("/").pop() ?? first.path,
-    };
+  if (Array.isArray(files)) {
+    const refs = extractAllChatFileRefs(files);
+    if (refs.length > 0) return refs[0];
   }
 
   return null;
+}
+
+/**
+ * Builds a minimal OutputLogType wrapping a resolved file reference -- the
+ * inverse of extractFileRef -- so a fileRef not sourced from any flowPool
+ * output (e.g. a chat attachment) can still be rendered by the existing
+ * output-bound widget components in WIDGET_REGISTRY without duplicating
+ * each one's fetch/render logic for a second, ref-shaped prop.
+ */
+export function wrapFileRefAsOutput(ref: ResolvedFileRef): OutputLogType {
+  const message =
+    ref.source === "v2"
+      ? {
+          _generated_files: [
+            { field: "", file_id: ref.fileId, name: ref.name, size: 0 },
+          ],
+        }
+      : { files: [{ path: ref.path, name: ref.name }] };
+  return { type: kindForExtension(extensionOf(ref.name)), message };
 }
 
 function looksLikeGeoJson(message: unknown): boolean {

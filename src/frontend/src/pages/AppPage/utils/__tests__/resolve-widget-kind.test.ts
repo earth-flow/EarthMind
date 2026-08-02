@@ -1,4 +1,10 @@
-import { extractFileRef, resolveWidgetKind } from "../resolve-widget-kind";
+import {
+  extractAllChatFileRefs,
+  extractFileRef,
+  kindForExtension,
+  resolveWidgetKind,
+  wrapFileRefAsOutput,
+} from "../resolve-widget-kind";
 
 describe("resolveWidgetKind", () => {
   it("returns empty when there is no output yet", () => {
@@ -70,6 +76,10 @@ describe("resolveWidgetKind", () => {
     ["table.xlsx", "xlsx"],
     ["table.csv", "xlsx"],
     ["shapes.geojson", "geojson"],
+    ["model.gltf", "mesh"],
+    ["model.glb", "mesh"],
+    ["model.obj", "mesh"],
+    ["model.stl", "mesh"],
     ["archive.zip", "file"],
   ])("maps a bridged file named %s to the %s kind", (name, expected) => {
     expect(
@@ -126,5 +136,56 @@ describe("extractFileRef", () => {
         files: [{ path: "flow-1/report.pdf", name: "report.pdf", type: "pdf" }],
       }),
     ).toEqual({ source: "v1", path: "flow-1/report.pdf", name: "report.pdf" });
+  });
+});
+
+describe("extractAllChatFileRefs", () => {
+  it("resolves every entry, unlike extractFileRef which only returns the first", () => {
+    expect(
+      extractAllChatFileRefs([
+        "flow-1/a.docx",
+        { path: "flow-1/b.xlsx", name: "b.xlsx" },
+      ]),
+    ).toEqual([
+      { source: "v1", path: "flow-1/a.docx", name: "a.docx" },
+      { source: "v1", path: "flow-1/b.xlsx", name: "b.xlsx" },
+    ]);
+  });
+
+  it("skips entries that aren't a recognizable chat file idiom", () => {
+    expect(extractAllChatFileRefs([42, null, "", {}])).toEqual([]);
+  });
+
+  it("returns an empty array for an empty input", () => {
+    expect(extractAllChatFileRefs([])).toEqual([]);
+  });
+});
+
+describe("wrapFileRefAsOutput", () => {
+  it("wraps a v1 ref as the same message.files shape extractFileRef reads", () => {
+    const ref = {
+      source: "v1" as const,
+      path: "flow-1/report.docx",
+      name: "report.docx",
+    };
+    const output = wrapFileRefAsOutput(ref);
+
+    expect(output.type).toBe("docx");
+    expect(extractFileRef(output.message)).toEqual(ref);
+  });
+
+  it("wraps a v2 ref as the same _generated_files shape extractFileRef reads", () => {
+    const ref = { source: "v2" as const, fileId: "abc-123", name: "scene.glb" };
+    const output = wrapFileRefAsOutput(ref);
+
+    expect(output.type).toBe("mesh");
+    expect(extractFileRef(output.message)).toEqual(ref);
+  });
+});
+
+describe("kindForExtension", () => {
+  it("resolves an unrecognized extension to the generic file kind", () => {
+    expect(kindForExtension("zip")).toBe("file");
+    expect(kindForExtension("")).toBe("file");
   });
 });

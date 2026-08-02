@@ -6,6 +6,7 @@ import { FileWidget } from "../components/widgets/file-widget";
 import { ImageWidget } from "../components/widgets/image-widget";
 import { JsonWidget } from "../components/widgets/json-widget";
 import { MapWidget } from "../components/widgets/map-widget";
+import { MeshWidget } from "../components/widgets/mesh-widget";
 import { PdfWidget } from "../components/widgets/pdf-widget";
 import { SpreadsheetWidget } from "../components/widgets/spreadsheet-widget";
 import { TableWidget } from "../components/widgets/table-widget";
@@ -20,6 +21,7 @@ export const WIDGET_REGISTRY: Partial<
   docx: DocxWidget,
   xlsx: SpreadsheetWidget,
   geojson: MapWidget,
+  mesh: MeshWidget,
   json: JsonWidget,
   table: TableWidget,
   text: TextWidget,

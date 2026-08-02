@@ -2071,5 +2071,7 @@
   "app.widgets.documentUnavailable": "Document unavailable",
   "app.widgets.spreadsheetUnavailable": "Spreadsheet unavailable",
   "app.widgets.mapUnavailable": "Map preview unavailable for this file — download to view.",
+  "app.widgets.meshUnavailable": "3D preview unavailable for this file — download to view.",
+  "app.widgets.closeTab": "Close tab",
   "app.widgets.fileUnavailable": "File unavailable"
 }

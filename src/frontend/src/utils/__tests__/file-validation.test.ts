@@ -86,5 +86,22 @@ describe("file-validation", () => {
       });
       expect(isAllowedChatAttachmentFile(file)).toBe(true);
     });
+
+    it("allows xlsx by extension and mime type", () => {
+      const file = new File(["test"], "table.xlsx", {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      expect(isAllowedChatAttachmentFile(file)).toBe(true);
+    });
+
+    it.each([
+      ["model.glb", "model/gltf-binary"],
+      ["model.gltf", "model/gltf+json"],
+      ["model.obj", ""],
+      ["model.stl", "application/octet-stream"],
+    ])("allows mesh file %s (mime %s)", (name, type) => {
+      const file = new File(["test"], name, { type });
+      expect(isAllowedChatAttachmentFile(file)).toBe(true);
+    });
   });
 });

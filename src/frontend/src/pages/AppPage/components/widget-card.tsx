@@ -2,17 +2,19 @@ import { useTranslation } from "react-i18next";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import type { WidgetKind } from "@/types/appPage/widget";
 
-const KIND_ICON: Record<WidgetKind, string> = {
+export const KIND_ICON: Record<WidgetKind, string> = {
   image: "Image",
   pdf: "FileText",
   docx: "FileText",
   xlsx: "FileSpreadsheet",
   geojson: "Map",
+  mesh: "Box",
   json: "Braces",
   table: "Table",
   text: "AlignLeft",
   file: "File",
   error: "AlertCircle",
+  knowledge_graph: "Network",
   empty: "LayoutDashboard",
 };
 
@@ -28,7 +30,7 @@ export function WidgetCard({ kind, title, children }: WidgetCardProps) {
 
   return (
     <div
-      className="flex h-72 flex-col overflow-hidden rounded-md border bg-background"
+      className="flex h-full flex-col overflow-hidden rounded-md border bg-background"
       data-testid={`app-widget-${kind}`}
     >
       <div className="flex shrink-0 items-center gap-2 border-b px-3 py-2">
