@@ -1,6 +1,10 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
+import useFlowStore from "@/stores/flowStore";
+import { deriveDefaultWidgetLayout } from "../utils/derive-widget-layout";
+import { WidgetHost } from "./widget-host";
 
 type AppWidgetRegionProps = {
   isChatOpen: boolean;
@@ -10,15 +14,23 @@ type AppWidgetRegionProps = {
 /**
  * Host region for the App page's visual widgets.
  *
- * M1 ships the region and its empty state only. The widget grid, the widget
- * registry and the node bindings that feed them land in M2 — this component
- * is the seam they plug into.
+ * The widget layout is auto-derived from the flow's current shape and run
+ * data (see deriveDefaultWidgetLayout) rather than persisted -- persistence
+ * and a manual widget picker are M4 scope. With no eligible outputs yet
+ * (fresh/never-run flow), this falls back to the original M1 empty state.
  */
 export function AppWidgetRegion({
   isChatOpen,
   onShowChat,
 }: AppWidgetRegionProps): JSX.Element {
   const { t } = useTranslation();
+  const nodes = useFlowStore((state) => state.nodes);
+  const flowPool = useFlowStore((state) => state.flowPool);
+
+  const layout = useMemo(
+    () => deriveDefaultWidgetLayout(nodes, flowPool),
+    [nodes, flowPool],
+  );
 
   return (
     <div
@@ -41,20 +53,28 @@ export function AppWidgetRegion({
         )}
       </div>
 
-      <div className="flex flex-1 items-center justify-center p-8">
-        <div className="flex max-w-sm flex-col items-center gap-2 text-center">
-          <ForwardedIconComponent
-            name="LayoutDashboard"
-            className="h-8 w-8 text-muted-foreground"
-          />
-          <span className="text-sm font-medium">
-            {t("app.widgets.emptyTitle")}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {t("app.widgets.emptyDescription")}
-          </span>
+      {layout.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center p-8">
+          <div className="flex max-w-sm flex-col items-center gap-2 text-center">
+            <ForwardedIconComponent
+              name="LayoutDashboard"
+              className="h-8 w-8 text-muted-foreground"
+            />
+            <span className="text-sm font-medium">
+              {t("app.widgets.emptyTitle")}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {t("app.widgets.emptyDescription")}
+            </span>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="grid flex-1 auto-rows-min grid-cols-1 gap-4 overflow-y-auto p-4 sm:grid-cols-2 xl:grid-cols-3">
+          {layout.map((item) => (
+            <WidgetHost key={item.id} item={item} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

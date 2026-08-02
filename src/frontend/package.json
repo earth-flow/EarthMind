@@ -80,6 +80,8 @@
     "i18next": "^25.8.18",
     "lodash": "^4.17.21",
     "lucide-react": "^0.575.0",
+    "mammoth": "^1.12.0",
+    "maplibre-gl": "^6.1.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.48",
     "mustache": "^4.2.0",
@@ -118,6 +120,7 @@
     "vanilla-jsoneditor": "^2.3.3",
     "web-vitals": "^4.1.1",
     "whatwg-fetch": "^3.6.20",
+    "xlsx": "^0.18.5",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
   },

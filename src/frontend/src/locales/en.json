@@ -2064,5 +2064,12 @@
   "app.viewToggle.app": "App",
   "app.chat.show": "Show chat",
   "app.widgets.emptyTitle": "No widgets yet",
-  "app.widgets.emptyDescription": "Visual components bound to your workflow's outputs will appear here."
+  "app.widgets.emptyDescription": "Visual components bound to your workflow's outputs will appear here.",
+  "app.widgets.noOutputYet": "No output yet",
+  "app.widgets.imageUnavailable": "Image unavailable",
+  "app.widgets.pdfUnavailable": "PDF unavailable",
+  "app.widgets.documentUnavailable": "Document unavailable",
+  "app.widgets.spreadsheetUnavailable": "Spreadsheet unavailable",
+  "app.widgets.mapUnavailable": "Map preview unavailable for this file — download to view.",
+  "app.widgets.fileUnavailable": "File unavailable"
 }
