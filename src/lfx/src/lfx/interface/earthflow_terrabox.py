@@ -9,12 +9,40 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import requests
+
 from lfx.custom.utils import create_component_template
 
 logger = logging.getLogger(__name__)
 
 EARTHFLOW_TOOLS_CATEGORY = "earthflow_tools"
 DEFAULT_TERRABOX_BASE_URL = "http://localhost:8000"
+
+# Heuristic for spotting file references inside a Terrabox tool's arbitrary
+# output dict. Terrabox tool handlers don't follow a single naming
+# convention for "this value is a generated file" (e.g. stac_basic.py uses a
+# plain "saved" key, not "*_path"), so the extension is the only reliable
+# signal — any string value ending in one of these suffixes is treated as a
+# file reference, regardless of its key name.
+_KNOWN_FILE_EXTENSIONS = frozenset(
+    {
+        ".tif",
+        ".tiff",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".docx",
+        ".xlsx",
+        ".xls",
+        ".csv",
+        ".geojson",
+        ".pdf",
+        ".shp",
+        ".zip",
+    }
+)
+_MAX_FILE_CANDIDATES = 10
+_MAX_SCAN_DEPTH = 6
 DEFAULT_TERRABOX_TOOLKITS: frozenset[str] = frozenset(
     {
         "geo_basic",
@@ -131,6 +159,120 @@ def _as_tool_spec(raw: Any) -> TerraboxToolSpec:
         requires_connection=getattr(raw, "requires_connection", False),
         required_scopes=getattr(raw, "required_scopes", None),
     )
+
+
+def find_file_like_values(obj: Any) -> list[tuple[str, str]]:
+    """Recursively find dict values that look like generated file paths.
+
+    Returns a list of ``(json_path, value)`` pairs, capped at
+    ``_MAX_FILE_CANDIDATES`` total matches and ``_MAX_SCAN_DEPTH`` levels of
+    nesting to stay safe against arbitrarily large/deep tool outputs.
+    """
+    matches: list[tuple[str, str]] = []
+    _walk_file_like_values(obj, matches, depth=0, prefix="")
+    return matches
+
+
+def _walk_file_like_values(obj: Any, matches: list[tuple[str, str]], *, depth: int, prefix: str) -> None:
+    if depth > _MAX_SCAN_DEPTH or len(matches) >= _MAX_FILE_CANDIDATES:
+        return
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if len(matches) >= _MAX_FILE_CANDIDATES:
+                return
+            child_prefix = f"{prefix}.{key}" if prefix else str(key)
+            if isinstance(value, str) and Path(value).suffix.lower() in _KNOWN_FILE_EXTENSIONS:
+                matches.append((child_prefix, value))
+            elif isinstance(value, dict | list):
+                _walk_file_like_values(value, matches, depth=depth + 1, prefix=child_prefix)
+    elif isinstance(obj, list):
+        for index, item in enumerate(obj):
+            if len(matches) >= _MAX_FILE_CANDIDATES:
+                return
+            if isinstance(item, dict | list):
+                _walk_file_like_values(item, matches, depth=depth + 1, prefix=f"{prefix}[{index}]")
+
+
+async def _upload_bridged_file(file_name: str, content: bytes, user_id: str) -> Any:
+    """Upload raw bytes into EarthMind's user-scoped file storage.
+
+    Reuses the exact upload path ``SaveToFileComponent._upload_file()`` already
+    calls (see ``lfx.components.files_and_knowledge.save_file``), so bridged
+    Terrabox files land in the same storage and are fetchable the same way as
+    any other user-uploaded/generated file.
+    """
+    import io
+
+    from fastapi import UploadFile
+
+    from earthmind.api.v2.files import upload_user_file
+    from earthmind.services.database.models.user.crud import get_user_by_id
+    from lfx.services.deps import get_settings_service, get_storage_service, session_scope
+
+    async with session_scope() as db:
+        current_user = await get_user_by_id(db, user_id)
+        return await upload_user_file(
+            file=UploadFile(filename=file_name, file=io.BytesIO(content), size=len(content)),
+            session=db,
+            current_user=current_user,
+            storage_service=get_storage_service(),
+            settings_service=get_settings_service(),
+            append=False,
+        )
+
+
+async def bridge_generated_files(
+    payload: dict[str, Any],
+    *,
+    api_key: str,
+    base_url: str,
+    user_id: str,
+    timeout: int = 60,
+) -> list[dict[str, Any]]:
+    """Fetch file-like Terrabox tool outputs and re-upload them into EarthMind's
+    own (user-scoped) file storage so the frontend can fetch them.
+
+    Terrabox tool outputs only ever carry an absolute path on Terrabox's own
+    host (see ``terrabox.core.services.tool_service.ToolService.execute_tool``);
+    nothing else in this codebase copies that file into EarthMind's storage, so
+    without this step no frontend widget can ever load it. Best-effort: any
+    failure here is logged and swallowed, never raised, since a broken preview
+    must not break the underlying tool call.
+    """
+    outputs = payload.get("outputs")
+    if not isinstance(outputs, dict):
+        return []
+
+    candidates = find_file_like_values(outputs)
+    bridged: list[dict[str, Any]] = []
+    for field_path, abs_path in candidates:
+        try:
+            response = requests.get(
+                f"{base_url.rstrip('/')}/v1/sdk/runtime/files",
+                params={"path": abs_path},
+                headers={"X-API-Key": api_key},
+                timeout=timeout,
+            )
+            response.raise_for_status()
+        except Exception:  # noqa: BLE001
+            logger.warning("Failed to fetch Terrabox runtime file %s", abs_path, exc_info=True)
+            continue
+
+        try:
+            uploaded = await _upload_bridged_file(Path(abs_path).name, response.content, user_id)
+        except Exception:  # noqa: BLE001
+            logger.warning("Failed to upload bridged Terrabox file for %s", field_path, exc_info=True)
+            continue
+
+        bridged.append(
+            {
+                "field": field_path,
+                "file_id": str(uploaded.id),
+                "name": uploaded.name,
+                "size": uploaded.size,
+            }
+        )
+    return bridged
 
 
 def _safe_identifier(value: str, *, title: bool = False) -> str:
@@ -293,6 +435,7 @@ def build_terrabox_component_source(spec: TerraboxToolSpec) -> str:
     inputs_source = ",\n        ".join(input_calls)
 
     return f'''import json
+import logging
 import os
 from typing import Any
 
@@ -312,7 +455,10 @@ from lfx.inputs.inputs import (
     SecretStrInput,
     StrInput,
 )
+from lfx.interface.earthflow_terrabox import bridge_generated_files
 from lfx.schema.data import Data
+
+logger = logging.getLogger(__name__)
 
 
 class {class_name}(LCToolComponent):
@@ -390,6 +536,12 @@ class {class_name}(LCToolComponent):
             api_key = get_secret_value()
         return str(api_key or "")
 
+    def _base_url_value(self) -> str:
+        return (
+            getattr(self, "base_url", None)
+            or os.getenv("TERRALINK_BASE_URL", {DEFAULT_TERRABOX_BASE_URL!r})
+        ).rstrip("/")
+
     def _execute(self, inputs: dict[str, Any]) -> dict[str, Any]:
         api_key = self._api_key_value()
         if not api_key:
@@ -398,10 +550,7 @@ class {class_name}(LCToolComponent):
                 "error": "Terrabox API key is required. Set the component API key or TERRALINK_API_KEY.",
             }}
 
-        base_url = (
-            getattr(self, "base_url", None)
-            or os.getenv("TERRALINK_BASE_URL", {DEFAULT_TERRABOX_BASE_URL!r})
-        ).rstrip("/")
+        base_url = self._base_url_value()
         url = f"{{base_url}}/v1/sdk/tools/{{self._TERRABOX_SLUG}}/execute"
         headers = {{"X-API-Key": api_key}}
         try:
@@ -422,8 +571,25 @@ class {class_name}(LCToolComponent):
             }}
         return payload
 
-    def run_model(self) -> list[Data]:
+    async def run_model(self) -> list[Data]:
         payload = self._execute(self._collect_inputs())
+        # ``self.user_id`` falls back to a PlaceholderGraph's ``str(None)`` (the
+        # literal string "None", not Python's None) when no real flow/vertex is
+        # attached -- e.g. in isolated component construction/tests -- so it
+        # must be checked explicitly rather than trusted for truthiness alone.
+        user_id = self.user_id
+        if payload.get("success") and user_id and user_id != "None":
+            try:
+                bridged = await bridge_generated_files(
+                    payload,
+                    api_key=self._api_key_value(),
+                    base_url=self._base_url_value(),
+                    user_id=user_id,
+                )
+                if bridged:
+                    payload["_generated_files"] = bridged
+            except Exception:  # noqa: BLE001
+                logger.warning("Terrabox file bridging failed for %s", self._TERRABOX_SLUG, exc_info=True)
         self.status = payload
         return [Data(data=payload)]
 

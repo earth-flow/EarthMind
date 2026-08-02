@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 from typing import Any
+from unittest.mock import AsyncMock, patch
 
 from lfx.custom.utils import create_component_template
 from lfx.interface.earthflow_components import apply_earthflow_component_policy
@@ -95,7 +96,7 @@ def test_terrabox_toolspec_builds_evalable_langflow_tool_component_template():
     assert instance.display_name == "Distance"
 
 
-def test_generated_terrabox_component_executes_via_sdk_rest_endpoint(monkeypatch):
+async def test_generated_terrabox_component_executes_via_sdk_rest_endpoint(monkeypatch):
     template = build_terrabox_component_template(_distance_spec())
     _, instance = create_component_template(
         component={
@@ -132,7 +133,7 @@ def test_generated_terrabox_component_executes_via_sdk_rest_endpoint(monkeypatch
 
     monkeypatch.setattr("requests.post", fake_post)
 
-    result = instance.run_model()
+    result = await instance.run_model()
 
     assert captured == {
         "url": "http://terrabox.local/v1/sdk/tools/geo_basic.distance/execute",
@@ -157,7 +158,98 @@ def test_generated_terrabox_component_executes_via_sdk_rest_endpoint(monkeypatch
     assert set(tool.args_schema.model_fields) >= {"lon1", "lat1", "lon2", "lat2", "unit", "metadata"}
 
 
-def test_terrabox_reserved_frontend_field_names_are_aliased_without_changing_payload(monkeypatch):
+async def test_generated_terrabox_component_bridges_file_like_outputs_when_user_id_set(monkeypatch):
+    template = build_terrabox_component_template(_distance_spec())
+    _, instance = create_component_template(
+        component={
+            "code": template["template"]["code"]["value"],
+            "output_types": [],
+        },
+    )
+    instance.base_url = "http://terrabox.local"
+    instance.api_key = "test-key"
+    instance.timeout = 7
+    instance.lon1 = 1.0
+    instance.lat1 = 2.0
+    instance.lon2 = 3.0
+    instance.lat2 = 4.0
+    instance.unit = "meters"
+    instance._user_id = "user-1"
+
+    class FakeExecuteResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, Any]:
+            return {"success": True, "outputs": {"saved": "/abs/runtime/scene.tif"}}
+
+    class FakeRuntimeFileResponse:
+        content = b"tif-bytes"
+
+        def raise_for_status(self) -> None:
+            return None
+
+    class FakeUploaded:
+        id = "22222222-2222-2222-2222-222222222222"
+        name = "scene.tif"
+        size = 9
+
+    monkeypatch.setattr("requests.post", lambda *args, **kwargs: FakeExecuteResponse())
+
+    with (
+        patch("lfx.interface.earthflow_terrabox.requests.get", return_value=FakeRuntimeFileResponse()),
+        patch(
+            "lfx.interface.earthflow_terrabox._upload_bridged_file",
+            new=AsyncMock(return_value=FakeUploaded()),
+        ),
+    ):
+        result = await instance.run_model()
+
+    assert result[0].data["_generated_files"] == [
+        {
+            "field": "saved",
+            "file_id": "22222222-2222-2222-2222-222222222222",
+            "name": "scene.tif",
+            "size": 9,
+        }
+    ]
+
+
+async def test_generated_terrabox_component_skips_bridging_without_user_id(monkeypatch):
+    template = build_terrabox_component_template(_distance_spec())
+    _, instance = create_component_template(
+        component={
+            "code": template["template"]["code"]["value"],
+            "output_types": [],
+        },
+    )
+    instance.base_url = "http://terrabox.local"
+    instance.api_key = "test-key"
+    instance.timeout = 7
+    instance.lon1 = 1.0
+    instance.lat1 = 2.0
+    instance.lon2 = 3.0
+    instance.lat2 = 4.0
+    instance.unit = "meters"
+    # instance.user_id left unset (None) — no flow/user context, e.g. a design-time test call.
+
+    class FakeExecuteResponse:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, Any]:
+            return {"success": True, "outputs": {"saved": "/abs/runtime/scene.tif"}}
+
+    monkeypatch.setattr("requests.post", lambda *args, **kwargs: FakeExecuteResponse())
+
+    with patch("lfx.interface.earthflow_terrabox.requests.get") as fake_get:
+        result = await instance.run_model()
+
+    fake_get.assert_not_called()
+    assert "_generated_files" not in result[0].data
+
+
+async def test_terrabox_reserved_frontend_field_names_are_aliased_without_changing_payload(monkeypatch):
     spec = TerraboxToolSpec(
         slug="earth_sci.microwave_ddm",
         name="Microwave DDM",
@@ -203,7 +295,7 @@ def test_terrabox_reserved_frontend_field_names_are_aliased_without_changing_pay
 
     monkeypatch.setattr("requests.post", fake_post)
 
-    instance.run_model()
+    await instance.run_model()
 
     assert captured["json"] == {"inputs": {"beta": 0.42}}
 
