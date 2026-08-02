@@ -489,6 +489,16 @@ def get_embeddings(
             else:
                 kwargs[param_mapping[param_name]] = param_value
 
+    # DashScope's (and other third-party) OpenAI-compatible embeddings
+    # endpoints only accept raw text as `input`. langchain_openai's
+    # OpenAIEmbeddings defaults to check_embedding_ctx_length=True, which
+    # pre-tokenizes text with tiktoken and sends arrays of token IDs instead
+    # — real OpenAI accepts that, DashScope's compatible-mode backend
+    # rejects it ("contents is neither str nor list of str"). Force raw-text
+    # mode for every non-OpenAI provider riding the OpenAIEmbeddings class.
+    if embedding_class_name == "OpenAIEmbeddings" and provider != "OpenAI":
+        kwargs["check_embedding_ctx_length"] = False
+
     try:
         return embedding_class(**kwargs)
     except Exception as e:
