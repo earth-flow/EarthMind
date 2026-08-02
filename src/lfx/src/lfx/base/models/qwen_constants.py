@@ -16,15 +16,16 @@ from lfx.base.models.model_metadata import create_model_metadata
 QWEN_MODELS_DETAILED = [
     create_model_metadata(
         provider="Qwen",
-        name="qwen-plus",
+        name="qwen3.7-plus",
         icon="OpenAI",
         tool_calling=True,
         default=True,
     ),
-    create_model_metadata(provider="Qwen", name="qwen-max", icon="OpenAI", tool_calling=True),
-    create_model_metadata(provider="Qwen", name="qwen-turbo", icon="OpenAI", tool_calling=True),
-    # Long-context variant (up to ~10M tokens); same wire format.
-    create_model_metadata(provider="Qwen", name="qwen-long", icon="OpenAI", tool_calling=True),
+    create_model_metadata(provider="Qwen", name="qwen3.7-max", icon="OpenAI", tool_calling=True),
+    create_model_metadata(provider="Qwen", name="qwen3.6-plus", icon="OpenAI", tool_calling=True),
+    create_model_metadata(
+        provider="Qwen", name="qwen3.6-max-preview", icon="OpenAI", tool_calling=True, preview=True
+    ),
 ]
 
 QWEN_EMBEDDING_MODELS_DETAILED = [

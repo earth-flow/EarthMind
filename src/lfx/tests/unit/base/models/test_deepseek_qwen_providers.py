@@ -94,7 +94,7 @@ def test_qwen_catalog_has_chat_and_embedding_models():
     chat = {row["name"] for row in rows if row.get("model_type", "llm") == "llm"}
     embeddings = {row["name"] for row in rows if row.get("model_type") == "embeddings"}
 
-    assert {"qwen-plus", "qwen-max", "qwen-turbo"} <= chat
+    assert {"qwen3.7-plus", "qwen3.7-max", "qwen3.6-plus", "qwen3.6-max-preview"} <= chat
     assert {"text-embedding-v3", "text-embedding-v4"} <= embeddings
 
 
@@ -162,7 +162,7 @@ def _capture_llm_kwargs(provider: str, name: str, provider_vars: dict | None = N
     ("provider", "model_name", "default_base"),
     [
         ("DeepSeek", "deepseek-chat", DEEPSEEK_DEFAULT_BASE),
-        ("Qwen", "qwen-plus", QWEN_DEFAULT_BASE),
+        ("Qwen", "qwen3.7-plus", QWEN_DEFAULT_BASE),
     ],
 )
 def test_get_llm_applies_declared_default_base_url(provider, model_name, default_base):
@@ -176,7 +176,7 @@ def test_get_llm_applies_declared_default_base_url(provider, model_name, default
 @pytest.mark.parametrize(
     ("provider", "model_name", "base_var", "override"),
     [
-        ("Qwen", "qwen-plus", "DASHSCOPE_API_BASE", QWEN_INTL_BASE),
+        ("Qwen", "qwen3.7-plus", "DASHSCOPE_API_BASE", QWEN_INTL_BASE),
         ("DeepSeek", "deepseek-chat", "DEEPSEEK_API_BASE", "https://proxy.internal/v1"),
     ],
 )
@@ -196,7 +196,7 @@ def test_get_llm_env_base_overrides_default(monkeypatch):
     """With nothing in the database, the environment still overrides."""
     monkeypatch.setenv("DASHSCOPE_API_BASE", QWEN_INTL_BASE)
 
-    kwargs = _capture_llm_kwargs("Qwen", "qwen-plus", provider_vars={})
+    kwargs = _capture_llm_kwargs("Qwen", "qwen3.7-plus", provider_vars={})
 
     assert kwargs["base_url"] == QWEN_INTL_BASE
 
@@ -214,7 +214,7 @@ def test_get_llm_missing_api_key_names_the_right_variable(monkeypatch):
     monkeypatch.delenv("DASHSCOPE_API_KEY", raising=False)
 
     with pytest.raises(ValueError, match="DASHSCOPE_API_KEY") as exc_info:
-        get_llm(_model_selection("Qwen", "qwen-plus"), user_id=None)
+        get_llm(_model_selection("Qwen", "qwen3.7-plus"), user_id=None)
 
     assert "Qwen" in str(exc_info.value)
 
