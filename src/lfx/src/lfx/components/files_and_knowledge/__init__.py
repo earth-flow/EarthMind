@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 from lfx.components._importing import import_mod
 
 if TYPE_CHECKING:
+    from lfx.components.files_and_knowledge.command_execution import CommandExecutionToolComponent
     from lfx.components.files_and_knowledge.directory import DirectoryComponent
     from lfx.components.files_and_knowledge.file import FileComponent
     from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
@@ -13,9 +14,11 @@ if TYPE_CHECKING:
     from lfx.components.files_and_knowledge.memory_retrieval import MemoryBaseComponent
     from lfx.components.files_and_knowledge.retrieval import KnowledgeBaseComponent
     from lfx.components.files_and_knowledge.save_file import SaveToFileComponent
+    from lfx.components.files_and_knowledge.word_document import WordDocumentToolComponent
 
 
 _dynamic_imports = {
+    "CommandExecutionToolComponent": "command_execution",
     "DirectoryComponent": "directory",
     "FileComponent": "file",
     "FileSystemToolComponent": "filesystem",
@@ -24,9 +27,11 @@ _dynamic_imports = {
     "KnowledgeBaseComponent": "retrieval",
     "MemoryBaseComponent": "memory_retrieval",
     "SaveToFileComponent": "save_file",
+    "WordDocumentToolComponent": "word_document",
 }
 
 __all__ = [
+    "CommandExecutionToolComponent",
     "DirectoryComponent",
     "FileComponent",
     "FileSystemToolComponent",
@@ -35,6 +40,7 @@ __all__ = [
     "KnowledgeIngestionComponent",
     "MemoryBaseComponent",
     "SaveToFileComponent",
+    "WordDocumentToolComponent",
 ]
 
 

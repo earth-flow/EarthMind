@@ -8,7 +8,9 @@ from langchain_core._api.deprecation import LangChainDeprecationWarning
 from lfx.components._importing import import_mod
 
 if TYPE_CHECKING:
+    from lfx.components.files_and_knowledge.command_execution import CommandExecutionToolComponent
     from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
+    from lfx.components.files_and_knowledge.word_document import WordDocumentToolComponent
 
     from .calculator import CalculatorToolComponent
     from .python_repl import PythonREPLToolComponent
@@ -22,9 +24,12 @@ if TYPE_CHECKING:
 
 _dynamic_imports = {
     "CalculatorToolComponent": "calculator",
-    # FileSystemToolComponent was moved to files_and_knowledge; forward it here
-    # so existing flows / imports referencing lfx.components.tools keep working.
+    # CommandExecutionToolComponent/FileSystemToolComponent/WordDocumentToolComponent
+    # live in files_and_knowledge (they share its sandbox helpers); forwarded here
+    # so flows / imports referencing lfx.components.tools keep working.
+    "CommandExecutionToolComponent": ("command_execution", "files_and_knowledge"),
     "FileSystemToolComponent": ("filesystem", "files_and_knowledge"),
+    "WordDocumentToolComponent": ("word_document", "files_and_knowledge"),
     "PythonREPLToolComponent": "python_repl",
     "SearchAPIComponent": "search_api",
     "SearXNGToolComponent": "searxng",
@@ -37,6 +42,7 @@ _dynamic_imports = {
 
 __all__ = [
     "CalculatorToolComponent",
+    "CommandExecutionToolComponent",
     "FileSystemToolComponent",
     "PythonREPLToolComponent",
     "SearXNGToolComponent",
@@ -45,6 +51,7 @@ __all__ = [
     "TavilySearchToolComponent",
     "WikidataAPIComponent",
     "WikipediaAPIComponent",
+    "WordDocumentToolComponent",
     "YfinanceToolComponent",
 ]
 

@@ -569,6 +569,150 @@ class TestFlowBuilderPromptFilesystem:
         )
 
 
+class TestWordDocumentToolsInToolkit:
+    """The agent gets the Word document tools, write-side wrapped to emit events.
+
+    Same sandbox binding as FileSystemTool (both resolve to the identical
+    per-user root), so this mirrors TestFilesystemToolsInToolkit.
+    """
+
+    async def test_toolkit_should_include_docx_tools(self):
+        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+
+        tools = await build_toolkit()
+        names = {getattr(t, "name", None) for t in tools}
+
+        assert {
+            "docx_read",
+            "docx_create",
+            "docx_append_paragraph",
+            "docx_replace_text",
+            "docx_add_table",
+        }.issubset(names), f"Word document tools must be present in the toolkit, got: {names}"
+
+    async def test_docx_create_through_toolkit_should_emit_file_written_event(self, tmp_path, monkeypatch):
+        import json
+
+        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+
+        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        reset_file_events()
+
+        tools = await build_toolkit()
+        create_tool = next(t for t in tools if t.name == "docx_create")
+
+        result = json.loads(create_tool.func(path="report.docx", title="Report"))
+        assert result["status"] == "ok"
+
+        events = drain_file_events()
+        assert len(events) == 1
+        assert events[0]["action"] == "docx_create"
+        assert events[0]["path"] == "report.docx"
+
+    async def test_failed_docx_create_should_not_emit_event(self, tmp_path, monkeypatch):
+        import json
+
+        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+
+        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        reset_file_events()
+
+        tools = await build_toolkit()
+        create_tool = next(t for t in tools if t.name == "docx_create")
+
+        result = json.loads(create_tool.func(path="../escape.docx"))
+        assert "error" in result
+        assert drain_file_events() == []
+
+    async def test_docx_read_should_not_emit_event(self, tmp_path, monkeypatch):
+        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+
+        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        reset_file_events()
+
+        tools = await build_toolkit()
+        create_tool = next(t for t in tools if t.name == "docx_create")
+        read_tool = next(t for t in tools if t.name == "docx_read")
+
+        create_tool.func(path="report.docx")
+        drain_file_events()  # discard create event
+
+        read_tool.func(path="report.docx")
+        assert drain_file_events() == []
+
+
+class TestFlowBuilderPromptWordDocuments:
+    def test_prompt_should_mention_docx_tools(self):
+        from earthmind.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT
+
+        assert "docx_create" in FLOW_BUILDER_PROMPT
+        assert "docx_read" in FLOW_BUILDER_PROMPT
+
+
+class TestCommandExecutionToolGating:
+    """run_command is opt-in via EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED.
+
+    Off by default so it never silently activates on an existing deployment.
+    """
+
+    async def test_should_be_absent_from_toolkit_by_default(self, monkeypatch):
+        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+
+        monkeypatch.delenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", raising=False)
+        tools = await build_toolkit()
+        names = {getattr(t, "name", None) for t in tools}
+        assert "run_command" not in names
+
+    async def test_should_be_present_when_enabled(self, monkeypatch):
+        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+
+        monkeypatch.setenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", "1")
+        tools = await build_toolkit()
+        names = {getattr(t, "name", None) for t in tools}
+        assert "run_command" in names
+
+    @pytest.mark.parametrize("off_value", ["0", "false", "no", "off", ""])
+    async def test_should_treat_falsey_values_as_disabled(self, monkeypatch, off_value):
+        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+
+        monkeypatch.setenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", off_value)
+        tools = await build_toolkit()
+        names = {getattr(t, "name", None) for t in tools}
+        assert "run_command" not in names
+
+    def test_prompt_should_only_mention_run_command_when_enabled(self):
+        from earthmind.agentic.flows.flow_builder_assistant import CLI_TOOL_PROMPT_ADDENDUM, FLOW_BUILDER_PROMPT
+
+        # The base prompt constant must never mention a tool that build_toolkit()
+        # only conditionally registers.
+        assert "run_command" not in FLOW_BUILDER_PROMPT
+        assert "run_command" in CLI_TOOL_PROMPT_ADDENDUM
+
+    def test_build_system_prompt_should_append_addendum_only_when_enabled(self, monkeypatch):
+        from earthmind.agentic.flows.flow_builder_assistant import build_system_prompt
+
+        monkeypatch.delenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", raising=False)
+        assert "run_command" not in build_system_prompt()
+
+        monkeypatch.setenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", "1")
+        assert "run_command" in build_system_prompt()
+
+    async def test_get_graph_should_not_crash_with_cli_tool_enabled(self, monkeypatch):
+        """Regression guard.
+
+        get_graph() must still build successfully once build_toolkit() and
+        build_system_prompt() both branch on the flag.
+        """
+        from earthmind.agentic.flows.flow_builder_assistant import get_graph
+
+        monkeypatch.setenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", "1")
+        graph = await get_graph()
+        assert graph is not None
+
+
 @pytest.mark.skipif(
     not has_api_key("OPENAI_API_KEY"),
     reason="OPENAI_API_KEY required for intent classification test",

@@ -4,7 +4,11 @@ This flow gives an Agent access to component search, description, and
 flow building tools so it can create complete flows from user requests.
 """
 
+import os
+
+from lfx.components.files_and_knowledge.command_execution import CommandExecutionToolComponent
 from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
+from lfx.components.files_and_knowledge.word_document import WordDocumentToolComponent
 from lfx.components.input_output import ChatInput, ChatOutput
 from lfx.components.models_and_agents import AgentComponent
 from lfx.graph import Graph
@@ -26,6 +30,21 @@ from lfx.mcp.flow_builder_tools import (
 
 from earthmind.agentic.flows.model_config import build_model_config
 from earthmind.agentic.services.file_events import wrap_file_tool_with_event
+
+# Opt-in gate for the CLI/command-execution tool. Unlike the filesystem and
+# Word tools (which stay inside the FileSystemToolComponent sandbox boundary),
+# CommandExecutionToolComponent has no real OS-level jail — a command given an
+# absolute path can reach anywhere the EarthMind server process's OS user can.
+# Defaults OFF so it never silently activates on an existing deployment;
+# operators opt in per-deployment after reading command_execution.py's module
+# docstring. Mirrors the on/off value parsing of EARTHFLOW_COMPONENTS_ENABLED.
+EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED = "EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED"
+
+
+def assistant_cli_tool_enabled() -> bool:
+    value = os.getenv(EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED, "0").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
 
 FLOW_BUILDER_PROMPT = """\
 You are a EarthMind Flow Builder assistant. You build and modify flows directly \
@@ -176,6 +195,19 @@ the flow docs to FLOW_DOCS.md", "create a markdown file describing this flow"),
 use `describe_component` and `get_field_value` first to ground the document in
 real configuration, then `write_file` to persist it. Do NOT modify the canvas as
 part of a documentation request — the user wants a file, not a flow change.
+
+**Word documents (same sandboxed workspace, paths RELATIVE to the sandbox root, must end in `.docx`):**
+- **docx_read** - Read a `.docx` file's paragraphs (with style) and tables.
+- **docx_create** - Create a new `.docx` file, optionally with a title.
+- **docx_append_paragraph** - Append a paragraph (optionally styled, e.g. `Heading 1`) to a `.docx` file.
+- **docx_replace_text** - Replace a whole paragraph's text by matching an exact substring.
+- **docx_add_table** - Append a table, optionally pre-filled with data.
+
+Use these instead of `write_file` whenever the user explicitly asks for a Word
+document / `.docx` file (a report, a proposal, meeting notes to send someone).
+`docx_replace_text` flattens the matched paragraph's run-level formatting into
+a single run — mention that only if the user is doing fine-grained mid-paragraph
+formatting edits, not for ordinary content changes.
 
 ## Creating new custom components (CRITICAL)
 
@@ -450,19 +482,52 @@ Reply: "Switched the Agent's model to OpenAI gpt-4o."
   diffs the user must approve; a model swap is a normal `configure_component`).
 """
 
+# Appended to FLOW_BUILDER_PROMPT only when assistant_cli_tool_enabled() is
+# True (build_toolkit() only registers run_command in that case too) — never
+# mention a tool in the prompt that isn't actually bound to the agent.
+CLI_TOOL_PROMPT_ADDENDUM = """
+
+**Command execution (`run_command`):**
+- Runs ONE command as an argv list: `command` (e.g. `"python3"`, `"git"`) plus
+  an `args` list. Never pass a whole shell string in `command` — pass the
+  program and each argument separately.
+- Defaults to the sandboxed workspace as the working directory (same
+  workspace as the filesystem/Word tools), but it is NOT a filesystem jail —
+  an absolute path or `..` in an argument reaches outside the workspace.
+  Treat it with the same care you would a real terminal on the user's
+  machine: only touch paths outside the workspace when the user's request
+  clearly requires it (e.g. "check what git branch I'm on" against a repo
+  path they gave you), never speculatively.
+- Prefer the dedicated filesystem/Word tools for anything they already cover
+  (reading/writing/searching files) — reach for `run_command` for things they
+  can't do: running a script, checking a tool's version, installing a
+  package, invoking `git`, etc.
+- A non-zero `returncode` is often normal information (e.g. a linter
+  reporting issues), not a failure to react to as an error — read `stdout`/
+  `stderr` and use judgment.
+"""
+
 
 async def build_toolkit() -> list:
     """Assemble the full toolkit the flow_builder Agent receives.
 
     Returns the canvas tools (read + write + propose-edit) PLUS the sandboxed
     filesystem tools (``read_file``, ``write_file``, ``edit_file``,
-    ``glob_search``, ``grep_search``). The two write-side filesystem tools are
+    ``glob_search``, ``grep_search``) PLUS the Word document tools
+    (``docx_read``, ``docx_create``, ``docx_append_paragraph``,
+    ``docx_replace_text``, ``docx_add_table``). Write-side tools from both are
     wrapped so successful invocations emit a ``file_written`` event for the
     SSE stream — read tools pass through unchanged.
 
+    ``run_command`` (``CommandExecutionToolComponent``) is registered only
+    when ``assistant_cli_tool_enabled()`` is True — see that function's
+    docstring and ``command_execution.py``'s module docstring for why it
+    defaults off (no OS-level sandbox, unlike the file/docx tools).
+
     All sandbox enforcement (path validation, O_NOFOLLOW, deny-list, hardlink
     refusal, ReDoS detection, per-user binding) remains inside
-    ``FileSystemToolComponent``. This function only assembles and wraps.
+    ``FileSystemToolComponent``; ``WordDocumentToolComponent`` composes it
+    rather than duplicating it. This function only assembles and wraps.
     """
     canvas_components = [
         SearchComponentTypes(),
@@ -505,7 +570,41 @@ async def build_toolkit() -> list:
         else:
             tools.append(tool)
 
+    # Word document tools — same per-user sandbox binding as the filesystem
+    # tools above (the two operate on the identical <BASE>/users/<hash>/ tree).
+    word = WordDocumentToolComponent()
+    if _request_user_id:
+        word._user_id = _request_user_id  # noqa: SLF001 — bind sandbox to caller
+        word._force_isolation = True  # noqa: SLF001 — security: see filesystem._validate_root
+    word_tools = await word._get_tools()  # noqa: SLF001 — public toolkit entry by design
+    docx_write_tools = {"docx_create", "docx_append_paragraph", "docx_replace_text", "docx_add_table"}
+    for tool in word_tools:
+        if tool.name in docx_write_tools:
+            tools.append(wrap_file_tool_with_event(tool, action=tool.name))
+        else:
+            tools.append(tool)
+
+    if assistant_cli_tool_enabled():
+        cli = CommandExecutionToolComponent()
+        if _request_user_id:
+            cli._user_id = _request_user_id  # noqa: SLF001 — bind cwd default to caller's sandbox
+            cli._force_isolation = True  # noqa: SLF001
+        tools.extend(await cli._get_tools())  # noqa: SLF001 — public toolkit entry by design
+
     return tools
+
+
+def build_system_prompt() -> str:
+    """Assemble the agent's system prompt for the current environment.
+
+    Split out from ``get_graph()`` so the conditional CLI-tool addendum can be
+    unit tested directly (a tool must never be mentioned in the prompt unless
+    ``build_toolkit()`` actually registers it — see ``assistant_cli_tool_enabled``).
+    """
+    system_prompt = FLOW_BUILDER_PROMPT
+    if assistant_cli_tool_enabled():
+        system_prompt += CLI_TOOL_PROMPT_ADDENDUM
+    return system_prompt
 
 
 async def get_graph(
@@ -537,7 +636,7 @@ async def get_graph(
     agent.set_input_value("model", copy.deepcopy(build_model_config(provider, model_name)))
     agent_config = {
         "input_value": chat_input.message_response,
-        "system_prompt": FLOW_BUILDER_PROMPT,
+        "system_prompt": build_system_prompt(),
         "tools": tools,
         "temperature": 0.1,
     }

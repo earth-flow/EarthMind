@@ -43,6 +43,7 @@ dependencies = [
     "validators>=0.34.0,<1.0.0",
     "filelock>=3.20.1,<4.0.0",
     "pypdf>=6.10.0,<7.0.0",
+    "python-docx>=1.1.0,<2.0.0",
     "cryptography>=46.0.7",
     "ag-ui-protocol>=0.1.10",
     "earthmind-sdk>=0.1.0",
