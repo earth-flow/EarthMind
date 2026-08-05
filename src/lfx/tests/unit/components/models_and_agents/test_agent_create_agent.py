@@ -1324,6 +1324,62 @@ async def test_should_pass_recursion_limit_derived_from_max_iterations_when_stre
 
 
 @pytest.mark.asyncio
+async def test_should_widen_recursion_limit_when_model_call_limit_middleware_adds_graph_nodes() -> None:
+    """`recursion_limit` must account for middleware-added before/after_model nodes.
+
+    `create_agent`'s factory wires a middleware's `before_model`/`after_model` hooks
+    as their own sequential graph nodes (not folded into the "model" node), so with
+    `ModelCallLimitMiddleware` attached (which overrides both hooks), one iteration
+    is `before_model -> model -> after_model -> tools` — 4 steps, not the 2
+    ("model -> tools") the old flat `max_iterations * 2 + 5` formula assumed. That
+    undercount let the raw LangGraph recursion_limit fire before
+    ModelCallLimitMiddleware's own graceful cutoff could run — reproduced live when
+    an Agent with a Word Document tool needed ~15 real tool-call iterations to write
+    a multi-paragraph document and hit `GraphRecursionError` well short of that.
+    """
+    captured_config: dict = {}
+
+    def _capture_astream(_input_dict, *, config, **_kwargs):
+        captured_config.update(config or {})
+        return _empty_event_stream()
+
+    fake_graph = MagicMock(name="compiled_state_graph")
+    fake_graph.astream_events = _capture_astream
+
+    component = _build_component()
+    component.set_attributes({"max_iterations": 7, "input_value": "hi", "chat_history": []})
+
+    with (
+        patch.object(type(component), "_get_llm", return_value=MagicMock(name="fake_llm")),
+        patch("lfx.components.models_and_agents.agent.create_agent", return_value=fake_graph),
+    ):
+        # `create_agent` is mocked (as in other tests) so this stays a unit test, but
+        # `_build_middleware` runs for real, so `self._built_middleware` ends up with
+        # the real ModelCallLimitMiddleware -- exactly what `_compute_recursion_limit`
+        # reads in production.
+        agent = component.create_agent_runnable()
+
+    final_message = MagicMock()
+    final_message.get_id.return_value = None
+    final_message.properties = MagicMock()
+
+    with (
+        patch.object(type(component), "_get_shared_callbacks", return_value=[]),
+        patch(
+            "lfx.components.models_and_agents.agent.process_agent_events",
+            new=AsyncMock(return_value=final_message),
+        ),
+    ):
+        await component.run_agent(agent)
+
+    # ModelCallLimitMiddleware overrides before_model+after_model => 4 steps/iteration.
+    assert captured_config["recursion_limit"] >= 7 * 4 + 5, (
+        f"recursion_limit must account for ModelCallLimitMiddleware's extra graph nodes; "
+        f"got {captured_config['recursion_limit']} for max_iterations=7"
+    )
+
+
+@pytest.mark.asyncio
 async def test_should_complete_run_agent_synchronously_before_returning_so_downstream_agents_see_final_state() -> None:
     """Regression guard for QA UI-012 (multi-agent chains).
 

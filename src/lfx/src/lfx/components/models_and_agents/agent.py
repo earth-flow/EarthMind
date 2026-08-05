@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, cast
 
 from langchain.agents import create_agent
-from langchain.agents.middleware import ModelCallLimitMiddleware, ToolRetryMiddleware
+from langchain.agents.middleware import AgentMiddleware, ModelCallLimitMiddleware, ToolRetryMiddleware
 
 from lfx.components.models_and_agents.agent_helpers.graph_event_adapter import (
     adapt_graph_events_to_executor_shape,
@@ -538,6 +538,9 @@ class AgentComponent(ToolCallingAgentComponent):
                 raise NotImplementedError(msg) from exc
 
         middleware = self._build_middleware(llm)
+        # Stashed for `_compute_recursion_limit()`, called later from `run_agent`
+        # (which only receives the compiled graph, not this middleware list).
+        self._built_middleware = middleware
         return create_agent(
             model=llm,
             tools=tools,
@@ -545,16 +548,58 @@ class AgentComponent(ToolCallingAgentComponent):
             middleware=middleware or None,
         )
 
+    @staticmethod
+    def _count_model_hook_nodes(middleware: list) -> int:
+        """Count extra langgraph nodes middleware add around each model call.
+
+        `create_agent`'s factory (`langchain.agents.factory`) wires each
+        middleware's `before_model`/`after_model` hook as its own sequential
+        graph node rather than folding it into the "model" node -- e.g. with
+        `ModelCallLimitMiddleware` (which overrides both), one iteration of the
+        loop is `<mw>.before_model -> model -> <mw>.after_model -> tools`, four
+        nodes/steps, not the two ("model -> tools") a naive count assumes.
+        `wrap_model_call`/`wrap_tool_call` hooks (used by `ToolRetryMiddleware`,
+        `SingleToolCallMiddleware`, `WatsonXPlaceholderMiddleware`) do NOT add
+        nodes -- they wrap execution of the existing model/tools node in place.
+        """
+        count = 0
+        for m in middleware:
+            cls = m.__class__
+            has_before = cls.before_model is not AgentMiddleware.before_model
+            has_abefore = cls.abefore_model is not AgentMiddleware.abefore_model
+            has_after = cls.after_model is not AgentMiddleware.after_model
+            has_aafter = cls.aafter_model is not AgentMiddleware.aafter_model
+            if has_before or has_abefore:
+                count += 1
+            if has_after or has_aafter:
+                count += 1
+        return count
+
     def _compute_recursion_limit(self) -> int:
         """Derive the LangGraph recursion_limit from the user-set max_iterations.
 
         Mirrors the clamp in `_build_middleware` (max(1, max_iterations)) so a
         saved 0 or negative value cannot under-cap the graph below one full
-        iteration. The +5 buffer covers start/end/router overhead.
+        iteration.
+
+        Must count real per-iteration graph steps, not assume "model + tools"
+        (2 steps) -- middleware with before_model/after_model hooks each add
+        their own node (see `_count_model_hook_nodes`). Undercounting this
+        let the raw LangGraph recursion_limit fire before
+        `ModelCallLimitMiddleware`'s own graceful "end" cutoff could run: with
+        the default `max_iterations=15` and `ModelCallLimitMiddleware` alone
+        (before_model + after_model = 2 extra nodes/iteration), real per-run
+        steps were up to 15 * 4 = 60, but the old `15 * 2 + 5 = 35` cap fired
+        first and surfaced a raw `GraphRecursionError` well before 15 real
+        model calls completed (reported when writing a long multi-paragraph
+        Word document, which legitimately needs many sequential tool calls).
+        The +5 buffer covers start/end/router overhead.
         """
         raw = getattr(self, "max_iterations", None)
         run_limit = max(1, int(raw)) if raw is not None else 15
-        return run_limit * 2 + 5
+        middleware = getattr(self, "_built_middleware", None) or []
+        steps_per_iteration = 2 + self._count_model_hook_nodes(middleware)
+        return run_limit * steps_per_iteration + 5
 
     def _build_middleware(self, llm: Any) -> list:
         # `llm` is passed in (rather than re-fetched via `self._get_llm()`)

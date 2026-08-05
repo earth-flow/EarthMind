@@ -15,7 +15,6 @@ from lfx.custom.utils import create_component_template
 
 logger = logging.getLogger(__name__)
 
-EARTHFLOW_TOOLS_CATEGORY = "earthflow_tools"
 DEFAULT_TERRABOX_BASE_URL = "http://localhost:8000"
 
 # Heuristic for spotting file references inside a Terrabox tool's arbitrary
@@ -434,7 +433,7 @@ def build_terrabox_component_source(spec: TerraboxToolSpec) -> str:
     )
     inputs_source = ",\n        ".join(input_calls)
 
-    return f'''import json
+    return f"""import json
 import logging
 import os
 from typing import Any
@@ -618,7 +617,7 @@ class {class_name}(LCToolComponent):
             func=call_terrabox_tool,
             args_schema=self._args_schema(),
         )
-'''
+"""
 
 
 def build_terrabox_component_template(spec: TerraboxToolSpec) -> dict[str, Any]:
@@ -632,14 +631,41 @@ def build_terrabox_component_template(spec: TerraboxToolSpec) -> dict[str, Any]:
     return template
 
 
-def build_terrabox_components_dict(tool_specs: list[TerraboxToolSpec]) -> dict[str, dict[str, Any]]:
-    components: dict[str, dict[str, Any]] = {}
+def terrabox_toolkit_name(slug: str) -> str:
+    """The Terrabox toolkit a tool slug belongs to, e.g. "geo_basic" for "geo_basic.distance"."""
+    return slug.split(".", 1)[0]
+
+
+def terrabox_toolkit_category(slug: str) -> str:
+    """Sidebar category for a tool's toolkit, e.g. "geo_basic" for "geo_basic.distance".
+
+    Grouping generated components by toolkit (rather than dumping all ~100+ of
+    them into one flat bucket) gives each Terrabox toolkit its own collapsible
+    sidebar section, with its own tools inside -- a toolkit-as-catalog structure
+    instead of one long unbrowsable list. The category is just the bare toolkit
+    name (no "earthflow"/"tools" prefix) so the sidebar's auto-titled fallback
+    label (`toTitleCase(categoryName)`) stays short, e.g. "Geo Basic" rather than
+    "Earthflow Tools Geo Basic".
+    """
+    return terrabox_toolkit_name(slug)
+
+
+def build_terrabox_components_by_category(tool_specs: list[TerraboxToolSpec]) -> dict[str, dict[str, dict[str, Any]]]:
+    """Build generated Terrabox tool components, grouped by toolkit category.
+
+    Returns ``{category: {component_name: template}}`` so each Terrabox
+    toolkit becomes its own sidebar group.
+    """
+    by_category: dict[str, dict[str, dict[str, Any]]] = {}
     for spec in tool_specs:
         try:
-            components[component_class_name(spec.slug)] = build_terrabox_component_template(spec)
+            template = build_terrabox_component_template(spec)
         except Exception:  # noqa: BLE001
             logger.exception("Failed to build Terrabox component template for %s", spec.slug)
-    return components
+            continue
+        category = terrabox_toolkit_category(spec.slug)
+        by_category.setdefault(category, {})[component_class_name(spec.slug)] = template
+    return by_category
 
 
 def _parse_csv_env(value: str | None) -> set[str] | None:
@@ -691,9 +717,7 @@ def load_terrabox_tool_specs(
     )
     tool_denylist = set(DEFAULT_EXCLUDED_TERRABOX_TOOLS)
     env_exclude_tools = (
-        exclude_tools
-        if exclude_tools is not None
-        else _parse_csv_env(os.getenv("EARTHFLOW_TERRABOX_EXCLUDE_TOOLS"))
+        exclude_tools if exclude_tools is not None else _parse_csv_env(os.getenv("EARTHFLOW_TERRABOX_EXCLUDE_TOOLS"))
     )
     if env_exclude_tools:
         tool_denylist.update(env_exclude_tools)

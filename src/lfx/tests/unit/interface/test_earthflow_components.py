@@ -5,12 +5,15 @@ from typing import Any
 from unittest.mock import AsyncMock, patch
 
 from lfx.custom.utils import create_component_template
-from lfx.interface.earthflow_components import apply_earthflow_component_policy
+from lfx.interface.earthflow_components import (
+    EARTHFLOW_ASSISTANT_TOOLS_CATEGORY,
+    apply_earthflow_component_policy,
+)
 from lfx.interface.earthflow_terrabox import (
-    EARTHFLOW_TOOLS_CATEGORY,
     TerraboxToolSpec,
     build_terrabox_component_template,
     load_terrabox_tool_specs,
+    terrabox_toolkit_category,
 )
 
 
@@ -42,7 +45,7 @@ def _distance_spec() -> TerraboxToolSpec:
     )
 
 
-def test_earthflow_policy_filters_native_components_and_injects_terrabox_tools():
+def test_earthflow_policy_keeps_all_native_components_and_injects_terrabox_tools():
     all_types = {
         "input_output": {
             "ChatInput": _stub_component("Chat Input"),
@@ -60,15 +63,60 @@ def test_earthflow_policy_filters_native_components_and_injects_terrabox_tools()
 
     filtered = apply_earthflow_component_policy(all_types, terrabox_tools=[_distance_spec()])
 
+    # All stock Langflow components pass through untouched -- the policy no
+    # longer hides anything, it only regroups EarthFlow-specific additions.
     assert "ChatInput" in filtered["input_output"]
     assert "ChatOutput" in filtered["input_output"]
     assert "DeepSeekModelComponent" in filtered["deepseek"]
     assert "TavilyAISearch" in filtered["tools"]
     assert "WikipediaAPI" in filtered["tools"]
-    assert "PythonREPLTool" not in filtered["tools"]
-    assert "Notion" not in filtered
-    assert "openai" not in filtered
-    assert "TerraboxGeoBasicDistance" in filtered[EARTHFLOW_TOOLS_CATEGORY]
+    assert "PythonREPLTool" in filtered["tools"]
+    assert "NotionListPages" in filtered["Notion"]
+    assert "OpenAIModelComponent" in filtered["openai"]
+    # The generated Terrabox tool lands in its own per-toolkit category
+    # ("geo_basic" for the "geo_basic.distance" slug, no "earthflow"/"tools"
+    # prefix so the sidebar's auto-titled label stays short), not one giant
+    # flat bucket -- each Terrabox toolkit is its own sidebar group.
+    geo_basic_category = terrabox_toolkit_category("geo_basic.distance")
+    assert geo_basic_category == "geo_basic"
+    assert "TerraboxGeoBasicDistance" in filtered[geo_basic_category]
+
+
+def test_earthflow_policy_splits_terrabox_tools_by_toolkit():
+    earth_sci_spec = TerraboxToolSpec(
+        slug="earth_sci.calculate_ati",
+        name="Calculate ATI",
+        description="Calculate ATI.",
+        parameters={"type": "object", "properties": {}},
+    )
+
+    filtered = apply_earthflow_component_policy({}, terrabox_tools=[_distance_spec(), earth_sci_spec])
+
+    assert "TerraboxGeoBasicDistance" in filtered["geo_basic"]
+    assert "TerraboxEarthSciCalculateAti" in filtered["earth_sci"]
+    # Toolkits don't leak into each other's category.
+    assert "TerraboxEarthSciCalculateAti" not in filtered["geo_basic"]
+    assert "TerraboxGeoBasicDistance" not in filtered["earth_sci"]
+
+
+def test_earthflow_policy_regroups_native_earthflow_tools_into_assistant_toolkit():
+    all_types = {
+        "files_and_knowledge": {
+            "File": _stub_component("File"),
+            "WordDocumentTool": _stub_component("Word Document"),
+            "CommandExecutionTool": _stub_component("Command Execution"),
+        },
+    }
+
+    filtered = apply_earthflow_component_policy(all_types, terrabox_tools=[])
+
+    # The stock file tool stays in its native category...
+    assert "File" in filtered["files_and_knowledge"]
+    assert "WordDocumentTool" not in filtered["files_and_knowledge"]
+    assert "CommandExecutionTool" not in filtered["files_and_knowledge"]
+    # ...while the EarthFlow-specific tools move into their own assistant toolkit.
+    assert "WordDocumentTool" in filtered[EARTHFLOW_ASSISTANT_TOOLS_CATEGORY]
+    assert "CommandExecutionTool" in filtered[EARTHFLOW_ASSISTANT_TOOLS_CATEGORY]
 
 
 def test_terrabox_toolspec_builds_evalable_langflow_tool_component_template():

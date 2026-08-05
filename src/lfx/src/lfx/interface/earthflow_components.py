@@ -4,109 +4,28 @@ import os
 from typing import Any
 
 from lfx.interface.earthflow_terrabox import (
-    EARTHFLOW_TOOLS_CATEGORY,
     TerraboxToolSpec,
-    build_terrabox_components_dict,
+    build_terrabox_components_by_category,
     load_terrabox_tool_specs,
 )
 
 EARTHFLOW_COMPONENTS_ENABLED = "EARTHFLOW_COMPONENTS_ENABLED"
 
-_KEEP_ALL_CATEGORIES: frozenset[str] = frozenset(
-    {
-        "deepseek",
-        "bing",
-        "exa",
-        "firecrawl",
-        "searchapi",
-        "serpapi",
-        "tavily",
-        "wikipedia",
-    }
-)
+# The toolkit-level sidebar category for EarthFlow's native (non-generated)
+# assistant tools -- kept separate from the per-Terrabox-toolkit categories
+# built below so it reads as its own catalog entry. No "earthflow"/"tools"
+# prefix, same reasoning as `terrabox_toolkit_category` -- the sidebar's
+# auto-titled fallback label is just this string title-cased, so a short bare
+# name ("Assistant Tools") beats a repeated, overly long one.
+EARTHFLOW_ASSISTANT_TOOLS_CATEGORY = "assistant_tools"
 
-_ALLOWLIST_BY_CATEGORY: dict[str, frozenset[str]] = {
-    "input_output": frozenset({"ChatInput", "ChatOutput", "TextInput", "TextOutput", "Webhook"}),
-    "models_and_agents": frozenset(
-        {
-            "Agent",
-            "EmbeddingModel",
-            "LanguageModelComponent",
-            "MCPTools",
-            "Memory",
-            "Prompt Template",
-        }
-    ),
-    "data_source": frozenset(
-        {
-            "APIRequest",
-            "CSVtoData",
-            "JSONtoData",
-            "NewsSearch",
-            "RSSReaderSimple",
-            "URLComponent",
-            "UnifiedWebSearch",
-        }
-    ),
-    "flow_controls": frozenset(
-        {
-            "ConditionalRouter",
-            "DataConditionalRouter",
-            "FlowTool",
-            "Listen",
-            "LoopComponent",
-            "Notify",
-            "Pass",
-            "RunFlow",
-            "SubFlow",
-        }
-    ),
-    "tools": frozenset(
-        {
-            "CalculatorTool",
-            "GoogleSearchAPI",
-            "GoogleSerperAPI",
-            "SearXNGTool",
-            "SearchAPI",
-            "SerpAPI",
-            "TavilyAISearch",
-            "WikidataAPI",
-            "WikipediaAPI",
-        }
-    ),
-    "llm_operations": frozenset({"BatchRunComponent", "LLMSelectorComponent", "StructuredOutput"}),
-    "processing": frozenset(
-        {
-            "CombineText",
-            "CreateData",
-            "CreateList",
-            "DataOperations",
-            "DataToDataFrame",
-            "JSONCleaner",
-            "MergeDataComponent",
-            "MessagetoData",
-            "OutputParser",
-            "ParseData",
-            "ParseJSONData",
-            "ParserComponent",
-            "SplitText",
-            "TextOperations",
-            "TypeConverterComponent",
-        }
-    ),
-    "utilities": frozenset({"CalculatorComponent", "CurrentDate", "IDGenerator"}),
-    "files_and_knowledge": frozenset({"Directory", "File", "FileSystemTool", "SaveToFile"}),
-    "langchain_utilities": frozenset(
-        {
-            "CharacterTextSplitter",
-            "LanguageRecursiveTextSplitter",
-            "NaturalLanguageTextSplitter",
-            "RecursiveCharacterTextSplitter",
-            "SemanticTextSplitter",
-        }
-    ),
-    "google": frozenset({"GoogleSearchAPICore", "GoogleSerperAPICore"}),
-}
+# Native (non-generated) components that are EarthFlow-specific additions rather
+# than stock Langflow components. They get pulled out of whatever category the
+# component directory scan naturally assigns them to (e.g. "files_and_knowledge")
+# and regrouped into EARTHFLOW_ASSISTANT_TOOLS_CATEGORY, so all EarthFlow-specific
+# tools live in dedicated toolkit sections instead of being scattered among or
+# hidden from the stock components.
+_EARTHFLOW_NATIVE_TOOL_NAMES: frozenset[str] = frozenset({"WordDocumentTool", "CommandExecutionTool"})
 
 
 def earthflow_components_enabled() -> bool:
@@ -114,22 +33,18 @@ def earthflow_components_enabled() -> bool:
     return value not in {"0", "false", "no", "off"}
 
 
-def _filter_native_components(all_types: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    filtered: dict[str, dict[str, Any]] = {}
-    for category, components in all_types.items():
-        if category in _KEEP_ALL_CATEGORIES:
-            if components:
-                filtered[category] = dict(components)
-            continue
+def _extract_earthflow_native_tools(all_types: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Pop EarthFlow-specific native components out of `all_types` in place.
 
-        allowed = _ALLOWLIST_BY_CATEGORY.get(category)
-        if allowed is None:
-            continue
-
-        category_components = {name: template for name, template in components.items() if name in allowed}
-        if category_components:
-            filtered[category] = category_components
-    return filtered
+    Returns the extracted {name: template} entries so the caller can merge them
+    into the dedicated EarthFlow tools category.
+    """
+    extracted: dict[str, dict[str, Any]] = {}
+    for components in all_types.values():
+        for name in list(components):
+            if name in _EARTHFLOW_NATIVE_TOOL_NAMES:
+                extracted[name] = components.pop(name)
+    return extracted
 
 
 def apply_earthflow_component_policy(
@@ -140,9 +55,15 @@ def apply_earthflow_component_policy(
     if not earthflow_components_enabled():
         return all_types
 
-    filtered = _filter_native_components(all_types)
+    result = {category: dict(components) for category, components in all_types.items()}
+    earthflow_native_tools = _extract_earthflow_native_tools(result)
+    result = {category: components for category, components in result.items() if components}
+
     tool_specs = terrabox_tools if terrabox_tools is not None else load_terrabox_tool_specs()
-    terrabox_components = build_terrabox_components_dict(tool_specs)
-    if terrabox_components:
-        filtered[EARTHFLOW_TOOLS_CATEGORY] = terrabox_components
-    return filtered
+    for category, components in build_terrabox_components_by_category(tool_specs).items():
+        result.setdefault(category, {}).update(components)
+
+    if earthflow_native_tools:
+        result.setdefault(EARTHFLOW_ASSISTANT_TOOLS_CATEGORY, {}).update(earthflow_native_tools)
+
+    return result
