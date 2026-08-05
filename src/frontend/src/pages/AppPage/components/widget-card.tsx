@@ -9,12 +9,16 @@ export const KIND_ICON: Record<WidgetKind, string> = {
   xlsx: "FileSpreadsheet",
   geojson: "Map",
   mesh: "Box",
+  pointcloud: "Boxes",
+  gs: "Sparkles",
+  video: "Video",
   json: "Braces",
   table: "Table",
   text: "AlignLeft",
   file: "File",
   error: "AlertCircle",
   knowledge_graph: "Network",
+  project_files: "Folder",
   empty: "LayoutDashboard",
 };
 

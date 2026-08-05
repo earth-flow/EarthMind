@@ -80,6 +80,14 @@ describe("resolveWidgetKind", () => {
     ["model.glb", "mesh"],
     ["model.obj", "mesh"],
     ["model.stl", "mesh"],
+    ["scan.pcd", "pointcloud"],
+    ["scan.ply", "pointcloud"],
+    ["scene.splat", "gs"],
+    ["scene.ksplat", "gs"],
+    ["scene.spz", "gs"],
+    ["clip.mp4", "video"],
+    ["clip.webm", "video"],
+    ["clip.avi", "video"],
     ["archive.zip", "file"],
   ])("maps a bridged file named %s to the %s kind", (name, expected) => {
     expect(
@@ -137,6 +145,18 @@ describe("extractFileRef", () => {
       }),
     ).toEqual({ source: "v1", path: "flow-1/report.pdf", name: "report.pdf" });
   });
+
+  it("resolves a sandbox file reference (only ever produced by wrapFileRefAsOutput, never a real flowPool payload)", () => {
+    expect(
+      extractFileRef({
+        _sandbox_file: { path: "reports/summary.docx", name: "summary.docx" },
+      }),
+    ).toEqual({
+      source: "sandbox",
+      path: "reports/summary.docx",
+      name: "summary.docx",
+    });
+  });
 });
 
 describe("extractAllChatFileRefs", () => {
@@ -179,6 +199,18 @@ describe("wrapFileRefAsOutput", () => {
     const output = wrapFileRefAsOutput(ref);
 
     expect(output.type).toBe("mesh");
+    expect(extractFileRef(output.message)).toEqual(ref);
+  });
+
+  it("wraps a sandbox ref as the _sandbox_file shape extractFileRef reads", () => {
+    const ref = {
+      source: "sandbox" as const,
+      path: "reports/summary.docx",
+      name: "summary.docx",
+    };
+    const output = wrapFileRefAsOutput(ref);
+
+    expect(output.type).toBe("docx");
     expect(extractFileRef(output.message)).toEqual(ref);
   });
 });

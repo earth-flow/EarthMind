@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
-from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
+from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent, list_sandbox_files
 
 
 @pytest.fixture
@@ -1003,3 +1003,63 @@ class TestEmptyRootPathDoesNotLeakCwd:
 
         assert "error" in result, f"Isolated mode without user_id must refuse: {result}"
         assert "user" in result["error"].lower() or "authenticated" in result["error"].lower()
+
+
+class TestListSandboxFiles:
+    """Module-level list_sandbox_files().
+
+    Used outside any agent tool call (e.g. a project-wide "browse the sandbox" page).
+    """
+
+    def test_should_list_files_recursively_with_relative_paths(self, sandbox: Path) -> None:
+        results = list_sandbox_files(sandbox)
+        paths = {entry["path"] for entry in results}
+
+        assert paths == {"hello.txt", "nested/deep.py", "binary.bin"}
+        for entry in results:
+            assert entry["size"] > 0
+            assert entry["modified_at"] > 0
+            assert entry["name"] == Path(entry["path"]).name
+
+    def test_should_exclude_reserved_segments(self, sandbox: Path) -> None:
+        reserved_dir = sandbox / ".components"
+        reserved_dir.mkdir()
+        (reserved_dir / "generated.py").write_text("class Foo: ...\n", encoding="utf-8")
+
+        results = list_sandbox_files(sandbox)
+
+        assert all(".components" not in entry["path"] for entry in results)
+
+    def test_should_not_follow_symlinked_file(self, sandbox: Path) -> None:
+        target = sandbox / "hello.txt"
+        link = sandbox / "hello_link.txt"
+        try:
+            link.symlink_to(target)
+        except (OSError, NotImplementedError):
+            pytest.skip("Symlinks are not supported on this platform/filesystem")
+
+        results = list_sandbox_files(sandbox)
+
+        assert "hello_link.txt" not in {entry["path"] for entry in results}
+        assert "hello.txt" in {entry["path"] for entry in results}
+
+    def test_should_not_descend_into_symlinked_directory(self, sandbox: Path, tmp_path: Path) -> None:
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        (outside / "secret.txt").write_text("nope", encoding="utf-8")
+        link_dir = sandbox / "linked_dir"
+        try:
+            link_dir.symlink_to(outside, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            pytest.skip("Symlinks are not supported on this platform/filesystem")
+
+        results = list_sandbox_files(sandbox)
+
+        assert all("linked_dir" not in entry["path"] for entry in results)
+        assert all("secret.txt" not in entry["path"] for entry in results)
+
+    def test_should_return_empty_list_for_empty_directory(self, tmp_path: Path) -> None:
+        empty = tmp_path / "empty"
+        empty.mkdir()
+
+        assert list_sandbox_files(empty) == []

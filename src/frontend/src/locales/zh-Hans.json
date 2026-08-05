@@ -1126,6 +1126,12 @@
   "mainPage.newFlow": "新流程",
   "mainPage.searchPlaceholder": "搜索 {{flowType}}...",
   "mainPage.tabComponents": "组件",
+  "mainPage.tabFiles": "文件",
+  "mainPage.filesFolderSandbox": "由智能体生成（沙箱）",
+  "mainPage.filesFolderFlowOutputs": "工作流输出",
+  "mainPage.filesSourceMyFiles": "我的文件",
+  "mainPage.filesEmptyTitle": "暂无文件",
+  "mainPage.filesEmptyDescription": "此项目中工作流生成的文件将显示在这里。",
   "mainPage.tabDeployments": "部署",
   "mainPage.tabFlows": "流",
   "mainPage.timeElapsed.day_one": "{{count}} 天",
@@ -2064,5 +2070,9 @@
   "app.viewToggle.app": "应用",
   "app.chat.show": "显示对话",
   "app.widgets.emptyTitle": "暂无组件",
-  "app.widgets.emptyDescription": "与工作流输出绑定的可视化组件将显示在这里。"
+  "app.widgets.emptyDescription": "与工作流输出绑定的可视化组件将显示在这里。",
+  "app.widgets.projectFilesTitle": "项目文件",
+  "app.widgets.pointcloudUnavailable": "点云预览不可用 — 请下载后查看。",
+  "app.widgets.gsUnavailable": "3D 高斯泼溅预览不可用 — 请下载后查看。",
+  "app.widgets.videoUnavailable": "视频预览不可用 — 请下载后查看。"
 }

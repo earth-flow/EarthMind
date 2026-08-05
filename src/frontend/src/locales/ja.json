@@ -1126,6 +1126,12 @@
   "mainPage.newFlow": "新しい流れ",
   "mainPage.searchPlaceholder": "{{flowType}} を検索...",
   "mainPage.tabComponents": "コンポーネント",
+  "mainPage.tabFiles": "ファイル",
+  "mainPage.filesFolderSandbox": "エージェントによって生成 (サンドボックス)",
+  "mainPage.filesFolderFlowOutputs": "フロー出力",
+  "mainPage.filesSourceMyFiles": "マイファイル",
+  "mainPage.filesEmptyTitle": "まだファイルがありません",
+  "mainPage.filesEmptyDescription": "このプロジェクトのワークフローが生成したファイルがここに表示されます。",
   "mainPage.tabDeployments": "デプロイメント",
   "mainPage.tabFlows": "フロー",
   "mainPage.timeElapsed.day_one": "{{count}} 日",
@@ -2064,5 +2070,9 @@
   "app.viewToggle.app": "アプリ",
   "app.chat.show": "チャットを表示",
   "app.widgets.emptyTitle": "ウィジェットがありません",
-  "app.widgets.emptyDescription": "ワークフローの出力に紐づけられたビジュアルコンポーネントがここに表示されます。"
+  "app.widgets.emptyDescription": "ワークフローの出力に紐づけられたビジュアルコンポーネントがここに表示されます。",
+  "app.widgets.projectFilesTitle": "プロジェクトファイル",
+  "app.widgets.pointcloudUnavailable": "点群のプレビューは利用できません — ダウンロードしてご覧ください。",
+  "app.widgets.gsUnavailable": "3D ガウシアンスプラットのプレビューは利用できません — ダウンロードしてご覧ください。",
+  "app.widgets.videoUnavailable": "動画のプレビューは利用できません — ダウンロードしてご覧ください。"
 }

@@ -4,7 +4,7 @@ import { getFetchCredentials } from "@/customization/utils/get-fetch-credentials
 import type { ResolvedFileRef } from "@/types/appPage/widget";
 
 /**
- * EarthMind has two independent file storage systems, discovered while
+ * EarthMind has three independent file storage systems, discovered while
  * building this widget layer:
  *  - "v1" flow-scoped files (Message.files / Image), served at
  *    `files/download|images/{flow_id}/{file_name}` — used by native
@@ -12,7 +12,11 @@ import type { ResolvedFileRef } from "@/types/appPage/widget";
  *  - "v2" user-scoped files (file_id UUID), served at
  *    `/api/v2/files/{file_id}` — used by SaveToFileComponent and by the
  *    Terrabox file bridge (see GeneratedFileRef / bridge_generated_files).
- * Widgets need to render either kind identically, so every widget goes
+ *  - "sandbox" files (FileSystemTool's shared sandbox directory), served at
+ *    `/sandbox-files/download?path=` — see api/v1/sandbox_files.py. Only
+ *    reachable via a user double-clicking a file in the Project Files tree
+ *    (OpenedFileWidgetLayoutItem), never a real flowPool output.
+ * Widgets need to render any of the three identically, so every widget goes
  * through this one abstraction rather than hard-coding a URL scheme.
  * (Type lives in types/appPage/widget.ts so AttachmentWidgetLayoutItem can
  * share it too.)
@@ -25,6 +29,9 @@ export function getFileRefUrl(
 ): string {
   if (ref.source === "v2") {
     return getURL("FILE_MANAGEMENT", { id: ref.fileId }, true);
+  }
+  if (ref.source === "sandbox") {
+    return `${getURL("SANDBOX_FILES")}/download?path=${encodeURIComponent(ref.path)}`;
   }
   const encodedPath = ref.path
     .split("/")

@@ -28,6 +28,7 @@ from earthmind.api.v1 import (
     monitor_router,
     openai_responses_router,
     projects_router,
+    sandbox_files_router,
     starter_projects_router,
     store_router,
     traces_router,
@@ -74,6 +75,7 @@ router_v1.include_router(monitor_router)
 router_v1.include_router(traces_router)
 router_v1.include_router(folders_router)
 router_v1.include_router(projects_router)
+router_v1.include_router(sandbox_files_router)
 router_v1.include_router(starter_projects_router)
 router_v1.include_router(knowledge_bases_router)
 router_v1.include_router(memories_router)

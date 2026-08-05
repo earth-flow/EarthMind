@@ -1,8 +1,12 @@
+import ProjectFilesTab from "@/components/common/projectFilesTab";
 import useFlowStore from "@/stores/flowStore";
 import type {
   AttachmentWidgetLayoutItem,
   KnowledgeGraphWidgetLayoutItem,
+  OpenedFileWidgetLayoutItem,
   OutputWidgetLayoutItem,
+  ProjectFilesWidgetLayoutItem,
+  ResolvedFileRef,
   WidgetKind,
   WidgetLayoutItem,
 } from "@/types/appPage/widget";
@@ -27,7 +31,8 @@ export function resolveItemWidgetKind(
   flowPool: FlowPoolType,
 ): WidgetKind {
   if (item.source === "knowledge_graph") return "knowledge_graph";
-  if (item.source === "attachment") {
+  if (item.source === "project_files") return "project_files";
+  if (item.source === "attachment" || item.source === "opened_file") {
     return kindForExtension(extensionOf(item.fileRef.name));
   }
   const runs = flowPool[item.binding.nodeId];
@@ -70,18 +75,28 @@ function KnowledgeGraphWidgetHost({
 }
 
 /**
- * Attachments have a fileRef but no flowPool output to read -- wrapFileRefAsOutput
- * adapts it into the same OutputLogType shape the existing file-kind widget
- * components already know how to unwrap via extractFileRef, so no widget
- * component needs a second, ref-shaped prop just for this source.
+ * Both attachments and opened files have a fileRef but no flowPool output to
+ * read -- wrapFileRefAsOutput adapts it into the same OutputLogType shape
+ * the existing file-kind widget components already know how to unwrap via
+ * extractFileRef, so no widget component needs a second, ref-shaped prop
+ * just for these sources. Shared by AttachmentWidgetHost (auto-derived from
+ * chat attachments) and OpenedFileWidgetHost (user double-clicked a file in
+ * the Project Files tree) since the rendering logic is identical -- only how
+ * the fileRef was obtained differs.
  */
-function AttachmentWidgetHost({ item }: { item: AttachmentWidgetLayoutItem }) {
-  const output = wrapFileRefAsOutput(item.fileRef);
+function FileRefWidgetHost({
+  fileRef,
+  title,
+}: {
+  fileRef: ResolvedFileRef;
+  title: string;
+}) {
+  const output = wrapFileRefAsOutput(fileRef);
   const kind = output.type as WidgetKind;
   const Content = WIDGET_REGISTRY[kind];
 
   return (
-    <WidgetCard kind={kind} title={item.title}>
+    <WidgetCard kind={kind} title={title}>
       {Content ? (
         <Content binding={{ nodeId: "", outputName: "" }} output={output} />
       ) : null}
@@ -89,12 +104,47 @@ function AttachmentWidgetHost({ item }: { item: AttachmentWidgetLayoutItem }) {
   );
 }
 
-export function WidgetHost({ item }: { item: WidgetLayoutItem }) {
+function AttachmentWidgetHost({ item }: { item: AttachmentWidgetLayoutItem }) {
+  return <FileRefWidgetHost fileRef={item.fileRef} title={item.title} />;
+}
+
+function OpenedFileWidgetHost({ item }: { item: OpenedFileWidgetLayoutItem }) {
+  return <FileRefWidgetHost fileRef={item.fileRef} title={item.title} />;
+}
+
+/** Project-wide files, not sourced from this flow's flowPool at all -- see ProjectFilesTab. */
+function ProjectFilesWidgetHost({
+  item,
+  onOpenFile,
+}: {
+  item: ProjectFilesWidgetLayoutItem;
+  onOpenFile: (ref: ResolvedFileRef, title: string) => void;
+}) {
+  return (
+    <WidgetCard kind="project_files" title={item.title}>
+      <ProjectFilesTab projectId={item.projectId} onOpenFile={onOpenFile} />
+    </WidgetCard>
+  );
+}
+
+export function WidgetHost({
+  item,
+  onOpenFile,
+}: {
+  item: WidgetLayoutItem;
+  onOpenFile: (ref: ResolvedFileRef, title: string) => void;
+}) {
   if (item.source === "knowledge_graph") {
     return <KnowledgeGraphWidgetHost item={item} />;
   }
   if (item.source === "attachment") {
     return <AttachmentWidgetHost item={item} />;
+  }
+  if (item.source === "opened_file") {
+    return <OpenedFileWidgetHost item={item} />;
+  }
+  if (item.source === "project_files") {
+    return <ProjectFilesWidgetHost item={item} onOpenFile={onOpenFile} />;
   }
   return <OutputWidgetHost item={item} />;
 }

@@ -1,14 +1,27 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useFlowStore from "@/stores/flowStore";
 import useFlowsManagerStore from "@/stores/flowsManagerStore";
+import useFlowStore from "@/stores/flowStore";
+import { useFolderStore } from "@/stores/foldersStore";
 import { useMessagesStore } from "@/stores/messagesStore";
+import type {
+  OpenedFileWidgetLayoutItem,
+  ProjectFilesWidgetLayoutItem,
+  ResolvedFileRef,
+} from "@/types/appPage/widget";
 import { deriveDefaultWidgetLayout } from "../utils/derive-widget-layout";
 import { KIND_ICON } from "./widget-card";
 import { resolveItemWidgetKind, WidgetHost } from "./widget-host";
+
+function openedFileRefId(ref: ResolvedFileRef): string {
+  const key = ref.source === "v2" ? ref.fileId : ref.path;
+  return `opened:${ref.source}:${key}`;
+}
+
+const PROJECT_FILES_TAB_ID = "project_files" as const;
 
 type AppWidgetRegionProps = {
   isChatOpen: boolean;
@@ -36,6 +49,8 @@ export function AppWidgetRegion({
   const nodes = useFlowStore((state) => state.nodes);
   const flowPool = useFlowStore((state) => state.flowPool);
   const currentFlowId = useFlowsManagerStore((state) => state.currentFlowId);
+  const currentFlow = useFlowsManagerStore((state) => state.currentFlow);
+  const myCollectionId = useFolderStore((state) => state.myCollectionId);
   const messages = useMessagesStore((state) => state.messages);
 
   const flowMessages = useMemo(
@@ -48,29 +63,82 @@ export function AppWidgetRegion({
     [nodes, flowPool, flowMessages],
   );
 
-  // Tabs the user has explicitly closed. The layout itself is never
+  // Tabs opened by double-clicking a file in the Project Files tree (see
+  // FileTree.tsx). Unlike derivedLayout, these are never re-derived from
+  // flow shape/run data -- they're purely user-initiated and stay open
+  // until explicitly closed.
+  const [openedFiles, setOpenedFiles] = useState<OpenedFileWidgetLayoutItem[]>(
+    [],
+  );
+
+  // Tabs the user has explicitly closed. The derived layout is never
   // persisted/manually placed (see file doc comment), so "closing" a tab
   // is a view-only dismissal, not a mutation of the derived layout -- if
   // the same id disappears from a later re-derive (e.g. its node was
   // deleted), it's dropped from this set too rather than staying closed
-  // forever for an id that no longer means anything.
+  // forever for an id that no longer means anything. openedFiles items are
+  // included in "live" here too, even though they're never re-derived --
+  // otherwise a closed opened-file tab would immediately un-close itself on
+  // the next derivedLayout change, since it's absent from derivedLayout by
+  // definition.
   const [closedIds, setClosedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setClosedIds((prev) => {
       if (prev.size === 0) return prev;
-      const liveIds = new Set(derivedLayout.map((item) => item.id));
+      const liveIds = new Set([
+        ...derivedLayout.map((item) => item.id),
+        ...openedFiles.map((item) => item.id),
+      ]);
       const next = new Set(Array.from(prev).filter((id) => liveIds.has(id)));
       return next.size === prev.size ? prev : next;
     });
-  }, [derivedLayout]);
+  }, [derivedLayout, openedFiles]);
 
-  const layout = useMemo(
-    () => derivedLayout.filter((item) => !closedIds.has(item.id)),
-    [derivedLayout, closedIds],
-  );
+  // Project-wide files: unlike every other widget kind, this one is not
+  // derived from flow shape/run data, isn't subject to closedIds filtering,
+  // and is always the first tab -- it's the same content regardless of which
+  // flow in the project you're viewing (see components/common/projectFilesTab).
+  const projectId = currentFlow?.folder_id ?? myCollectionId;
+  const projectFilesItem: ProjectFilesWidgetLayoutItem | undefined = projectId
+    ? {
+        source: "project_files",
+        id: PROJECT_FILES_TAB_ID,
+        projectId,
+        title: t("app.widgets.projectFilesTitle"),
+      }
+    : undefined;
+
+  const layout = useMemo(() => {
+    const visible = [...derivedLayout, ...openedFiles].filter(
+      (item) => !closedIds.has(item.id),
+    );
+    return projectFilesItem ? [projectFilesItem, ...visible] : visible;
+  }, [derivedLayout, openedFiles, closedIds, projectFilesItem]);
 
   const [activeId, setActiveId] = useState<string | undefined>(layout[0]?.id);
+
+  // Opens (or re-focuses) a tab for a file double-clicked in the Project
+  // Files tree. Reopening a previously closed file must actually show it
+  // again, not stay suppressed by a stale closedIds entry.
+  const openFileTab = useCallback((ref: ResolvedFileRef, title: string) => {
+    const id = openedFileRefId(ref);
+    setOpenedFiles((prev) =>
+      prev.some((item) => item.id === id)
+        ? prev
+        : [
+            ...prev,
+            { source: "opened_file" as const, id, fileRef: ref, title },
+          ],
+    );
+    setClosedIds((prev) => {
+      if (!prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+    setActiveId(id);
+  }, []);
 
   // Keep the active tab stable across re-derives (e.g. a new run adding
   // another widget); only fall back to the first tab when the previously
@@ -131,35 +199,42 @@ export function AppWidgetRegion({
           className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 pb-4"
         >
           <TabsList className="h-auto w-full shrink-0 justify-start gap-1 overflow-x-auto">
-            {layout.map((item) => (
-              // TabsTrigger renders a native <button>, so the close control
-              // has to be a sibling rather than nested inside it -- a
-              // <button> can't validly contain another interactive element.
-              <div key={item.id} className="group relative flex items-center">
-                <TabsTrigger
-                  value={item.id}
-                  className="gap-1.5 pr-6"
-                  data-testid={`app-widget-tab-${item.id}`}
-                >
-                  <ForwardedIconComponent
-                    name={KIND_ICON[resolveItemWidgetKind(item, flowPool)]}
-                    className="h-3.5 w-3.5 shrink-0"
-                  />
-                  <span className="max-w-[12rem] truncate" title={item.title}>
-                    {item.title}
-                  </span>
-                </TabsTrigger>
-                <button
-                  type="button"
-                  onClick={(event) => handleCloseTab(item.id, event)}
-                  aria-label={t("app.widgets.closeTab")}
-                  data-testid={`app-widget-tab-close-${item.id}`}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground opacity-0 hover:bg-muted hover:text-foreground group-hover:opacity-100 group-focus-within:opacity-100"
-                >
-                  <ForwardedIconComponent name="X" className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
+            {layout.map((item) => {
+              // The project-files tab is permanent -- see file doc comment --
+              // so it gets no close control, unlike every other widget tab.
+              const isClosable = item.source !== "project_files";
+              return (
+                // TabsTrigger renders a native <button>, so the close control
+                // has to be a sibling rather than nested inside it -- a
+                // <button> can't validly contain another interactive element.
+                <div key={item.id} className="group relative flex items-center">
+                  <TabsTrigger
+                    value={item.id}
+                    className={isClosable ? "gap-1.5 pr-6" : "gap-1.5"}
+                    data-testid={`app-widget-tab-${item.id}`}
+                  >
+                    <ForwardedIconComponent
+                      name={KIND_ICON[resolveItemWidgetKind(item, flowPool)]}
+                      className="h-3.5 w-3.5 shrink-0"
+                    />
+                    <span className="max-w-[12rem] truncate" title={item.title}>
+                      {item.title}
+                    </span>
+                  </TabsTrigger>
+                  {isClosable && (
+                    <button
+                      type="button"
+                      onClick={(event) => handleCloseTab(item.id, event)}
+                      aria-label={t("app.widgets.closeTab")}
+                      data-testid={`app-widget-tab-close-${item.id}`}
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground opacity-0 hover:bg-muted hover:text-foreground group-hover:opacity-100 group-focus-within:opacity-100"
+                    >
+                      <ForwardedIconComponent name="X" className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </TabsList>
           {layout.map((item) => (
             <TabsContent
@@ -167,7 +242,7 @@ export function AppWidgetRegion({
               value={item.id}
               className="mt-2 min-h-0 flex-1 overflow-hidden"
             >
-              <WidgetHost item={item} />
+              <WidgetHost item={item} onOpenFile={openFileTab} />
             </TabsContent>
           ))}
         </Tabs>

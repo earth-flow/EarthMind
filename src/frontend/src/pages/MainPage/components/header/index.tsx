@@ -92,11 +92,15 @@ const HeaderComponent = ({
   );
   const hideNewFlowButton = useUtilityStore((s) => s.hideNewFlowButton);
 
-  // Determine which tabs to show based on feature flags
+  // Determine which tabs to show based on feature flags. "files" is always
+  // present and never closable/removable -- it's the project-wide file
+  // browser shared by every workflow in the project (sandbox + generated
+  // files), not a per-flow view like the others.
   const tabTypes = [
     ...(isDeploymentsEnabled ? ["deployments"] : []),
     ...(isMCPEnabled ? ["mcp"] : ["components"]),
     "flows",
+    "files",
   ];
 
   const handleDownload = () => {
@@ -175,7 +179,9 @@ const HeaderComponent = ({
                         ? t("mainPage.tabDeployments")
                         : type === "components"
                           ? t("mainPage.tabComponents")
-                          : type.charAt(0).toUpperCase() + type.slice(1)}
+                          : type === "files"
+                            ? t("mainPage.tabFiles")
+                            : type.charAt(0).toUpperCase() + type.slice(1)}
                   {type === "deployments" && (
                     <Badge
                       variant="purpleStatic"
@@ -190,7 +196,9 @@ const HeaderComponent = ({
             ))}
           </div>
           {/* Search and filters */}
-          {flowType !== "mcp" && flowType !== "deployments" && (
+          {flowType !== "mcp" &&
+            flowType !== "deployments" &&
+            flowType !== "files" && (
             <div className="flex justify-between">
               <div className="flex w-full xl:w-5/12">
                 <Input

@@ -1126,6 +1126,12 @@
   "mainPage.newFlow": "Neuer Ablauf",
   "mainPage.searchPlaceholder": "Suche auf {{flowType}}...",
   "mainPage.tabComponents": "Komponenten",
+  "mainPage.tabFiles": "Dateien",
+  "mainPage.filesFolderSandbox": "Von einem Agenten generiert (Sandbox)",
+  "mainPage.filesFolderFlowOutputs": "Flow-Ausgaben",
+  "mainPage.filesSourceMyFiles": "Meine Dateien",
+  "mainPage.filesEmptyTitle": "Noch keine Dateien",
+  "mainPage.filesEmptyDescription": "Von Workflows in diesem Projekt generierte Dateien werden hier angezeigt.",
   "mainPage.tabDeployments": "Bereitstellungen",
   "mainPage.tabFlows": "Abläufe",
   "mainPage.timeElapsed.day_one": "{{count}} Tag",
@@ -2064,5 +2070,9 @@
   "app.viewToggle.app": "App",
   "app.chat.show": "Chat anzeigen",
   "app.widgets.emptyTitle": "Noch keine Widgets",
-  "app.widgets.emptyDescription": "Visuelle Komponenten, die an die Ausgaben Ihres Workflows gebunden sind, erscheinen hier."
+  "app.widgets.emptyDescription": "Visuelle Komponenten, die an die Ausgaben Ihres Workflows gebunden sind, erscheinen hier.",
+  "app.widgets.projectFilesTitle": "Projektdateien",
+  "app.widgets.pointcloudUnavailable": "Punktwolken-Vorschau nicht verfügbar — zum Anzeigen herunterladen.",
+  "app.widgets.gsUnavailable": "3D-Gaussian-Splat-Vorschau nicht verfügbar — zum Anzeigen herunterladen.",
+  "app.widgets.videoUnavailable": "Videovorschau nicht verfügbar — zum Anzeigen herunterladen."
 }

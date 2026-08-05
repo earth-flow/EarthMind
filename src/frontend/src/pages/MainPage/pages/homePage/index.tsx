@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useParams } from "react-router-dom";
 import PaginatorComponent from "@/components/common/paginatorComponent";
+import ProjectFilesTab from "@/components/common/projectFilesTab";
 import CardsWrapComponent from "@/components/core/cardsWrapComponent";
 import { useStartNewFlow } from "@/components/core/flowBuilderWelcome/hooks/use-start-new-flow";
 import { IS_MAC } from "@/constants/constants";
@@ -269,7 +270,9 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
 
   return (
     <CardsWrapComponent
-      onFileDrop={flowType === "mcp" ? undefined : handleFileDrop}
+      onFileDrop={
+        flowType === "mcp" || flowType === "files" ? undefined : handleFileDrop
+      }
       dragMessage={
         isEmptyFolder
           ? t("home.dragFlowsOrComponents")
@@ -319,6 +322,10 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
                     <CustomMcpServerTab folderName={folderName} />
                   ) : flowType === "deployments" ? (
                     <DeploymentsPage />
+                  ) : flowType === "files" ? (
+                    <ProjectFilesTab
+                      projectId={folderId ?? myCollectionId ?? ""}
+                    />
                   ) : (flowType === "flows" || flowType === "components") &&
                     data &&
                     data.pagination.total > 0 ? (

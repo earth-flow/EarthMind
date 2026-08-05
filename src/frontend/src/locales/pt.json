@@ -1126,6 +1126,12 @@
   "mainPage.newFlow": "Novo fluxo",
   "mainPage.searchPlaceholder": "Pesquisar {{flowType}}...",
   "mainPage.tabComponents": "Componentes",
+  "mainPage.tabFiles": "Arquivos",
+  "mainPage.filesFolderSandbox": "Gerado por um agente (sandbox)",
+  "mainPage.filesFolderFlowOutputs": "Saídas de fluxo",
+  "mainPage.filesSourceMyFiles": "Meus arquivos",
+  "mainPage.filesEmptyTitle": "Ainda não há arquivos",
+  "mainPage.filesEmptyDescription": "Os arquivos gerados pelos fluxos de trabalho deste projeto aparecerão aqui.",
   "mainPage.tabDeployments": "Implementações",
   "mainPage.tabFlows": "Fluxos",
   "mainPage.timeElapsed.day_one": "{{count}} dia",
@@ -2064,5 +2070,9 @@
   "app.viewToggle.app": "App",
   "app.chat.show": "Mostrar chat",
   "app.widgets.emptyTitle": "Ainda não há widgets",
-  "app.widgets.emptyDescription": "Os componentes visuais vinculados às saídas do seu fluxo de trabalho aparecerão aqui."
+  "app.widgets.emptyDescription": "Os componentes visuais vinculados às saídas do seu fluxo de trabalho aparecerão aqui.",
+  "app.widgets.projectFilesTitle": "Arquivos do projeto",
+  "app.widgets.pointcloudUnavailable": "Pré-visualização de nuvem de pontos indisponível — baixe para visualizar.",
+  "app.widgets.gsUnavailable": "Pré-visualização de Gaussian Splat 3D indisponível — baixe para visualizar.",
+  "app.widgets.videoUnavailable": "Pré-visualização de vídeo indisponível — baixe para visualizar."
 }

@@ -1126,6 +1126,12 @@
   "mainPage.newFlow": "Nuevo flujo",
   "mainPage.searchPlaceholder": "Buscar {{flowType}}...",
   "mainPage.tabComponents": "Componentes",
+  "mainPage.tabFiles": "Archivos",
+  "mainPage.filesFolderSandbox": "Generado por un agente (sandbox)",
+  "mainPage.filesFolderFlowOutputs": "Salidas de flujo",
+  "mainPage.filesSourceMyFiles": "Mis archivos",
+  "mainPage.filesEmptyTitle": "Aún no hay archivos",
+  "mainPage.filesEmptyDescription": "Los archivos generados por los flujos de trabajo de este proyecto aparecerán aquí.",
   "mainPage.tabDeployments": "Despliegues",
   "mainPage.tabFlows": "Flujos",
   "mainPage.timeElapsed.day_one": "{{count}} día",
@@ -2064,5 +2070,9 @@
   "app.viewToggle.app": "App",
   "app.chat.show": "Mostrar chat",
   "app.widgets.emptyTitle": "Aún no hay widgets",
-  "app.widgets.emptyDescription": "Los componentes visuales vinculados a las salidas de su flujo de trabajo aparecerán aquí."
+  "app.widgets.emptyDescription": "Los componentes visuales vinculados a las salidas de su flujo de trabajo aparecerán aquí.",
+  "app.widgets.projectFilesTitle": "Archivos del proyecto",
+  "app.widgets.pointcloudUnavailable": "Vista previa de nube de puntos no disponible — descargar para ver.",
+  "app.widgets.gsUnavailable": "Vista previa de Gaussian Splat 3D no disponible — descargar para ver.",
+  "app.widgets.videoUnavailable": "Vista previa de video no disponible — descargar para ver."
 }

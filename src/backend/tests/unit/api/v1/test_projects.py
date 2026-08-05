@@ -1582,6 +1582,107 @@ class TestReadProjectBugFix:
             )
 
 
+async def test_list_project_files_aggregates_across_flows(client: AsyncClient, logged_in_headers):
+    """GET /projects/{id}/files must aggregate v1 flow-scoped files across every flow in the project."""
+    project_resp = await client.post(
+        "api/v1/projects/",
+        json={"name": "Files Project", "description": "", "flows_list": [], "components_list": []},
+        headers=logged_in_headers,
+    )
+    assert project_resp.status_code == status.HTTP_201_CREATED
+    project_id = project_resp.json()["id"]
+
+    flow1_resp = await client.post(
+        "api/v1/flows/",
+        json={"name": "Flow One", "folder_id": project_id, "data": {"nodes": [], "edges": []}, "is_component": False},
+        headers=logged_in_headers,
+    )
+    flow2_resp = await client.post(
+        "api/v1/flows/",
+        json={"name": "Flow Two", "folder_id": project_id, "data": {"nodes": [], "edges": []}, "is_component": False},
+        headers=logged_in_headers,
+    )
+    assert flow1_resp.status_code == status.HTTP_201_CREATED
+    assert flow2_resp.status_code == status.HTTP_201_CREATED
+    flow1_id = flow1_resp.json()["id"]
+    flow2_id = flow2_resp.json()["id"]
+
+    upload1 = await client.post(
+        f"api/v1/files/upload/{flow1_id}",
+        files={"file": ("report.txt", b"flow one content")},
+        headers=logged_in_headers,
+    )
+    upload2 = await client.post(
+        f"api/v1/files/upload/{flow2_id}",
+        files={"file": ("notes.txt", b"flow two content")},
+        headers=logged_in_headers,
+    )
+    assert upload1.status_code == status.HTTP_201_CREATED
+    assert upload2.status_code == status.HTTP_201_CREATED
+
+    response = await client.get(f"api/v1/projects/{project_id}/files", headers=logged_in_headers)
+    assert response.status_code == status.HTTP_200_OK
+    files = response.json()["files"]
+
+    assert len(files) == 2
+    flow_ids_seen = {entry["flow_id"] for entry in files}
+    assert flow_ids_seen == {str(flow1_id), str(flow2_id)}
+    file_names = {entry["file_name"].split("_", 2)[-1] for entry in files}  # strip the upload timestamp prefix
+    assert file_names == {"report.txt", "notes.txt"}
+    flow_names_by_id = {entry["flow_id"]: entry["flow_name"] for entry in files}
+    assert flow_names_by_id[str(flow1_id)] == "Flow One"
+    assert flow_names_by_id[str(flow2_id)] == "Flow Two"
+
+
+async def test_list_project_files_empty_project_returns_empty_list(client: AsyncClient, logged_in_headers, basic_case):
+    project_resp = await client.post("api/v1/projects/", json=basic_case, headers=logged_in_headers)
+    assert project_resp.status_code == status.HTTP_201_CREATED
+    project_id = project_resp.json()["id"]
+
+    response = await client.get(f"api/v1/projects/{project_id}/files", headers=logged_in_headers)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["files"] == []
+
+
+async def test_list_project_files_does_not_leak_other_projects_flows(client: AsyncClient, logged_in_headers):
+    project_a = await client.post(
+        "api/v1/projects/",
+        json={"name": "Project A Files", "description": "", "flows_list": [], "components_list": []},
+        headers=logged_in_headers,
+    )
+    project_b = await client.post(
+        "api/v1/projects/",
+        json={"name": "Project B Files", "description": "", "flows_list": [], "components_list": []},
+        headers=logged_in_headers,
+    )
+    project_a_id = project_a.json()["id"]
+    project_b_id = project_b.json()["id"]
+
+    flow_b = await client.post(
+        "api/v1/flows/",
+        json={
+            "name": "Flow In B",
+            "folder_id": project_b_id,
+            "data": {"nodes": [], "edges": []},
+            "is_component": False,
+        },
+        headers=logged_in_headers,
+    )
+    flow_b_id = flow_b.json()["id"]
+    upload = await client.post(
+        f"api/v1/files/upload/{flow_b_id}",
+        files={"file": ("only_in_b.txt", b"content")},
+        headers=logged_in_headers,
+    )
+    assert upload.status_code == status.HTTP_201_CREATED
+
+    response = await client.get(f"api/v1/projects/{project_a_id}/files", headers=logged_in_headers)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["files"] == []
+
+
 async def test_download_file_starter_project(client: AsyncClient, logged_in_headers, active_user, json_flow):
     """Test downloading a project with multiple flows.
 

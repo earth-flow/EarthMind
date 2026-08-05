@@ -7,6 +7,7 @@ export const URLs = {
   API_KEY: `api_key`,
   FILES: `files`,
   FILE_MANAGEMENT: `files`,
+  SANDBOX_FILES: `sandbox-files`,
   VERSION: `version`,
   MESSAGES: `monitor/messages`,
   BUILDS: `monitor/builds`,

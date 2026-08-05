@@ -7,7 +7,7 @@ import json
 import os
 import re
 from pathlib import Path, PureWindowsPath
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
@@ -77,6 +77,10 @@ def _default_config_dir() -> Path:
 MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 BINARY_SNIFF_BYTES = 8 * 1024
 GLOB_RESULT_LIMIT = 100
+# Hard cap on entries returned by list_sandbox_files(), bounding response size
+# on a pathologically large sandbox (a project-wide "browse files" view, not
+# an agent tool -- there's no narrowing `path=` argument to recover a tail).
+LIST_FILES_LIMIT = 2000
 # Hard upper bound on the number of glob matches collected before truncation.
 # Without scanning past `GLOB_RESULT_LIMIT`, the first big branch hit by
 # `os.scandir` order fills the cap and entire nested branches are silently
@@ -272,6 +276,52 @@ def _read_head_no_follow(target: Path, n: int) -> bytes:
         return os.read(fd, n)
     finally:
         os.close(fd)
+
+
+def list_sandbox_files(root: Path) -> list[dict[str, Any]]:
+    """Recursively list regular files under ``root``, refusing to follow symlinks.
+
+    Module-level (not a method) so callers outside of an agent tool call —
+    e.g. a project-wide "browse the sandbox" page — can list a resolved
+    sandbox root (from ``FileSystemToolComponent()._validate_root()``)
+    without going through a tool invocation. Deliberately stricter than
+    ``_glob_search`` above: that method resolves + boundary-checks each glob
+    match, but ``Path.glob`` will still *descend into* a symlinked
+    subdirectory before that check ever runs. Here, ``os.walk(followlinks=False)``
+    never descends into a symlinked directory in the first place, the
+    directory list is also pruned up front to make the intent explicit, and
+    each file is individually checked with ``os.path.islink`` before being
+    ``stat``'d. Reserved segments (``RESERVED_SEGMENTS`` — internal
+    bookkeeping, never a user file) are excluded at every level. Truncated at
+    ``LIST_FILES_LIMIT`` entries.
+    """
+    entries: list[dict[str, Any]] = []
+    reserved = {segment.casefold() for segment in RESERVED_SEGMENTS}
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
+        dirpath_obj = Path(dirpath)
+        dirnames[:] = [d for d in dirnames if d.casefold() not in reserved and not (dirpath_obj / d).is_symlink()]
+        for filename in filenames:
+            full_path = Path(dirpath) / filename
+            if full_path.is_symlink():
+                continue
+            relative = full_path.relative_to(root)
+            if any(part.casefold() in reserved for part in relative.parts):
+                continue
+            try:
+                stat_result = full_path.stat()
+            except OSError:
+                continue
+            entries.append(
+                {
+                    "path": relative.as_posix(),
+                    "name": filename,
+                    "size": stat_result.st_size,
+                    "modified_at": stat_result.st_mtime,
+                }
+            )
+            if len(entries) >= LIST_FILES_LIMIT:
+                return sorted(entries, key=lambda entry: entry["path"])
+    return sorted(entries, key=lambda entry: entry["path"])
 
 
 def _check_windows_portability(path: str) -> str | None:

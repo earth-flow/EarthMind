@@ -2,17 +2,15 @@ import { useTranslation } from "react-i18next";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
 import { useGetDownloadFileV2 } from "@/controllers/API/queries/file-management";
+import { useGetDownloadSandboxFile } from "@/controllers/API/queries/file-management/use-get-sandbox-files";
 import { useGetDownloadFileMutation } from "@/controllers/API/queries/files";
-import type { WidgetContentProps } from "@/types/appPage/widget";
+import type {
+  ResolvedFileRef,
+  WidgetContentProps,
+} from "@/types/appPage/widget";
 import { extractFileRef } from "../../utils/resolve-widget-kind";
 
-function DownloadTrigger({
-  fileRef,
-}: {
-  fileRef:
-    | { source: "v1"; path: string; name: string }
-    | { source: "v2"; fileId: string; name: string };
-}) {
+function DownloadTrigger({ fileRef }: { fileRef: ResolvedFileRef }) {
   const extension = fileRef.name.split(".").pop() ?? "";
   const { mutate: downloadV1 } = useGetDownloadFileMutation({
     path: fileRef.source === "v1" ? fileRef.path : "",
@@ -23,15 +21,19 @@ function DownloadTrigger({
     filename: fileRef.name.replace(/\.[^.]+$/, ""),
     type: extension,
   });
+  const { mutate: downloadSandbox } = useGetDownloadSandboxFile({
+    path: fileRef.source === "sandbox" ? fileRef.path : "",
+    name: fileRef.name,
+  });
+
+  const handleDownload = () => {
+    if (fileRef.source === "v1") return downloadV1(undefined);
+    if (fileRef.source === "v2") return downloadV2(undefined);
+    return downloadSandbox();
+  };
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() =>
-        fileRef.source === "v1" ? downloadV1(undefined) : downloadV2(undefined)
-      }
-    >
+    <Button variant="outline" size="sm" onClick={handleDownload}>
       <ForwardedIconComponent name="Download" className="h-4 w-4" />
       {fileRef.name}
     </Button>
