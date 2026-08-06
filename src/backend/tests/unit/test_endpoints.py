@@ -6,15 +6,15 @@ import orjson
 import pytest
 from fastapi import status
 from httpx import AsyncClient
-from earthmind.services.database.models.flow.model import FlowCreate
-from earthmind.services.deps import get_settings_service
+from terraflow.services.database.models.flow.model import FlowCreate
+from terraflow.services.deps import get_settings_service
 from lfx.custom.directory_reader.directory_reader import DirectoryReader
 from lfx.services.settings.base import BASE_COMPONENTS_PATH
 
 
 @pytest.fixture(autouse=True)
 def allow_custom_components_by_default(monkeypatch):
-    monkeypatch.setenv("EARTHMIND_ALLOW_CUSTOM_COMPONENTS", "true")
+    monkeypatch.setenv("TERRAFLOW_ALLOW_CUSTOM_COMPONENTS", "true")
 
 
 async def run_post(client, flow_id, headers, post_data):
@@ -342,8 +342,8 @@ async def second_user_headers(client):
     second login token, which this fixture provides by registering and
     logging in as ``second_active_user`` for the lifetime of the test.
     """
-    from earthmind.services.database.models.user.model import User, UserRead
-    from earthmind.services.deps import get_auth_service, session_scope
+    from terraflow.services.database.models.user.model import User, UserRead
+    from terraflow.services.deps import get_auth_service, session_scope
     from sqlmodel import select
 
     username = "second_active_user"
@@ -954,9 +954,9 @@ async def test_user_cannot_run_other_users_flow_session_endpoint(
     (a different user than ``active_user`` who owns ``simple_api_test``) to
     exercise the session-auth variant of the wrapper dependency.
     """
-    from earthmind.services.auth.utils import get_password_hash
-    from earthmind.services.database.models.user.model import User
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.auth.utils import get_password_hash
+    from terraflow.services.database.models.user.model import User
+    from terraflow.services.deps import get_settings_service
     from lfx.services.deps import session_scope
     from sqlmodel import select
 
@@ -1203,9 +1203,9 @@ async def test_openai_responses_rejects_cross_user_flow_access(
     200 with real output; after the fix the helper resolves to
     flow_not_found because UUID lookups now enforce user scope.
     """
-    from earthmind.services.auth.utils import get_password_hash
-    from earthmind.services.database.models.api_key.model import ApiKey
-    from earthmind.services.database.models.user.model import User
+    from terraflow.services.auth.utils import get_password_hash
+    from terraflow.services.database.models.api_key.model import ApiKey
+    from terraflow.services.database.models.user.model import User
     from lfx.services.deps import session_scope
     from sqlmodel import select
 

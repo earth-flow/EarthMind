@@ -9,19 +9,19 @@ ARGUMENT_NUMBER = 2
 
 
 def update_uv_dep(base_version: str) -> None:
-    """Update the earthmind-base dependency in pyproject.toml."""
+    """Update the terraflow-base dependency in pyproject.toml."""
     pyproject_path = BASE_DIR / "pyproject.toml"
 
     # Read the pyproject.toml file content
     content = pyproject_path.read_text(encoding="utf-8")
 
-    # For the main project, update the earthmind-base dependency in the UV section
+    # For the main project, update the terraflow-base dependency in the UV section
     # Updated pattern to handle PEP 440 version suffixes, extras (e.g., [complete]),
     # and both ~= and == version specifiers
-    # Also handles both earthmind-base and earthmind-base-nightly names
+    # Also handles both terraflow-base and terraflow-base-nightly names
     # Captures extras in group 3 to preserve them in the replacement
     pattern = re.compile(
-        r'(dependencies\s*=\s*\[\s*\n\s*)("earthmind-base(?:-nightly)?((?:\[[^\]]+\])?)(?:~=|==|>=)[\d.]+(?:\.(?:post|dev|a|b|rc)\d+)*")'
+        r'(dependencies\s*=\s*\[\s*\n\s*)("terraflow-base(?:-nightly)?((?:\[[^\]]+\])?)(?:~=|==|>=)[\d.]+(?:\.(?:post|dev|a|b|rc)\d+)*")'
     )
 
     # Check if the pattern is found
@@ -32,8 +32,8 @@ def update_uv_dep(base_version: str) -> None:
 
     # Extract extras if present (e.g., "[complete]")
     extras = match.group(3) if match.group(3) else ""
-    # Keep the canonical `earthmind-base` name with an exact `==<dev>` pin.
-    replacement = rf'\1"earthmind-base{extras}=={base_version}"'
+    # Keep the canonical `terraflow-base` name with an exact `==<dev>` pin.
+    replacement = rf'\1"terraflow-base{extras}=={base_version}"'
 
     # Replace the matched pattern with the new one
     content = pattern.sub(replacement, content)

@@ -15,7 +15,7 @@ DEFAULT_OLLAMA_URL = "http://localhost:11434"
 class LanguageModelComponent(LCModelComponent):
     display_name = "Language Model"
     description = "Runs a language model given a specified provider."
-    documentation: str = "https://docs.earthmind.org/components-models"
+    documentation: str = "https://docs.terraflow.org/components-models"
     icon = "brain-circuit"
     category = "models"
 

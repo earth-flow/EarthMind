@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from cryptography.fernet import InvalidToken
-from earthmind.services.auth.utils import decrypt_api_key
+from terraflow.services.auth.utils import decrypt_api_key
 
 from lfx.log.logger import logger
 from lfx.services.deps import get_settings_service

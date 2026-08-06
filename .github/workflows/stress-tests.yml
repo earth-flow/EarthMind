@@ -19,13 +19,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: earthmind
-          POSTGRES_PASSWORD: earthmind
-          POSTGRES_DB: earthmind
+          POSTGRES_USER: terraflow
+          POSTGRES_PASSWORD: terraflow
+          POSTGRES_DB: terraflow
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U earthmind"
+          --health-cmd="pg_isready -U terraflow"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -49,8 +49,8 @@ jobs:
 
       - name: Run stress test
         env:
-          DB_URL: "postgresql+psycopg://earthmind:earthmind@localhost:5432/earthmind"  # pragma: allowlist secret
-          EARTHMIND_TELEMETRY_WRITER_ENABLED: "true"
+          DB_URL: "postgresql+psycopg://terraflow:terraflow@localhost:5432/terraflow"  # pragma: allowlist secret
+          TERRAFLOW_TELEMETRY_WRITER_ENABLED: "true"
         run: |
           uv run python src/backend/tests/stress/stress_telemetry_writes.py \
             --concurrency 50 --seconds 15

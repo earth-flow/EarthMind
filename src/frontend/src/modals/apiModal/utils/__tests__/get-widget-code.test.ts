@@ -24,13 +24,13 @@ describe("getWidgetCode", () => {
       expect(code).toContain("<script");
       expect(code).toContain("src=");
       expect(code).toContain(
-        "https://cdn.jsdelivr.net/gh/earthmind-ai/earthmind-embedded-chat",
+        "https://cdn.jsdelivr.net/gh/terraflow-ai/terraflow-embedded-chat",
       );
       expect(code).toContain("@v1.0.8");
       expect(code).toContain("</script>");
 
-      // Check for earthmind-chat component
-      expect(code).toContain("<earthmind-chat");
+      // Check for terraflow-chat component
+      expect(code).toContain("<terraflow-chat");
       expect(code).toContain('window_title="Test Flow"');
       expect(code).toContain('flow_id="test-flow-123"');
       expect(code).toContain('host_url="https://localhost:3000"');
@@ -39,7 +39,7 @@ describe("getWidgetCode", () => {
       expect(code).toContain('api_key="..."');
 
       // Check closing tag
-      expect(code).toContain("</earthmind-chat>");
+      expect(code).toContain("</terraflow-chat>");
     });
 
     it("should generate widget code without API key when isAuth is true", () => {
@@ -51,11 +51,11 @@ describe("getWidgetCode", () => {
       // Check for script tag
       expect(code).toContain("<script");
       expect(code).toContain(
-        "https://cdn.jsdelivr.net/gh/earthmind-ai/earthmind-embedded-chat@v1.0.8",
+        "https://cdn.jsdelivr.net/gh/terraflow-ai/terraflow-embedded-chat@v1.0.8",
       );
 
-      // Check for earthmind-chat component
-      expect(code).toContain("<earthmind-chat");
+      // Check for terraflow-chat component
+      expect(code).toContain("<terraflow-chat");
       expect(code).toContain('window_title="Test Flow"');
       expect(code).toContain('flow_id="test-flow-123"');
       expect(code).toContain('host_url="https://localhost:3000"');
@@ -64,7 +64,7 @@ describe("getWidgetCode", () => {
       expect(code).not.toContain("api_key");
 
       // Check closing tag
-      expect(code).toContain("</earthmind-chat>");
+      expect(code).toContain("</terraflow-chat>");
     });
 
     it("should use single-line CDN URL when copy is false", () => {
@@ -75,7 +75,7 @@ describe("getWidgetCode", () => {
 
       // Should use multi-line format for non-copy mode
       expect(code).toContain("src=");
-      expect(code).toContain("https://cdn.jsdelivr.net/gh/earthmind-ai");
+      expect(code).toContain("https://cdn.jsdelivr.net/gh/terraflow-ai");
       expect(code).toContain("build/static/js/bundle.min.js");
     });
 
@@ -87,7 +87,7 @@ describe("getWidgetCode", () => {
 
       // Should use single-line format for copy mode
       expect(code).toContain(
-        "https://cdn.jsdelivr.net/gh/earthmind-ai/earthmind-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js",
+        "https://cdn.jsdelivr.net/gh/terraflow-ai/terraflow-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js",
       );
       expect(code).not.toContain("\nbuild/static");
     });
@@ -248,7 +248,7 @@ describe("getWidgetCode", () => {
 
       // Single-line CDN URL
       expect(code).toContain(
-        "https://cdn.jsdelivr.net/gh/earthmind-ai/earthmind-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js",
+        "https://cdn.jsdelivr.net/gh/terraflow-ai/terraflow-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js",
       );
       expect(code).not.toContain("\nbuild/static");
     });
@@ -278,7 +278,7 @@ describe("getWidgetCode", () => {
   });
 
   describe("Code structure", () => {
-    it("should have proper HTML structure with script and earthmind-chat tags", () => {
+    it("should have proper HTML structure with script and terraflow-chat tags", () => {
       const code = getWidgetCode(baseOptions);
 
       // Check for opening and closing script tags
@@ -287,12 +287,12 @@ describe("getWidgetCode", () => {
       expect(scriptTagCount).toBe(1);
       expect(scriptCloseTagCount).toBe(1);
 
-      // Check for opening and closing earthmind-chat tags
-      expect(code).toContain("<earthmind-chat");
-      expect(code).toContain("</earthmind-chat>");
+      // Check for opening and closing terraflow-chat tags
+      expect(code).toContain("<terraflow-chat");
+      expect(code).toContain("</terraflow-chat>");
     });
 
-    it("should have all required attributes in earthmind-chat component", () => {
+    it("should have all required attributes in terraflow-chat component", () => {
       const code = getWidgetCode(baseOptions);
 
       expect(code).toMatch(/window_title="[^"]*"/);
@@ -324,7 +324,7 @@ describe("getWidgetCode", () => {
       });
 
       expect(code).toContain("<script");
-      expect(code).toContain("<earthmind-chat");
+      expect(code).toContain("<terraflow-chat");
       expect(code).toContain('window_title=""');
       expect(code).toContain('flow_id=""');
     });
@@ -338,8 +338,8 @@ describe("getWidgetCode", () => {
       });
 
       expect(code).toContain("<script");
-      expect(code).toContain("<earthmind-chat");
-      expect(code).toContain("</earthmind-chat>");
+      expect(code).toContain("<terraflow-chat");
+      expect(code).toContain("</terraflow-chat>");
     });
 
     it("should produce consistent output for same inputs", () => {

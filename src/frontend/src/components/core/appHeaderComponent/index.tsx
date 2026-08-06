@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AlertDropdown from "@/alerts/alertDropDown";
-import EarthMindLogo from "@/assets/EarthMindLogo.svg?react";
+import TerraflowLogo from "@/assets/TerraflowLogo.svg?react";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import ModelProviderCount from "@/components/common/modelProviderCountComponent";
 import ShadTooltip from "@/components/common/shadTooltipComponent";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import CustomAccountMenu from "@/customization/components/custom-AccountMenu";
-import CustomEarthMindCounts from "@/customization/components/custom-earthmind-counts";
+import CustomTerraflowCounts from "@/customization/components/custom-terraflow-counts";
 import { CustomOrgSelector } from "@/customization/components/custom-org-selector";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import useTheme from "@/customization/hooks/use-custom-theme";
@@ -66,7 +66,7 @@ export default function AppHeader(): JSX.Element {
           className="mr-1 flex h-8 w-8 items-center"
           data-testid="icon-ChevronLeft"
         >
-          <EarthMindLogo className="h-5 w-5" />
+          <TerraflowLogo className="h-5 w-5" />
         </Button>
         <CustomOrgSelector />
       </div>
@@ -84,7 +84,7 @@ export default function AppHeader(): JSX.Element {
         {false && <ModelProviderCount />}
         <FlowViewToggle />
         <div className="hidden pr-2 whitespace-nowrap lg:inline-flex lg:items-center">
-          <CustomEarthMindCounts />
+          <CustomTerraflowCounts />
         </div>
         <AlertDropdown
           notificationRef={notificationContentRef}

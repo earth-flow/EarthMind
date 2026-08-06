@@ -1,16 +1,16 @@
-# LFX - EarthMind Executor
+# LFX - Terraflow Executor
 
-The EarthMind Executor (LFX) is a command-line tool that serves and runs flows statelessly from flow JSON files with minimal dependencies.
+The Terraflow Executor (LFX) is a command-line tool that serves and runs flows statelessly from flow JSON files with minimal dependencies.
 
-Running a flow with LFX is similar to running flows with the `--backend-only` environment variable enabled, but even more lightweight because the EarthMind package and all of its dependencies don't need to be installed.
+Running a flow with LFX is similar to running flows with the `--backend-only` environment variable enabled, but even more lightweight because the Terraflow package and all of its dependencies don't need to be installed.
 
-LFX uses a no-op database interface called [`NoopSession`](https://github.com/earthmind-ai/earthmind/blob/main/src/lfx/src/lfx/services/session.py) for all operations that require persistent state.
-There is no `earthmind.db` database file when using LFX.
-You can run flows with the API, but any stateful operations that depend on the EarthMind database, like saving flows, storing messages, or managing users **will not** persist data.
-Operations that depend on `earthmind.db` will not work as they do in the full EarthMind application.
+LFX uses a no-op database interface called [`NoopSession`](https://github.com/terraflow-ai/terraflow/blob/main/src/lfx/src/lfx/services/session.py) for all operations that require persistent state.
+There is no `terraflow.db` database file when using LFX.
+You can run flows with the API, but any stateful operations that depend on the Terraflow database, like saving flows, storing messages, or managing users **will not** persist data.
+Operations that depend on `terraflow.db` will not work as they do in the full Terraflow application.
 
 Memory operations are dispatched at call time, not at import time.
-If the `earthmind` package is installed in the same Python environment as `lfx` and a real database service is registered, memory operations are routed to the full `earthmind.memory` implementation instead. This applies when `lfx` is used as a Python library inside a running EarthMind server, not when running `lfx run` or `lfx serve` from the command line.
+If the `terraflow` package is installed in the same Python environment as `lfx` and a real database service is registered, memory operations are routed to the full `terraflow.memory` implementation instead. This applies when `lfx` is used as a Python library inside a running Terraflow server, not when running `lfx run` or `lfx serve` from the command line.
 
 ## Commands
 
@@ -20,18 +20,18 @@ If the `earthmind` package is installed in the same Python environment as `lfx` 
 |---------|-------------|
 | [`lfx serve`](#serve-the-simple-agent-starter-flow-with-lfx-serve) | Serve one or more flows as FastAPI endpoints at `/flows/{flow_id}/run` |
 | [`lfx run`](#run-the-simple-agent-flow-with-lfx-run) | Execute a flow locally and stream results to `stdout` |
-| [`lfx-mcp`](#lfx-mcp) | Start an MCP server that connects to a running EarthMind instance |
+| [`lfx-mcp`](#lfx-mcp) | Start an MCP server that connects to a running Terraflow instance |
 
-**Flow DevOps SDK commands** — documented in the [Flow DevOps Toolkit](https://docs.earthmind.org/flow-devops-sdk):
+**Flow DevOps SDK commands** — documented in the [Flow DevOps Toolkit](https://docs.terraflow.org/flow-devops-sdk):
 
 | Command | Description |
 |---------|-------------|
 | `lfx init` | Scaffold a versioned flow project with CI templates |
-| `lfx login` | Validate credentials against a remote EarthMind instance |
+| `lfx login` | Validate credentials against a remote Terraflow instance |
 | `lfx create` | Create a new flow JSON from a built-in or custom template |
 | `lfx validate` | Validate flow JSON before pushing |
 | `lfx requirements` | Generate `requirements.txt` from a flow's component dependencies |
-| `lfx status` | Compare local flow files against a remote EarthMind instance |
+| `lfx status` | Compare local flow files against a remote Terraflow instance |
 | `lfx push` | Push flows to a remote instance by stable ID |
 | `lfx pull` | Pull flows from a remote instance to local files |
 | `lfx export` | Normalize flow JSON for clean git diffs |
@@ -43,28 +43,28 @@ If the `earthmind` package is installed in the same Python environment as `lfx` 
 - Create or download a flow JSON file. For example, download the Simple Agent flow from the repository:
 
   ```bash
-  curl -o simple-agent-flow.json "https://raw.githubusercontent.com/earthmind-ai/earthmind/main/src/backend/base/earthmind/initial_setup/starter_projects/Simple%20Agent.json"
+  curl -o simple-agent-flow.json "https://raw.githubusercontent.com/terraflow-ai/terraflow/main/src/backend/base/terraflow/initial_setup/starter_projects/Simple%20Agent.json"
   ```
 
 - Create an [OpenAI API key](https://platform.openai.com/api-keys).
-- Create a EarthMind API key. For LFX, you can generate a secure token locally (see [Serve the simple agent starter flow with `lfx serve`](#serve-the-simple-agent-starter-flow-with-lfx-serve)), or create one through the EarthMind server UI or CLI.
+- Create a Terraflow API key. For LFX, you can generate a secure token locally (see [Serve the simple agent starter flow with `lfx serve`](#serve-the-simple-agent-starter-flow-with-lfx-serve)), or create one through the Terraflow server UI or CLI.
 
 ## Install LFX
 
-LFX can be installed in multiple ways. If you have installed EarthMind OSS version >=1.6, `lfx` is already included.
+LFX can be installed in multiple ways. If you have installed Terraflow OSS version >=1.6, `lfx` is already included.
 
 ### Clone repository
 
-1. Clone the EarthMind repository:
+1. Clone the Terraflow repository:
 
    ```bash
-   git clone https://github.com/earthmind-ai/earthmind
+   git clone https://github.com/terraflow-ai/terraflow
    ```
 
-2. Change directory to `earthmind/src/lfx`:
+2. Change directory to `terraflow/src/lfx`:
 
    ```bash
-   cd earthmind/src/lfx
+   cd terraflow/src/lfx
    ```
 
    From this directory, you can run `lfx` commands using `uv run lfx` as shown in [lfx serve](#serve-the-simple-agent-starter-flow-with-lfx-serve) or [lfx run](#run-the-simple-agent-flow-with-lfx-run).
@@ -96,10 +96,10 @@ LFX can be installed in multiple ways. If you have installed EarthMind OSS versi
 
 Run LFX without installing it locally using `uvx`.
 
-1. Create a EarthMind API key (see [Serve](#serve-the-simple-agent-starter-flow-with-lfx-serve)), and set `EARTHMIND_API_KEY` in the same terminal session as `lfx`:
+1. Create a Terraflow API key (see [Serve](#serve-the-simple-agent-starter-flow-with-lfx-serve)), and set `TERRAFLOW_API_KEY` in the same terminal session as `lfx`:
 
    ```bash
-   export EARTHMIND_API_KEY="sk..."
+   export TERRAFLOW_API_KEY="sk..."
    ```
 
 2. Run `lfx serve` using `uvx`:
@@ -122,24 +122,24 @@ The API key is required for security because `lfx serve` can create a publicly a
 
 This example uses the **Agent** component's built-in OpenAI model, which requires an OpenAI API key. If you want to use a different provider, edit the model provider, model name, and credentials accordingly.
 
-1. Generate a EarthMind API key.
+1. Generate a Terraflow API key.
 
-   For LFX, you can generate a secure token locally to use as your `EARTHMIND_API_KEY`:
+   For LFX, you can generate a secure token locally to use as your `TERRAFLOW_API_KEY`:
 
    ```bash
    uv run python -c "import secrets; print(secrets.token_urlsafe(32))"
    ```
 
-   This is different from creating a EarthMind API key through the EarthMind server UI or CLI, which stores the key in the EarthMind database. For LFX, you only need a secure token string to authenticate requests to your LFX server.
+   This is different from creating a Terraflow API key through the Terraflow server UI or CLI, which stores the key in the Terraflow database. For LFX, you only need a secure token string to authenticate requests to your LFX server.
 
 2. Set up your environment variables using one of the following options.
 
    **Option: .env file**
 
-   Create a `.env` file and populate it with your flow's variables. The `EARTHMIND_API_KEY` is required. This example assumes the flow requires an OpenAI API key.
+   Create a `.env` file and populate it with your flow's variables. The `TERRAFLOW_API_KEY` is required. This example assumes the flow requires an OpenAI API key.
 
    ```bash
-   EARTHMIND_API_KEY="sk..."
+   TERRAFLOW_API_KEY="sk..."
    OPENAI_API_KEY="sk-..."
    ```
 
@@ -148,13 +148,13 @@ This example uses the **Agent** component's built-in OpenAI model, which require
    Export your variables in the same terminal session where you'll start the server. You must declare your variables before the server starts for the server to pick them up.
 
    ```bash
-   export EARTHMIND_API_KEY="sk..."
+   export TERRAFLOW_API_KEY="sk..."
    export OPENAI_API_KEY="sk-..."
    ```
 
 3. Install dependencies.
 
-   If you already have EarthMind installed, or if you're running from source at `src/lfx`, LFX is included with EarthMind and all dependencies are already available. You don't need to install additional dependencies.
+   If you already have Terraflow installed, or if you're running from source at `src/lfx`, LFX is included with Terraflow and all dependencies are already available. You don't need to install additional dependencies.
 
    If you install the standalone `lfx` package from [PyPI](https://pypi.org/project/lfx/) or run LFX with `uvx`, you need to manually install the dependencies required by the components in your flow.
 
@@ -211,10 +211,10 @@ This example uses the **Agent** component's built-in OpenAI model, which require
     API key:     x-api-key header or ?x-api-key= query parameter
    ```
 
-6. To send a test request to the server, open a new terminal and export your `flow_id` and EarthMind API key values as variables:
+6. To send a test request to the server, open a new terminal and export your `flow_id` and Terraflow API key values as variables:
 
    ```bash
-   export EARTHMIND_API_KEY="sk..."
+   export TERRAFLOW_API_KEY="sk..."
    export FLOW_ID="c1dab29d-3364-58ef-8fef-99311d32ee42"
    ```
 
@@ -223,7 +223,7 @@ This example uses the **Agent** component's built-in OpenAI model, which require
    ```bash
    curl -X POST http://localhost:8000/flows/$FLOW_ID/run \
      -H "Content-Type: application/json" \
-     -H "x-api-key: $EARTHMIND_API_KEY" \
+     -H "x-api-key: $TERRAFLOW_API_KEY" \
      -d '{"input_value": "Hello, world!"}'
    ```
 
@@ -239,7 +239,7 @@ This example uses the **Agent** component's built-in OpenAI model, which require
    }
    ```
 
-Your flow is now running as a lightweight API endpoint, with only the flow's required dependencies and no visual builder installed. Users who call your endpoint don't need to install EarthMind or configure their own LLM provider keys.
+Your flow is now running as a lightweight API endpoint, with only the flow's required dependencies and no visual builder installed. Users who call your endpoint don't need to install Terraflow or configure their own LLM provider keys.
 
 To make your server publicly accessible, use a tunneling service like ngrok or deploy to a public cloud provider.
 
@@ -250,7 +250,7 @@ The LFX server exposes the following endpoints. All `/flows/{flow_id}` routes re
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/flows` | GET | List all served flows and their metadata |
-| `/flows/upload/` | POST | Upload a flow JSON to the registry (accepts full EarthMind export format) |
+| `/flows/upload/` | POST | Upload a flow JSON to the registry (accepts full Terraflow export format) |
 | `/flows/{flow_id}/run` | POST | Run the flow and return a single response |
 | `/flows/{flow_id}/stream` | POST | Run the flow and stream output as server-sent events |
 | `/flows/{flow_id}/info` | GET | Return flow metadata (title, description, input/output types) |
@@ -294,7 +294,7 @@ The LFX server exposes the following endpoints. All `/flows/{flow_id}` routes re
 
 ### Response schema
 
-The LFX server's response schema is different from the EarthMind API `/run` endpoint's schema. Requests to the LFX server's `/flows/{flow_id}/run` endpoint return the following fields:
+The LFX server's response schema is different from the Terraflow API `/run` endpoint's schema. Requests to the LFX server's `/flows/{flow_id}/run` endpoint return the following fields:
 
 ```json
 {
@@ -341,18 +341,18 @@ uv run lfx serve --env-file .env
 
 While the server is running, upload flows with `POST /flows/upload/`.
 
-The endpoint accepts the full EarthMind export JSON directly, the same format you get from the EarthMind UI's **Export** button:
+The endpoint accepts the full Terraflow export JSON directly, the same format you get from the Terraflow UI's **Export** button:
 
 ```bash
 # Upload a flow JSON file
 curl -X POST http://localhost:8000/flows/upload/ \
-  -H "x-api-key: $EARTHMIND_API_KEY" \
+  -H "x-api-key: $TERRAFLOW_API_KEY" \
   -H "Content-Type: application/json" \
   -d @my-flow.json
 
 # Upload and replace an existing flow with the same ID
 curl -X POST "http://localhost:8000/flows/upload/?replace=true" \
-  -H "x-api-key: $EARTHMIND_API_KEY" \
+  -H "x-api-key: $TERRAFLOW_API_KEY" \
   -H "Content-Type: application/json" \
   -d @my-flow.json
 ```
@@ -392,27 +392,27 @@ Use `--no-env-fallback` to disable process-environment fallback. With this flag 
 uv run lfx serve my-flow.json --no-env-fallback --env-file .env
 ```
 
-Pass per-request credentials in the `global_vars` map under `EARTHMIND_REQUEST_VARIABLES`:
+Pass per-request credentials in the `global_vars` map under `TERRAFLOW_REQUEST_VARIABLES`:
 
 ```bash
 curl -X POST http://localhost:8000/flows/$FLOW_ID/run \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $EARTHMIND_API_KEY" \
+  -H "x-api-key: $TERRAFLOW_API_KEY" \
   -d '{
     "input_value": "Hello world",
     "global_vars": {
-      "EARTHMIND_REQUEST_VARIABLES": {
+      "TERRAFLOW_REQUEST_VARIABLES": {
         "OPENAI_API_KEY": "sk-per-request-key"
       }
     }
   }'
 ```
 
-Credentials supplied in `EARTHMIND_REQUEST_VARIABLES` are scoped to the current request using Python `contextvars`. EarthMind's built-in components do not write them to `os.environ`, so they do not bleed into other concurrent requests on the same worker. Custom components that explicitly write to `os.environ` are outside this guarantee.
+Credentials supplied in `TERRAFLOW_REQUEST_VARIABLES` are scoped to the current request using Python `contextvars`. Terraflow's built-in components do not write them to `os.environ`, so they do not bleed into other concurrent requests on the same worker. Custom components that explicitly write to `os.environ` are outside this guarantee.
 
 ### Check or upgrade flow compatibility at startup
 
-Use `--upgrade-flow` to check compatibility between a flow and the current LFX version before serving it. See [LFX and EarthMind version compatibility](https://docs.earthmind.org/lfx-compatibility) for details on the version model.
+Use `--upgrade-flow` to check compatibility between a flow and the current LFX version before serving it. See [LFX and Terraflow version compatibility](https://docs.terraflow.org/lfx-compatibility) for details on the version model.
 
 ```bash
 # Fail at startup if any component is incompatible
@@ -432,7 +432,7 @@ uv run lfx serve my-flow.json --upgrade-flow=safe
 | `--flow-json` | Read inline flow JSON content as a string. Example: `uv run lfx serve --flow-json '{...}'`. |
 | `--host`, `-h` | Host to bind the server to. Default: `127.0.0.1`. |
 | `--log-level` | Logging level. One of: `debug`, `info`, `warning`, `error`, `critical`. Default: `warning`. |
-| `--no-env-fallback` / `--env-fallback` | Disable process-environment fallback for credential resolution. Use with per-request `EARTHMIND_REQUEST_VARIABLES`. Default: `--env-fallback`. |
+| `--no-env-fallback` / `--env-fallback` | Disable process-environment fallback for credential resolution. Use with per-request `TERRAFLOW_REQUEST_VARIABLES`. Default: `--env-fallback`. |
 | `--port`, `-p` | Port to bind the server to. Default: `8000`. |
 | `--stdin` | Read JSON flow content from `stdin`. Example: `cat flow.json | uv run lfx serve --stdin`. |
 | `--upgrade-flow` | Compatibility mode: `check` reports issues and fails, `safe` applies safe upgrades in memory. |
@@ -441,7 +441,7 @@ uv run lfx serve my-flow.json --upgrade-flow=safe
 
 ## Run the simple agent flow with `lfx run`
 
-The `lfx run` command runs a flow from a JSON file without serving it, and the output is sent to `stdout`. Input to `lfx run` can be a path to the JSON file, inline JSON passed with `--input-value`, or read from `stdin`. No EarthMind API key is required.
+The `lfx run` command runs a flow from a JSON file without serving it, and the output is sent to `stdout`. Input to `lfx run` can be a path to the JSON file, inline JSON passed with `--input-value`, or read from `stdin`. No Terraflow API key is required.
 
 This example uses the **Agent** component's built-in OpenAI model, which requires an OpenAI API key. If you want to use a different provider, edit the model provider, model name, and credentials accordingly.
 
@@ -453,7 +453,7 @@ This example uses the **Agent** component's built-in OpenAI model, which require
 
 2. Install dependencies.
 
-   If you already have EarthMind installed, or if you're running from source at `src/lfx`, LFX is included with EarthMind and all dependencies are already available. You don't need to install additional dependencies.
+   If you already have Terraflow installed, or if you're running from source at `src/lfx`, LFX is included with Terraflow and all dependencies are already available. You don't need to install additional dependencies.
 
    If you install the standalone `lfx` package from [PyPI](https://pypi.org/project/lfx/) or run LFX with `uvx`, you need to manually install the dependencies required by the components in your flow.
 
@@ -554,7 +554,7 @@ For a complete example of creating an agent flow programmatically using LFX comp
 Create a file called `simple_agent.py`:
 
 ```python
-"""A simple agent flow example for EarthMind.
+"""A simple agent flow example for Terraflow.
 
 Usage:
     uv run lfx run simple_agent.py "How are you?"
@@ -572,7 +572,7 @@ async def get_graph() -> Graph:
     """Create and return the graph with async component initialization."""
     log_config = LogConfig(
         log_level="INFO",
-        log_file=Path("earthmind.log"),
+        log_file=Path("terraflow.log"),
     )
 
     chat_input = cp.ChatInput()
@@ -600,7 +600,7 @@ uv run lfx run simple_agent.py "How are you?" --verbose
 
 ## lfx-mcp
 
-`lfx-mcp` is a separate binary installed with `lfx`. It starts an MCP server that gives any MCP-compatible client programmatic control over a EarthMind instance for building flows, managing components, and running executions.
+`lfx-mcp` is a separate binary installed with `lfx`. It starts an MCP server that gives any MCP-compatible client programmatic control over a Terraflow instance for building flows, managing components, and running executions.
 
 For more information, see [LFX_MCP.md](./LFX_MCP.md).
 
@@ -619,7 +619,7 @@ make format
 
 ## Pluggable services
 
-LFX supports a pluggable service architecture that lets you customize and extend its behavior. You can replace built-in services (storage, telemetry, tracing, etc.) with your own implementations or use EarthMind's full-featured services.
+LFX supports a pluggable service architecture that lets you customize and extend its behavior. You can replace built-in services (storage, telemetry, tracing, etc.) with your own implementations or use Terraflow's full-featured services.
 
 For more information, see [PLUGGABLE_SERVICES.md](./PLUGGABLE_SERVICES.md).
 
@@ -657,8 +657,8 @@ Both settings are optional. When unset or empty, all categories from the compone
 
 | Variable | Description |
 |----------|-------------|
-| `EARTHMIND_COMPONENT_CATEGORY_ALLOWLIST` | Comma-separated list of component category names to **include**. If empty (default), all categories are included. If set, only the listed categories are available. |
-| `EARTHMIND_COMPONENT_CATEGORY_BLOCKLIST` | Comma-separated list of component category names to **exclude**. If empty (default), no categories are excluded. Applied after the allowlist. |
+| `TERRAFLOW_COMPONENT_CATEGORY_ALLOWLIST` | Comma-separated list of component category names to **include**. If empty (default), all categories are included. If set, only the listed categories are available. |
+| `TERRAFLOW_COMPONENT_CATEGORY_BLOCKLIST` | Comma-separated list of component category names to **exclude**. If empty (default), no categories are excluded. Applied after the allowlist. |
 
 Category names are case-insensitive.
 
@@ -677,21 +677,21 @@ Provider-specific and other categories (e.g. `openai`, `anthropic`, `google`, `l
 Allowlist only — restrict to specific categories:
 
    ```bash
-   export EARTHMIND_COMPONENT_CATEGORY_ALLOWLIST="openai,anthropic,google,processing,input_output"
+   export TERRAFLOW_COMPONENT_CATEGORY_ALLOWLIST="openai,anthropic,google,processing,input_output"
    uv run lfx serve my_flow.json
    ```
 
 Blocklist only — load all categories except the ones you exclude:
 
    ```bash
-   export EARTHMIND_COMPONENT_CATEGORY_BLOCKLIST="prototypes,langchain_utilities"
+   export TERRAFLOW_COMPONENT_CATEGORY_BLOCKLIST="prototypes,langchain_utilities"
    uv run lfx run my_flow.json "Hello"
    ```
 
 Virtual `core` keyword — use `core` in the allowlist or blocklist to refer to all core categories at once (e.g. allow only core categories, or exclude all core from a broader set):
 
    ```bash
-   export EARTHMIND_COMPONENT_CATEGORY_ALLOWLIST="core"
+   export TERRAFLOW_COMPONENT_CATEGORY_ALLOWLIST="core"
    uv run lfx serve my_flow.json
    ```
 

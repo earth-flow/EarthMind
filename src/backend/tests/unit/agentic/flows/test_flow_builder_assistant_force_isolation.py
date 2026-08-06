@@ -14,8 +14,8 @@ is bound to the request, the fs component used to mint the tools has
 
 from __future__ import annotations
 
-from earthmind.agentic.flows import flow_builder_assistant as fba
-from earthmind.agentic.services.user_components_context import (
+from terraflow.agentic.flows import flow_builder_assistant as fba
+from terraflow.agentic.services.user_components_context import (
     reset_current_user_id,
     set_current_user_id,
 )

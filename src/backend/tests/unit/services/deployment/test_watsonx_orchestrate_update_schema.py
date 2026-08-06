@@ -7,7 +7,7 @@ from uuid import UUID
 import pytest
 
 try:
-    from earthmind.services.adapters.deployment.watsonx_orchestrate import (
+    from terraflow.services.adapters.deployment.watsonx_orchestrate import (
         WatsonxOrchestrateDeploymentService,  # noqa: F401
     )
 except ModuleNotFoundError:
@@ -16,7 +16,7 @@ except ModuleNotFoundError:
         allow_module_level=True,
     )
 
-from earthmind.services.adapters.deployment.watsonx_orchestrate.payloads import (
+from terraflow.services.adapters.deployment.watsonx_orchestrate.payloads import (
     PAYLOAD_SCHEMAS,
     WatsonxAgentExecutionResultData,
     WatsonxDeploymentCreatePayload,

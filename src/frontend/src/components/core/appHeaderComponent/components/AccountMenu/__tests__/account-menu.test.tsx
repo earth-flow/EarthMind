@@ -27,7 +27,7 @@ jest.mock("@/customization/hooks/use-custom-navigate", () => ({
 }));
 
 jest.mock("@/customization/feature-flags", () => ({
-  ENABLE_DATASTAX_EARTHMIND: false,
+  ENABLE_DATASTAX_TERRAFLOW: false,
 }));
 
 jest.mock("@/stores/authStore", () => ({

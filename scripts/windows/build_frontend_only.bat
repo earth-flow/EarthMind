@@ -1,5 +1,5 @@
 @echo off
-echo Starting EarthMind frontend build process...
+echo Starting Terraflow frontend build process...
 
 REM Get the script directory and resolve project root
 for %%I in ("%~dp0..\..") do set "PROJECT_ROOT=%%~fI"
@@ -47,21 +47,21 @@ if not exist "src\frontend\build" (
     set BUILD_DIR=src\frontend\build
 )
 
-echo Copying from %BUILD_DIR% to src\backend\base\earthmind\frontend\
+echo Copying from %BUILD_DIR% to src\backend\base\terraflow\frontend\
 REM Create target directory if it doesn't exist
-if not exist "src\backend\base\earthmind\frontend" (
-    mkdir "src\backend\base\earthmind\frontend"
+if not exist "src\backend\base\terraflow\frontend" (
+    mkdir "src\backend\base\terraflow\frontend"
 )
 
 REM Remove existing files in target directory (FORCES CLEAN REPLACEMENT)
 echo Removing existing files from target directory...
-if exist "src\backend\base\earthmind\frontend\*" (
-    del /q /s "src\backend\base\earthmind\frontend\*"
-    for /d %%d in ("src\backend\base\earthmind\frontend\*") do rmdir /s /q "%%d"
+if exist "src\backend\base\terraflow\frontend\*" (
+    del /q /s "src\backend\base\terraflow\frontend\*"
+    for /d %%d in ("src\backend\base\terraflow\frontend\*") do rmdir /s /q "%%d"
 )
 
 REM Copy all files from build directory
-xcopy "%BUILD_DIR%\*" "src\backend\base\earthmind\frontend\" /e /i /y
+xcopy "%BUILD_DIR%\*" "src\backend\base\terraflow\frontend\" /e /i /y
 if errorlevel 1 (
     echo Error: Failed to copy build files
     pause
@@ -72,5 +72,5 @@ echo Build files copied successfully!
 
 echo.
 echo Frontend build process completed!
-echo You can now run the backend with: uv run earthmind run
+echo You can now run the backend with: uv run terraflow run
 pause

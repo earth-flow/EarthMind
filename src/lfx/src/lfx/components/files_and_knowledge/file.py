@@ -3,7 +3,7 @@
 Notes:
 -----
 - ALL Docling parsing/export runs in a separate OS process to prevent memory
-  growth and native library state from impacting the main EarthMind process.
+  growth and native library state from impacting the main Terraflow process.
 - Standard text/structured parsing continues to use existing BaseFileComponent
   utilities (and optional threading via `parallel_load_data`).
 """
@@ -49,7 +49,7 @@ class FileComponent(BaseFileComponent):
     display_name = "Read File"
     # description is now a dynamic property - see get_tool_description()
     _base_description = "Loads and returns the content from uploaded files."
-    documentation: str = "https://docs.earthmind.org/read-file"
+    documentation: str = "https://docs.terraflow.org/read-file"
     icon = "file-text"
     name = "File"
     add_tool_output = True  # Enable tool mode toggle without requiring tool_mode inputs

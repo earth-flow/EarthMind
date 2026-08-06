@@ -11,7 +11,7 @@ class NoopTransactionService(TransactionServiceProtocol):
     """No-operation transaction service for standalone lfx mode.
 
     This service is used when lfx runs without a concrete transaction
-    service implementation (e.g., without earthmind). All operations
+    service implementation (e.g., without terraflow). All operations
     are no-ops and transaction logging is disabled.
     """
 

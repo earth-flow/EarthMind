@@ -3,7 +3,7 @@ import type { Page } from "@playwright/test";
 import { TEXTS } from "../utils/constants/texts";
 
 /**
- * Bootstraps a fresh EarthMind install by creating a "Basic Prompting" flow
+ * Bootstraps a fresh Terraflow install by creating a "Basic Prompting" flow
  * from the templates modal so subsequent assertions have a valid project
  * sidebar to work against. The empty-page CTA opens the templates modal
  * directly (it bypasses the welcome overlay used by the in-app "New Flow"
@@ -11,7 +11,7 @@ import { TEXTS } from "../utils/constants/texts";
  * defensively for either the modal or the welcome overlay before
  * proceeding.
  */
-export const addFlowToTestOnEmptyEarthMind = async (page: Page) => {
+export const addFlowToTestOnEmptyTerraflow = async (page: Page) => {
   await page.getByTestId("new_project_btn_empty_page").click();
 
   const modalSelector = '[data-testid="modal-title"]';

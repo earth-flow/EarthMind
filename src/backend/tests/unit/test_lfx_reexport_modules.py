@@ -1,37 +1,37 @@
-"""Test to ensure all earthmind modules that re-export lfx modules work correctly.
+"""Test to ensure all terraflow modules that re-export lfx modules work correctly.
 
-This test validates that every earthmind module that re-exports from lfx
+This test validates that every terraflow module that re-exports from lfx
 can successfully import and access all expected symbols, maintaining
 backward compatibility and proper API exposure.
 
-Based on analysis, there are 24 earthmind modules that re-export from lfx:
+Based on analysis, there are 24 terraflow modules that re-export from lfx:
 
 Base Modules (11):
-- earthmind.base (wildcard from lfx.base)
-- earthmind.base.agents (from lfx.base.agents)
-- earthmind.base.data (from lfx.base.data)
-- earthmind.base.embeddings (from lfx.base.embeddings)
-- earthmind.base.io (from lfx.base.io)
-- earthmind.base.memory (from lfx.base.memory)
-- earthmind.base.models (from lfx.base.models)
-- earthmind.base.prompts (from lfx.base.prompts)
-- earthmind.base.textsplitters (from lfx.base.textsplitters)
-- earthmind.base.tools (from lfx.base.tools)
-- earthmind.base.vectorstores (from lfx.base.vectorstores)
+- terraflow.base (wildcard from lfx.base)
+- terraflow.base.agents (from lfx.base.agents)
+- terraflow.base.data (from lfx.base.data)
+- terraflow.base.embeddings (from lfx.base.embeddings)
+- terraflow.base.io (from lfx.base.io)
+- terraflow.base.memory (from lfx.base.memory)
+- terraflow.base.models (from lfx.base.models)
+- terraflow.base.prompts (from lfx.base.prompts)
+- terraflow.base.textsplitters (from lfx.base.textsplitters)
+- terraflow.base.tools (from lfx.base.tools)
+- terraflow.base.vectorstores (from lfx.base.vectorstores)
 
 Core System Modules (13):
-- earthmind.custom (from lfx.custom)
-- earthmind.custom.custom_component (from lfx.custom.custom_component)
-- earthmind.field_typing (from lfx.field_typing with __getattr__)
-- earthmind.graph (from lfx.graph)
-- earthmind.inputs (from lfx.inputs.inputs)
-- earthmind.interface (from lfx.interface)
-- earthmind.io (from lfx.io + lfx.template)
-- earthmind.load (from lfx.load)
-- earthmind.logging (from lfx.log.logger)
-- earthmind.schema (from lfx.schema)
-- earthmind.template (wildcard from lfx.template)
-- earthmind.template.field (from lfx.template.field)
+- terraflow.custom (from lfx.custom)
+- terraflow.custom.custom_component (from lfx.custom.custom_component)
+- terraflow.field_typing (from lfx.field_typing with __getattr__)
+- terraflow.graph (from lfx.graph)
+- terraflow.inputs (from lfx.inputs.inputs)
+- terraflow.interface (from lfx.interface)
+- terraflow.io (from lfx.io + lfx.template)
+- terraflow.load (from lfx.load)
+- terraflow.logging (from lfx.log.logger)
+- terraflow.schema (from lfx.schema)
+- terraflow.template (wildcard from lfx.template)
+- terraflow.template.field (from lfx.template.field)
 """
 
 import importlib
@@ -48,38 +48,38 @@ def get_all_reexport_modules():
     """Get all known re-export modules for parametrized testing."""
     # Define the modules here so they can be accessed by parametrize
     direct_reexport_modules = {
-        "earthmind.base.agents": "lfx.base.agents",
-        "earthmind.base.data": "lfx.base.data",
-        "earthmind.base.embeddings": "lfx.base.embeddings",
-        "earthmind.base.io": "lfx.base.io",
-        "earthmind.base.memory": "lfx.base.memory",
-        "earthmind.base.models": "lfx.base.models",
-        "earthmind.base.prompts": "lfx.base.prompts",
-        "earthmind.base.textsplitters": "lfx.base.textsplitters",
-        "earthmind.base.tools": "lfx.base.tools",
-        "earthmind.base.vectorstores": "lfx.base.vectorstores",
-        "earthmind.custom.custom_component": "lfx.custom.custom_component",
-        "earthmind.graph": "lfx.graph",
-        "earthmind.inputs": "lfx.inputs.inputs",
-        "earthmind.interface": "lfx.interface",
-        "earthmind.load": "lfx.load",
-        "earthmind.logging": "lfx.log",
-        "earthmind.schema": "lfx.schema",
-        "earthmind.template.field": "lfx.template.field",
+        "terraflow.base.agents": "lfx.base.agents",
+        "terraflow.base.data": "lfx.base.data",
+        "terraflow.base.embeddings": "lfx.base.embeddings",
+        "terraflow.base.io": "lfx.base.io",
+        "terraflow.base.memory": "lfx.base.memory",
+        "terraflow.base.models": "lfx.base.models",
+        "terraflow.base.prompts": "lfx.base.prompts",
+        "terraflow.base.textsplitters": "lfx.base.textsplitters",
+        "terraflow.base.tools": "lfx.base.tools",
+        "terraflow.base.vectorstores": "lfx.base.vectorstores",
+        "terraflow.custom.custom_component": "lfx.custom.custom_component",
+        "terraflow.graph": "lfx.graph",
+        "terraflow.inputs": "lfx.inputs.inputs",
+        "terraflow.interface": "lfx.interface",
+        "terraflow.load": "lfx.load",
+        "terraflow.logging": "lfx.log",
+        "terraflow.schema": "lfx.schema",
+        "terraflow.template.field": "lfx.template.field",
     }
 
     wildcard_reexport_modules = {
-        "earthmind.base": "lfx.base",
-        "earthmind.template": "lfx.template",
+        "terraflow.base": "lfx.base",
+        "terraflow.template": "lfx.template",
     }
 
     complex_reexport_modules = {
-        "earthmind.custom": ["lfx.custom", "lfx.custom.custom_component", "lfx.custom.utils"],
-        "earthmind.io": ["lfx.io", "lfx.template"],
+        "terraflow.custom": ["lfx.custom", "lfx.custom.custom_component", "lfx.custom.utils"],
+        "terraflow.io": ["lfx.io", "lfx.template"],
     }
 
     dynamic_reexport_modules = {
-        "earthmind.field_typing": "lfx.field_typing",
+        "terraflow.field_typing": "lfx.field_typing",
     }
 
     return list(
@@ -93,20 +93,20 @@ def get_all_reexport_modules():
 
 
 class TestLfxReexportModules:
-    """Test that all earthmind modules that re-export from lfx work correctly."""
+    """Test that all terraflow modules that re-export from lfx work correctly."""
 
     @classmethod
-    def _discover_earthmind_modules(cls) -> list[str]:
-        """Dynamically discover all earthmind modules."""
-        earthmind_modules: list[str] = []
+    def _discover_terraflow_modules(cls) -> list[str]:
+        """Dynamically discover all terraflow modules."""
+        terraflow_modules: list[str] = []
         try:
-            import earthmind
+            import terraflow
 
-            for _importer, modname, _ispkg in pkgutil.walk_packages(earthmind.__path__, earthmind.__name__ + "."):
-                earthmind_modules.append(modname)
+            for _importer, modname, _ispkg in pkgutil.walk_packages(terraflow.__path__, terraflow.__name__ + "."):
+                terraflow_modules.append(modname)
         except ImportError:
             pass
-        return earthmind_modules
+        return terraflow_modules
 
     @classmethod
     def _detect_reexport_pattern(cls, module_name: str) -> dict[str, str | None]:
@@ -164,53 +164,53 @@ class TestLfxReexportModules:
     # Define all the modules that re-export from lfx (kept for backward compatibility)
     DIRECT_REEXPORT_MODULES = {
         # Base modules with direct re-exports
-        "earthmind.base.agents": "lfx.base.agents",
-        "earthmind.base.data": "lfx.base.data",
-        "earthmind.base.embeddings": "lfx.base.embeddings",
-        "earthmind.base.io": "lfx.base.io",
-        "earthmind.base.memory": "lfx.base.memory",
-        "earthmind.base.models": "lfx.base.models",
-        "earthmind.base.prompts": "lfx.base.prompts",
-        "earthmind.base.textsplitters": "lfx.base.textsplitters",
-        "earthmind.base.tools": "lfx.base.tools",
-        "earthmind.base.vectorstores": "lfx.base.vectorstores",
+        "terraflow.base.agents": "lfx.base.agents",
+        "terraflow.base.data": "lfx.base.data",
+        "terraflow.base.embeddings": "lfx.base.embeddings",
+        "terraflow.base.io": "lfx.base.io",
+        "terraflow.base.memory": "lfx.base.memory",
+        "terraflow.base.models": "lfx.base.models",
+        "terraflow.base.prompts": "lfx.base.prompts",
+        "terraflow.base.textsplitters": "lfx.base.textsplitters",
+        "terraflow.base.tools": "lfx.base.tools",
+        "terraflow.base.vectorstores": "lfx.base.vectorstores",
         # Core system modules with direct re-exports
-        "earthmind.custom.custom_component": "lfx.custom.custom_component",
-        "earthmind.graph": "lfx.graph",
-        "earthmind.inputs": "lfx.inputs.inputs",
-        "earthmind.interface": "lfx.interface",
-        "earthmind.load": "lfx.load",
-        "earthmind.logging": "lfx.log",  # Note: imports from lfx.log.logger
-        "earthmind.schema": "lfx.schema",
-        "earthmind.template.field": "lfx.template.field",
+        "terraflow.custom.custom_component": "lfx.custom.custom_component",
+        "terraflow.graph": "lfx.graph",
+        "terraflow.inputs": "lfx.inputs.inputs",
+        "terraflow.interface": "lfx.interface",
+        "terraflow.load": "lfx.load",
+        "terraflow.logging": "lfx.log",  # Note: imports from lfx.log.logger
+        "terraflow.schema": "lfx.schema",
+        "terraflow.template.field": "lfx.template.field",
     }
 
     # Modules that use wildcard imports from lfx
     WILDCARD_REEXPORT_MODULES = {
-        "earthmind.base": "lfx.base",
-        "earthmind.template": "lfx.template",
+        "terraflow.base": "lfx.base",
+        "terraflow.template": "lfx.template",
     }
 
     # Modules with complex/mixed import patterns
     COMPLEX_REEXPORT_MODULES = {
-        "earthmind.custom": ["lfx.custom", "lfx.custom.custom_component", "lfx.custom.utils"],
-        "earthmind.io": ["lfx.io", "lfx.template"],  # Mixed imports
+        "terraflow.custom": ["lfx.custom", "lfx.custom.custom_component", "lfx.custom.utils"],
+        "terraflow.io": ["lfx.io", "lfx.template"],  # Mixed imports
     }
 
     # Modules with dynamic __getattr__ patterns
     DYNAMIC_REEXPORT_MODULES = {
-        "earthmind.field_typing": "lfx.field_typing",
+        "terraflow.field_typing": "lfx.field_typing",
     }
 
     def test_direct_reexport_modules_importable(self):
         """Test that all direct re-export modules can be imported."""
         successful_imports = 0
 
-        for earthmind_module, lfx_module in self.DIRECT_REEXPORT_MODULES.items():
+        for terraflow_module, lfx_module in self.DIRECT_REEXPORT_MODULES.items():
             try:
-                # Import the earthmind module
-                lf_module = importlib.import_module(earthmind_module)
-                assert lf_module is not None, f"EarthMind module {earthmind_module} is None"
+                # Import the terraflow module
+                lf_module = importlib.import_module(terraflow_module)
+                assert lf_module is not None, f"Terraflow module {terraflow_module} is None"
 
                 # Import the corresponding lfx module to compare
 
@@ -220,17 +220,17 @@ class TestLfxReexportModules:
                 successful_imports += 1
 
             except Exception as e:
-                pytest.fail(f"Failed to import direct re-export module {earthmind_module}: {e!s}")
+                pytest.fail(f"Failed to import direct re-export module {terraflow_module}: {e!s}")
 
     def test_wildcard_reexport_modules_importable(self):
         """Test that modules using wildcard imports work correctly."""
         successful_imports = 0
 
-        for earthmind_module, lfx_module in self.WILDCARD_REEXPORT_MODULES.items():
+        for terraflow_module, lfx_module in self.WILDCARD_REEXPORT_MODULES.items():
             try:
-                # Import the earthmind module
-                lf_module = importlib.import_module(earthmind_module)
-                assert lf_module is not None, f"EarthMind module {earthmind_module} is None"
+                # Import the terraflow module
+                lf_module = importlib.import_module(terraflow_module)
+                assert lf_module is not None, f"Terraflow module {terraflow_module} is None"
 
                 # Wildcard imports should expose most/all attributes from lfx module
                 lfx_mod = importlib.import_module(lfx_module)
@@ -240,56 +240,56 @@ class TestLfxReexportModules:
                     all_attrs = list(lfx_mod.__all__)  # Test all attributes
                     for attr in all_attrs:
                         if hasattr(lfx_mod, attr):
-                            assert hasattr(lf_module, attr), f"Attribute {attr} missing from {earthmind_module}"
+                            assert hasattr(lf_module, attr), f"Attribute {attr} missing from {terraflow_module}"
 
                 successful_imports += 1
 
             except Exception as e:
-                pytest.fail(f"Failed to import wildcard re-export module {earthmind_module}: {e!s}")
+                pytest.fail(f"Failed to import wildcard re-export module {terraflow_module}: {e!s}")
 
     def test_complex_reexport_modules_importable(self):
         """Test that modules with complex/mixed import patterns work correctly."""
         successful_imports = 0
 
-        for earthmind_module in self.COMPLEX_REEXPORT_MODULES:
+        for terraflow_module in self.COMPLEX_REEXPORT_MODULES:
             try:
-                # Import the earthmind module
-                lf_module = importlib.import_module(earthmind_module)
-                assert lf_module is not None, f"EarthMind module {earthmind_module} is None"
+                # Import the terraflow module
+                lf_module = importlib.import_module(terraflow_module)
+                assert lf_module is not None, f"Terraflow module {terraflow_module} is None"
 
                 # Verify it has __all__ attribute for complex modules
-                assert hasattr(lf_module, "__all__"), f"Complex module {earthmind_module} missing __all__"
-                assert len(lf_module.__all__) > 0, f"Complex module {earthmind_module} has empty __all__"
+                assert hasattr(lf_module, "__all__"), f"Complex module {terraflow_module} missing __all__"
+                assert len(lf_module.__all__) > 0, f"Complex module {terraflow_module} has empty __all__"
 
                 # Try to access all items from __all__
                 all_items = lf_module.__all__  # Test all items
                 for item in all_items:
                     try:
                         attr = getattr(lf_module, item)
-                        assert attr is not None, f"Attribute {item} is None in {earthmind_module}"
+                        assert attr is not None, f"Attribute {item} is None in {terraflow_module}"
                     except AttributeError:
-                        pytest.fail(f"Complex module {earthmind_module} missing expected attribute {item} from __all__")
+                        pytest.fail(f"Complex module {terraflow_module} missing expected attribute {item} from __all__")
 
                 successful_imports += 1
 
             except Exception as e:
-                pytest.fail(f"Failed to import complex re-export module {earthmind_module}: {e!s}")
+                pytest.fail(f"Failed to import complex re-export module {terraflow_module}: {e!s}")
 
     def test_dynamic_reexport_modules_importable(self):
         """Test that modules with __getattr__ dynamic loading work correctly."""
         successful_imports = 0
 
-        for earthmind_module in self.DYNAMIC_REEXPORT_MODULES:
+        for terraflow_module in self.DYNAMIC_REEXPORT_MODULES:
             try:
-                # Import the earthmind module
-                lf_module = importlib.import_module(earthmind_module)
-                assert lf_module is not None, f"EarthMind module {earthmind_module} is None"
+                # Import the terraflow module
+                lf_module = importlib.import_module(terraflow_module)
+                assert lf_module is not None, f"Terraflow module {terraflow_module} is None"
 
                 # Dynamic modules should have __getattr__ method
-                assert hasattr(lf_module, "__getattr__"), f"Dynamic module {earthmind_module} missing __getattr__"
+                assert hasattr(lf_module, "__getattr__"), f"Dynamic module {terraflow_module} missing __getattr__"
 
                 # Test accessing some known attributes dynamically
-                if earthmind_module == "earthmind.field_typing":
+                if terraflow_module == "terraflow.field_typing":
                     # Test some known field typing constants
                     test_attrs = ["Data", "Text", "LanguageModel"]
                     for attr in test_attrs:
@@ -297,12 +297,12 @@ class TestLfxReexportModules:
                             value = getattr(lf_module, attr)
                             assert value is not None, f"Dynamic attribute {attr} is None"
                         except AttributeError:
-                            pytest.fail(f"Dynamic module {earthmind_module} missing expected attribute {attr}")
+                            pytest.fail(f"Dynamic module {terraflow_module} missing expected attribute {attr}")
 
                 successful_imports += 1
 
             except Exception as e:
-                pytest.fail(f"Failed to import dynamic re-export module {earthmind_module}: {e!s}")
+                pytest.fail(f"Failed to import dynamic re-export module {terraflow_module}: {e!s}")
 
     def test_all_reexport_modules_have_required_structure(self):
         """Test that re-export modules have the expected structure."""
@@ -315,9 +315,9 @@ class TestLfxReexportModules:
         for lf_mod in self.COMPLEX_REEXPORT_MODULES:
             all_modules[lf_mod] = self.COMPLEX_REEXPORT_MODULES[lf_mod]
 
-        for earthmind_module in all_modules:
+        for terraflow_module in all_modules:
             try:
-                lf_module = importlib.import_module(earthmind_module)
+                lf_module = importlib.import_module(terraflow_module)
 
                 # All modules should be importable
                 assert lf_module is not None
@@ -329,21 +329,21 @@ class TestLfxReexportModules:
                 assert hasattr(lf_module, "__file__") or hasattr(lf_module, "__path__")
 
             except Exception as e:
-                pytest.fail(f"Module structure issue with {earthmind_module}: {e!s}")
+                pytest.fail(f"Module structure issue with {terraflow_module}: {e!s}")
 
     def test_reexport_modules_backward_compatibility(self):
         """Test that common import patterns still work for backward compatibility."""
         # Test some key imports that should always work
         backward_compatible_imports = [
-            ("earthmind.schema", "Data"),
-            ("earthmind.inputs", "StrInput"),
-            ("earthmind.inputs", "IntInput"),
-            ("earthmind.custom", "Component"),  # Base component class
-            ("earthmind.custom", "CustomComponent"),
-            ("earthmind.field_typing", "Text"),  # Dynamic
-            ("earthmind.field_typing", "Data"),  # Dynamic
-            ("earthmind.load", "load_flow_from_json"),
-            ("earthmind.logging", "logger"),
+            ("terraflow.schema", "Data"),
+            ("terraflow.inputs", "StrInput"),
+            ("terraflow.inputs", "IntInput"),
+            ("terraflow.custom", "Component"),  # Base component class
+            ("terraflow.custom", "CustomComponent"),
+            ("terraflow.field_typing", "Text"),  # Dynamic
+            ("terraflow.field_typing", "Data"),  # Dynamic
+            ("terraflow.load", "load_flow_from_json"),
+            ("terraflow.logging", "logger"),
         ]
 
         for module_name, symbol_name in backward_compatible_imports:
@@ -363,12 +363,12 @@ class TestLfxReexportModules:
         """Test that there are no circular import issues in re-export modules."""
         # Test importing modules in different orders to catch circular imports
         import_orders = [
-            ["earthmind.schema", "earthmind.inputs", "earthmind.base"],
-            ["earthmind.base", "earthmind.schema", "earthmind.inputs"],
-            ["earthmind.inputs", "earthmind.base", "earthmind.schema"],
-            ["earthmind.custom", "earthmind.field_typing", "earthmind.template"],
-            ["earthmind.template", "earthmind.custom", "earthmind.field_typing"],
-            ["earthmind.field_typing", "earthmind.template", "earthmind.custom"],
+            ["terraflow.schema", "terraflow.inputs", "terraflow.base"],
+            ["terraflow.base", "terraflow.schema", "terraflow.inputs"],
+            ["terraflow.inputs", "terraflow.base", "terraflow.schema"],
+            ["terraflow.custom", "terraflow.field_typing", "terraflow.template"],
+            ["terraflow.template", "terraflow.custom", "terraflow.field_typing"],
+            ["terraflow.field_typing", "terraflow.template", "terraflow.custom"],
         ]
 
         for order in import_orders:
@@ -392,11 +392,11 @@ class TestLfxReexportModules:
         """Test that re-export modules import efficiently."""
         # Test that basic imports are fast
         performance_critical_modules = [
-            "earthmind.schema",
-            "earthmind.inputs",
-            "earthmind.field_typing",
-            "earthmind.load",
-            "earthmind.logging",
+            "terraflow.schema",
+            "terraflow.inputs",
+            "terraflow.field_typing",
+            "terraflow.load",
+            "terraflow.logging",
         ]
 
         slow_imports = []
@@ -435,12 +435,12 @@ class TestLfxReexportModules:
 
     # Dynamic test methods using the discovery functions
     def test_dynamic_module_discovery(self):
-        """Test that we can dynamically discover earthmind modules."""
-        modules = self._discover_earthmind_modules()
-        assert len(modules) > 0, "Should discover at least some earthmind modules"
+        """Test that we can dynamically discover terraflow modules."""
+        modules = self._discover_terraflow_modules()
+        assert len(modules) > 0, "Should discover at least some terraflow modules"
 
         # Check that known modules are found
-        expected_modules = ["earthmind.schema", "earthmind.inputs", "earthmind.custom"]
+        expected_modules = ["terraflow.schema", "terraflow.inputs", "terraflow.custom"]
         found_modules = [mod for mod in expected_modules if mod in modules]
         assert len(found_modules) > 0, f"Expected to find some of {expected_modules}, but found: {found_modules}"
 
@@ -465,16 +465,16 @@ class TestLfxReexportModules:
     def test_generate_backward_compatibility_imports(self):
         """Test generating backward compatibility imports dynamically."""
         # Test with a known module that has lfx imports
-        test_cases = [("earthmind.schema", "lfx.schema"), ("earthmind.custom", "lfx.custom")]
+        test_cases = [("terraflow.schema", "lfx.schema"), ("terraflow.custom", "lfx.custom")]
 
         for lf_module, expected_lfx_source in test_cases:
             lfx_symbols = self._get_expected_symbols(expected_lfx_source)
             assert len(lfx_symbols) > 0, f"Should find some symbols in {expected_lfx_source}"
 
-            # Test that symbols explicitly re-exported by earthmind module are accessible
+            # Test that symbols explicitly re-exported by terraflow module are accessible
             lf_module_obj = importlib.import_module(lf_module)
 
-            # Get the symbols that earthmind explicitly re-exports (from its __all__)
+            # Get the symbols that terraflow explicitly re-exports (from its __all__)
             if hasattr(lf_module_obj, "__all__"):
                 lf_reexported = lf_module_obj.__all__
                 # Check that these re-exported symbols are actually available

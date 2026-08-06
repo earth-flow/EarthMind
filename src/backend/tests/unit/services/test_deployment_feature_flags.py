@@ -1,4 +1,4 @@
-import earthmind.services.utils as service_utils
+import terraflow.services.utils as service_utils
 
 
 def test_register_builtin_adapters_skips_import_when_feature_disabled(monkeypatch):
@@ -20,7 +20,7 @@ def test_register_builtin_adapters_imports_when_feature_enabled(monkeypatch):
 
     service_utils.register_builtin_adapters()
 
-    assert calls == ["earthmind.services.adapters.deployment.watsonx_orchestrate.register"]
+    assert calls == ["terraflow.services.adapters.deployment.watsonx_orchestrate.register"]
 
 
 def test_register_builtin_deployment_mappers_skips_import_when_feature_disabled(monkeypatch):
@@ -42,4 +42,4 @@ def test_register_builtin_deployment_mappers_imports_when_feature_enabled(monkey
 
     service_utils.register_builtin_deployment_mappers()
 
-    assert calls == ["earthmind.api.v1.mappers.deployments.watsonx_orchestrate"]
+    assert calls == ["terraflow.api.v1.mappers.deployments.watsonx_orchestrate"]

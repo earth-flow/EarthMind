@@ -4,12 +4,12 @@ from lfx.serialization.constants import MAX_ITEMS_LENGTH, MAX_TEXT_LENGTH
 
 
 class UiSettings(BaseModel):
-    """Frontend, auto-save, display limits, and (legacy) EarthMind Store integration."""
+    """Frontend, auto-save, display limits, and (legacy) Terraflow Store integration."""
 
     auto_saving: bool = True
-    """If set to True, EarthMind will auto save flows."""
+    """If set to True, Terraflow will auto save flows."""
     auto_saving_interval: int = 1000
-    """The interval in ms at which EarthMind will auto save flows."""
+    """The interval in ms at which Terraflow will auto save flows."""
 
     max_text_length: int = MAX_TEXT_LENGTH
     """Maximum number of characters to store and display in the UI. Responses longer than this
@@ -33,7 +33,7 @@ class UiSettings(BaseModel):
     hide_getting_started_progress: bool = Field(
         default=False,
         validation_alias=AliasChoices(
-            "EARTHMIND_HIDE_GETTING_STARTED_PROGRESS",
+            "TERRAFLOW_HIDE_GETTING_STARTED_PROGRESS",
             "HIDE_GETTING_STARTED_PROGRESS",
         ),
     )
@@ -47,8 +47,8 @@ class UiSettings(BaseModel):
     hide_starter_projects: bool = False
     """If set to True, hides starter projects from the UI (does not affect database seeding)."""
 
-    # EarthMind Store (legacy)
+    # Terraflow Store (legacy)
     store: bool | None = True
-    store_url: str | None = "https://api.earthmind.store"
-    download_webhook_url: str | None = "https://api.earthmind.store/flows/trigger/ec611a61-8460-4438-b187-a4f65e5559d4"
-    like_webhook_url: str | None = "https://api.earthmind.store/flows/trigger/64275852-ec00-45c1-984e-3bff814732da"
+    store_url: str | None = "https://api.terraflow.store"
+    download_webhook_url: str | None = "https://api.terraflow.store/flows/trigger/ec611a61-8460-4438-b187-a4f65e5559d4"
+    like_webhook_url: str | None = "https://api.terraflow.store/flows/trigger/64275852-ec00-45c1-984e-3bff814732da"

@@ -1,4 +1,4 @@
-const url = `${process.env.EARTHMIND_SERVER_URL ?? ""}/api/v1/version`;
+const url = `${process.env.TERRAFLOW_SERVER_URL ?? ""}/api/v1/version`;
 
 const options = {
   method: 'GET',

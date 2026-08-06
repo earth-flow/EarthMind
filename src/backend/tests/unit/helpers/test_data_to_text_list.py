@@ -1,5 +1,5 @@
 import pytest
-from earthmind.helpers.data import data_to_text_list
+from terraflow.helpers.data import data_to_text_list
 from lfx.schema import Data
 
 

@@ -25,10 +25,10 @@ describe("AssistantHeader", () => {
   });
 
   describe("rendering", () => {
-    it("should display 'EarthMind Assistant' title", () => {
+    it("should display 'Terraflow Assistant' title", () => {
       render(<AssistantHeader {...defaultProps} />);
 
-      expect(screen.getByText("EarthMind Assistant")).toBeInTheDocument();
+      expect(screen.getByText("Terraflow Assistant")).toBeInTheDocument();
     });
 
     it("should render New session button", () => {

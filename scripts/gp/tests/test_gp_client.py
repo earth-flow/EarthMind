@@ -72,7 +72,7 @@ class TestGetHeaders:
 class TestListBundles:
     def test_returns_parsed_json_on_success(self):
         mock_response = MagicMock()
-        mock_response.json.return_value = {"bundleIds": ["earthmind-ui"]}
+        mock_response.json.return_value = {"bundleIds": ["terraflow-ui"]}
 
         with (
             patch.dict("os.environ", {"GP_ADMIN_USER_ID": "u", "GP_ADMIN_PASSWORD": "p"}),
@@ -83,7 +83,7 @@ class TestListBundles:
 
         mock_get.assert_called_once()
         mock_response.raise_for_status.assert_called_once()
-        assert result == {"bundleIds": ["earthmind-ui"]}
+        assert result == {"bundleIds": ["terraflow-ui"]}
 
     def test_raises_on_http_error(self):
         import requests as req

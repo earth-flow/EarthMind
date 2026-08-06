@@ -46,7 +46,7 @@ class SaveToFileComponent(Component):
         "'file_format' — output format: 'csv', 'json', 'txt', 'html', 'excel', 'markdown' (optional). "
         "Returns a confirmation with the file path or URL."
     )
-    documentation: str = "https://docs.earthmind.org/write-file"
+    documentation: str = "https://docs.terraflow.org/write-file"
     icon = "file-text"
     name = "SaveToFile"
 
@@ -338,7 +338,7 @@ class SaveToFileComponent(Component):
         if type(self.input) is Data:
             return "Data"
         # When invoked by a code agent (e.g. OpenDsStar), the input may be a raw
-        # pandas DataFrame rather than EarthMind's DataFrame wrapper.
+        # pandas DataFrame rather than Terraflow's DataFrame wrapper.
         if isinstance(self.input, pd.DataFrame):
             self.input = DataFrame(self.input)
             return "DataFrame"
@@ -390,8 +390,8 @@ class SaveToFileComponent(Component):
 
     async def _upload_file(self, file_path: Path) -> None:
         """Upload the saved file using the upload_user_file service."""
-        from earthmind.api.v2.files import upload_user_file
-        from earthmind.services.database.models.user.crud import get_user_by_id
+        from terraflow.api.v2.files import upload_user_file
+        from terraflow.services.database.models.user.crud import get_user_by_id
 
         # Ensure the file exists
         if not file_path.exists():
@@ -680,7 +680,7 @@ class SaveToFileComponent(Component):
         if not bucket_name:
             msg = (
                 "S3 Bucket Name is required for S3 storage. Provide it as a component input "
-                "or set EARTHMIND_OBJECT_STORAGE_BUCKET_NAME environment variable."
+                "or set TERRAFLOW_OBJECT_STORAGE_BUCKET_NAME environment variable."
             )
             raise ValueError(msg)
 

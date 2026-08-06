@@ -1,6 +1,6 @@
 # API Examples (Local Test Harness)
 
-Run all API example suites against a local EarthMind server:
+Run all API example suites against a local Terraflow server:
 
 ```bash
 make api_examples_local

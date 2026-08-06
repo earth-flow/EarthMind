@@ -6,11 +6,11 @@ export default function NoDataPdf(): JSX.Element {
     <div className="flex h-full w-full flex-col items-center justify-center bg-muted">
       <div className="chat-alert-box">
         <span>
-          📄 <span className="earthmind-chat-span">{t("output.pdfTitle")}</span>
+          📄 <span className="terraflow-chat-span">{t("output.pdfTitle")}</span>
         </span>
         <br />
-        <div className="earthmind-chat-desc">
-          <span className="earthmind-chat-desc-span">
+        <div className="terraflow-chat-desc">
+          <span className="terraflow-chat-desc-span">
             {t("output.pdfLoadError")}{" "}
           </span>
         </div>

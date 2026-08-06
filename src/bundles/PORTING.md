@@ -20,13 +20,13 @@ Before you start, confirm the component is a good fit:
 
 - [ ] The provider directory `src/lfx/src/lfx/components/<provider>/` exists
       and contains one or more `Component` subclasses.
-- [ ] Imports from `lfx.*` only (no `from earthmind...`); the bundle is
-      installed against the public `BUNDLE_API` surface, not EarthMind internals.
-      Check with: `grep -r "from earthmind" src/lfx/src/lfx/components/<provider>/`
+- [ ] Imports from `lfx.*` only (no `from terraflow...`); the bundle is
+      installed against the public `BUNDLE_API` surface, not Terraflow internals.
+      Check with: `grep -r "from terraflow" src/lfx/src/lfx/components/<provider>/`
 - [ ] No deactivated / legacy duplicate exists under `src/lfx/src/lfx/components/deactivated/<provider>/`.
 - [ ] The runtime dependencies the component pulls in (e.g. `langchain-community`,
       a vendor SDK) can be declared in the bundle's `pyproject.toml` without
-      cycling through `lfx` or `earthmind-base`.
+      cycling through `lfx` or `terraflow-base`.
 
 Pick the **bundle name** (snake_case, lowercase, matches the directory name —
 e.g. `duckduckgo`, `arxiv`, `wikipedia`) and the **distribution name**
@@ -68,7 +68,7 @@ Copy [`src/bundles/duckduckgo/pyproject.toml`](duckduckgo/pyproject.toml) and
 substitute names + the runtime-dep block. The non-obvious bits:
 
 - `dependencies` lists every runtime dep the component imports. Floor `lfx`
-  at the current EarthMind/LFX `major.minor` line and cap below the next `lfx`
+  at the current Terraflow/LFX `major.minor` line and cap below the next `lfx`
   major — e.g. `"lfx>=1.10.0,<2.0.0"`. You normally don't hand-write this:
   `port_bundle.py` fills it in from `src/lfx/pyproject.toml` at port time, and
   `make patch` re-syncs every existing bundle via
@@ -78,16 +78,16 @@ substitute names + the runtime-dep block. The non-obvious bits:
   lfx's `BUNDLE_API_VERSION`, not the version cap.
 - **Platform-gated deps:** if a runtime dep has no wheel on some platform
   (e.g. `ibm-db` ships none for linux/aarch64), gate it with a PEP 508 marker
-  so `pip install earthmind` still succeeds there, e.g.
+  so `pip install terraflow` still succeeds there, e.g.
   `"ibm-db>=3.2.9,<4.0.0; sys_platform != 'linux' or platform_machine != 'aarch64'"`.
   Import that dep *lazily* (inside the method that uses it, not at module top
   level) so the bundle still loads on the excluded platform and the affected
   component degrades gracefully instead of breaking discovery. The
-  cross-platform install test gates a hard-dep bundle through earthmind's main
+  cross-platform install test gates a hard-dep bundle through terraflow's main
   install; if the **bundle itself** (not just a transitive dep) cannot install
   on a platform, also add the same marker to its dependency line in the root
-  [`pyproject.toml`](../../pyproject.toml) so earthmind does not require it there.
-- `[project.entry-points."earthmind.extensions"]`: `<dist-name> = "lfx_<bundle>"`.
+  [`pyproject.toml`](../../pyproject.toml) so terraflow does not require it there.
+- `[project.entry-points."terraflow.extensions"]`: `<dist-name> = "lfx_<bundle>"`.
   This is what `lfx.extension.loader._plugins._manifest_via_entry_point`
   reads to find the manifest; an editable install with no `dist.files`
   visibility falls back to this entry point.
@@ -100,7 +100,7 @@ substitute names + the runtime-dep block. The non-obvious bits:
 
 ```json
 {
-  "$schema": "https://schemas.earthmind.org/extension/v1.json",
+  "$schema": "https://schemas.terraflow.org/extension/v1.json",
   "id": "lfx-<bundle>",
   "version": "0.1.0",
   "name": "<Human-readable bundle name>",
@@ -182,10 +182,10 @@ Then surgically remove the three references in
 Three edits — all mechanical:
 
 ```toml
-# 1. Add to [project] dependencies (regular dep so `pip install earthmind`
+# 1. Add to [project] dependencies (regular dep so `pip install terraflow`
 #    still pulls the component in -- no user-visible change at install time).
 dependencies = [
-    "earthmind-base[complete]>=0.10.0",
+    "terraflow-base[complete]>=0.10.0",
     "lfx-duckduckgo>=0.1.0",
     "lfx-<bundle>>=0.1.0",                 # <-- add this line
 ]
@@ -206,8 +206,8 @@ members = [
 
 ### 3b. `src/backend/base/pyproject.toml` (optional)
 
-Only touch this if the component had a `earthmind-base[<bundle>]` extra.
-Remove the extra and any `earthmind-base[<bundle>]` reference from
+Only touch this if the component had a `terraflow-base[<bundle>]` extra.
+Remove the extra and any `terraflow-base[<bundle>]` reference from
 `complete`. The duckduckgo port did this; if the component had no extras
 (e.g. arxiv), skip this section entirely.
 
@@ -382,26 +382,26 @@ Dockerfiles need an extra line:
   already in the base lock.
 
 If your bundle has no extras and its deps are already in
-`earthmind-base[complete]`, the `--no-deps` install is enough.
+`terraflow-base[complete]`, the `--no-deps` install is enough.
 
 ---
 
 ## Common pitfalls
 
-- **Component imports `from earthmind...`**: the bundle is installed against
-  `lfx`, not `earthmind`. Either rewrite the import to use the public
+- **Component imports `from terraflow...`**: the bundle is installed against
+  `lfx`, not `terraflow`. Either rewrite the import to use the public
   `BUNDLE_API` surface or leave the component in-tree.
 - **`extension.json` not in the wheel**: `dist.files` doesn't surface it,
   so non-editable installs skip the bundle. Confirm the `[tool.hatch.build.targets.wheel] include` glob picks it up.
 - **Bundle name has a hyphen**: only the *distribution* name uses
   hyphens (`lfx-duckduckgo`); the *bundle* name is snake_case
   (`duckduckgo`). The schema rejects hyphens in `bundles[].name`.
-- **Forgot the `earthmind.extensions` entry-point**: editable installs
+- **Forgot the `terraflow.extensions` entry-point**: editable installs
   fail discovery silently — `installed_extension_roots()` returns an
   empty dict and the bundle never enters the registry.
 - **Migration entries missing**: saved flows still validate, but the
   palette can't render the legacy node — the user sees a "component not
-  found" toast. The four-entry block in step 4 covers every shape EarthMind
+  found" toast. The four-entry block in step 4 covers every shape Terraflow
   has serialized in the past.
 
 ---

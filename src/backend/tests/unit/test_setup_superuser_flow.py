@@ -1,9 +1,9 @@
 import filelock
 import pytest
-from earthmind.services.auth.utils import verify_password
-from earthmind.services.database.models.user.model import User
-from earthmind.services.deps import get_auth_service, get_settings_service, session_scope
-from earthmind.services.utils import SetupSuperuserResult, setup_superuser, teardown_superuser
+from terraflow.services.auth.utils import verify_password
+from terraflow.services.database.models.user.model import User
+from terraflow.services.deps import get_auth_service, get_settings_service, session_scope
+from terraflow.services.utils import SetupSuperuserResult, setup_superuser, teardown_superuser
 from lfx.services.settings.constants import DEFAULT_SUPERUSER, DEFAULT_SUPERUSER_PASSWORD
 from sqlmodel import select
 
@@ -18,12 +18,12 @@ async def initialized_services(monkeypatch, tmp_path):
     LifespanManager. This avoids the heavy lifespan startup/shutdown (MCP servers,
     background tasks, streamable HTTP) that causes hangs on CI Linux.
     """
-    from earthmind.services.utils import initialize_services, teardown_services
+    from terraflow.services.utils import initialize_services, teardown_services
     from lfx.services.manager import get_service_manager
 
     db_path = tmp_path / "test.db"
-    monkeypatch.setenv("EARTHMIND_DATABASE_URL", f"sqlite:///{db_path}")
-    monkeypatch.setenv("EARTHMIND_AUTO_LOGIN", "false")
+    monkeypatch.setenv("TERRAFLOW_DATABASE_URL", f"sqlite:///{db_path}")
+    monkeypatch.setenv("TERRAFLOW_AUTO_LOGIN", "false")
 
     get_service_manager().factories.clear()
     get_service_manager().services.clear()

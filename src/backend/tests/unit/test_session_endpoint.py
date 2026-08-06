@@ -2,9 +2,9 @@ from uuid import uuid4
 
 import pytest
 from httpx import AsyncClient
-from earthmind.memory import aadd_messagetables
-from earthmind.services.database.models.message.model import MessageTable
-from earthmind.services.deps import session_scope
+from terraflow.memory import aadd_messagetables
+from terraflow.services.database.models.message.model import MessageTable
+from terraflow.services.deps import session_scope
 
 
 @pytest.fixture

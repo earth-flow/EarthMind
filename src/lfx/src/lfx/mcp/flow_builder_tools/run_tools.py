@@ -2,7 +2,7 @@
 
 The "do the bigger thing" tools — propose a plan to the user, build a whole
 flow from a spec, execute the canvas flow, generate a brand-new component.
-Each is decoupled from ``earthmind`` via late imports (``lfx`` ships without
+Each is decoupled from ``terraflow`` via late imports (``lfx`` ships without
 the backend), and the run/generate tools coordinate with the per-request
 state in ``_state`` so the canvas the user sees is the canvas that runs.
 """
@@ -224,7 +224,7 @@ class RunFlow(Component):
     canvas animates like a normal Run, and the result text is returned to
     the agent so it can answer follow-up questions about it.
 
-    Decoupled from ``earthmind`` via a late import (same pattern as
+    Decoupled from ``terraflow`` via a late import (same pattern as
     ``_load_registry_user_aware``): ``lfx`` may run without the backend.
     """
 
@@ -260,13 +260,13 @@ class RunFlow(Component):
             return Data(data={"error": msg, "text": msg})
 
         try:
-            from earthmind.agentic.services.flow_run import run_working_flow
+            from terraflow.agentic.services.flow_run import run_working_flow
         except ImportError:
             msg = "Flow execution is not available in this environment."
             return Data(data={"error": msg, "text": msg})
 
         try:
-            from earthmind.agentic.services.user_components_context import current_user_id
+            from terraflow.agentic.services.user_components_context import current_user_id
 
             user_id = current_user_id()
         except ImportError:
@@ -288,11 +288,11 @@ class RunFlow(Component):
         # tops up the credential when the provider matches (see
         # inject_model_into_flow). Deterministic and LLM-agnostic.
         try:
-            from earthmind.agentic.services.agent_run_context import (
+            from terraflow.agentic.services.agent_run_context import (
                 current_agent_run_model,
                 current_requested_agent_model,
             )
-            from earthmind.agentic.services.flow_preparation import inject_model_into_flow
+            from terraflow.agentic.services.flow_preparation import inject_model_into_flow
 
             requested = current_requested_agent_model() or {}
             req_provider = requested.get("provider")
@@ -345,7 +345,7 @@ class RunFlow(Component):
 
 
 class GenerateComponent(Component):
-    """Generate, validate and register a NEW custom EarthMind component.
+    """Generate, validate and register a NEW custom Terraflow component.
 
     This is what lets ONE agent loop handle "create a component that does X
     and use it in a flow" without an intent router or phase orchestration:
@@ -354,13 +354,13 @@ class GenerateComponent(Component):
 
     Wraps the full backend pipeline (LLM generation → security scan → code
     + runtime validation with retries → user-scoped registration). Lazily
-    imports ``earthmind`` (same decoupling as ``RunFlow``): ``lfx`` may run
+    imports ``terraflow`` (same decoupling as ``RunFlow``): ``lfx`` may run
     without the backend.
     """
 
     display_name = "Generate Component"
     description = (
-        "Create a brand-new custom EarthMind component from a natural-language description. "
+        "Create a brand-new custom Terraflow component from a natural-language description. "
         "Use this when the user asks for a component/tool that does not exist yet. On success "
         "the component is validated and registered — then call search_components to find it by "
         "its class name and add it to the flow. Returns the generated component's class name."
@@ -389,16 +389,16 @@ class GenerateComponent(Component):
             return Data(data={"error": msg, "text": msg})
 
         try:
-            from earthmind.agentic.services.assistant_service import execute_flow_with_validation
-            from earthmind.agentic.services.file_events import reset_file_events
-            from earthmind.agentic.services.flow_types import EARTHMIND_ASSISTANT_FLOW
+            from terraflow.agentic.services.assistant_service import execute_flow_with_validation
+            from terraflow.agentic.services.file_events import reset_file_events
+            from terraflow.agentic.services.flow_types import TERRAFLOW_ASSISTANT_FLOW
         except ImportError:
             msg = "Component generation is not available in this environment."
             return Data(data={"error": msg, "text": msg})
 
         try:
-            from earthmind.agentic.services.agent_run_context import current_agent_run_model
-            from earthmind.agentic.services.user_components_context import current_user_id
+            from terraflow.agentic.services.agent_run_context import current_agent_run_model
+            from terraflow.agentic.services.user_components_context import current_user_id
 
             user_id = current_user_id()
             model = current_agent_run_model() or {}
@@ -422,7 +422,7 @@ class GenerateComponent(Component):
             reset_tool_cache()
             reset_file_events()
             return await execute_flow_with_validation(
-                flow_filename=EARTHMIND_ASSISTANT_FLOW,
+                flow_filename=TERRAFLOW_ASSISTANT_FLOW,
                 input_value=spec,
                 global_variables={"FLOW_ID": flow_id},
                 user_id=user_id,
@@ -450,7 +450,7 @@ class GenerateComponent(Component):
         # component. assistant_service drains this and emits a `validation_failed`
         # progress event so the user is told honestly the component wasn't built.
         try:
-            from earthmind.agentic.services.component_events import emit_component_generation_failed
+            from terraflow.agentic.services.component_events import emit_component_generation_failed
 
             emit_component_generation_failed(
                 error=err,

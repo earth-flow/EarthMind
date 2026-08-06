@@ -95,7 +95,7 @@ function SafariScrollFixInner() {
     scrollEl.addEventListener("touchstart", onTouchStart, { passive: true });
     scrollEl.addEventListener("touchmove", onTouchMove, { passive: true });
     scrollEl.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("earthmind-scroll-to-bottom", onForceSticky);
+    window.addEventListener("terraflow-scroll-to-bottom", onForceSticky);
 
     let rafId: ReturnType<typeof requestAnimationFrame>;
     const tick = () => {
@@ -126,7 +126,7 @@ function SafariScrollFixInner() {
       scrollEl.removeEventListener("touchstart", onTouchStart);
       scrollEl.removeEventListener("touchmove", onTouchMove);
       scrollEl.removeEventListener("scroll", onScroll);
-      window.removeEventListener("earthmind-scroll-to-bottom", onForceSticky);
+      window.removeEventListener("terraflow-scroll-to-bottom", onForceSticky);
       cancelAnimationFrame(rafId);
     };
   }, [scrollRef, stopScroll]);

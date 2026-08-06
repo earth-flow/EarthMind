@@ -12,8 +12,8 @@ from urllib.parse import urlparse
 import pytest
 from anyio import Path
 from httpx import AsyncClient
-from earthmind.initial_setup.constants import STARTER_FOLDER_NAME
-from earthmind.initial_setup.setup import (
+from terraflow.initial_setup.constants import STARTER_FOLDER_NAME
+from terraflow.initial_setup.setup import (
     copy_profile_pictures,
     detect_github_url,
     get_project_data,
@@ -21,11 +21,11 @@ from earthmind.initial_setup.setup import (
     load_starter_projects,
     update_projects_components_with_latest_component_versions,
 )
-from earthmind.interface.components import get_and_cache_all_types_dict
-from earthmind.services.auth.utils import create_super_user
-from earthmind.services.database.models import Flow
-from earthmind.services.database.models.folder.model import Folder
-from earthmind.services.deps import get_settings_service, session_scope
+from terraflow.interface.components import get_and_cache_all_types_dict
+from terraflow.services.auth.utils import create_super_user
+from terraflow.services.database.models import Flow
+from terraflow.services.database.models.folder.model import Folder
+from terraflow.services.deps import get_settings_service, session_scope
 from sqlalchemy.orm import selectinload
 from sqlmodel import select
 
@@ -201,48 +201,48 @@ async def test_refresh_starter_projects():
     ("url", "expected"),
     [
         (
-            "https://github.com/earthmind-ai/earthmind-bundles",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/heads/main.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/heads/main.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/heads/main.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/heads/main.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles.git",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/heads/main.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles.git",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/heads/main.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/tree/some.branch-0_1",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/heads/some.branch-0_1.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/tree/some.branch-0_1",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/heads/some.branch-0_1.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/tree/some/branch",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/heads/some/branch.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/tree/some/branch",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/heads/some/branch.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/tree/some/branch/",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/heads/some/branch.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/tree/some/branch/",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/heads/some/branch.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/releases/tag/v1.0.0-0_1",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/tags/v1.0.0-0_1.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/releases/tag/v1.0.0-0_1",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/tags/v1.0.0-0_1.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/releases/tag/foo/v1.0.0",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/tags/foo/v1.0.0.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/releases/tag/foo/v1.0.0",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/tags/foo/v1.0.0.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/releases/tag/foo/v1.0.0/",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/refs/tags/foo/v1.0.0.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/releases/tag/foo/v1.0.0/",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/refs/tags/foo/v1.0.0.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/commit/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/commit/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9.zip",
         ),
         (
-            "https://github.com/earthmind-ai/earthmind-bundles/commit/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9/",
-            "https://github.com/earthmind-ai/earthmind-bundles/archive/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9.zip",
+            "https://github.com/terraflow-ai/terraflow-bundles/commit/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9/",
+            "https://github.com/terraflow-ai/terraflow-bundles/archive/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9.zip",
         ),
         ("https://example.com/myzip.zip", "https://example.com/myzip.zip"),
     ],
@@ -269,7 +269,7 @@ async def test_detect_github_url(url, expected):
 async def test_load_bundles_from_urls():
     settings_service = get_settings_service()
     settings_service.settings.bundle_urls = [
-        "https://github.com/earthmind-ai/earthmind-bundles/commit/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9"
+        "https://github.com/terraflow-ai/terraflow-bundles/commit/68428ce16729a385fe1bcc0f1ec91fd5f5f420b9"
     ]
     settings_service.auth_settings.AUTO_LOGIN = True
 
@@ -289,7 +289,7 @@ async def test_load_bundles_from_urls():
 
     try:
         assert len(components_paths) == 1
-        assert "earthmind-bundles-68428ce16729a385fe1bcc0f1ec91fd5f5f420b9/components" in components_paths[0]
+        assert "terraflow-bundles-68428ce16729a385fe1bcc0f1ec91fd5f5f420b9/components" in components_paths[0]
 
         content = await (Path(components_paths[0]) / "embeddings" / "openai2.py").read_text(encoding="utf-8")
         assert "OpenAIEmbeddings2Component" in content
@@ -307,9 +307,9 @@ async def test_load_bundles_from_urls():
 
 @pytest.fixture
 def set_fs_flows_polling_interval():
-    os.environ["EARTHMIND_FS_FLOWS_POLLING_INTERVAL"] = "100"
+    os.environ["TERRAFLOW_FS_FLOWS_POLLING_INTERVAL"] = "100"
     yield
-    os.unsetenv("EARTHMIND_FS_FLOWS_POLLING_INTERVAL")
+    os.unsetenv("TERRAFLOW_FS_FLOWS_POLLING_INTERVAL")
 
 
 @pytest.mark.usefixtures("set_fs_flows_polling_interval")
@@ -333,7 +333,7 @@ async def test_sync_flows_from_fs(client: AsyncClient, logged_in_headers):
 
         # Construct the full path where the file was saved
         # The API saves relative paths to: storage_service.data_dir / "flows" / user_id / filename
-        from earthmind.services.deps import get_storage_service
+        from terraflow.services.deps import get_storage_service
 
         storage_service = get_storage_service()
         flow_file = storage_service.data_dir / "flows" / str(user_id) / flow_filename
@@ -375,7 +375,7 @@ def profile_pictures_temp_config(monkeypatch):
     config_path = SyncPath(temp_dir)
 
     # Set the config_dir to our temp directory
-    monkeypatch.setenv("EARTHMIND_CONFIG_DIR", str(config_path))
+    monkeypatch.setenv("TERRAFLOW_CONFIG_DIR", str(config_path))
 
     yield config_path
 
@@ -455,7 +455,7 @@ async def test_copy_profile_pictures_is_idempotent():
 
 async def test_copy_profile_pictures_source_exists():
     """Test that the source profile pictures directory exists in the package."""
-    from earthmind.initial_setup import setup
+    from terraflow.initial_setup import setup
 
     source_path = Path(setup.__file__).parent / "profile_pictures"
     assert await source_path.exists(), "Source profile_pictures directory should exist in package"
@@ -510,7 +510,7 @@ async def test_profile_picture_can_be_downloaded(client: AsyncClient, logged_in_
 
 async def test_copy_profile_pictures_handles_missing_config_dir():
     """Test that copy_profile_pictures raises error when config_dir is not set."""
-    with patch("earthmind.initial_setup.setup.get_storage_service") as mock_storage:
+    with patch("terraflow.initial_setup.setup.get_storage_service") as mock_storage:
         mock_settings = AsyncMock()
         mock_settings.settings_service.settings.config_dir = None
         mock_storage.return_value = mock_settings
@@ -721,7 +721,7 @@ def test_update_projects_resolves_parser_via_component_type_alias():
 
 async def test_update_project_file_success():
     """Test that update_project_file successfully writes to a writable path."""
-    from earthmind.initial_setup.setup import update_project_file
+    from terraflow.initial_setup.setup import update_project_file
 
     with tempfile.TemporaryDirectory() as temp_dir:
         project_path = Path(temp_dir) / "test_project.json"
@@ -742,7 +742,7 @@ async def test_update_project_file_success():
 
 async def test_update_project_file_readonly_filesystem():
     """Test that update_project_file handles read-only filesystem gracefully."""
-    from earthmind.initial_setup.setup import update_project_file
+    from terraflow.initial_setup.setup import update_project_file
 
     project_path = Path("/nonexistent/readonly/path/test_project.json")
     project = {"name": "Test Project", "data": {"old": "data"}}
@@ -757,7 +757,7 @@ async def test_update_project_file_readonly_filesystem():
 
 async def test_update_project_file_permission_denied():
     """Test that update_project_file handles permission denied gracefully."""
-    from earthmind.initial_setup.setup import update_project_file
+    from terraflow.initial_setup.setup import update_project_file
 
     with tempfile.TemporaryDirectory() as temp_dir:
         project_path = Path(temp_dir) / "test_project.json"
@@ -765,7 +765,7 @@ async def test_update_project_file_permission_denied():
         updated_data = {"new": "data"}
 
         # Mock aiofiles.open to raise OSError (permission denied)
-        with patch("earthmind.initial_setup.setup.aiofiles.open") as mock_open:
+        with patch("terraflow.initial_setup.setup.aiofiles.open") as mock_open:
             mock_open.side_effect = OSError(13, "Permission denied")
 
             # Should not raise
@@ -777,13 +777,13 @@ async def test_update_project_file_permission_denied():
 
 async def test_update_project_file_logs_debug_on_oserror():
     """Test that update_project_file logs a debug message on OSError."""
-    from earthmind.initial_setup.setup import update_project_file
+    from terraflow.initial_setup.setup import update_project_file
 
     project_path = Path("/nonexistent/readonly/path/test_project.json")
     project = {"name": "Test Project", "data": {"old": "data"}}
     updated_data = {"new": "data"}
 
-    with patch("earthmind.initial_setup.setup.logger") as mock_logger:
+    with patch("terraflow.initial_setup.setup.logger") as mock_logger:
         mock_logger.adebug = AsyncMock()
         await update_project_file(project_path, project, updated_data)
         # Verify debug log was called (either success or error path)

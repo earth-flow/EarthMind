@@ -35,7 +35,7 @@ def _make_component(
 ) -> FileSystemToolComponent:
     """Build a FileSystemToolComponent pinned to a fresh sandbox.
 
-    The component bypasses the EarthMindClient by binding ``_user_id``
+    The component bypasses the TerraflowClient by binding ``_user_id``
     directly and overriding ``_resolve_auto_login``. We seed a pepper
     file so the hash is reproducible across tests; otherwise the first
     write creates one and subsequent runs see a different namespace.
@@ -44,7 +44,7 @@ def _make_component(
     pepper_path = base_dir / ".fs_pepper"
     if not pepper_path.exists():
         pepper_path.write_bytes(secrets.token_bytes(32))
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(base_dir))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(base_dir))
     component = FileSystemToolComponent()
     monkeypatch.setattr(
         FileSystemToolComponent,

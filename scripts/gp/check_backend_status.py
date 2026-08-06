@@ -21,8 +21,8 @@ from pathlib import Path
 import requests
 from gp_client import BASE_URL, GP_INSTANCE, TARGET_LANGS, get_headers
 
-DEFAULT_SOURCE = Path(__file__).parent.parent.parent / "src/backend/base/earthmind/locales/en.json"
-GP_BACKEND_BUNDLE = os.getenv("GP_BACKEND_BUNDLE", "earthmind-ui-backend-v2")
+DEFAULT_SOURCE = Path(__file__).parent.parent.parent / "src/backend/base/terraflow/locales/en.json"
+GP_BACKEND_BUNDLE = os.getenv("GP_BACKEND_BUNDLE", "terraflow-ui-backend-v2")
 REQUEST_TIMEOUT = 60
 
 

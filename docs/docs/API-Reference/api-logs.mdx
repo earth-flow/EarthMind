@@ -16,18 +16,18 @@ import exampleJavascriptApiLogsRetrieveLogsWithOptionalParameters from '!!raw-lo
 
 
 
-Retrieve logs for your EarthMind flows and server.
+Retrieve logs for your Terraflow flows and server.
 
 ## Enable log retrieval
 
-The `/logs` endpoint requires log retrieval to be enabled in your EarthMind instance.
+The `/logs` endpoint requires log retrieval to be enabled in your Terraflow instance.
 
-To enable log retrieval, set the following [environment variables](/environment-variables) in your EarthMind `.env` file, and then start EarthMind with `uv run earthmind run --env-file .env`:
+To enable log retrieval, set the following [environment variables](/environment-variables) in your Terraflow `.env` file, and then start Terraflow with `uv run terraflow run --env-file .env`:
 
 ```text
-EARTHMIND_ENABLE_LOG_RETRIEVAL=True
-EARTHMIND_LOG_RETRIEVER_BUFFER_SIZE=10000 // Must be greater than 0
-EARTHMIND_LOG_LEVEL=DEBUG // Can be DEBUG, ERROR, INFO, WARNING, or CRITICAL
+TERRAFLOW_ENABLE_LOG_RETRIEVAL=True
+TERRAFLOW_LOG_RETRIEVER_BUFFER_SIZE=10000 // Must be greater than 0
+TERRAFLOW_LOG_LEVEL=DEBUG // Can be DEBUG, ERROR, INFO, WARNING, or CRITICAL
 ```
 
 ## Stream logs

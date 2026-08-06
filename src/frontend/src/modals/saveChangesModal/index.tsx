@@ -71,7 +71,7 @@ export function SaveChangesModal({
             <a
               target="_blank"
               className="text-accent-pink-foreground hover:underline"
-              href="https://docs.earthmind.org/environment-variables#visual-editor-and-playground-behavior"
+              href="https://docs.terraflow.org/environment-variables#visual-editor-and-playground-behavior"
               rel="noopener"
             >
               {t("flow.enableAutoSaving")}

@@ -1,10 +1,10 @@
 ---
-title: Deploy EarthMind on a remote server
+title: Deploy Terraflow on a remote server
 slug: /deployment-caddyfile
 ---
 
-Learn how to deploy EarthMind on your own remote server with secure web access.
-This guide walks you through setting up EarthMind on a remote server using [Docker](https://docs.docker.com/) and configuring secure web access with [Caddy](https://caddyserver.com/docs/).
+Learn how to deploy Terraflow on your own remote server with secure web access.
+This guide walks you through setting up Terraflow on a remote server using [Docker](https://docs.docker.com/) and configuring secure web access with [Caddy](https://caddyserver.com/docs/).
 
 ## Prerequisites
 
@@ -58,7 +58,7 @@ Memory usage: 5%                IPv4 address for eth0: 5.161.250.132
 Swap usage:   0%                IPv6 address for eth0: 2a01:4ff:f0:4de7::1
 ```
 
-## Deploy EarthMind on your server
+## Deploy Terraflow on your server
 
 Now that your local machine is connected to your remote server with SSH, you can install Docker, create a `docker-compose.yml` file, and serve it publicly with a reverse proxy, such as Caddy.
 
@@ -79,23 +79,23 @@ Now that your local machine is connected to your remote server with SSH, you can
 
 3. Add the following values to `docker-compose.yml`, and then save the file.
 
-    The following example defines the EarthMind service from the `earthmind:latest` image and a Caddy service to expose EarthMind through a reverse proxy.
+    The following example defines the Terraflow service from the `terraflow:latest` image and a Caddy service to expose Terraflow through a reverse proxy.
 
     :::tip
-    The [host-earthmind](https://github.com/datastax/host-earthmind) repository offers pre-built copies of this `docker-compose.yml` and `Caddyfile`, if you prefer to fork the repository to your server.
+    The [host-terraflow](https://github.com/datastax/host-terraflow) repository offers pre-built copies of this `docker-compose.yml` and `Caddyfile`, if you prefer to fork the repository to your server.
     :::
 
     ```yml
     version: "3.8"
 
     services:
-      earthmind:
-        image: earthmindai/earthmind:latest
+      terraflow:
+        image: terraflowai/terraflow:latest
         ports:
           - "7860:7860"
         environment:
-          - EARTHMIND_HOST=0.0.0.0
-          - EARTHMIND_PORT=7860
+          - TERRAFLOW_HOST=0.0.0.0
+          - TERRAFLOW_PORT=7860
 
       caddy:
         image: caddy:latest
@@ -107,7 +107,7 @@ Now that your local machine is connected to your remote server with SSH, you can
           - caddy_data:/data
           - caddy_config:/config
         depends_on:
-          - earthmind
+          - terraflow
 
     volumes:
       caddy_data:
@@ -122,19 +122,19 @@ Now that your local machine is connected to your remote server with SSH, you can
 
 5. Add the following values to `Caddyfile`, and then save the file.
 
-    This Caddyfile configures Caddy to listen on port 80, and forward all incoming requests to port 80 to the EarthMind service at port 7860.
+    This Caddyfile configures Caddy to listen on port 80, and forward all incoming requests to port 80 to the Terraflow service at port 7860.
 
     ```
     :80 {
-        reverse_proxy earthmind:7860
+        reverse_proxy terraflow:7860
     }
     ```
 
 6. To deploy your server, run `docker-compose up`.
 
-    When the `Welcome to EarthMind` message appears, EarthMind is running and accessible internally at `http://0.0.0.0:7860` inside the Docker network.
+    When the `Welcome to Terraflow` message appears, Terraflow is running and accessible internally at `http://0.0.0.0:7860` inside the Docker network.
 
-7. To access your EarthMind server over the public internet, navigate to your server's public IP address, such as `http://5.161.250.132`.
+7. To access your Terraflow server over the public internet, navigate to your server's public IP address, such as `http://5.161.250.132`.
 This address uses HTTP because HTTPS isn't enabled yet.
 
 8. Recommended: Enable HTTPS:
@@ -143,17 +143,17 @@ This address uses HTTP because HTTPS isn't enabled yet.
 
         ```
         Type: A
-        Name: earthmind
+        Name: terraflow
         Value: 5.161.250.132  # Set to your server's IP address
         ```
 
     2. Stop your server.
 
-    3. Modify your Caddyfile to include port `443` so Caddy can forward both HTTP (port 80) and HTTPS (port 443) requests to the EarthMind service:
+    3. Modify your Caddyfile to include port `443` so Caddy can forward both HTTP (port 80) and HTTPS (port 443) requests to the Terraflow service:
 
         ```
         :80, :443 {
-            reverse_proxy earthmind:7860
+            reverse_proxy terraflow:7860
         }
         ```
 
@@ -165,6 +165,6 @@ This address uses HTTP because HTTPS isn't enabled yet.
 
 ## See also
 
-To package your local flows into a custom Docker image, see [Containerize a EarthMind application](/develop-application).
+To package your local flows into a custom Docker image, see [Containerize a Terraflow application](/develop-application).
 
-For a step-by-step guide to deploying EarthMind, including deployments to [fly.io](https://fly.io/) and [Flightcontrol.dev](https://www.flightcontrol.dev/), see [How to Host EarthMind Anywhere](https://www.youtube.com/watch?v=q4qt5hSnte4).
+For a step-by-step guide to deploying Terraflow, including deployments to [fly.io](https://fly.io/) and [Flightcontrol.dev](https://www.flightcontrol.dev/), see [How to Host Terraflow Anywhere](https://www.youtube.com/watch?v=q4qt5hSnte4).

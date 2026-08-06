@@ -11,7 +11,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 import pytest
-from earthmind.api.v1.schemas.authz_shares import ShareCreate
+from terraflow.api.v1.schemas.authz_shares import ShareCreate
 from pydantic import ValidationError
 
 

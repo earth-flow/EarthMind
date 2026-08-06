@@ -4,23 +4,23 @@ from lfx.cli.runtime_variables import build_request_variables_from_global_vars
 from lfx.services.variable.service import VariableService
 
 
-def test_build_request_variables_parses_earthmind_request_variables():
+def test_build_request_variables_parses_terraflow_request_variables():
     merged = {"access_token": "from-json", "USER_ID": "u1"}
     global_vars = {
-        "EARTHMIND_REQUEST_VARIABLES": json.dumps(merged),
+        "TERRAFLOW_REQUEST_VARIABLES": json.dumps(merged),
         "access_token": "from-raw-override",
-        "x-earthmind-global-var-access-token": "alias-value",
+        "x-terraflow-global-var-access-token": "alias-value",
     }
     flat = build_request_variables_from_global_vars(global_vars)
     assert flat["access_token"] == "from-raw-override"  # noqa: S105  # test value, not a credential
     assert flat["USER_ID"] == "u1"
-    assert flat["x-earthmind-global-var-access-token"] == "alias-value"
+    assert flat["x-terraflow-global-var-access-token"] == "alias-value"
 
 
 def test_build_request_variables_keeps_raw_keys_when_blob_is_malformed():
-    """A malformed EARTHMIND_REQUEST_VARIABLES blob is skipped; raw keys still merge."""
+    """A malformed TERRAFLOW_REQUEST_VARIABLES blob is skipped; raw keys still merge."""
     global_vars = {
-        "EARTHMIND_REQUEST_VARIABLES": "{not valid json",
+        "TERRAFLOW_REQUEST_VARIABLES": "{not valid json",
         "access_token": "raw-tok",
     }
     flat = build_request_variables_from_global_vars(global_vars)
@@ -30,7 +30,7 @@ def test_build_request_variables_keeps_raw_keys_when_blob_is_malformed():
 def test_build_request_variables_ignores_non_dict_blob():
     """A JSON blob that is not an object is ignored; raw keys still merge."""
     global_vars = {
-        "EARTHMIND_REQUEST_VARIABLES": json.dumps(["a", "b"]),
+        "TERRAFLOW_REQUEST_VARIABLES": json.dumps(["a", "b"]),
         "access_token": "raw-tok",
     }
     flat = build_request_variables_from_global_vars(global_vars)
@@ -40,7 +40,7 @@ def test_build_request_variables_ignores_non_dict_blob():
 def test_build_request_variables_coerces_structured_blob_values():
     """JSON null is dropped (never the truthy "None"); dict/list become valid JSON strings."""
     global_vars = {
-        "EARTHMIND_REQUEST_VARIABLES": json.dumps(
+        "TERRAFLOW_REQUEST_VARIABLES": json.dumps(
             {"good": "tok", "null_cred": None, "nested": {"a": 1}, "listy": [1, 2]}
         ),
     }
@@ -88,7 +88,7 @@ async def test_variable_service_reads_active_request_scope():
     token = activate_request_variables(
         {
             "wxo_github_access_token": "tok-123",
-            "x-earthmind-global-var-wxo-github-access-token": "tok-123",
+            "x-terraflow-global-var-wxo-github-access-token": "tok-123",
         }
     )
     try:

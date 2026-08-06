@@ -617,8 +617,8 @@ class TestMCPComponentConfigPriority:
         }
 
         with (
-            patch("earthmind.api.v2.mcp.get_server") as mock_get_server,
-            patch("earthmind.services.database.models.user.crud.get_user_by_id") as mock_get_user,
+            patch("terraflow.api.v2.mcp.get_server") as mock_get_server,
+            patch("terraflow.services.database.models.user.crud.get_user_by_id") as mock_get_user,
             patch("lfx.components.models_and_agents.mcp_component.session_scope"),
             patch.object(component.stdio_client, "connect_to_server") as mock_connect,
         ):
@@ -653,8 +653,8 @@ class TestMCPComponentConfigPriority:
         }
 
         with (
-            patch("earthmind.api.v2.mcp.get_server") as mock_get_server,
-            patch("earthmind.services.database.models.user.crud.get_user_by_id") as mock_get_user,
+            patch("terraflow.api.v2.mcp.get_server") as mock_get_server,
+            patch("terraflow.services.database.models.user.crud.get_user_by_id") as mock_get_user,
             patch("lfx.components.models_and_agents.mcp_component.session_scope"),
             patch.object(component.stdio_client, "connect_to_server") as mock_connect,
         ):
@@ -683,8 +683,8 @@ class TestMCPComponentConfigPriority:
         component._user_id = "test_user_123"
 
         with (
-            patch("earthmind.api.v2.mcp.get_server") as mock_get_server,
-            patch("earthmind.services.database.models.user.crud.get_user_by_id") as mock_get_user,
+            patch("terraflow.api.v2.mcp.get_server") as mock_get_server,
+            patch("terraflow.services.database.models.user.crud.get_user_by_id") as mock_get_user,
             patch("lfx.components.models_and_agents.mcp_component.session_scope"),
             patch.object(component.stdio_client, "connect_to_server") as mock_connect,
         ):
@@ -715,8 +715,8 @@ class TestMCPComponentConfigPriority:
         component._user_id = "api_user_456"
 
         with (
-            patch("earthmind.api.v2.mcp.get_server") as mock_get_server,
-            patch("earthmind.services.database.models.user.crud.get_user_by_id") as mock_get_user,
+            patch("terraflow.api.v2.mcp.get_server") as mock_get_server,
+            patch("terraflow.services.database.models.user.crud.get_user_by_id") as mock_get_user,
             patch("lfx.components.models_and_agents.mcp_component.session_scope"),
             patch.object(component.stdio_client, "connect_to_server") as mock_connect,
         ):
@@ -737,17 +737,17 @@ class TestMCPComponentConfigPriority:
     # heavyweight approach — the patch intercepts *every* import executed while active,
     # including unrelated library code pulled in by awaits, mocks, or assertions — but
     # targeted alternatives (sys.modules / importlib) do not reliably reproduce the
-    # `ModuleNotFoundError` raised from an `import earthmind.*` statement inside the
+    # `ModuleNotFoundError` raised from an `import terraflow.*` statement inside the
     # code under test. The `real_import` fallback forwards all non-matching names to
     # the real import machinery; the `name`-prefix guard in each fake_import is kept
     # as tight as possible so surrounding test plumbing is not affected.
 
     @pytest.mark.asyncio
-    async def test_update_tool_list_falls_back_to_value_config_when_earthmind_absent(self, component):
-        """Test LFX standalone mode falls back to value config when EarthMind is unavailable.
+    async def test_update_tool_list_falls_back_to_value_config_when_terraflow_absent(self, component):
+        """Test LFX standalone mode falls back to value config when Terraflow is unavailable.
 
-        Regression test: when lfx is run without the full EarthMind package installed
-        (e.g., serving a flow via `lfx`), importing `earthmind.api.v2.mcp` raises
+        Regression test: when lfx is run without the full Terraflow package installed
+        (e.g., serving a flow via `lfx`), importing `terraflow.api.v2.mcp` raises
         ModuleNotFoundError. The component must gracefully fall back to the server
         config embedded in the flow JSON (server_config_from_value) rather than failing.
         """
@@ -761,10 +761,10 @@ class TestMCPComponentConfigPriority:
         component._user_id = "test_user_123"
 
         real_import = builtins.__import__
-        earthmind_prefixes = ("earthmind.api.v2.mcp", "earthmind.services.database")
+        terraflow_prefixes = ("terraflow.api.v2.mcp", "terraflow.services.database")
 
         def fake_import(name, import_globals=None, import_locals=None, fromlist=(), level=0):
-            if any(name == p or name.startswith(p + ".") for p in earthmind_prefixes):
+            if any(name == p or name.startswith(p + ".") for p in terraflow_prefixes):
                 raise ModuleNotFoundError(name=name)
             return real_import(name, import_globals, import_locals, fromlist, level)
 
@@ -790,13 +790,13 @@ class TestMCPComponentConfigPriority:
 
     @pytest.mark.asyncio
     async def test_update_tool_list_surfaces_transitive_import_error_instead_of_falling_back(self, component):
-        """A transitive ModuleNotFoundError inside EarthMind must NOT be silently swallowed.
+        """A transitive ModuleNotFoundError inside Terraflow must NOT be silently swallowed.
 
-        If a EarthMind dependency (e.g. sqlmodel) fails to import while loading
-        earthmind.services.database.models.user.crud, that's a real bug in the full
-        EarthMind stack — not LFX standalone mode. We must not silently fall back
+        If a Terraflow dependency (e.g. sqlmodel) fails to import while loading
+        terraflow.services.database.models.user.crud, that's a real bug in the full
+        Terraflow stack — not LFX standalone mode. We must not silently fall back
         to the flow-embedded config, because the database config is supposed to
-        take precedence when EarthMind is available.
+        take precedence when Terraflow is available.
         """
         import builtins
 
@@ -812,8 +812,8 @@ class TestMCPComponentConfigPriority:
 
         def fake_import(name, import_globals=None, import_locals=None, fromlist=(), level=0):
             # Simulate a transitive dependency failure: sqlmodel is the missing module,
-            # not a EarthMind module. This should NOT be treated as standalone mode.
-            if name.startswith("earthmind.services.database"):
+            # not a Terraflow module. This should NOT be treated as standalone mode.
+            if name.startswith("terraflow.services.database"):
                 raise ModuleNotFoundError(transitive_error_msg, name="sqlmodel")
             return real_import(name, import_globals, import_locals, fromlist, level)
 
@@ -839,7 +839,7 @@ class TestMCPComponentConfigPriority:
         """A plain ImportError (attribute missing, not module missing) must surface.
 
         Regression test for the intentional `except ModuleNotFoundError` narrowing: if
-        an installed EarthMind no longer exposes `get_server` or `get_user_by_id` (real
+        an installed Terraflow no longer exposes `get_server` or `get_user_by_id` (real
         API break), the resulting ImportError — which is NOT a ModuleNotFoundError —
         must NOT be swallowed as standalone mode. It must propagate to the outer
         handler and surface as a `ValueError("Error updating tool list: ...")`.
@@ -858,10 +858,10 @@ class TestMCPComponentConfigPriority:
             # The module imports fine, but a specific attribute is missing — this
             # raises plain ImportError (not ModuleNotFoundError) at the `from ... import`
             # line. Emulate that by raising ImportError when this module is requested
-            # with a fromlist, just as `from earthmind.api.v2.mcp import get_server` would.
-            if name == "earthmind.api.v2.mcp" and fromlist and "get_server" in fromlist:
-                msg = "cannot import name 'get_server' from 'earthmind.api.v2.mcp'"
-                raise ImportError(msg, name="earthmind.api.v2.mcp")
+            # with a fromlist, just as `from terraflow.api.v2.mcp import get_server` would.
+            if name == "terraflow.api.v2.mcp" and fromlist and "get_server" in fromlist:
+                msg = "cannot import name 'get_server' from 'terraflow.api.v2.mcp'"
+                raise ImportError(msg, name="terraflow.api.v2.mcp")
             return real_import(name, import_globals, import_locals, fromlist, level)
 
         with (
@@ -882,11 +882,11 @@ class TestMCPComponentConfigPriority:
 
     @pytest.mark.asyncio
     async def test_update_tool_list_surfaces_lfx_services_deps_missing(self, component):
-        """A ModuleNotFoundError for an lfx module (not earthmind.*) must surface.
+        """A ModuleNotFoundError for an lfx module (not terraflow.*) must surface.
 
         Edge-case regression test: if `lfx.services.deps` itself is missing (a
-        packaging error inside lfx), the prefix check `missing_module == "earthmind"
-        or missing_module.startswith("earthmind.")` correctly returns False and the
+        packaging error inside lfx), the prefix check `missing_module == "terraflow"
+        or missing_module.startswith("terraflow.")` correctly returns False and the
         error is re-raised. Locks in the intended precedence rule so a future rewrite
         of the prefix check cannot silently convert this into a standalone fallback.
         """
@@ -996,8 +996,8 @@ async def test_config_priority_with_fixtures(mock_db_session_with_servers):
 
     # Inject the mock session directly rather than mocking session_scope
     with (
-        patch("earthmind.api.v2.mcp.get_server") as mock_get_server,
-        patch("earthmind.services.database.models.user.crud.get_user_by_id") as mock_get_user,
+        patch("terraflow.api.v2.mcp.get_server") as mock_get_server,
+        patch("terraflow.services.database.models.user.crud.get_user_by_id") as mock_get_user,
         patch(
             "lfx.components.models_and_agents.mcp_component.session_scope",
             return_value=mock_db_session_with_servers,

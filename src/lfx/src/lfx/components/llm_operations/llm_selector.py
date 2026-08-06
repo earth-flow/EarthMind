@@ -18,7 +18,7 @@ from lfx.template.field.base import Output
 class LLMSelectorComponent(Component):
     display_name = "LLM Selector"
     description = "Routes the input to the most appropriate LLM based on OpenRouter model specifications"
-    documentation: str = "https://docs.earthmind.org/llm-selector"
+    documentation: str = "https://docs.terraflow.org/llm-selector"
     icon = "git-branch"
 
     # Constants for magic values
@@ -187,26 +187,26 @@ class LLMSelectorComponent(Component):
         finally:
             self.status = ""
 
-    def _get_api_model_id_for_earthmind_model(self, earthmind_model_name: str) -> str | None:
-        """Attempt to find the OpenRouter API ID for a given EarthMind model name."""
-        if not earthmind_model_name:
+    def _get_api_model_id_for_terraflow_model(self, terraflow_model_name: str) -> str | None:
+        """Attempt to find the OpenRouter API ID for a given Terraflow model name."""
+        if not terraflow_model_name:
             return None
 
-        potential_names_to_check = [earthmind_model_name, self._simplify_model_name(earthmind_model_name)]
+        potential_names_to_check = [terraflow_model_name, self._simplify_model_name(terraflow_model_name)]
 
-        if earthmind_model_name.startswith("models/"):
-            name_without_prefix = earthmind_model_name[len("models/") :]
+        if terraflow_model_name.startswith("models/"):
+            name_without_prefix = terraflow_model_name[len("models/") :]
             potential_names_to_check.append(name_without_prefix)
             potential_names_to_check.append(self._simplify_model_name(name_without_prefix))
 
-        elif earthmind_model_name.startswith("community_models/"):
-            name_without_prefix = earthmind_model_name[len("community_models/") :]
+        elif terraflow_model_name.startswith("community_models/"):
+            name_without_prefix = terraflow_model_name[len("community_models/") :]
             potential_names_to_check.append(name_without_prefix)
             simplified_no_prefix = self._simplify_model_name(name_without_prefix)
             potential_names_to_check.append(simplified_no_prefix)
 
-        elif earthmind_model_name.startswith("community_models/"):
-            name_without_prefix = earthmind_model_name[len("community_models/") :]
+        elif terraflow_model_name.startswith("community_models/"):
+            name_without_prefix = terraflow_model_name[len("community_models/") :]
             potential_names_to_check.append(name_without_prefix)
             simplified_no_prefix_comm = self._simplify_model_name(name_without_prefix)
             potential_names_to_check.append(simplified_no_prefix_comm)
@@ -218,31 +218,31 @@ class LLMSelectorComponent(Component):
                 return self._model_name_to_api_id[name_variant]
 
         self.log(
-            f"Could not map EarthMind model name '{earthmind_model_name}' "
+            f"Could not map Terraflow model name '{terraflow_model_name}' "
             f"(tried variants: {unique_names_to_check}) to an OpenRouter API ID."
         )
         return None
 
-    def _get_model_specs_dict(self, earthmind_model_name: str) -> dict[str, Any]:
-        """Get a dictionary of relevant model specifications for a given EarthMind model name."""
+    def _get_model_specs_dict(self, terraflow_model_name: str) -> dict[str, Any]:
+        """Get a dictionary of relevant model specifications for a given Terraflow model name."""
         if not self.use_openrouter_specs or not self._models_api_cache:
             return {
-                "id": earthmind_model_name,
-                "name": earthmind_model_name,
+                "id": terraflow_model_name,
+                "name": terraflow_model_name,
                 "description": "Specifications not available.",
             }
 
-        api_model_id = self._get_api_model_id_for_earthmind_model(earthmind_model_name)
+        api_model_id = self._get_api_model_id_for_terraflow_model(terraflow_model_name)
 
         if not api_model_id or api_model_id not in self._models_api_cache:
             log_msg = (
-                f"No cached API data found for EarthMind model '{earthmind_model_name}' "
+                f"No cached API data found for Terraflow model '{terraflow_model_name}' "
                 f"(mapped API ID: {api_model_id}). Returning basic info."
             )
             self.log(log_msg)
             return {
-                "id": earthmind_model_name,
-                "name": earthmind_model_name,
+                "id": terraflow_model_name,
+                "name": terraflow_model_name,
                 "description": "Full specifications not found in cache.",
             }
 
@@ -306,7 +306,7 @@ If no model seems suitable, pick the first model in the list (index 0) as a fall
 
         successful_result: Message | None = None
         try:
-            self.log(f"Starting model routing with {len(self.models)} available EarthMind models.")
+            self.log(f"Starting model routing with {len(self.models)} available Terraflow models.")
             self.log(f"Optimization preference: {self.optimization}")
             self.log(f"Input length: {len(self.input_value)} characters")
 
@@ -318,9 +318,9 @@ If no model seems suitable, pick the first model in the list (index 0) as a fall
 
             self.status = "Analyzing available models and preparing specifications..."
             model_specs_for_judge = []
-            for i, earthmind_model_instance in enumerate(self.models):
-                earthmind_model_name = get_model_name(earthmind_model_instance)
-                if not earthmind_model_name:
+            for i, terraflow_model_instance in enumerate(self.models):
+                terraflow_model_name = get_model_name(terraflow_model_instance)
+                if not terraflow_model_name:
                     self.log(f"Warning: Could not determine name for model at index {i}. Using placeholder.", "warning")
                     spec_dict = {
                         "id": f"unknown_model_{i}",
@@ -328,11 +328,11 @@ If no model seems suitable, pick the first model in the list (index 0) as a fall
                         "description": "Name could not be determined.",
                     }
                 else:
-                    spec_dict = self._get_model_specs_dict(earthmind_model_name)
+                    spec_dict = self._get_model_specs_dict(terraflow_model_name)
 
-                model_specs_for_judge.append({"index": i, "earthmind_name": earthmind_model_name, "specs": spec_dict})
+                model_specs_for_judge.append({"index": i, "terraflow_name": terraflow_model_name, "specs": spec_dict})
                 self.log(
-                    f"Prepared specs for EarthMind model {i} ('{earthmind_model_name}'): {spec_dict.get('name', 'N/A')}"
+                    f"Prepared specs for Terraflow model {i} ('{terraflow_model_name}'): {spec_dict.get('name', 'N/A')}"
                 )
 
             estimated_tokens = len(self.input_value.split()) * 1.3
@@ -364,7 +364,7 @@ Return ONLY the index number:"""
             self._selected_model_name = get_model_name(chosen_model_instance)
             if self._selected_model_name:
                 self._selected_api_model_id = (
-                    self._get_api_model_id_for_earthmind_model(self._selected_model_name) or self._selected_model_name
+                    self._get_api_model_id_for_terraflow_model(self._selected_model_name) or self._selected_model_name
                 )
             else:
                 self._selected_api_model_id = "unknown_model"
@@ -372,11 +372,11 @@ Return ONLY the index number:"""
             specs_source = (
                 "OpenRouter API"
                 if self.use_openrouter_specs and self._models_api_cache
-                else "Basic (EarthMind model names only)"
+                else "Basic (Terraflow model names only)"
             )
             self._routing_decision = f"""Model Selection Decision:
 - Selected Model Index: {selected_index}
-- Selected EarthMind Model Name: {self._selected_model_name}
+- Selected Terraflow Model Name: {self._selected_model_name}
 - Selected API Model ID (if resolved): {self._selected_api_model_id}
 - Optimization Preference: {self.optimization}
 - Input Query Length: {len(self.input_value)} characters (~{int(estimated_tokens)} tokens)
@@ -385,7 +385,7 @@ Return ONLY the index number:"""
 
             log_msg = (
                 f"DECISION by Judge LLM: Selected model index {selected_index} -> "
-                f"EarthMind Name: '{self._selected_model_name}', API ID: '{self._selected_api_model_id}'"
+                f"Terraflow Name: '{self._selected_model_name}', API ID: '{self._selected_api_model_id}'"
             )
             self.log(log_msg)
 
@@ -415,13 +415,13 @@ Return ONLY the index number:"""
                 chosen_model_instance = self.models[0]
                 self._selected_model_name = get_model_name(chosen_model_instance)
                 if self._selected_model_name:
-                    mapped_id = self._get_api_model_id_for_earthmind_model(self._selected_model_name)
+                    mapped_id = self._get_api_model_id_for_terraflow_model(self._selected_model_name)
                     self._selected_api_model_id = mapped_id or self._selected_model_name
                 else:
                     self._selected_api_model_id = "fallback_model"
                 self._routing_decision = f"""Fallback Decision:
 - Error During Routing: {error_msg}
-- Fallback Model EarthMind Name: {self._selected_model_name}
+- Fallback Model Terraflow Name: {self._selected_model_name}
 - Fallback Model API ID (if resolved): {self._selected_api_model_id}
 - Reason: Automatic fallback enabled"""
 
@@ -483,8 +483,8 @@ Return ONLY the index number:"""
         """Return detailed information about the selected model as a list of Data objects."""
         if self._selected_model_name:
             specs_dict = self._get_model_specs_dict(self._selected_model_name)
-            if "earthmind_name" not in specs_dict:
-                specs_dict["earthmind_model_name_used_for_lookup"] = self._selected_model_name
+            if "terraflow_name" not in specs_dict:
+                specs_dict["terraflow_model_name_used_for_lookup"] = self._selected_model_name
             if self._selected_api_model_id and specs_dict.get("id") != self._selected_api_model_id:
                 specs_dict["resolved_api_model_id"] = self._selected_api_model_id
             data_output = [Data(data=specs_dict)]

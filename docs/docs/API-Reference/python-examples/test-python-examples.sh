@@ -145,7 +145,7 @@ for file in "${PY_FILES[@]}"; do
   fi
 
   if [[ "$MODE" == "execute" ]]; then
-    # api-openai-responses/* call EarthMind's HTTP API (e.g. /api/v1/responses) with x-api-key;
+    # api-openai-responses/* call Terraflow's HTTP API (e.g. /api/v1/responses) with x-api-key;
     # they do not require OPENAI_API_KEY in the environment (same as the JS examples).
 
     # Streaming / long-running examples: skip in local harness (hang, flaky, or need extra setup).
@@ -169,8 +169,8 @@ for file in "${PY_FILES[@]}"; do
       continue
     fi
 
-    if [[ -z "${EARTHMIND_API_KEY:-}" || ( -z "${EARTHMIND_URL:-}" && -z "${EARTHMIND_SERVER_URL:-}" ) ]]; then
-      echo "SKIP  $rel (set EARTHMIND_API_KEY and EARTHMIND_URL or EARTHMIND_SERVER_URL to execute)"
+    if [[ -z "${TERRAFLOW_API_KEY:-}" || ( -z "${TERRAFLOW_URL:-}" && -z "${TERRAFLOW_SERVER_URL:-}" ) ]]; then
+      echo "SKIP  $rel (set TERRAFLOW_API_KEY and TERRAFLOW_URL or TERRAFLOW_SERVER_URL to execute)"
       ((SKIP+=1))
       continue
     fi
@@ -188,7 +188,7 @@ for file in "${PY_FILES[@]}"; do
       continue
     fi
 
-    if ! uv run python - "$file" "$PY_TIMEOUT_SECONDS" >/tmp/earthmind-python-example.out 2>/tmp/earthmind-python-example.err <<'PY'
+    if ! uv run python - "$file" "$PY_TIMEOUT_SECONDS" >/tmp/terraflow-python-example.out 2>/tmp/terraflow-python-example.err <<'PY'
 import runpy
 import signal
 import sys
@@ -208,7 +208,7 @@ finally:
 PY
     then
       echo "FAIL  $rel (execution)"
-      print_failure_logs "/tmp/earthmind-python-example.out" "/tmp/earthmind-python-example.err"
+      print_failure_logs "/tmp/terraflow-python-example.out" "/tmp/terraflow-python-example.err"
       ((FAIL+=1))
       continue
     fi

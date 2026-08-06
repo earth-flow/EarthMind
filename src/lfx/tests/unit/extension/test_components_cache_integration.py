@@ -145,7 +145,7 @@ async def test_template_failure_skips_component_without_aborting_bundle(tmp_path
 @pytest.mark.asyncio
 async def test_components_path_empty_string_does_not_crash(monkeypatch) -> None:
     """Pathsep parsing edge case: empty segments don't break the inline walk."""
-    monkeypatch.setenv("EARTHMIND_COMPONENTS_PATH", os.pathsep)
+    monkeypatch.setenv("TERRAFLOW_COMPONENTS_PATH", os.pathsep)
     settings_service = _FakeSettingsService(components_path=[])
     # No patch needed -- there's nothing to load.
     result = await import_extension_components(settings_service)
@@ -154,11 +154,11 @@ async def test_components_path_empty_string_does_not_crash(monkeypatch) -> None:
 
 @pytest.mark.asyncio
 async def test_seed_directory_bundle_loads_at_official_slot(tmp_path: Path, monkeypatch) -> None:
-    """A subdirectory under ``$EARTHMIND_SEED_DIR`` registers at @official.
+    """A subdirectory under ``$TERRAFLOW_SEED_DIR`` registers at @official.
 
     This is the second production-install source documented in the
     deployment guide.  Without the startup wiring, an operator who copies
-    bundles into ``/opt/earthmind/bundles/`` (the Mode B/C alternative to
+    bundles into ``/opt/terraflow/bundles/`` (the Mode B/C alternative to
     ``pip install``) sees the docs say it works while no components actually
     appear in the palette.
     """
@@ -187,7 +187,7 @@ async def test_seed_directory_bundle_loads_at_official_slot(tmp_path: Path, monk
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("EARTHMIND_SEED_DIR", str(seed_root))
+    monkeypatch.setenv("TERRAFLOW_SEED_DIR", str(seed_root))
 
     fresh_registry = BundleRegistry()
     settings_service = _FakeSettingsService(components_path=[])
@@ -249,7 +249,7 @@ async def test_seed_bundle_shadowed_by_installed_emits_typed_warning(tmp_path: P
         "    def build(self):\n        return None\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("EARTHMIND_SEED_DIR", str(seed_root))
+    monkeypatch.setenv("TERRAFLOW_SEED_DIR", str(seed_root))
 
     # Build an installed-pkg LoadResult by hand (test seam: stub
     # load_installed_extensions to return a result for bundle "pilot").
@@ -359,7 +359,7 @@ async def test_seed_bundle_shadows_dev_emits_generic_bundle_shadowed(tmp_path: P
         "    def build(self):\n        return None\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("EARTHMIND_SEED_DIR", str(seed_root))
+    monkeypatch.setenv("TERRAFLOW_SEED_DIR", str(seed_root))
 
     # Faked dev result for the same bundle name pointing at a totally
     # different path -- the stale registration that used to silently win.
@@ -760,7 +760,7 @@ async def test_dev_extension_components_loaded_via_official_slot(
 ) -> None:
     """Dev extensions registered via ``lfx extension dev`` must enter the @official pathway.
 
-    Earlier wiring appended their bundle directories to EARTHMIND_COMPONENTS_PATH,
+    Earlier wiring appended their bundle directories to TERRAFLOW_COMPONENTS_PATH,
     causing them to fall back to legacy custom-component loading without
     extension metadata or BundleRegistry entries.  Now they share the same
     pathway as installed extensions.
@@ -797,7 +797,7 @@ async def test_dev_extension_components_loaded_via_official_slot(
 
     # Point the dev registry at an isolated state file via env var so the
     # test does not pollute the user's real cache dir.
-    monkeypatch.setenv("EARTHMIND_DEV_EXTENSIONS_DIR", str(tmp_path / "registry"))
+    monkeypatch.setenv("TERRAFLOW_DEV_EXTENSIONS_DIR", str(tmp_path / "registry"))
     register_dev_extension(ext_root)
 
     fresh_registry = BundleRegistry()

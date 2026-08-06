@@ -4,6 +4,6 @@ node_modules
 **/node_modules/
 dist/
 **/build/
-src/backend/earthmind/frontend
-**/earthmind-pre.db
-**/earthmind.db
+src/backend/terraflow/frontend
+**/terraflow-pre.db
+**/terraflow.db

@@ -1,16 +1,16 @@
 """OpenSearch k-NN vector-store backend.
 
 Wraps ``langchain_community.vectorstores.OpenSearchVectorSearch`` so
-EarthMind Knowledge Bases can target a self-hosted or managed
+Terraflow Knowledge Bases can target a self-hosted or managed
 OpenSearch cluster (AWS OpenSearch Service, Aiven, OpenSearch
 Project, etc.) alongside the other native DB connectors. URL and
-auth credentials are resolved through EarthMind's ``variable_service``
+auth credentials are resolved through Terraflow's ``variable_service``
 so ``backend_config`` only carries variable *names* — never raw
 secrets — and round-trips cleanly through the UI.
 
 ``backend_config`` fields:
 
-* ``url_variable`` — name of the EarthMind variable holding the
+* ``url_variable`` — name of the Terraflow variable holding the
   cluster URL. Defaults to ``OPENSEARCH_URL``. Required.
 * ``username_variable`` — name of the variable holding the basic-auth
   user. Optional; defaults to ``OPENSEARCH_USERNAME``.
@@ -42,7 +42,7 @@ secrets — and round-trips cleanly through the UI.
 Optional dependencies: ``langchain-community`` ships the LangChain
 wrapper; ``opensearch-py`` ships the raw client used for count /
 stats / scan / delete-by-query. Both are imported lazily so
-EarthMind installs without OpenSearch deps keep working.
+Terraflow installs without OpenSearch deps keep working.
 """
 
 from __future__ import annotations
@@ -125,7 +125,7 @@ def _coerce_bool(value: Any, *, default: bool) -> bool:
 
 
 class OpenSearchBackend(BaseVectorStoreBackend):
-    """OpenSearch k-NN as a EarthMind KB backend."""
+    """OpenSearch k-NN as a Terraflow KB backend."""
 
     backend_type = BackendType.OPENSEARCH
 
@@ -150,7 +150,7 @@ class OpenSearchBackend(BaseVectorStoreBackend):
         url = await self.resolve_secret(url_variable)
         if not url:
             msg = (
-                f"OpenSearchBackend needs the {url_variable!r} EarthMind variable "
+                f"OpenSearchBackend needs the {url_variable!r} Terraflow variable "
                 "(or env var of the same name) populated with the cluster URL."
             )
             raise ValueError(msg)
@@ -248,7 +248,7 @@ class OpenSearchBackend(BaseVectorStoreBackend):
               [knn] filter doesn't support values of type: VALUE_NULL
 
         Dropping the kwarg lets the wrapper build the body without the
-        key, which is what every EarthMind callsite that doesn't pass a
+        key, which is what every Terraflow callsite that doesn't pass a
         filter actually wants.
         """
         await self.ensure_ready()

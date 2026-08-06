@@ -12,7 +12,7 @@ from lfx.schema import DataFrame
 class NewsSearchComponent(Component):
     display_name = "News Search"
     description = "Searches Google News via RSS. Returns clean article data."
-    documentation: str = "https://docs.earthmind.org/web-search"
+    documentation: str = "https://docs.terraflow.org/web-search"
     icon = "newspaper"
     name = "NewsSearch"
     legacy = True

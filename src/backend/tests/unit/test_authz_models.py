@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from earthmind.services.database.models.auth import (
+from terraflow.services.database.models.auth import (
     AuthzAuditLog,
     AuthzEditLock,
     AuthzRole,
@@ -17,8 +17,8 @@ from earthmind.services.database.models.auth import (
     SharePermissionLevel,
     ShareScope,
 )
-from earthmind.services.database.models.flow.model import Flow
-from earthmind.services.database.models.user.model import User
+from terraflow.services.database.models.flow.model import Flow
+from terraflow.services.database.models.user.model import User
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 

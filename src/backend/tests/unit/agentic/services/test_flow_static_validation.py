@@ -1,6 +1,6 @@
 """validate_flow_spec — Tier-1 static validation of a built flow.
 
-Thin wrapper that reuses EarthMind's existing CLI validator
+Thin wrapper that reuses Terraflow's existing CLI validator
 (``validate_flow_file`` + the STRUCTURAL→REQUIRED_INPUTS semantic
 checks) on an in-memory flow dict, with ZERO LLM tokens. Its own
 responsibility is only: serialize → delegate → map to a small stable
@@ -13,12 +13,12 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-from earthmind.agentic.services.flow_static_validation import (
+from terraflow.agentic.services.flow_static_validation import (
     FlowValidationReport,
     validate_flow_spec,
 )
 
-MODULE = "earthmind.agentic.services.flow_static_validation"
+MODULE = "terraflow.agentic.services.flow_static_validation"
 
 
 def _fake_result(*, errors=(), warnings=()):

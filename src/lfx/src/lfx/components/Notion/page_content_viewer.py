@@ -12,7 +12,7 @@ from lfx.schema.data import Data
 class NotionPageContent(LCToolComponent):
     display_name = "Page Content Viewer "
     description = "Retrieve the content of a Notion page as plain text."
-    documentation = "https://docs.earthmind.org/bundles-notion"
+    documentation = "https://docs.terraflow.org/bundles-notion"
     icon = "NotionDirectoryLoader"
 
     inputs = [

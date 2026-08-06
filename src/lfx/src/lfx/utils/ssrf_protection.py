@@ -13,8 +13,8 @@ IMPORTANT: HTTP Redirects
     See: https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
 
 Configuration:
-    EARTHMIND_SSRF_PROTECTION_ENABLED: Enable/disable SSRF protection (default: true)
-    EARTHMIND_SSRF_ALLOWED_HOSTS: Comma-separated list of allowed hosts/CIDR ranges
+    TERRAFLOW_SSRF_PROTECTION_ENABLED: Enable/disable SSRF protection (default: true)
+    TERRAFLOW_SSRF_ALLOWED_HOSTS: Comma-separated list of allowed hosts/CIDR ranges
         Examples: "192.168.1.0/24,internal-api.company.local,10.0.0.5"
 """
 
@@ -81,7 +81,7 @@ def is_ssrf_protection_enabled() -> bool:
     # This ensures tests can override the protection state without settings service caching issues
     import os
 
-    env_value = os.getenv("EARTHMIND_SSRF_PROTECTION_ENABLED")
+    env_value = os.getenv("TERRAFLOW_SSRF_PROTECTION_ENABLED")
     if env_value is not None:
         # Environment variable is set - use it (supports test mocking)
         return env_value.lower() in ("true", "1", "yes", "on")
@@ -100,7 +100,7 @@ def get_allowed_hosts() -> list[str]:
     # This ensures tests can override the allowlist without settings service caching issues
     import os
 
-    env_value = os.getenv("EARTHMIND_SSRF_ALLOWED_HOSTS", "")
+    env_value = os.getenv("TERRAFLOW_SSRF_ALLOWED_HOSTS", "")
     if env_value:
         # Parse comma-separated list from environment variable
         return [host.strip() for host in env_value.split(",") if host.strip()]
@@ -287,7 +287,7 @@ def _validate_direct_ip_address(hostname: str) -> bool:
     if is_ip_blocked(ip_obj):
         msg = (
             f"Access to IP address {hostname} is blocked by SSRF protection. "
-            "To allow this IP, add it to EARTHMIND_SSRF_ALLOWED_HOSTS environment variable."
+            "To allow this IP, add it to TERRAFLOW_SSRF_ALLOWED_HOSTS environment variable."
         )
         raise SSRFProtectionError(msg)
 
@@ -328,7 +328,7 @@ def _validate_hostname_resolution(hostname: str) -> None:
     if blocked_ips:
         msg = (
             f"Hostname {hostname} resolves to blocked IP address(es): {', '.join(blocked_ips)}. "
-            "To allow this hostname, add it to EARTHMIND_SSRF_ALLOWED_HOSTS environment variable."
+            "To allow this hostname, add it to TERRAFLOW_SSRF_ALLOWED_HOSTS environment variable."
         )
         raise SSRFProtectionError(msg)
 
@@ -498,7 +498,7 @@ def validate_and_resolve_url(url: str) -> tuple[str, list[str]]:
             if is_ip_blocked(ip_obj):
                 msg = (
                     f"Access to IP address {hostname} is blocked by SSRF protection. "
-                    "To allow this IP, add it to EARTHMIND_SSRF_ALLOWED_HOSTS environment variable."
+                    "To allow this IP, add it to TERRAFLOW_SSRF_ALLOWED_HOSTS environment variable."
                 )
                 raise SSRFProtectionError(msg)
             # Direct IP is public and allowed - return it for DNS pinning
@@ -548,7 +548,7 @@ def validate_and_resolve_url(url: str) -> tuple[str, list[str]]:
         if blocked_ips:
             msg = (
                 f"Hostname {hostname} resolves to blocked IP address(es): {', '.join(blocked_ips)}. "
-                "To allow this hostname, add it to EARTHMIND_SSRF_ALLOWED_HOSTS environment variable."
+                "To allow this hostname, add it to TERRAFLOW_SSRF_ALLOWED_HOSTS environment variable."
             )
             raise SSRFProtectionError(msg)
 

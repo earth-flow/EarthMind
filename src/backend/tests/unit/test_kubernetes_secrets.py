@@ -4,7 +4,7 @@ from uuid import UUID
 
 import pytest
 from kubernetes.client import V1ObjectMeta, V1Secret
-from earthmind.services.variable.kubernetes_secrets import KubernetesSecretManager, encode_user_id
+from terraflow.services.variable.kubernetes_secrets import KubernetesSecretManager, encode_user_id
 
 
 @pytest.fixture

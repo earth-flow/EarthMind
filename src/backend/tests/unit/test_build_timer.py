@@ -150,7 +150,7 @@ class TestDurationFormatting:
 
     def test_format_elapsed_time_from_client_timestamp(self):
         """Test that duration formatting works with client timestamps."""
-        from earthmind.api.utils import format_elapsed_time
+        from terraflow.api.utils import format_elapsed_time
 
         # Test milliseconds (< 1 second)
         duration_ms = 0.5  # 500ms

@@ -8,11 +8,11 @@ from uuid import uuid4
 
 import pytest
 from fastapi import HTTPException
-from earthmind.api.v1.schemas.deployments import DetectVarsRequest
-from earthmind.api.v1.variable import detect_env_vars
+from terraflow.api.v1.schemas.deployments import DetectVarsRequest
+from terraflow.api.v1.variable import detect_env_vars
 from pydantic import ValidationError
 
-MODULE = "earthmind.api.v1.variable"
+MODULE = "terraflow.api.v1.variable"
 
 
 def _flow_version_with_data(data: object) -> SimpleNamespace:

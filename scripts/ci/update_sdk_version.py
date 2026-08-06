@@ -1,6 +1,6 @@
-"""Update the canonical ``earthmind-sdk`` version for nightly builds.
+"""Update the canonical ``terraflow-sdk`` version for nightly builds.
 
-The SDK keeps its canonical ``earthmind-sdk`` name -- it is NOT renamed to ``earthmind-sdk-nightly`` --
+The SDK keeps its canonical ``terraflow-sdk`` name -- it is NOT renamed to ``terraflow-sdk-nightly`` --
 and is published as a ``.devN`` pre-release. This script only sets the nightly version.
 See ``src/bundles/NIGHTLY.md``.
 """
@@ -16,13 +16,13 @@ sys.path.append(str(current_dir))
 
 
 def update_sdk_for_nightly(sdk_tag: str):
-    """Set the canonical ``earthmind-sdk`` package version for a nightly build."""
+    """Set the canonical ``terraflow-sdk`` package version for a nightly build."""
     sdk_pyproject_path = "src/sdk/pyproject.toml"
 
     version = sdk_tag.lstrip("v")
     update_pyproject_version(sdk_pyproject_path, version)
 
-    print(f"Updated earthmind-sdk to nightly version {version}")
+    print(f"Updated terraflow-sdk to nightly version {version}")
 
 
 def main():

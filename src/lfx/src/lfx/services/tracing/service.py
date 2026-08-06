@@ -23,7 +23,7 @@ class TracingService(BaseTracingService):
     This is a lightweight implementation that logs trace events
     but does not integrate with external tracing services. For full
     tracing functionality (LangSmith, LangFuse, etc.), use the
-    EarthMind TracingService.
+    Terraflow TracingService.
     """
 
     def __init__(self):
@@ -57,7 +57,7 @@ class TracingService(BaseTracingService):
             run_id: Run identifier
             flow_id: Flow identifier
             run_name: Run name
-            user_id: Authenticated EarthMind user identifier
+            user_id: Authenticated Terraflow user identifier
             session_id: Session identifier
             project_name: Project name
             tracing_user_id: Optional caller-supplied label forwarded to tracing providers

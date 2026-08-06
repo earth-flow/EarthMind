@@ -5,17 +5,17 @@ flows to the post-Phase-A namespaced ID ``ext:<bundle>:<Class>@<slot>``.  Three
 legacy reference shapes are mapped:
 
     1. ``import_path`` -- the dotted path components used to live at, e.g.
-       ``earthmind.components.openai.OpenAIEmbeddings``.  Always added when a
+       ``terraflow.components.openai.OpenAIEmbeddings``.  Always added when a
        bundle is extracted.
     2. ``legacy_slot`` -- the pre-Phase-A namespaced shape, e.g.
        ``ext:openai:OpenAIEmbeddings@official-pre-a``.  Always added when the
        slot vocabulary changed.
     3. ``bare_class_name`` -- the unqualified class name (``OpenAIEmbeddings``).
        Added only if the class name is globally unique across every Bundle in
-       this EarthMind release; CI guards this with
+       this Terraflow release; CI guards this with
        ``scripts/migrate/check_bare_names.py``.
 
-The table is a single JSON file at a canonical in-repo path.  Every EarthMind
+The table is a single JSON file at a canonical in-repo path.  Every Terraflow
 release adds entries; **no entry is ever removed**.  CI rejects removals so a
 flow saved years ago against a long-extracted bundle still loads.
 
@@ -99,7 +99,7 @@ class MigrationEntry(BaseModel):
     populated; the other two are ``None``.  This is enforced by the
     ``_exactly_one_legacy_form`` validator below.
 
-    ``added_in`` records the EarthMind release that introduced the entry.  It
+    ``added_in`` records the Terraflow release that introduced the entry.  It
     is informational at runtime but the CI append-only check (see
     ``scripts/migrate/check_migration_append_only.py``) uses it to attribute
     surprise removals to a specific release window.
@@ -117,7 +117,7 @@ class MigrationEntry(BaseModel):
     import_path: StrictStr | None = Field(
         default=None,
         description=(
-            "Dotted Python import path the component lived at, e.g. 'earthmind.components.openai.OpenAIEmbeddings'."
+            "Dotted Python import path the component lived at, e.g. 'terraflow.components.openai.OpenAIEmbeddings'."
         ),
     )
     legacy_slot: StrictStr | None = Field(
@@ -130,7 +130,7 @@ class MigrationEntry(BaseModel):
     )
     added_in: StrictStr = Field(
         ...,
-        description="EarthMind release that added this entry (informational; CI uses it for removal-attribution).",
+        description="Terraflow release that added this entry (informational; CI uses it for removal-attribution).",
     )
 
     @field_validator("bare_class_name")
@@ -256,7 +256,7 @@ class AmbiguousBareName(BaseModel):
     )
     added_in: StrictStr | None = Field(
         default=None,
-        description="EarthMind version that introduced this ambiguity entry.",
+        description="Terraflow version that introduced this ambiguity entry.",
     )
 
     @field_validator("name")
@@ -330,7 +330,7 @@ class MigrationTable(BaseModel):
     def _validate_schema_version(cls, value: int) -> int:
         if value != MIGRATION_SCHEMA_VERSION:
             msg = (
-                f"Unsupported migration table schema_version {value}; this EarthMind expects {MIGRATION_SCHEMA_VERSION}."
+                f"Unsupported migration table schema_version {value}; this Terraflow expects {MIGRATION_SCHEMA_VERSION}."
             )
             raise ValueError(msg)
         return value

@@ -318,19 +318,19 @@ def test_vertex_before_callback_event():
     # Assert the event has the correct step_name
     assert event.step_name == vertex.display_name
 
-    # Assert the raw_event contains the earthmind metrics
+    # Assert the raw_event contains the terraflow metrics
     assert event.raw_event is not None
     assert isinstance(event.raw_event, dict)
-    assert "earthmind" in event.raw_event
+    assert "terraflow" in event.raw_event
 
-    # Assert the earthmind metrics contain expected fields
-    earthmind_metrics = event.raw_event["earthmind"]
-    assert isinstance(earthmind_metrics, dict)
-    assert "timestamp" in earthmind_metrics
-    assert isinstance(earthmind_metrics["timestamp"], float)
-    assert "component_id" in earthmind_metrics
-    assert earthmind_metrics["component_id"] == vertex.id
-    assert earthmind_metrics["component_id"] == "test_vertex_id"
+    # Assert the terraflow metrics contain expected fields
+    terraflow_metrics = event.raw_event["terraflow"]
+    assert isinstance(terraflow_metrics, dict)
+    assert "timestamp" in terraflow_metrics
+    assert isinstance(terraflow_metrics["timestamp"], float)
+    assert "component_id" in terraflow_metrics
+    assert terraflow_metrics["component_id"] == vertex.id
+    assert terraflow_metrics["component_id"] == "test_vertex_id"
 
 
 def test_vertex_after_callback_event():
@@ -356,19 +356,19 @@ def test_vertex_after_callback_event():
     # Assert the event has the correct step_name
     assert event.step_name == vertex.display_name
 
-    # Assert the raw_event contains the earthmind metrics
+    # Assert the raw_event contains the terraflow metrics
     assert event.raw_event is not None
     assert isinstance(event.raw_event, dict)
-    assert "earthmind" in event.raw_event
+    assert "terraflow" in event.raw_event
 
-    # Assert the earthmind metrics contain expected fields
-    earthmind_metrics = event.raw_event["earthmind"]
-    assert isinstance(earthmind_metrics, dict)
-    assert "timestamp" in earthmind_metrics
-    assert isinstance(earthmind_metrics["timestamp"], float)
-    assert "component_id" in earthmind_metrics
-    assert earthmind_metrics["component_id"] == vertex.id
-    assert earthmind_metrics["component_id"] == "test_vertex_id"
+    # Assert the terraflow metrics contain expected fields
+    terraflow_metrics = event.raw_event["terraflow"]
+    assert isinstance(terraflow_metrics, dict)
+    assert "timestamp" in terraflow_metrics
+    assert isinstance(terraflow_metrics["timestamp"], float)
+    assert "component_id" in terraflow_metrics
+    assert terraflow_metrics["component_id"] == vertex.id
+    assert terraflow_metrics["component_id"] == "test_vertex_id"
 
 
 def test_vertex_raw_event_metrics():

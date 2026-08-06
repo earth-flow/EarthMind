@@ -1,5 +1,5 @@
 [project]
-name = "earthmind-base"
+name = "terraflow-base"
 version = "0.10.0"
 description = "A Python package with a built-in web application"
 requires-python = ">=3.10,<3.15"
@@ -7,12 +7,12 @@ license = "MIT"
 keywords = ["nlp", "langchain", "openai", "gpt", "gui"]
 readme = "README.md"
 maintainers = [
-    { name = "Carlos Coelho", email = "carlos@earthmind.org" },
+    { name = "Carlos Coelho", email = "carlos@terraflow.org" },
     { name = "Cristhian Zanforlin", email = "cristhian.lousa@gmail.com" },
-    { name = "Gabriel Almeida", email = "gabriel@earthmind.org" },
+    { name = "Gabriel Almeida", email = "gabriel@terraflow.org" },
     { name = "Lucas Eduoli", email = "lucaseduoli@gmail.com" },
     { name = "Otávio Anovazzi", email = "otavio2204@gmail.com" },
-    { name = "Rodrigo Nader", email = "rodrigo@earthmind.org" },
+    { name = "Rodrigo Nader", email = "rodrigo@terraflow.org" },
     { name = "Italo dos Anjos", email = "italojohnnydosanjos@gmail.com" },
 ]
 
@@ -146,7 +146,7 @@ dev = [
 
 
 [tool.hatch.build.targets.wheel]
-packages = ["earthmind"]
+packages = ["terraflow"]
 
 
 [tool.pytest.ini_options]
@@ -162,10 +162,10 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.codeflash]
 # All paths are relative to this pyproject.toml's directory.
-module-root = "earthmind"
+module-root = "terraflow"
 tests-root = "../tests/unit"
 test-framework = "pytest"
-ignore-paths = ["earthmind/components/"]
+ignore-paths = ["terraflow/components/"]
 formatter-cmds = ["ruff check --exit-zero --fix $file", "ruff format $file"]
 # disable plugins that might interfere with runtime measurement
 pytest-cmd = "pytest -p no:profiling -p no:sugar -p no:xdist -p no:cov -p no:split"
@@ -176,8 +176,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.urls]
-Repository = "https://github.com/earthmind-ai/earthmind"
-Documentation = "https://docs.earthmind.org"
+Repository = "https://github.com/terraflow-ai/terraflow"
+Documentation = "https://docs.terraflow.org"
 # Optional dependencies
 [project.optional-dependencies]
 audio = [
@@ -249,7 +249,7 @@ ctransformers = ["ctransformers>=0.2.10"]
 # which only supports Python 3.14 from pydantic 2.13 onward. Without this guard
 # the langfuse SDK raises pydantic.v1.errors.ConfigError on import in Python
 # 3.14 environments (e.g. the official Docker image), causing tracing to
-# silently no-op. See https://github.com/earthmind-ai/earthmind/issues/13317.
+# silently no-op. See https://github.com/terraflow-ai/terraflow/issues/13317.
 langfuse = ["langfuse~=3.8", "pydantic>=2.13.0"]
 langwatch = ["langwatch~=0.10.0; python_version < '3.14'"]
 langsmith = ["langsmith>=0.3.42,<1.0.0"]
@@ -273,7 +273,7 @@ wikipedia = ["wikipedia==1.4.0"]
 fake-useragent = ["fake-useragent>=2.0.0"]
 # duckduckgo: the runtime dep for the extracted lfx-duckduckgo bundle.
 # Public consumers should install lfx-duckduckgo directly (pip-installing
-# earthmind-base no longer pulls in ddgs by default).  The extra remains
+# terraflow-base no longer pulls in ddgs by default).  The extra remains
 # defined here so docker/build_and_push_base.Dockerfile can route ddgs
 # through the locked sync (``uv sync --extra duckduckgo``) instead of an
 # unpinned ``uv pip install ddgs`` that would silently drift across
@@ -304,7 +304,7 @@ qianfan = ["qianfan==0.3.5"]
 pgvector = ["pgvector>=0.4.2"]
 litellm = [
     "litellm>=1.85.1,<2.0.0",
-    # Runtime deps from litellm[proxy] that earthmind-ide hits when logging
+    # Runtime deps from litellm[proxy] that terraflow-ide hits when logging
     # to langfuse via litellm.proxy.proxy_server (issue #12228). The full
     # [proxy] extra pins boto3==1.43.1, which conflicts with our aioboto3
     # transitive cap, so we pull in just the missing modules instead.
@@ -339,7 +339,7 @@ spider = ["spider-client>=0.0.27,<1.0.0"]
 # Excluded on macOS x86_64: PyTorch dropped Intel Mac wheel builds after v2.2.2
 # Python 3.14: agent-lifecycle-toolkit 0.10.x dropped its own <3.14 cap (now
 # requires-python >=3.10) and does not depend on OpenDsStar, so the python_version
-# gate is removed; the dependency tree resolves on 3.14 within the earthmind lock.
+# gate is removed; the dependency tree resolves on 3.14 within the terraflow lock.
 altk = ["agent-lifecycle-toolkit>=0.10.1,<1.0; sys_platform != 'darwin' or platform_machine != 'x86_64'"]
 
 # Toolguard Integration
@@ -363,12 +363,12 @@ docling = [
     "docling-slim[cli,convert-core,extract-core,feat-ocr-rapidocr,format-latex,format-office,format-pdf,format-web,models-local,service-client]>=2.36.1,<3.0.0; sys_platform != 'darwin' or platform_machine != 'x86_64'",
 ]
 docling-chunking = [
-    "earthmind-base[docling]",
+    "terraflow-base[docling]",
     "docling-core[chunking]>=2.77.0,<3.0.0",
     "tiktoken>=0.7.0",
 ]
 docling-image-description = [
-    "earthmind-base[docling]",
+    "terraflow-base[docling]",
     "langchain-docling>=1.1.0",
 ]
 
@@ -415,125 +415,125 @@ ibm-watsonx-clients = [
 ]
 
 complete = [
-    "earthmind-base[couchbase]",
-    "earthmind-base[cassandra]",
-    "earthmind-base[clickhouse]",
-    "earthmind-base[mongodb]",
-    "earthmind-base[supabase]",
-    "earthmind-base[redis]",
-    "earthmind-base[elasticsearch]",
-    "earthmind-base[faiss]",
-    "earthmind-base[qdrant]",
-    "earthmind-base[qdrant-vectors]",
-    "earthmind-base[weaviate]",
-    "earthmind-base[chroma]",
-    "earthmind-base[upstash]",
-    "earthmind-base[pinecone]",
-    "earthmind-base[milvus]",
-    "earthmind-base[mongodb-vectors]",
-    "earthmind-base[astradb]",
-    "earthmind-base[openai]",
-    "earthmind-base[anthropic]",
-    "earthmind-base[cohere]",
-    "earthmind-base[google]",
-    "earthmind-base[ollama]",
-    "earthmind-base[nvidia]",
-    "earthmind-base[mistral]",
-    "earthmind-base[sambanova]",
-    "earthmind-base[groq]",
-    "earthmind-base[langfuse]",
-    "earthmind-base[langwatch]",
-    "earthmind-base[langsmith]",
-    "earthmind-base[arize]",
-    "earthmind-base[pypdf]",
-    "earthmind-base[docx]",
-    "earthmind-base[pytube]",
-    # "earthmind-base[crewai]",  # commented out due to httpx version conflict
-    "earthmind-base[smolagents]",
-    "earthmind-base[beautifulsoup]",
-    "earthmind-base[serpapi]",
-    "earthmind-base[google-api]",
-    "earthmind-base[wikipedia]",
-    "earthmind-base[fake-useragent]",
-    # duckduckgo was an extra of earthmind-base; it has been moved to
-    # the standalone lfx-duckduckgo bundle (now a regular dep of earthmind).
-    "earthmind-base[yfinance]",
-    "earthmind-base[wolframalpha]",
-    "earthmind-base[pyarrow]",
-    "earthmind-base[fastavro]",
-    "earthmind-base[gitpython]",
-    "earthmind-base[nltk]",
-    "earthmind-base[lark]",
-    "earthmind-base[huggingface]",
-    "earthmind-base[metaphor]",
-    "earthmind-base[metal]",
-    "earthmind-base[markup]",
-    "earthmind-base[aws]",
-    "earthmind-base[numexpr]",
-    "earthmind-base[qianfan]",
-    "earthmind-base[pgvector]",
-    "earthmind-base[litellm]",
-    "earthmind-base[zep]",
-    "earthmind-base[youtube]",
-    "earthmind-base[markdown]",
-    "earthmind-base[kubernetes]",
-    "earthmind-base[json-repair]",
-    "earthmind-base[composio]",
-    "earthmind-base[ragstack]",
-    "earthmind-base[opensearch]",
-    "earthmind-base[atlassian]",
-    "earthmind-base[mem0]",
-    "earthmind-base[needle]",
-    "earthmind-base[sseclient]",
-    "earthmind-base[openinference]",
-    "earthmind-base[mcp]",
-    "earthmind-base[ag2]",
-    "earthmind-base[scrapegraph]",
-    "earthmind-base[apify]",
-    "earthmind-base[spider]",
+    "terraflow-base[couchbase]",
+    "terraflow-base[cassandra]",
+    "terraflow-base[clickhouse]",
+    "terraflow-base[mongodb]",
+    "terraflow-base[supabase]",
+    "terraflow-base[redis]",
+    "terraflow-base[elasticsearch]",
+    "terraflow-base[faiss]",
+    "terraflow-base[qdrant]",
+    "terraflow-base[qdrant-vectors]",
+    "terraflow-base[weaviate]",
+    "terraflow-base[chroma]",
+    "terraflow-base[upstash]",
+    "terraflow-base[pinecone]",
+    "terraflow-base[milvus]",
+    "terraflow-base[mongodb-vectors]",
+    "terraflow-base[astradb]",
+    "terraflow-base[openai]",
+    "terraflow-base[anthropic]",
+    "terraflow-base[cohere]",
+    "terraflow-base[google]",
+    "terraflow-base[ollama]",
+    "terraflow-base[nvidia]",
+    "terraflow-base[mistral]",
+    "terraflow-base[sambanova]",
+    "terraflow-base[groq]",
+    "terraflow-base[langfuse]",
+    "terraflow-base[langwatch]",
+    "terraflow-base[langsmith]",
+    "terraflow-base[arize]",
+    "terraflow-base[pypdf]",
+    "terraflow-base[docx]",
+    "terraflow-base[pytube]",
+    # "terraflow-base[crewai]",  # commented out due to httpx version conflict
+    "terraflow-base[smolagents]",
+    "terraflow-base[beautifulsoup]",
+    "terraflow-base[serpapi]",
+    "terraflow-base[google-api]",
+    "terraflow-base[wikipedia]",
+    "terraflow-base[fake-useragent]",
+    # duckduckgo was an extra of terraflow-base; it has been moved to
+    # the standalone lfx-duckduckgo bundle (now a regular dep of terraflow).
+    "terraflow-base[yfinance]",
+    "terraflow-base[wolframalpha]",
+    "terraflow-base[pyarrow]",
+    "terraflow-base[fastavro]",
+    "terraflow-base[gitpython]",
+    "terraflow-base[nltk]",
+    "terraflow-base[lark]",
+    "terraflow-base[huggingface]",
+    "terraflow-base[metaphor]",
+    "terraflow-base[metal]",
+    "terraflow-base[markup]",
+    "terraflow-base[aws]",
+    "terraflow-base[numexpr]",
+    "terraflow-base[qianfan]",
+    "terraflow-base[pgvector]",
+    "terraflow-base[litellm]",
+    "terraflow-base[zep]",
+    "terraflow-base[youtube]",
+    "terraflow-base[markdown]",
+    "terraflow-base[kubernetes]",
+    "terraflow-base[json-repair]",
+    "terraflow-base[composio]",
+    "terraflow-base[ragstack]",
+    "terraflow-base[opensearch]",
+    "terraflow-base[atlassian]",
+    "terraflow-base[mem0]",
+    "terraflow-base[needle]",
+    "terraflow-base[sseclient]",
+    "terraflow-base[openinference]",
+    "terraflow-base[mcp]",
+    "terraflow-base[ag2]",
+    "terraflow-base[scrapegraph]",
+    "terraflow-base[apify]",
+    "terraflow-base[spider]",
     # ALTK
-    "earthmind-base[altk]",
+    "terraflow-base[altk]",
     # Toolguard
-    "earthmind-base[toolguard]",
+    "terraflow-base[toolguard]",
     # Additional LangChain integrations
-    "earthmind-base[langchain-huggingface]",
-    "earthmind-base[langchain-unstructured]",
-    "earthmind-base[graph-retriever]",
-    "earthmind-base[langchain-mcp-adapters]",
+    "terraflow-base[langchain-huggingface]",
+    "terraflow-base[langchain-unstructured]",
+    "terraflow-base[graph-retriever]",
+    "terraflow-base[langchain-mcp-adapters]",
     # Additional monitoring
-    "earthmind-base[opik]",
-    "earthmind-base[traceloop]",
-    "earthmind-base[openlayer]",
+    "terraflow-base[opik]",
+    "terraflow-base[traceloop]",
+    "terraflow-base[openlayer]",
     # Document processing / OCR
-    "earthmind-base[docling]",
-    "earthmind-base[easyocr]",
+    "terraflow-base[docling]",
+    "terraflow-base[easyocr]",
     # Additional tools
-    "earthmind-base[cleanlab]",
-    "earthmind-base[twelvelabs]",
-    "earthmind-base[jigsawstack]",
-    "earthmind-base[assemblyai]",
+    "terraflow-base[cleanlab]",
+    "terraflow-base[twelvelabs]",
+    "terraflow-base[jigsawstack]",
+    "terraflow-base[assemblyai]",
     # Data processing
-    "earthmind-base[datasets]",
-    "earthmind-base[fastparquet]",
+    "terraflow-base[datasets]",
+    "terraflow-base[fastparquet]",
     # Vision / ML
-    "earthmind-base[vlmrun]",
-    "earthmind-base[cuga]",
-    "earthmind-base[mlx]",
+    "terraflow-base[vlmrun]",
+    "terraflow-base[cuga]",
+    "terraflow-base[mlx]",
     # MCP
-    "earthmind-base[fastmcp]",
+    "terraflow-base[fastmcp]",
     # AWS extras
-    "earthmind-base[aioboto3]",
+    "terraflow-base[aioboto3]",
     # Astra
-    "earthmind-base[astrapy]",
+    "terraflow-base[astrapy]",
     # Windows-specific
-    "earthmind-base[gassist]",
+    "terraflow-base[gassist]",
     # wxO deployment adapter,
-    "earthmind-base[ibm-watsonx-clients]"
+    "terraflow-base[ibm-watsonx-clients]"
 ]
 
 all = [
-    "earthmind-base[complete]",
+    "terraflow-base[complete]",
 ]
 
 [project.scripts]
-earthmind-base = "earthmind.earthmind_launcher:main"
+terraflow-base = "terraflow.terraflow_launcher:main"

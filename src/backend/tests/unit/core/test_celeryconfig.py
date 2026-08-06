@@ -1,7 +1,7 @@
-"""Unit tests for earthmind.core.celeryconfig module."""
+"""Unit tests for terraflow.core.celeryconfig module."""
 
 # Import the module to test
-from earthmind.core import celeryconfig
+from terraflow.core import celeryconfig
 
 
 class TestCeleryConfigAcceptContent:

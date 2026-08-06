@@ -21,7 +21,7 @@ compound, incremental-only, idempotency.
 
 from __future__ import annotations
 
-from earthmind.agentic.services.assistant_service import _reconcile_flow_updates
+from terraflow.agentic.services.assistant_service import _reconcile_flow_updates
 
 
 def _reconcile(updates, **state):

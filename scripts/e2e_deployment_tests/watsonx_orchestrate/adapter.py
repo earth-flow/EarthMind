@@ -140,22 +140,22 @@ from types import MethodType, SimpleNamespace
 from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
-import earthmind.services.adapters.deployment.watsonx_orchestrate.core.create as create_core_module
-import earthmind.services.adapters.deployment.watsonx_orchestrate.core.retry as retry_module
-import earthmind.services.adapters.deployment.watsonx_orchestrate.core.shared as shared_core_module
-import earthmind.services.adapters.deployment.watsonx_orchestrate.core.update as update_core_module
+import terraflow.services.adapters.deployment.watsonx_orchestrate.core.create as create_core_module
+import terraflow.services.adapters.deployment.watsonx_orchestrate.core.retry as retry_module
+import terraflow.services.adapters.deployment.watsonx_orchestrate.core.shared as shared_core_module
+import terraflow.services.adapters.deployment.watsonx_orchestrate.core.update as update_core_module
 from dotenv import load_dotenv
 from fastapi import HTTPException
 from ibm_watsonx_orchestrate_clients.tools.tool_client import ClientAPIException
-from earthmind.services.adapters.deployment.context import (
+from terraflow.services.adapters.deployment.context import (
     DeploymentAdapterContext,
     DeploymentProviderIDContext,
 )
-from earthmind.services.adapters.deployment.watsonx_orchestrate import (
+from terraflow.services.adapters.deployment.watsonx_orchestrate import (
     WatsonxOrchestrateDeploymentService,
     WxOCredentials,
 )
-from earthmind.services.adapters.deployment.watsonx_orchestrate.payloads import (
+from terraflow.services.adapters.deployment.watsonx_orchestrate.payloads import (
     WatsonxDeploymentCreateResultData,
     WatsonxFlowArtifactProviderData,
 )
@@ -248,7 +248,7 @@ class WatsonxAdapterDirectE2E:
         self.provider_id = uuid4()
         self.service = WatsonxOrchestrateDeploymentService(DummySettingsService())
 
-        import earthmind.services.adapters.deployment.watsonx_orchestrate.client as _client_mod
+        import terraflow.services.adapters.deployment.watsonx_orchestrate.client as _client_mod
 
         self._client_mod = _client_mod
 

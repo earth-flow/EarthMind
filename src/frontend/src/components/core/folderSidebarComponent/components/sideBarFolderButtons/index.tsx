@@ -24,7 +24,7 @@ import { useGetDownloadFolders } from "@/controllers/API/queries/folders/use-get
 import { CustomStoreButton } from "@/customization/components/custom-store-button";
 import {
   ENABLE_CUSTOM_PARAM,
-  ENABLE_DATASTAX_EARTHMIND,
+  ENABLE_DATASTAX_TERRAFLOW,
   ENABLE_FILE_MANAGEMENT,
   ENABLE_MCP_NOTICE,
 } from "@/customization/feature-flags";
@@ -498,7 +498,7 @@ const SideBarFoldersButtonsComponent = ({
         <SidebarFooter className="border-t">
           <div className="grid w-full items-center gap-2 p-2">
             {/* TODO: Remove this on cleanup */}
-            {ENABLE_DATASTAX_EARTHMIND && <CustomStoreButton />}{" "}
+            {ENABLE_DATASTAX_TERRAFLOW && <CustomStoreButton />}{" "}
             <SidebarMenuButton
               onClick={handleFilesNavigation}
               size="md"

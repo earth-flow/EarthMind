@@ -30,12 +30,12 @@ URL_REGEX = re.compile(
 )
 
 USER_AGENT = None
-# Check if earthmind is installed using importlib.util.find_spec(name))
-if importlib.util.find_spec("earthmind"):
-    earthmind_installed = True
+# Check if terraflow is installed using importlib.util.find_spec(name))
+if importlib.util.find_spec("terraflow"):
+    terraflow_installed = True
     USER_AGENT = get_user_agent()
 else:
-    earthmind_installed = False
+    terraflow_installed = False
     USER_AGENT = "lfx"
 
 
@@ -52,7 +52,7 @@ class URLComponent(Component):
 
     display_name = "URL"
     description = "Fetch content from one or more web pages, following links recursively."
-    documentation: str = "https://docs.earthmind.org/url"
+    documentation: str = "https://docs.terraflow.org/url"
     icon = "layout-template"
     name = "URLComponent"
 

@@ -9,7 +9,7 @@ from lfx.template.field.base import Output
 class DirectoryComponent(Component):
     display_name = "Directory"
     description = "Recursively load files from a directory."
-    documentation: str = "https://docs.earthmind.org/directory"
+    documentation: str = "https://docs.terraflow.org/directory"
     icon = "folder"
     name = "Directory"
     legacy = True

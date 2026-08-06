@@ -9,7 +9,7 @@ class FeatureFlags(BaseSettings):
     mvp_components: bool = False
 
     class Config:
-        env_prefix = "EARTHMIND_FEATURE_"
+        env_prefix = "TERRAFLOW_FEATURE_"
 
 
 FEATURE_FLAGS = FeatureFlags()

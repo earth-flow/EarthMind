@@ -23,7 +23,7 @@ from lfx.services.deps import get_settings_service
 GENERIC_STARTUP_ERROR_MSG = (
     "MCP Composer startup failed. Check OAuth configuration and check logs for more information."
 )
-COMPOSER_BACKEND_AUTH_HEADER = "x-earthmind-mcp-composer-token"
+COMPOSER_BACKEND_AUTH_HEADER = "x-terraflow-mcp-composer-token"
 
 
 class MCPComposerError(Exception):
@@ -87,7 +87,7 @@ class MCPComposerService(Service):
         self._port_to_project: dict[int, str] = {}  # Track which project is using which port
         self._pid_to_project: dict[int, str] = {}  # Track which PID belongs to which project
         self._last_errors: dict[str, str] = {}  # Track last error message per project for UI display
-        self._backend_auth_tokens: dict[str, str] = {}  # project_id -> internal Composer-to-EarthMind token
+        self._backend_auth_tokens: dict[str, str] = {}  # project_id -> internal Composer-to-Terraflow token
 
     def get_last_error(self, project_id: str) -> str | None:
         """Get the last error message for a project, if any."""
@@ -102,13 +102,13 @@ class MCPComposerService(Service):
         self._last_errors.pop(project_id, None)
 
     def get_or_create_backend_auth_token(self, project_id: str) -> str:
-        """Return the internal token used by MCP Composer to call EarthMind's MCP endpoint."""
+        """Return the internal token used by MCP Composer to call Terraflow's MCP endpoint."""
         if project_id not in self._backend_auth_tokens:
             self._backend_auth_tokens[project_id] = secrets.token_urlsafe(32)
         return self._backend_auth_tokens[project_id]
 
     def validate_backend_auth_token(self, project_id: str, token: str | None) -> bool:
-        """Validate an internal Composer-to-EarthMind token for a project."""
+        """Validate an internal Composer-to-Terraflow token for a project."""
         expected_token = self._backend_auth_tokens.get(project_id)
         if not expected_token or not token:
             return False
@@ -748,7 +748,7 @@ class MCPComposerService(Service):
             else:
                 # Port is in use by unknown process - don't kill it (security concern)
                 await logger.aerror(
-                    f"Port {port} is in use by an unknown process (not owned by EarthMind). "
+                    f"Port {port} is in use by an unknown process (not owned by Terraflow). "
                     f"Will not kill external application for security reasons."
                 )
                 port_error_msg = (
@@ -848,7 +848,7 @@ class MCPComposerService(Service):
         *,
         legacy_sse_url: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Build mcp-composer member-server config with internal EarthMind auth headers."""
+        """Build mcp-composer member-server config with internal Terraflow auth headers."""
         backend_token = self.get_or_create_backend_auth_token(project_id)
         headers = {COMPOSER_BACKEND_AUTH_HEADER: backend_token}
         streamable_id = f"{project_id}-streamable"
@@ -918,7 +918,7 @@ class MCPComposerService(Service):
     def _normalize_oauth_callback_aliases(cls, auth_config: dict[str, Any] | None) -> dict[str, Any]:
         """Normalize OAuth callback aliases to a canonical full callback URL value.
 
-        `oauth_callback_url` is the canonical field name in EarthMind. For compatibility,
+        `oauth_callback_url` is the canonical field name in Terraflow. For compatibility,
         we also accept `oauth_callback_path` and mirror the effective value to both keys so
         comparisons and subprocess env var mapping stay consistent.
         """
@@ -1068,7 +1068,7 @@ class MCPComposerService(Service):
 
         Args:
             project_id: The project ID
-            streamable_http_url: Streamable HTTP endpoint for the remote EarthMind MCP server
+            streamable_http_url: Streamable HTTP endpoint for the remote Terraflow MCP server
             auth_config: Authentication configuration
             max_retries: Maximum number of retry attempts (default: 3)
             max_startup_checks: Number of checks per retry attempt (default: 40)
@@ -1132,7 +1132,7 @@ class MCPComposerService(Service):
 
         Args:
             project_id: The project ID
-            streamable_http_url: Streamable HTTP endpoint for the remote EarthMind MCP server
+            streamable_http_url: Streamable HTTP endpoint for the remote Terraflow MCP server
             auth_config: Authentication configuration
             max_retries: Maximum number of retry attempts (default: 3)
             max_startup_checks: Number of checks per retry attempt (default: 40)

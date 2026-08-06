@@ -1,6 +1,6 @@
 # Bundle API
 
-Stable surface that EarthMind Extension Bundles consume.  Every public symbol
+Stable surface that Terraflow Extension Bundles consume.  Every public symbol
 listed below is part of the contract: changes to its name, signature, semantics,
 or visibility require a coordinated version bump and a `## Changelog` entry.
 
@@ -62,14 +62,14 @@ that does not list `str(BUNDLE_API_VERSION)` is rejected at install time with
 
 | Symbol | Source |
 | --- | --- |
-| Manifest schema (`extension.json` / `[tool.earthmind.extension]`) | `lfx.extension.manifest.ExtensionManifest` |
+| Manifest schema (`extension.json` / `[tool.terraflow.extension]`) | `lfx.extension.manifest.ExtensionManifest` |
 | `BundleRef` (one entry in `bundles[]`) | `lfx.extension.manifest.BundleRef` |
 | `LfxCompat` (declared as `manifest.lfx`) | `lfx.extension.manifest.LfxCompat` |
 | `BUNDLE_API_VERSION` (the integer this lfx ships) | `lfx.extension.manifest` |
 | `EXTENSION_SCHEMA_URL` / `SCHEMA_VERSION` | `lfx.extension.manifest` |
 
 Slot vocabulary: `official` (installed pip distributions and seed
-directories) and `extra` (paths declared in `EARTHMIND_COMPONENTS_PATH`).
+directories) and `extra` (paths declared in `TERRAFLOW_COMPONENTS_PATH`).
 Component IDs at runtime are `ext:<bundle>:<Class>@<slot>`.
 
 ### Discovery + loading entry points
@@ -92,7 +92,7 @@ Component IDs at runtime are `ext:<bundle>:<Class>@<slot>`.
 | `BundleRegistry` | `lfx.extension.bundle_registry` |
 | `BundleRecord` | `lfx.extension.bundle_registry` |
 | `ReloadInProgressError` | `lfx.extension.bundle_registry` |
-| `POST /api/v1/extensions/{id}/bundles/{name}/reload` | `earthmind.api.v1.extensions` |
+| `POST /api/v1/extensions/{id}/bundles/{name}/reload` | `terraflow.api.v1.extensions` |
 
 ### Errors
 
@@ -116,7 +116,7 @@ requires a `BUNDLE_API_VERSION` bump.
 | `lfx extension validate` (CLI) | `lfx.cli._extension_commands` |
 | `lfx extension schema` (CLI) | `lfx.cli._extension_commands` |
 | `lfx extension init` (CLI) | `lfx.cli._extension_commands` |
-| `lfx extension dev` (CLI -- registers a local path and execs `earthmind run`) | `lfx.cli._extension_commands` |
+| `lfx extension dev` (CLI -- registers a local path and execs `terraflow run`) | `lfx.cli._extension_commands` |
 | `lfx extension list` (CLI) | `lfx.cli._extension_commands` |
 | `lfx extension reload` (CLI) | `lfx.cli._extension_commands` |
 | `register_dev_extension` / `unregister_dev_extension` (Python API) | `lfx.extension.dev_registry` |
@@ -153,9 +153,9 @@ v0 contract:
 The shipped LE-1023 pilot is **`duckduckgo`**, extracted into the
 standalone distribution
 [`lfx-duckduckgo`](src/bundles/duckduckgo/) under `src/bundles/duckduckgo/`
-with its own `pyproject.toml`.  `earthmind`'s own `pyproject.toml`
+with its own `pyproject.toml`.  `terraflow`'s own `pyproject.toml`
 declares `lfx-duckduckgo>=0.1.0` as a regular dependency so a flat
-`pip install earthmind` continues to ship the bundle as before.
+`pip install terraflow` continues to ship the bundle as before.
 
 Why this bundle:
 
@@ -169,7 +169,7 @@ Why this bundle:
   bare-name migration entry is allowed by `check_bare_names.py`.
 
 The runtime half of the M1 proof-of-delivery gate (save a flow on
-pre-migration EarthMind, upgrade, confirm it loads AND runs identically)
+pre-migration Terraflow, upgrade, confirm it loads AND runs identically)
 lives in the dogfood checklist at
 [`src/bundles/duckduckgo/M1_DOGFOOD_CHECKLIST.md`](src/bundles/duckduckgo/M1_DOGFOOD_CHECKLIST.md);
 the deserialize half is covered by
@@ -207,7 +207,7 @@ the deserialize half is covered by
   2+ bundle folders has a matching marker, so a future bundle move that
   introduces a new ambiguity is caught at PR time.
 - Router-trust CI guard broadened to scan every `.py` under
-  `src/backend/base/earthmind/api/**` and `src/lfx/src/lfx/**`; a new file
+  `src/backend/base/terraflow/api/**` and `src/lfx/src/lfx/**`; a new file
   that mounts an `APIRouter(prefix=".../extensions...")` is auto-detected
   and checked for forbidden install/uninstall/registry-mutation handlers.
   Authors of files with non-literal prefixes can opt in via a
@@ -259,7 +259,7 @@ the deserialize half is covered by
     ``--execute-imports`` subprocess now inherits an explicit allowlist
     (``PATH``, ``LANG``, ``LC_*``, ``SYSTEMROOT``, ``TMPDIR``, ``TZ``,
     Python locale + encoding vars) instead of denylisting only
-    ``EARTHMIND_*``/``LFX_*``.  Cloud / CI credentials
+    ``TERRAFLOW_*``/``LFX_*``.  Cloud / CI credentials
     (``AWS_*``, ``OPENAI_API_KEY``, ``GITHUB_TOKEN``, ...) no longer
     propagate into untrusted bundle import.  The CLI / module docs
     re-frame this pass as best-effort hygiene lint, not a sandbox.
@@ -315,7 +315,7 @@ the deserialize half is covered by
     corrupt JSON / wrong shape (WARNING with detail).  The state
     file is written with mode 0600 so a hostile third-party process
     cannot inject an extension path into the developer's next
-    ``earthmind run``.
+    ``terraflow run``.
   - **Entry-point predicate avoids module-level side effects.**
     ``_entry_point_loads_to_component`` now consults
     ``importlib.util.find_spec`` first and only falls through to
@@ -335,13 +335,13 @@ the deserialize half is covered by
     their previous import paths so external imports are unchanged.
   - **Editable installs are discovered via the entry-point fallback.**
     ``_distribution_manifest_path`` now falls back to the
-    ``earthmind.extensions`` entry-point group when ``dist.files`` only
+    ``terraflow.extensions`` entry-point group when ``dist.files`` only
     surfaces ``dist-info/`` entries (the ``pip install -e`` /
     ``uv pip install -e`` case).  The entry-point value is resolved
     via ``importlib.util.find_spec`` -- which runs import-system
     finders but never executes the module body -- and the resulting
     package directory is scanned for ``extension.json`` or a
-    ``[tool.earthmind.extension]`` pyproject.  Wheel installs are
+    ``[tool.terraflow.extension]`` pyproject.  Wheel installs are
     unaffected: the fallback only fires when the primary ``dist.files``
     scan finds no manifest.  Previously, editable-installed bundles
     were silently dropped by ``lfx extension list`` and the registry,

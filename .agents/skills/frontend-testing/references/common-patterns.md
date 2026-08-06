@@ -1,6 +1,6 @@
 # Common Testing Patterns
 
-Frequently used patterns for testing EarthMind React components with Jest and React Testing Library.
+Frequently used patterns for testing Terraflow React components with Jest and React Testing Library.
 
 ## Query Priority
 
@@ -176,7 +176,7 @@ describe("LoginForm", () => {
 
 ## Modal/Dialog Testing
 
-EarthMind uses Radix UI dialogs:
+Terraflow uses Radix UI dialogs:
 
 ```typescript
 describe("ConfirmDialog", () => {
@@ -316,7 +316,7 @@ describe("ItemList", () => {
 
 ## Testing Tooltips
 
-EarthMind uses Radix tooltips which require hover:
+Terraflow uses Radix tooltips which require hover:
 
 ```typescript
 it("should show tooltip on hover", async () => {
@@ -363,7 +363,7 @@ describe("ErrorBoundary", () => {
 
 ## Testing Custom data-testid Attributes
 
-EarthMind components frequently use `data-testid` for testing. Common patterns:
+Terraflow components frequently use `data-testid` for testing. Common patterns:
 
 ```typescript
 // Input components

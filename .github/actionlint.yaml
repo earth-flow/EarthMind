@@ -1,4 +1,4 @@
 self-hosted-runner:
   labels:
-    - earthmind-ai-arm64-40gb-ephemeral
-    - EarthMind-runner
+    - terraflow-ai-arm64-40gb-ephemeral
+    - Terraflow-runner

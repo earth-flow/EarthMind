@@ -139,12 +139,12 @@ def get_api_key_for_provider(user_id: UUID | str | None, provider: str, api_key:
 
 
 def _env_value_for(var_key: str) -> str | None:
-    """Read a provider key from the environment, accepting a EARTHMIND_ alias.
+    """Read a provider key from the environment, accepting a TERRAFLOW_ alias.
 
     Provider keys are conventionally bare (``GOOGLE_API_KEY``), but some .env
-    templates prefix everything with ``EARTHMIND_`` (matching how EarthMind reads
-    its own settings). Accept ``EARTHMIND_<VAR>`` as a fallback so e.g.
-    ``EARTHMIND_GOOGLE_API_KEY`` enables Gemini exactly like ``GOOGLE_API_KEY``.
+    templates prefix everything with ``TERRAFLOW_`` (matching how Terraflow reads
+    its own settings). Accept ``TERRAFLOW_<VAR>`` as a fallback so e.g.
+    ``TERRAFLOW_GOOGLE_API_KEY`` enables Gemini exactly like ``GOOGLE_API_KEY``.
     The bare name keeps precedence — no behavior change when it is set. The
     resolved value is always stored under the bare canonical key by callers, so
     downstream detection (available_model_providers, get_llm) is unaffected.
@@ -152,7 +152,7 @@ def _env_value_for(var_key: str) -> str | None:
     value = os.environ.get(var_key)
     if value and value.strip():
         return value
-    prefixed = os.environ.get(f"EARTHMIND_{var_key}")
+    prefixed = os.environ.get(f"TERRAFLOW_{var_key}")
     if prefixed and prefixed.strip():
         return prefixed
     return None
@@ -243,8 +243,8 @@ def _validate_and_get_enabled_providers(
     skip_validation: bool = True,
 ) -> set[str]:
     """Return set of enabled providers based on credential existence."""
-    from earthmind.services.auth import utils as auth_utils
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.auth import utils as auth_utils
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     enabled = set()
@@ -332,7 +332,7 @@ async def _get_model_status(user_id: UUID | str) -> tuple[set[str], set[str]]:
         variable_service = get_variable_service()
         if variable_service is None:
             return set(), set()
-        from earthmind.services.variable.service import DatabaseVariableService
+        from terraflow.services.variable.service import DatabaseVariableService
 
         if not isinstance(variable_service, DatabaseVariableService):
             return set(), set()
@@ -359,7 +359,7 @@ async def _fetch_enabled_providers_for_user(user_id: UUID | str) -> set[str]:
         if variable_service is None:
             return set()
 
-        from earthmind.services.variable.service import DatabaseVariableService
+        from terraflow.services.variable.service import DatabaseVariableService
 
         if not isinstance(variable_service, DatabaseVariableService):
             return set()

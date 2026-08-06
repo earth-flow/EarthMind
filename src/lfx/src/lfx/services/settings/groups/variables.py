@@ -13,7 +13,7 @@ class VariablesSettings(BaseModel):
 
     fallback_to_env_var: bool = True
     """If set to True, Global Variables set in the UI will fallback to a environment variable
-    with the same name in case EarthMind fails to retrieve the variable value."""
+    with the same name in case Terraflow fails to retrieve the variable value."""
 
     store_environment_variables: bool = True
     """Whether to store environment variables as Global Variables in the database."""
@@ -23,12 +23,12 @@ class VariablesSettings(BaseModel):
 
     # Agentic Experience
     agentic_experience: bool = False
-    """If set to True, EarthMind will start the agentic MCP server that provides tools for
+    """If set to True, Terraflow will start the agentic MCP server that provides tools for
     flow/component operations, template search, and graph visualization."""
 
     # Developer API
     developer_api_enabled: bool = False
-    """If set to True, EarthMind will enable developer API endpoints for advanced debugging and introspection."""
+    """If set to True, Terraflow will enable developer API endpoints for advanced debugging and introspection."""
 
     @field_validator("variables_to_get_from_environment", mode="before")
     @classmethod
@@ -40,7 +40,7 @@ class VariablesSettings(BaseModel):
 
         # Add agentic variables if agentic_experience is enabled
         # Check env var directly since we can't access instance attributes in validator
-        if os.getenv("EARTHMIND_AGENTIC_EXPERIENCE", "true").lower() == "true":
+        if os.getenv("TERRAFLOW_AGENTIC_EXPERIENCE", "true").lower() == "true":
             result.extend(AGENTIC_VARIABLES)
 
         return list(set(result))

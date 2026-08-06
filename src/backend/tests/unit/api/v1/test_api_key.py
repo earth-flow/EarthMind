@@ -95,9 +95,9 @@ async def test_save_store_api_key(client: AsyncClient, logged_in_headers):
 async def test_delete_api_key_route_unauthorized(client: AsyncClient, logged_in_headers, active_user):
     """Test that users cannot delete API keys belonging to other users."""
     # Import required modules
-    from earthmind.services.auth.utils import get_password_hash
-    from earthmind.services.database.models.user.model import User
-    from earthmind.services.deps import session_scope
+    from terraflow.services.auth.utils import get_password_hash
+    from terraflow.services.database.models.user.model import User
+    from terraflow.services.deps import session_scope
     from sqlmodel import select
 
     # Create first user's API key

@@ -15,8 +15,8 @@ no-context path stays byte-identical to today's behavior.
 
 from __future__ import annotations
 
-from earthmind.agentic.services.conversation_buffer import ConversationTurn
-from earthmind.agentic.services.helpers.intent_context import (
+from terraflow.agentic.services.conversation_buffer import ConversationTurn
+from terraflow.agentic.services.helpers.intent_context import (
     INTENT_CONTEXT_MAX_CHARS,
     build_intent_context,
 )

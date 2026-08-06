@@ -1,6 +1,6 @@
-"""Table class for lfx package - pandas DataFrame subclass for EarthMind data structures.
+"""Table class for lfx package - pandas DataFrame subclass for Terraflow data structures.
 
-This module provides the Table class (formerly DataFrame) as the base type for tabular data in EarthMind.
+This module provides the Table class (formerly DataFrame) as the base type for tabular data in Terraflow.
 DataFrame is maintained as an alias for backwards compatibility.
 """
 
@@ -19,11 +19,11 @@ if TYPE_CHECKING:
 class Table(pandas_DataFrame):
     """A pandas DataFrame subclass specialized for handling collections of JSON objects.
 
-    This is the base type for EarthMind tabular data structures, replacing the legacy DataFrame class.
+    This is the base type for Terraflow tabular data structures, replacing the legacy DataFrame class.
     DataFrame is maintained as an alias for backwards compatibility.
 
     This class extends pandas.DataFrame to provide seamless integration between
-    EarthMind's JSON objects and pandas' powerful data manipulation capabilities.
+    Terraflow's JSON objects and pandas' powerful data manipulation capabilities.
 
     Args:
         data: Input data in various formats:

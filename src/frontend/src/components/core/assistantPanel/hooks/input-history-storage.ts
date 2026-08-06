@@ -11,7 +11,7 @@
  * the assistant panel or surface garbage into the textarea.
  */
 
-const STORAGE_KEY = "earthmind-assistant-input-history";
+const STORAGE_KEY = "terraflow-assistant-input-history";
 const MAX_HISTORY = 10;
 
 export function readHistory(): string[] {

@@ -1,3 +1,3 @@
-FROM earthmindai/earthmind:latest
+FROM terraflowai/terraflow:latest
 
-CMD ["python", "-m", "earthmind", "run", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["python", "-m", "terraflow", "run", "--host", "0.0.0.0", "--port", "7860"]

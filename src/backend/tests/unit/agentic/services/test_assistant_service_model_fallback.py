@@ -21,12 +21,12 @@ import json
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from earthmind.agentic.services.assistant_service import (
+from terraflow.agentic.services.assistant_service import (
     execute_flow_with_validation_streaming,
 )
-from earthmind.agentic.services.flow_types import FlowExecutionError, IntentResult
+from terraflow.agentic.services.flow_types import FlowExecutionError, IntentResult
 
-MODULE = "earthmind.agentic.services.assistant_service"
+MODULE = "terraflow.agentic.services.assistant_service"
 
 # The exact error wrapping the assistant receives from the LLM call when
 # OpenAI returns 403 model_not_found. Lifted verbatim from

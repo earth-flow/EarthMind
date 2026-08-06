@@ -1,6 +1,6 @@
 # Async Testing Patterns
 
-Patterns for testing asynchronous behavior in EarthMind with Jest and React Testing Library.
+Patterns for testing asynchronous behavior in Terraflow with Jest and React Testing Library.
 
 ## waitFor
 

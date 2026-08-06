@@ -10,7 +10,7 @@ from textwrap import dedent
 from unittest.mock import patch
 
 import pytest
-from earthmind.agentic.helpers.validation import (
+from terraflow.agentic.helpers.validation import (
     _extract_class_name_regex,
     _extract_io_names,
     _extract_output_methods,
@@ -19,7 +19,7 @@ from earthmind.agentic.helpers.validation import (
     validate_component_runtime,
 )
 
-MODULE = "earthmind.agentic.helpers.validation"
+MODULE = "terraflow.agentic.helpers.validation"
 
 
 def _parse(code: str) -> ast.Module:
@@ -185,7 +185,7 @@ class TestValidateComponentCode:
         generated code, an attacker who can influence LLM output can achieve
         arbitrary server-side code execution.
         """
-        env_key = "_EARTHMIND_SECURITY_VALIDATION_TEST"
+        env_key = "_TERRAFLOW_SECURITY_VALIDATION_TEST"
         os.environ.pop(env_key, None)
 
         malicious_code = f"""

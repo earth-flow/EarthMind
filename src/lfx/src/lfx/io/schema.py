@@ -54,7 +54,7 @@ _convert_type_to_field_type = {
 # connection handles for non-string fields (MCP tools, dynamic Composio tools, etc.).
 # Without these, int/float/bool/dict inputs render as UI-only widgets with no
 # input port, preventing values from being wired in from other components.
-# See https://github.com/earthmind-ai/earthmind/issues/9424
+# See https://github.com/terraflow-ai/terraflow/issues/9424
 _SCHEMA_INPUT_TYPES_BY_CLS: dict[type[InputTypes], list[str]] = {
     IntInput: ["Message"],
     FloatInput: ["Message"],
@@ -65,7 +65,7 @@ _SCHEMA_INPUT_TYPES_BY_CLS: dict[type[InputTypes], list[str]] = {
 
 
 def _resolve_input_type(annotation: Any, *, required: bool) -> tuple[type[InputTypes], bool, list[Any] | None]:
-    """Resolve a Pydantic annotation into a EarthMind input type."""
+    """Resolve a Pydantic annotation into a Terraflow input type."""
     ann = annotation
 
     if isinstance(ann, UnionType):
@@ -118,8 +118,8 @@ def _resolve_input_type(annotation: Any, *, required: bool) -> tuple[type[InputT
         raise TypeError(msg) from err
 
 
-def _get_earthmind_input_default(model_field: Any, input_cls: type[InputTypes]) -> Any:
-    """Return a EarthMind-safe default value for a Pydantic model field."""
+def _get_terraflow_input_default(model_field: Any, input_cls: type[InputTypes]) -> Any:
+    """Return a Terraflow-safe default value for a Pydantic model field."""
     default = model_field.default
     if default is PydanticUndefined:
         return PydanticUndefined
@@ -259,7 +259,7 @@ def flatten_schema(root_schema: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-def schema_to_earthmind_inputs(schema: type[BaseModel]) -> list[InputTypes]:
+def schema_to_terraflow_inputs(schema: type[BaseModel]) -> list[InputTypes]:
     inputs: list[InputTypes] = []
 
     for field_name, model_field in schema.model_fields.items():
@@ -273,7 +273,7 @@ def schema_to_earthmind_inputs(schema: type[BaseModel]) -> list[InputTypes]:
             "is_list": is_list,
         }
 
-        default = _get_earthmind_input_default(model_field, lf_cls)
+        default = _get_terraflow_input_default(model_field, lf_cls)
         if default is not PydanticUndefined:
             input_kwargs["value"] = default
 

@@ -60,7 +60,7 @@ export default function FooterWrapper(props) {
         }}
       >
         <img
-          src="/img/earthmind-icon-black-transparent.svg"
+          src="/img/terraflow-icon-black-transparent.svg"
           style={{ width: "40px" }}
           alt="Search"
         />

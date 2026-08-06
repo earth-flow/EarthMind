@@ -1,7 +1,7 @@
 import * as Form from "@radix-ui/react-form";
 import { type FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import EarthMindLogo from "@/assets/EarthMindLogo.svg?react";
+import TerraflowLogo from "@/assets/TerraflowLogo.svg?react";
 import ShadTooltip from "@/components/common/shadTooltipComponent";
 import InputComponent from "@/components/core/parameterRenderComponent/components/inputComponent";
 import { useAddUser } from "@/controllers/API/queries/auth";
@@ -89,8 +89,8 @@ export default function SignUp(): JSX.Element {
     >
       <div className="flex h-full w-full flex-col items-center justify-center bg-muted">
         <div className="flex w-full max-w-xs flex-col items-center justify-center gap-2">
-          <EarthMindLogo
-            title={t("common.earthMindLogo")}
+          <TerraflowLogo
+            title={t("common.terraFlowLogo")}
             className="mb-4 h-10 w-10 scale-[1.5]"
           />
           <span className="mb-6 text-2xl font-semibold text-primary text-center">

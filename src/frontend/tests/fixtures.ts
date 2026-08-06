@@ -2,7 +2,7 @@
 import { test as base, expect, Page } from "@playwright/test";
 import "./playwrightCoverage";
 
-export type { EarthMindPage } from "./utils/types";
+export type { TerraflowPage } from "./utils/types";
 
 // Optional CPU throttling for reproducing race conditions seen on slower
 // runners (Windows CI). Enable with LF_CPU_THROTTLE=<rate>, e.g. 4.
@@ -38,7 +38,7 @@ export const test = base.extend({
     // Flag to allow flow errors (for tests that expect errors)
     let allowFlowErrors = false;
 
-    // Add helper method to page context — see EarthMindPage type in utils/types.ts
+    // Add helper method to page context — see TerraflowPage type in utils/types.ts
     (page as Page & { allowFlowErrors?: () => void }).allowFlowErrors = () => {
       allowFlowErrors = true;
     };

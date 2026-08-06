@@ -48,7 +48,7 @@ def test_get_api_key_missing():
         patch.dict(os.environ, {}, clear=True),
         pytest.raises(
             ValueError,
-            match="EARTHMIND_API_KEY environment variable is not set",
+            match="TERRAFLOW_API_KEY environment variable is not set",
         ),
     ):
         get_api_key()
@@ -56,7 +56,7 @@ def test_get_api_key_missing():
 
 def test_get_api_key_present():
     """Test API key retrieval when set."""
-    with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key-123"}):  # pragma: allowlist secret
+    with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key-123"}):  # pragma: allowlist secret
         assert get_api_key() == "test-key-123"
 
 
@@ -103,7 +103,7 @@ def test_create_multi_serve_app_unknown_flow_id_returns_404(mock_graph, test_flo
     registry = FlowRegistry()
     registry.add(mock_graph, test_flow_meta)
 
-    with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}):  # pragma: allowlist secret
+    with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}):  # pragma: allowlist secret
         app = create_multi_serve_app(registry=registry)
         client = TestClient(app)
 
@@ -135,7 +135,7 @@ def test_serve_command_json_file():
         with (
             patch("lfx.cli.commands.load_flow_from_json") as mock_load,
             patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         ):
             import typer
             from lfx.cli.commands import serve_command
@@ -189,7 +189,7 @@ def test_serve_command_inline_json():
     with (
         patch("lfx.cli.commands.load_flow_from_json") as mock_load,
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         import typer
         from lfx.cli.commands import serve_command
@@ -356,7 +356,7 @@ class TestServeCommandMultiFlow:
         with (
             patch("lfx.cli.commands.load_flow_from_json", return_value=mock_graph),
             patch("lfx.cli.commands.uvicorn.run"),
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         ):
             import typer
             from typer.testing import CliRunner
@@ -386,7 +386,7 @@ class TestServeCommandMultiFlow:
         with (
             patch("lfx.cli.commands.load_flow_from_json", return_value=mock_graph),
             patch("lfx.cli.commands.uvicorn.run"),
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         ):
             import typer
             from typer.testing import CliRunner
@@ -401,7 +401,7 @@ class TestServeCommandMultiFlow:
     def test_serve_command_empty_directory_exits_nonzero(self, tmp_path):
         from lfx.cli.commands import serve_command
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}):  # pragma: allowlist secret
             import typer
             from typer.testing import CliRunner
 
@@ -459,7 +459,7 @@ class TestPythonScriptServe:
             patch("lfx.cli.commands.load_graph_from_script", new=AsyncMock(return_value=mock_graph)),
             patch("lfx.cli.commands.find_graph_variable", return_value={"type": "assignment", "line": 1}),
             patch("lfx.cli.commands.uvicorn.run"),
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         ):
             import typer
             from typer.testing import CliRunner
@@ -477,7 +477,7 @@ class TestPythonScriptServe:
         bad = tmp_path / "flow.txt"
         bad.write_text("not a flow")
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}):  # pragma: allowlist secret
             import typer
             from typer.testing import CliRunner
 
@@ -696,7 +696,7 @@ def test_serve_command_passes_workers_to_uvicorn():
         p = Path(tmp) / "flow.json"
         p.write_text(json.dumps(flow_data))
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
             patch("lfx.cli.commands.load_flow_from_json", return_value=mock_graph),
             patch("lfx.cli.commands.uvicorn.run") as mock_run,
         ):
@@ -748,7 +748,7 @@ def test_serve_command_sets_startup_paths_env_for_multi_worker(tmp_path):
     p.write_text(json.dumps(flow_data))
 
     with (
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         patch("lfx.cli.commands.load_flow_from_json", return_value=mock_graph),
         patch("lfx.cli.commands.uvicorn.run", side_effect=capture_env),
     ):
@@ -802,7 +802,7 @@ def test_serve_command_does_not_set_startup_paths_when_flow_dir_set(tmp_path):
     p.write_text(json.dumps(flow_data))
 
     with (
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         patch("lfx.cli.commands.load_flow_from_json", return_value=mock_graph),
         patch("lfx.cli.commands.uvicorn.run", side_effect=capture_env),
     ):
@@ -846,7 +846,7 @@ def test_serve_command_warns_when_workers_gt1_without_flow_dir():
         p = Path(tmp) / "flow.json"
         p.write_text(json.dumps(flow_data))
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
             patch("lfx.cli.commands.load_flow_from_json", return_value=mock_graph),
             patch("lfx.cli.commands.uvicorn.run"),
             patch("typer.echo", side_effect=lambda msg, **kw: stderr_output.append(msg) if kw.get("err") else None),
@@ -884,7 +884,7 @@ def test_serve_command_rejects_py_with_multiple_workers(tmp_path):
     stderr_output = []
 
     with (
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         patch("lfx.cli.commands.uvicorn.run"),
         patch("typer.echo", side_effect=lambda msg, **kw: stderr_output.append(msg) if kw.get("err") else None),
     ):
@@ -934,7 +934,7 @@ def test_serve_command_allows_py_with_multiple_workers_no_flow_dir(tmp_path):
         captured_env.update(os.environ)
 
     with (
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         patch("lfx.cli.commands.load_graph_from_script", new=AsyncMock(return_value=mock_graph)),
         patch("lfx.cli.commands.find_graph_variable", return_value={"type": "assignment", "line": 1}),
         patch("lfx.cli.commands.uvicorn.run", side_effect=capture_env),
@@ -981,7 +981,7 @@ def test_serve_command_no_warning_when_workers_gt1_with_flow_dir(tmp_path):
         p = Path(tmp) / "flow.json"
         p.write_text(json.dumps(flow_data))
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
             patch("lfx.cli.commands.load_flow_from_json", return_value=mock_graph),
             patch("lfx.cli.commands.uvicorn.run"),
             patch("typer.echo", side_effect=lambda msg, **kw: stderr_output.append(msg) if kw.get("err") else None),
@@ -1098,7 +1098,7 @@ def test_serve_upgrade_flow_check_aborts_on_incompatible():
     with (
         patch("lfx.upgrade.cli_gate._load_bundled_registry", return_value=_upgrade_registry()),
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         args = ["--flow-json", _upgrade_flow_json(), "--upgrade-flow", "check"]
         result = CliRunner().invoke(_upgrade_serve_app(), args)
@@ -1113,7 +1113,7 @@ def test_serve_upgrade_flow_safe_blocked_aborts():
     with (
         patch("lfx.upgrade.cli_gate._load_bundled_registry", return_value={}),
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         args = ["--flow-json", _upgrade_flow_json(), "--upgrade-flow", "safe"]
         result = CliRunner().invoke(_upgrade_serve_app(), args)
@@ -1128,7 +1128,7 @@ def test_serve_upgrade_flow_bad_value_rejected():
     with (
         patch("lfx.upgrade.cli_gate._load_bundled_registry", return_value=_upgrade_registry()),
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         args = ["--flow-json", _upgrade_flow_json(), "--upgrade-flow", "typo"]
         result = CliRunner().invoke(_upgrade_serve_app(), args)
@@ -1145,7 +1145,7 @@ def test_serve_upgrade_flow_safe_proceeds_to_serve():
         patch("lfx.upgrade.cli_gate._load_bundled_registry", return_value=_upgrade_registry()),
         patch("lfx.cli.commands.load_flow_from_json", side_effect=_upgrade_capturing_loader(captured)),
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         args = ["--flow-json", _upgrade_flow_json(), "--upgrade-flow", "safe"]
         result = CliRunner().invoke(_upgrade_serve_app(), args)
@@ -1168,7 +1168,7 @@ def test_serve_upgrade_safe_inline_envelope_preserved_and_upgraded():
         patch("lfx.upgrade.cli_gate._load_bundled_registry", return_value=_upgrade_registry()),
         patch("lfx.cli.commands.load_flow_from_json", side_effect=_upgrade_capturing_loader(captured)),
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         args = ["--flow-json", _upgrade_flow_json_enveloped(), "--upgrade-flow", "safe"]
         result = CliRunner().invoke(_upgrade_serve_app(), args)
@@ -1189,7 +1189,7 @@ def test_serve_upgrade_safe_stdin_envelope_preserved():
         patch("lfx.upgrade.cli_gate._load_bundled_registry", return_value=_upgrade_registry()),
         patch("lfx.cli.commands.load_flow_from_json", side_effect=_upgrade_capturing_loader(captured)),
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         result = CliRunner().invoke(
             _upgrade_serve_app(), ["--stdin", "--upgrade-flow", "safe"], input=_upgrade_flow_json_enveloped()
@@ -1218,7 +1218,7 @@ def test_serve_file_upgrade_safe_writes_enveloped_payload():
             patch("lfx.upgrade.cli_gate._load_bundled_registry", return_value=_upgrade_registry()),
             patch("lfx.cli.commands.load_flow_from_json", side_effect=_upgrade_capturing_loader(captured)),
             patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         ):
             result = CliRunner().invoke(_upgrade_serve_app(), [flow_path, "--upgrade-flow", "safe"])
             assert result.exit_code == 0, result.stdout
@@ -1242,7 +1242,7 @@ def test_serve_file_upgrade_rejects_py_script():
     try:
         with (
             patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         ):
             result = CliRunner().invoke(_upgrade_serve_app(), [py_path, "--upgrade-flow", "check"])
             assert result.exit_code != 0
@@ -1263,7 +1263,7 @@ def test_serve_upgrade_rejects_multiple_paths():
                 paths.append(f.name)
         with (
             patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
         ):
             result = CliRunner().invoke(_upgrade_serve_app(), [*paths, "--upgrade-flow", "safe"])
             assert result.exit_code != 0
@@ -1279,7 +1279,7 @@ def test_serve_upgrade_requires_a_flow_source():
 
     with (
         patch("lfx.cli.commands.uvicorn.run") as mock_uvicorn,
-        patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}),  # pragma: allowlist secret
+        patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}),  # pragma: allowlist secret
     ):
         result = CliRunner().invoke(_upgrade_serve_app(), ["--upgrade-flow", "check"])
         assert result.exit_code != 0

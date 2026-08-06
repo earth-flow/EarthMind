@@ -4,7 +4,7 @@ import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from earthmind.services.telemetry.schema import (
+from terraflow.services.telemetry.schema import (
     ComponentPayload,
     ExceptionPayload,
     PlaygroundPayload,
@@ -12,7 +12,7 @@ from earthmind.services.telemetry.schema import (
     ShutdownPayload,
     VersionPayload,
 )
-from earthmind.services.telemetry.service import TelemetryService
+from terraflow.services.telemetry.service import TelemetryService
 
 
 class TestExceptionTelemetryIntegration:
@@ -27,7 +27,7 @@ class TestExceptionTelemetryIntegration:
         telemetry_service.do_not_track = False
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "darwin",
         }
@@ -84,7 +84,7 @@ class TestExceptionTelemetryIntegration:
         telemetry_service.do_not_track = False
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "darwin",
         }
@@ -209,7 +209,7 @@ class TestTelemetryPayloadValidation:
 
     def test_component_inputs_payload_creation_and_serialization(self):
         """Test ComponentInputsPayload creation and serialization."""
-        from earthmind.services.telemetry.schema import ComponentInputsPayload
+        from terraflow.services.telemetry.schema import ComponentInputsPayload
 
         payload = ComponentInputsPayload(
             component_run_id="run-abc-123",
@@ -299,7 +299,7 @@ class TestTelemetryPayloadValidation:
     def test_version_payload_creation_and_serialization(self):
         """Test VersionPayload creation and serialization."""
         payload = VersionPayload(
-            package="earthmind",
+            package="terraflow",
             version="1.5.0",
             platform="macOS-14.0-arm64",
             python="3.11",
@@ -310,7 +310,7 @@ class TestTelemetryPayloadValidation:
             client_type="oss",
         )
 
-        assert payload.package == "earthmind"
+        assert payload.package == "terraflow"
         assert payload.version == "1.5.0"
         assert payload.platform == "macOS-14.0-arm64"
         assert payload.python == "3.11"
@@ -321,7 +321,7 @@ class TestTelemetryPayloadValidation:
 
         serialized = payload.model_dump(by_alias=True)
         expected = {
-            "package": "earthmind",
+            "package": "terraflow",
             "version": "1.5.0",
             "platform": "macOS-14.0-arm64",
             "python": "3.11",
@@ -518,7 +518,7 @@ class TestComponentInputTelemetry:
 
     def test_component_inputs_payload_with_dict(self):
         """Test ComponentInputsPayload with dict."""
-        from earthmind.services.telemetry.schema import ComponentInputsPayload
+        from terraflow.services.telemetry.schema import ComponentInputsPayload
 
         inputs_dict = {
             "temperature": 0.7,
@@ -574,7 +574,7 @@ class TestComponentInputTelemetry:
 
     def test_multiple_component_inputs_same_run(self):
         """Test multiple ComponentInputsPayload for same run_id."""
-        from earthmind.services.telemetry.schema import ComponentInputsPayload
+        from terraflow.services.telemetry.schema import ComponentInputsPayload
 
         run_id = "run-xyz-789"
 
@@ -600,7 +600,7 @@ class TestComponentInputTelemetry:
 
     def test_component_payload_with_run_id_integration(self):
         """Test ComponentPayload with run_id for joining data."""
-        from earthmind.services.telemetry.schema import ComponentInputsPayload, ComponentPayload
+        from terraflow.services.telemetry.schema import ComponentInputsPayload, ComponentPayload
 
         run_id = "run-integration-123"
         component_id = "TestComponent-xyz"

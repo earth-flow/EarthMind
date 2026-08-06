@@ -1,8 +1,8 @@
 """Pydantic models for the v0 Extension manifest schema.
 
-A EarthMind Extension is the distribution unit that gets pip-installed.  In v0
+A Terraflow Extension is the distribution unit that gets pip-installed.  In v0
 it ships exactly one Bundle (a named group of components) plus a manifest at
-the distribution root.  The manifest tells EarthMind:
+the distribution root.  The manifest tells Terraflow:
 
     - which Bundle to register (``bundles[0]``),
     - what component-base-class API surface the Bundle was built against
@@ -13,7 +13,7 @@ the distribution root.  The manifest tells EarthMind:
 Manifest source forms (both supported):
 
     1. ``extension.json`` at the package root.
-    2. ``[tool.earthmind.extension]`` in ``pyproject.toml``.
+    2. ``[tool.terraflow.extension]`` in ``pyproject.toml``.
 
 Use :func:`load_manifest` to discover and parse either form.
 
@@ -73,7 +73,7 @@ manifest's own shape) and from the ``"v0"`` initial-state marker in
 BUNDLE_API.md's changelog (which is documentation prose); the integer
 contract version is ``1`` from day one."""
 
-EXTENSION_SCHEMA_URL: str = f"https://schemas.earthmind.org/extension/v{SCHEMA_VERSION}.json"
+EXTENSION_SCHEMA_URL: str = f"https://schemas.terraflow.org/extension/v{SCHEMA_VERSION}.json"
 """Canonical hosting URL for the published JSON Schema.  Authors point their
 ``$schema`` field here for editor autocompletion."""
 
@@ -248,7 +248,7 @@ class BundleRef(BaseModel):
 
 
 class ExtensionManifest(BaseModel):
-    """The v0 EarthMind Extension manifest.
+    """The v0 Terraflow Extension manifest.
 
     Required fields:
         - id, version, name, bundles, lfx
@@ -285,7 +285,7 @@ class ExtensionManifest(BaseModel):
         ...,
         min_length=1,
         max_length=200,
-        description="Human-readable display name shown in EarthMind.",
+        description="Human-readable display name shown in Terraflow.",
     )
     description: StrictStr | None = Field(
         default=None,
@@ -401,7 +401,7 @@ def _read_extension_json(path: Path) -> dict[str, Any]:
 
 
 def _read_pyproject_extension(path: Path) -> dict[str, Any] | None:
-    """Read ``[tool.earthmind.extension]`` from a pyproject.toml.
+    """Read ``[tool.terraflow.extension]`` from a pyproject.toml.
 
     Returns the table as a dict, or ``None`` if the table is absent.  Raises
     ``ValueError`` if the TOML is malformed or the section is not a table.
@@ -415,14 +415,14 @@ def _read_pyproject_extension(path: Path) -> dict[str, Any] | None:
     tool = data.get("tool")
     if not isinstance(tool, dict):
         return None
-    earthmind = tool.get("earthmind")
-    if not isinstance(earthmind, dict):
+    terraflow = tool.get("terraflow")
+    if not isinstance(terraflow, dict):
         return None
-    section = earthmind.get("extension")
+    section = terraflow.get("extension")
     if section is None:
         return None
     if not isinstance(section, dict):
-        msg = "[tool.earthmind.extension] must be a TOML table"
+        msg = "[tool.terraflow.extension] must be a TOML table"
         raise TypeError(msg)
     return section
 
@@ -430,7 +430,7 @@ def _read_pyproject_extension(path: Path) -> dict[str, Any] | None:
 def load_manifest(root: Path | str) -> ManifestSource:
     """Discover and parse a v0 manifest at ``root``.
 
-    Discovery order: ``extension.json`` first, then ``[tool.earthmind.extension]``
+    Discovery order: ``extension.json`` first, then ``[tool.terraflow.extension]``
     in ``pyproject.toml``.  Both present is allowed; ``extension.json`` wins, so
     authors who add ``$schema`` to the JSON for editor support do not have to
     duplicate it in pyproject.toml.
@@ -463,6 +463,6 @@ def load_manifest(root: Path | str) -> ManifestSource:
 
     msg = (
         f"No extension manifest found at {root_path}. Expected either "
-        f"'extension.json' or a [tool.earthmind.extension] section in 'pyproject.toml'."
+        f"'extension.json' or a [tool.terraflow.extension] section in 'pyproject.toml'."
     )
     raise FileNotFoundError(msg)

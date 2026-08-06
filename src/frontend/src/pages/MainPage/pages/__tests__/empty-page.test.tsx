@@ -106,7 +106,7 @@ describe("EmptyPageCommunity - Create first flow behavior", () => {
 
     fireEvent.click(screen.getByTestId("new_project_btn_empty_page"));
 
-    // Empty-state button must open the new EarthMind Assistant welcome flow,
+    // Empty-state button must open the new Terraflow Assistant welcome flow,
     // matching the "New Flow" button shown when the user already has flows.
     expect(startNewFlowMock).toHaveBeenCalledTimes(1);
     // It must NOT open the old TemplatesModal.

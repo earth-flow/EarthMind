@@ -4,8 +4,8 @@ import { ArrowRight, X } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
-import earthmindAssistantIcon from "@/assets/earthmind_assistant.svg";
-import earthmindAssistantIdleIcon from "@/assets/earthmind_assistant_idle.svg";
+import terraflowAssistantIcon from "@/assets/terraflow_assistant.svg";
+import terraflowAssistantIdleIcon from "@/assets/terraflow_assistant_idle.svg";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import {
   readAssistantDiscovered,
@@ -21,7 +21,7 @@ import type { AllNodeType } from "@/types/flow";
 import CanvasControlsDropdown from "./CanvasControlsDropdown";
 import HelpDropdown from "./HelpDropdown";
 
-// Delay before the "Try the new EarthMind Assistant!" tooltip surfaces, in ms.
+// Delay before the "Try the new Terraflow Assistant!" tooltip surfaces, in ms.
 // Long enough that an active user mid-task isn't interrupted; short enough
 // that a user who landed on the canvas and paused gets the hint.
 const ONBOARDING_TOOLTIP_DELAY_MS = 10_000;
@@ -181,12 +181,12 @@ const CanvasControls = ({
                 onClick={handleAssistantClick}
               >
                 {/* Idle state — uses the design-tuned
-                    ``earthmind_assistant_idle.svg`` (noise filter + brand tint
+                    ``terraflow_assistant_idle.svg`` (noise filter + brand tint
                     baked into the SVG). Hidden whenever the panel is open so
                     the button reads as "active" alongside the open panel. */}
                 <img
-                  src={earthmindAssistantIdleIcon}
-                  alt="EarthMind Assistant"
+                  src={terraflowAssistantIdleIcon}
+                  alt="Terraflow Assistant"
                   className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${
                     assistantSidebarOpen ? "opacity-0" : "group-hover:opacity-0"
                   }`}
@@ -194,7 +194,7 @@ const CanvasControls = ({
                 {/* Brand-lit icon — surfaces on hover AND while the panel is
                     open; both states share the same active brand identity. */}
                 <img
-                  src={earthmindAssistantIcon}
+                  src={terraflowAssistantIcon}
                   alt=""
                   aria-hidden="true"
                   className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${
@@ -239,7 +239,7 @@ const CanvasControls = ({
               <button
                 type="button"
                 data-testid="assistant-onboarding-open"
-                aria-label="Open EarthMind Assistant"
+                aria-label="Open Terraflow Assistant"
                 className="flex h-4 w-4 shrink-0 items-center justify-center rounded text-foreground transition-colors hover:bg-muted-foreground/10"
                 onClick={handleAssistantClick}
               >

@@ -1,6 +1,6 @@
 import { pushHistory, readHistory } from "../input-history-storage";
 
-const STORAGE_KEY = "earthmind-assistant-input-history";
+const STORAGE_KEY = "terraflow-assistant-input-history";
 const MAX_HISTORY = 10;
 
 describe("input-history storage", () => {

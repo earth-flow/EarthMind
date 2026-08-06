@@ -16,7 +16,7 @@ from typing import Any
 
 from lfx.graph.edge.base import types_compatible
 
-# EarthMind uses oe (U+0153) as a quote replacement in ReactFlow handle strings
+# Terraflow uses oe (U+0153) as a quote replacement in ReactFlow handle strings
 _Q = "\u0153"
 
 # Synthetic output name created at runtime when a component is set to tool
@@ -96,12 +96,12 @@ def _enable_tool_mode(flow: dict, source_id: str) -> None:
 
 
 def _scaped_json_stringify(obj: Any) -> str:
-    """Replicate EarthMind frontend's scapedJSONStringfy: sorted keys, compact, oe for quotes."""
+    """Replicate Terraflow frontend's scapedJSONStringfy: sorted keys, compact, oe for quotes."""
     return _custom_stringify(obj).replace('"', _Q)
 
 
 def _custom_stringify(obj: Any) -> str:
-    """Replicate EarthMind frontend's customStringify for edge handle data.
+    """Replicate Terraflow frontend's customStringify for edge handle data.
 
     Covers the subset of types used in handle dicts. Uses json.dumps for
     strings to handle escaping correctly.
@@ -234,7 +234,7 @@ def add_connection(
     # Idempotent: if a connection between the same source output and target
     # input already exists, return it rather than appending a duplicate. We
     # compare structurally (source/target ids + handle name/fieldName) instead
-    # of by edge id, since UI-saved edges from older EarthMind versions use a
+    # of by edge id, since UI-saved edges from older Terraflow versions use a
     # different id prefix (`xy-edge__` vs `reactflow__edge-`) even though the
     # underlying connection is the same. A repeat call (batch retry, UI-then-MCP)
     # would otherwise double-wire the flow at runtime.

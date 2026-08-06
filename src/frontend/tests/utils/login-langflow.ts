@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 
 import { TEXTS } from "../utils/constants/texts";
-export const loginEarthMind = async (page: Page) => {
+export const loginTerraflow = async (page: Page) => {
   await page.goto("/");
   await page
     .getByPlaceholder(TEXTS.placeholderUsername)

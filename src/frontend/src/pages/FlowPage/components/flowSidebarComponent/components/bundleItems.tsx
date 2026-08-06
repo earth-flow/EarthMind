@@ -50,7 +50,7 @@ export const BundleItem = memo(
     //   * the build-time kill switch is on (corporate Mode B/C builds can
     //     dead-code-eliminate the UI by setting it to false),
     //   * the backend has the reload route enabled (runtime mirror of
-    //     ``EARTHMIND_ENABLE_EXTENSION_RELOAD`` from ``/config``), AND
+    //     ``TERRAFLOW_ENABLE_EXTENSION_RELOAD`` from ``/config``), AND
     //   * the bundle was loaded from a manifest-shipping Extension (we
     //     have an extensionId to send to the reload endpoint).
     // BundleHeaderActions itself re-checks; the predicate here also gates

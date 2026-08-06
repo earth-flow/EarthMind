@@ -4,7 +4,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from earthmind.services.cache.utils import CACHE_DIR
+from terraflow.services.cache.utils import CACHE_DIR
 from lfx.components.vectorstores.local_db import LocalDBComponent
 from lfx.schema.data import Data
 

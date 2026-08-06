@@ -6,11 +6,11 @@ captured by the dynamic `/{deployment_id}` route.
 
 from uuid import uuid4
 
-import earthmind.api.router as api_router_module
+import terraflow.api.router as api_router_module
 import pytest
 from fastapi import APIRouter, FastAPI
 from fastapi.routing import APIRoute
-from earthmind.api.v1.deployments import router
+from terraflow.api.v1.deployments import router
 from starlette.routing import Match
 
 

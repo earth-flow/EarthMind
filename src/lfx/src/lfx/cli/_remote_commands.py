@@ -7,7 +7,7 @@ def register(app: typer.Typer) -> None:
     """Register remote-stage commands on *app*."""
 
     @app.command(
-        name="status", help="Compare local flow files against a remote EarthMind instance", rich_help_panel="Remote"
+        name="status", help="Compare local flow files against a remote Terraflow instance", rich_help_panel="Remote"
     )
     def status_command_wrapper(
         flow_paths: list[str] = typer.Argument(
@@ -34,12 +34,12 @@ def register(app: typer.Typer) -> None:
         target: str | None = typer.Option(
             None,
             "--target",
-            help="EarthMind instance URL (inline override — skips config file lookup).",
+            help="Terraflow instance URL (inline override — skips config file lookup).",
         ),
         api_key: str | None = typer.Option(
             None,
             "--api-key",
-            help="API key for the EarthMind instance (used with --target or to override config).",
+            help="API key for the Terraflow instance (used with --target or to override config).",
         ),
         show_remote_only: bool = typer.Option(
             False,
@@ -62,7 +62,7 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         name="push",
-        help="Push flow JSON to a remote EarthMind instance (upsert by stable ID)",
+        help="Push flow JSON to a remote Terraflow instance (upsert by stable ID)",
         rich_help_panel="Remote",
     )
     def push_command_wrapper(
@@ -101,12 +101,12 @@ def register(app: typer.Typer) -> None:
         target: str | None = typer.Option(
             None,
             "--target",
-            help="EarthMind instance URL (inline override — skips config file lookup).",
+            help="Terraflow instance URL (inline override — skips config file lookup).",
         ),
         api_key: str | None = typer.Option(
             None,
             "--api-key",
-            help="API key for the EarthMind instance (used with --target or to override config).",
+            help="API key for the Terraflow instance (used with --target or to override config).",
         ),
         dry_run: bool = typer.Option(
             False,
@@ -124,7 +124,7 @@ def register(app: typer.Typer) -> None:
             help="Clear password/load_from_db field values before pushing.",
         ),
     ) -> None:
-        """Push EarthMind flows to a remote instance using stable IDs for upsert (lazy-loaded)."""
+        """Push Terraflow flows to a remote instance using stable IDs for upsert (lazy-loaded)."""
         from lfx.cli.push import push_command
 
         push_command(
@@ -142,7 +142,7 @@ def register(app: typer.Typer) -> None:
         )
 
     @app.command(
-        name="pull", help="Pull flows from a remote EarthMind instance to local files", rich_help_panel="Remote"
+        name="pull", help="Pull flows from a remote Terraflow instance to local files", rich_help_panel="Remote"
     )
     def pull_command_wrapper(
         env: str | None = typer.Option(
@@ -181,12 +181,12 @@ def register(app: typer.Typer) -> None:
         target: str | None = typer.Option(
             None,
             "--target",
-            help="EarthMind instance URL (inline override — skips config file lookup).",
+            help="Terraflow instance URL (inline override — skips config file lookup).",
         ),
         api_key: str | None = typer.Option(
             None,
             "--api-key",
-            help="API key for the EarthMind instance (used with --target or to override config).",
+            help="API key for the Terraflow instance (used with --target or to override config).",
         ),
         strip_secrets: bool = typer.Option(
             True,
@@ -199,7 +199,7 @@ def register(app: typer.Typer) -> None:
             help="JSON indentation level.",
         ),
     ) -> None:
-        """Pull and normalize flows from a remote EarthMind instance (lazy-loaded)."""
+        """Pull and normalize flows from a remote Terraflow instance (lazy-loaded)."""
         from lfx.cli.pull import pull_command
 
         pull_command(
@@ -261,12 +261,12 @@ def register(app: typer.Typer) -> None:
         target: str | None = typer.Option(
             None,
             "--target",
-            help="EarthMind instance URL (inline override — skips config file lookup).",
+            help="Terraflow instance URL (inline override — skips config file lookup).",
         ),
         api_key: str | None = typer.Option(
             None,
             "--api-key",
-            help="API key for the EarthMind instance (used with --target or to override config).",
+            help="API key for the Terraflow instance (used with --target or to override config).",
         ),
         in_place: bool = typer.Option(
             False,
@@ -300,7 +300,7 @@ def register(app: typer.Typer) -> None:
             help="JSON indentation level.",
         ),
     ) -> None:
-        """Export and normalize EarthMind flow JSON for version control (lazy-loaded)."""
+        """Export and normalize Terraflow flow JSON for version control (lazy-loaded)."""
         from lfx.cli.export import export_command
 
         export_command(

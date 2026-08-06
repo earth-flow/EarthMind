@@ -2,14 +2,14 @@ import os
 
 from openai import OpenAI
 
-base = (os.environ.get("EARTHMIND_URL") or os.environ.get("EARTHMIND_SERVER_URL", "")).rstrip("/")
-api_key = os.environ.get("EARTHMIND_API_KEY", "")
+base = (os.environ.get("TERRAFLOW_URL") or os.environ.get("TERRAFLOW_SERVER_URL", "")).rstrip("/")
+api_key = os.environ.get("TERRAFLOW_API_KEY", "")
 flow_id = os.environ.get("FLOW_ID", "")
 
 client = OpenAI(
     base_url=f"{base}/api/v1/",
     default_headers={"x-api-key": api_key},
-    api_key="dummy-api-key",  # Required by OpenAI SDK but not used by EarthMind
+    api_key="dummy-api-key",  # Required by OpenAI SDK but not used by Terraflow
 )
 
 try:

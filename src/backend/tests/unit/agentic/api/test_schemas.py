@@ -4,7 +4,7 @@ Tests the Pydantic models used for request/response validation.
 """
 
 import pytest
-from earthmind.agentic.api.schemas import AssistantRequest, StepType, ValidationResult
+from terraflow.agentic.api.schemas import AssistantRequest, StepType, ValidationResult
 from pydantic import ValidationError
 
 

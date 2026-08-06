@@ -149,7 +149,7 @@ def get_transaction_service() -> TransactionServiceProtocol | None:
 def get_auth_service() -> AuthServiceProtocol | None:
     """Retrieves the auth service instance.
 
-    Returns the pluggable auth service (minimal LFX or full EarthMind when configured).
+    Returns the pluggable auth service (minimal LFX or full Terraflow when configured).
     """
     from lfx.services.schema import ServiceType
 

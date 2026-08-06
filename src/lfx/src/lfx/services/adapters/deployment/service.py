@@ -41,13 +41,13 @@ if TYPE_CHECKING:
 
 
 # No adapter key registered -- this stub exists so the protocol and ABC are
-# testable.  Concrete adapters (e.g. in EarthMind) subclass BaseDeploymentService
+# testable.  Concrete adapters (e.g. in Terraflow) subclass BaseDeploymentService
 # and register under meaningful keys like "local" or "remote".
 class DeploymentService(BaseDeploymentService):
     """Null deployment service for LFX.
 
     All operations raise :class:`DeploymentNotConfiguredError` because LFX does
-    not ship a deployment adapter.  Concrete adapters (e.g. in EarthMind) should
+    not ship a deployment adapter.  Concrete adapters (e.g. in Terraflow) should
     subclass :class:`BaseDeploymentService` to provide real behaviour.
     """
 

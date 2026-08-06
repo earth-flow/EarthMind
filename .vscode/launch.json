@@ -11,7 +11,7 @@
 
       "args": [
         "--factory",
-        "earthmind.main:create_app",
+        "terraflow.main:create_app",
         "--port",
         "7860",
         "--reload",
@@ -31,8 +31,8 @@
       "jinja": true,
       "justMyCode": false,
       "env": {
-        "EARTHMIND_LOG_LEVEL": "debug",
-        "EARTHMIND_PROMETHEUS_PORT": "9090"
+        "TERRAFLOW_LOG_LEVEL": "debug",
+        "TERRAFLOW_PROMETHEUS_PORT": "9090"
       },
       "envFile": "${workspaceFolder}/.env"
     },
@@ -40,11 +40,11 @@
       "name": "Debug CLI",
       "type": "debugpy",
       "request": "launch",
-      "module": "earthmind",
+      "module": "terraflow",
       "args": [
         "run",
         "--frontend-path",
-        "${workspaceFolder}/src/backend/base/earthmind/frontend",
+        "${workspaceFolder}/src/backend/base/terraflow/frontend",
         "--env-file",
         "${workspaceFolder}/.env"
       ],

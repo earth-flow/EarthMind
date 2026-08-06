@@ -1,5 +1,5 @@
 curl -X GET \
-  "$EARTHMIND_URL/api/v2/files/c7b22c4c-d5e0-4ec9-af97-5d85b7657a34" \
+  "$TERRAFLOW_URL/api/v2/files/c7b22c4c-d5e0-4ec9-af97-5d85b7657a34" \
   -H "accept: application/json" \
-  -H "x-api-key: $EARTHMIND_API_KEY" \
+  -H "x-api-key: $TERRAFLOW_API_KEY" \
   --output downloaded_file.txt

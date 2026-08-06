@@ -209,15 +209,15 @@ def test_load_manifest_pyproject(tmp_path: Path) -> None:
 [project]
 name = "lfx-openai"
 
-[tool.earthmind.extension]
+[tool.terraflow.extension]
 id = "lfx-openai"
 version = "1.2.3"
 name = "OpenAI Bundle"
 
-[tool.earthmind.extension.lfx]
+[tool.terraflow.extension.lfx]
 compat = ["1"]
 
-[[tool.earthmind.extension.bundles]]
+[[tool.terraflow.extension.bundles]]
 name = "openai"
 path = "openai"
 """
@@ -229,7 +229,7 @@ path = "openai"
 
 def test_load_manifest_extension_json_wins_over_pyproject(tmp_path: Path) -> None:
     (tmp_path / "extension.json").write_text(json.dumps(_VALID), encoding="utf-8")
-    (tmp_path / "pyproject.toml").write_text("[tool.earthmind.extension]\nid='wrong'", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text("[tool.terraflow.extension]\nid='wrong'", encoding="utf-8")
     source = load_manifest(tmp_path)
     assert source.kind == "extension.json"
 

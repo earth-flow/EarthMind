@@ -25,17 +25,17 @@ test(
     await page.getByTestId("code-button-modal").last().click();
 
     const codeInputCode = `
-# from earthmind.field_typing import Data
-from earthmind.custom import Component
-from earthmind.io import CodeInput, Output
-from earthmind.schema import Data
+# from terraflow.field_typing import Data
+from terraflow.custom import Component
+from terraflow.io import CodeInput, Output
+from terraflow.schema import Data
 from time import sleep
-from earthmind.schema.message import Message
+from terraflow.schema.message import Message
 
 class CustomComponent(Component):
     display_name = "Custom Component"
     description = "Use as a template to create your own component."
-    documentation: str = "https://docs.earthmind.org/components-custom-components"
+    documentation: str = "https://docs.terraflow.org/components-custom-components"
     icon = "custom_components"
     name = "CustomComponent"
 
@@ -71,9 +71,9 @@ class CustomComponent(Component):
       'def python_function(text: str) -> st:    """This is a default python function that returns the input text"""    return text';
 
     const customComponentCode = `from typing import Callable
-from earthmind.field_typing import Code
-from earthmind.interface.custom.custom_component import CustomComponent
-from earthmind.interface.custom.utils import get_function
+from terraflow.field_typing import Code
+from terraflow.interface.custom.custom_component import CustomComponent
+from terraflow.interface.custom.utils import get_function
 
 class PythonFunctionComponent(CustomComponent):
     def python_function(text: str) -> str:

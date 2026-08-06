@@ -1,12 +1,12 @@
 # Complexity Reduction Patterns
 
-This document provides patterns for reducing cognitive complexity in EarthMind React components.
+This document provides patterns for reducing cognitive complexity in Terraflow React components.
 
 ## Understanding Complexity
 
 ### SonarJS Cognitive Complexity
 
-EarthMind does not have automated complexity analysis tools. Assess complexity manually using SonarJS cognitive complexity rules:
+Terraflow does not have automated complexity analysis tools. Assess complexity manually using SonarJS cognitive complexity rules:
 
 - **Total Complexity**: Sum of all functions' complexity in the file
 - **Max Complexity**: Highest single function complexity

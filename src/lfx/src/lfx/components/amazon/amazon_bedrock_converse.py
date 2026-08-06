@@ -1,6 +1,6 @@
-from earthmind.field_typing import LanguageModel
-from earthmind.inputs.inputs import BoolInput, FloatInput, IntInput, MessageTextInput, SecretStrInput
-from earthmind.io import DictInput, DropdownInput
+from terraflow.field_typing import LanguageModel
+from terraflow.inputs.inputs import BoolInput, FloatInput, IntInput, MessageTextInput, SecretStrInput
+from terraflow.io import DictInput, DropdownInput
 
 from lfx.base.models.aws_constants import AWS_REGIONS, AWS_MODEL_IDs
 from lfx.base.models.model import LCModelComponent

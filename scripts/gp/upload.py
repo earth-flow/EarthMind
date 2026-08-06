@@ -24,8 +24,8 @@ from gp_client import (
     upload_strings,
 )
 
-DEFAULT_BACKEND_SOURCE = Path(__file__).parent.parent.parent / "src/backend/base/earthmind/locales/en.json"
-GP_BACKEND_BUNDLE = os.getenv("GP_BACKEND_BUNDLE", "earthmind-ui-backend-v2")
+DEFAULT_BACKEND_SOURCE = Path(__file__).parent.parent.parent / "src/backend/base/terraflow/locales/en.json"
+GP_BACKEND_BUNDLE = os.getenv("GP_BACKEND_BUNDLE", "terraflow-ui-backend-v2")
 BACKEND_REQUEST_TIMEOUT = 300  # 5 minutes — single PUT with full payload
 
 

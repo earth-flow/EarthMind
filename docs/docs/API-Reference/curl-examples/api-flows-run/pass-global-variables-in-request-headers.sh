@@ -1,10 +1,10 @@
 curl -X POST \
-  "$EARTHMIND_SERVER_URL/api/v1/run/$FLOW_ID" \
+  "$TERRAFLOW_SERVER_URL/api/v1/run/$FLOW_ID" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $EARTHMIND_API_KEY" \
-  -H "X-EARTHMIND-GLOBAL-VAR-OPENAI_API_KEY: sk-..." \
-  -H "X-EARTHMIND-GLOBAL-VAR-USER_ID: user123" \
-  -H "X-EARTHMIND-GLOBAL-VAR-ENVIRONMENT: production" \
+  -H "x-api-key: $TERRAFLOW_API_KEY" \
+  -H "X-TERRAFLOW-GLOBAL-VAR-OPENAI_API_KEY: sk-..." \
+  -H "X-TERRAFLOW-GLOBAL-VAR-USER_ID: user123" \
+  -H "X-TERRAFLOW-GLOBAL-VAR-ENVIRONMENT: production" \
   -d '{
     "input_value": "Tell me about something interesting!",
     "input_type": "chat",

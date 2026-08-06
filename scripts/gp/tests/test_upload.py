@@ -23,10 +23,10 @@ class TestUploadFrontend:
         source.write_text(json.dumps({"hello": "Hello", "bye": "Bye"}), encoding="utf-8")
 
         with (
-            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["earthmind-ui"]}),
+            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["terraflow-ui"]}),
             patch.object(upload_mod, "create_bundle") as mock_create,
             patch.object(upload_mod, "upload_strings") as mock_upload,
-            patch.object(upload_mod, "GP_BUNDLE", "earthmind-ui"),
+            patch.object(upload_mod, "GP_BUNDLE", "terraflow-ui"),
         ):
             _run_frontend(str(source))
 
@@ -41,7 +41,7 @@ class TestUploadFrontend:
             patch.object(upload_mod, "list_bundles", return_value={"bundleIds": []}),
             patch.object(upload_mod, "create_bundle") as mock_create,
             patch.object(upload_mod, "upload_strings") as mock_upload,
-            patch.object(upload_mod, "GP_BUNDLE", "earthmind-ui"),
+            patch.object(upload_mod, "GP_BUNDLE", "terraflow-ui"),
         ):
             _run_frontend(str(source))
 
@@ -53,10 +53,10 @@ class TestUploadFrontend:
         source.write_text("{}", encoding="utf-8")
 
         with (
-            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["earthmind-ui"]}),
+            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["terraflow-ui"]}),
             patch.object(upload_mod, "create_bundle"),
             patch.object(upload_mod, "upload_strings") as mock_upload,
-            patch.object(upload_mod, "GP_BUNDLE", "earthmind-ui"),
+            patch.object(upload_mod, "GP_BUNDLE", "terraflow-ui"),
         ):
             _run_frontend(str(source))
 
@@ -83,10 +83,10 @@ class TestUploadBackend:
         source.write_text(json.dumps(strings), encoding="utf-8")
 
         with (
-            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["earthmind-backend"]}),
+            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["terraflow-backend"]}),
             patch.object(upload_mod, "create_backend_bundle") as mock_create,
             patch.object(upload_mod, "upload_backend_strings") as mock_upload,
-            patch.object(upload_mod, "GP_BACKEND_BUNDLE", "earthmind-backend"),
+            patch.object(upload_mod, "GP_BACKEND_BUNDLE", "terraflow-backend"),
         ):
             _run_backend(str(source))
 
@@ -102,7 +102,7 @@ class TestUploadBackend:
             patch.object(upload_mod, "list_bundles", return_value={"bundleIds": []}),
             patch.object(upload_mod, "create_backend_bundle") as mock_create,
             patch.object(upload_mod, "upload_backend_strings") as mock_upload,
-            patch.object(upload_mod, "GP_BACKEND_BUNDLE", "earthmind-backend"),
+            patch.object(upload_mod, "GP_BACKEND_BUNDLE", "terraflow-backend"),
         ):
             _run_backend(str(source))
 
@@ -138,10 +138,10 @@ class TestUploadBackend:
             return {}
 
         with (
-            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["earthmind-backend"]}),
+            patch.object(upload_mod, "list_bundles", return_value={"bundleIds": ["terraflow-backend"]}),
             patch.object(upload_mod, "create_backend_bundle"),
             patch.object(upload_mod, "upload_backend_strings", side_effect=_capture_upload),
-            patch.object(upload_mod, "GP_BACKEND_BUNDLE", "earthmind-backend"),
+            patch.object(upload_mod, "GP_BACKEND_BUNDLE", "terraflow-backend"),
         ):
             _run_backend(str(source))
 

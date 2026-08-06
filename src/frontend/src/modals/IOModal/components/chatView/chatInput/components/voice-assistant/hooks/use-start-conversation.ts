@@ -38,7 +38,7 @@ export const useStartConversation = (
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(
           JSON.stringify({
-            type: "earthmind.elevenlabs.config",
+            type: "terraflow.elevenlabs.config",
             enabled: audioSettings.provider === "elevenlabs",
             voice_id:
               audioSettings.provider === "elevenlabs"

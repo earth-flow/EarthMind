@@ -10,7 +10,7 @@ import {
 } from "@/constants/constants";
 import { useLogout } from "@/controllers/API/queries/auth";
 import { CustomProfileIcon } from "@/customization/components/custom-profile-icon";
-import { ENABLE_DATASTAX_EARTHMIND } from "@/customization/feature-flags";
+import { ENABLE_DATASTAX_TERRAFLOW } from "@/customization/feature-flags";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import useAuthStore from "@/stores/authStore";
 import { useDarkStore } from "@/stores/darkStore";
@@ -119,11 +119,11 @@ export const AccountMenu = () => {
                 </HeaderMenuItemButton>
               </div>
             )}
-            {/* EarthMind: external docs link temporarily disabled (remove `false &&` to re-enable) */}
+            {/* Terraflow: external docs link temporarily disabled (remove `false &&` to re-enable) */}
             {false && (
               <HeaderMenuItemLink
                 newPage
-                href={ENABLE_DATASTAX_EARTHMIND ? DATASTAX_DOCS_URL : DOCS_URL}
+                href={ENABLE_DATASTAX_TERRAFLOW ? DATASTAX_DOCS_URL : DOCS_URL}
               >
                 <span data-testid="menu_docs_button" id="menu_docs_button">
                   {t("account.docs")}
@@ -143,7 +143,7 @@ export const AccountMenu = () => {
                 {t("account.github")}
               </span>
             </HeaderMenuItemLink>
-            {/* EarthMind: external Discord/Twitter links temporarily disabled (remove `false &&` to re-enable) */}
+            {/* Terraflow: external Discord/Twitter links temporarily disabled (remove `false &&` to re-enable) */}
             {false && (
               <>
                 <HeaderMenuItemLink newPage href={DISCORD_URL}>

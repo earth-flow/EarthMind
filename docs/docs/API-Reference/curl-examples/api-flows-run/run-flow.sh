@@ -1,7 +1,7 @@
 curl -X POST \
-  "$EARTHMIND_SERVER_URL/api/v1/run/$FLOW_ID" \
+  "$TERRAFLOW_SERVER_URL/api/v1/run/$FLOW_ID" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: $EARTHMIND_API_KEY" \
+  -H "x-api-key: $TERRAFLOW_API_KEY" \
   -d '{
     "input_value": "Tell me about something interesting!",
     "session_id": "chat-123",

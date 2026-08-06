@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/projects/b408ddb9-6266-4431-9be8-e04a62758331`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/projects/b408ddb9-6266-4431-9be8-e04a62758331`;
 
 const options = {
   method: 'PATCH',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
   body: JSON.stringify({
   "name": "string",

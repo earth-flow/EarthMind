@@ -64,7 +64,7 @@ class AuthSettings(BaseSettings):
         description=(
             "Source for API key validation. "
             "'db' validates against database-stored API keys (default behavior). "
-            "'env' validates against the EARTHMIND_API_KEY environment variable."
+            "'env' validates against the TERRAFLOW_API_KEY environment variable."
         ),
     )
 
@@ -91,7 +91,7 @@ class AuthSettings(BaseSettings):
         default=True,
         description="Allow creation of superusers via CLI. Set to False in production for security.",
     )
-    """If True, allows creation of superusers via the CLI 'earthmind superuser' command."""
+    """If True, allows creation of superusers via the CLI 'terraflow superuser' command."""
 
     NEW_USER_IS_ACTIVE: bool = False
     SUPERUSER: str = DEFAULT_SUPERUSER
@@ -166,7 +166,7 @@ class AuthSettings(BaseSettings):
 
     pwd_context: CryptContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    model_config = SettingsConfigDict(validate_assignment=True, extra="ignore", env_prefix="EARTHMIND_")
+    model_config = SettingsConfigDict(validate_assignment=True, extra="ignore", env_prefix="TERRAFLOW_")
 
     def reset_credentials(self) -> None:
         # Preserve the configured username but scrub the password from memory to avoid plaintext exposure.

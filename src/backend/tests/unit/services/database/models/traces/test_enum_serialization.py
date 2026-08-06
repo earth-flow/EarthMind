@@ -13,8 +13,8 @@ and keep the PG enum type names aligned with the migration.
 from __future__ import annotations
 
 import pytest
-from earthmind.services.database.models.flow.model import Flow
-from earthmind.services.database.models.traces.model import (
+from terraflow.services.database.models.flow.model import Flow
+from terraflow.services.database.models.traces.model import (
     SpanKind,
     SpanStatus,
     SpanTable,
@@ -216,7 +216,7 @@ async def _traces_db_engine():
 
 @pytest.mark.asyncio
 class TestLegacyUppercaseRowsRoundTripThroughOrm:
-    """End-to-end regression for https://github.com/earthmind-ai/earthmind/issues/13318.
+    """End-to-end regression for https://github.com/terraflow-ai/terraflow/issues/13318.
 
     Before ``values_callable=_enum_values`` shipped in v1.9.2, the trace/span
     enum columns persisted the enum *names* (``"OK"``, ``"ERROR"``, ``"CHAIN"``).

@@ -1,14 +1,14 @@
-"""Tests for EarthMindClient.post_event -- best-effort event emission."""
+"""Tests for TerraflowClient.post_event -- best-effort event emission."""
 
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from lfx.mcp.client import EarthMindClient
+from lfx.mcp.client import TerraflowClient
 
 
 @pytest.fixture
 def client():
-    return EarthMindClient(server_url="http://localhost:7860", api_key="test-key")  # pragma: allowlist secret
+    return TerraflowClient(server_url="http://localhost:7860", api_key="test-key")  # pragma: allowlist secret
 
 
 class TestPostEvent:

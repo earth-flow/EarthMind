@@ -4,7 +4,7 @@ import time
 import uuid
 
 import pytest
-from earthmind.events.event_manager import EventManager
+from terraflow.events.event_manager import EventManager
 from lfx.schema.log import LoggableType
 
 

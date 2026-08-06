@@ -14,7 +14,7 @@ from contextvars import copy_context
 from unittest.mock import MagicMock
 
 import pytest
-from earthmind.agentic.services.file_events import (
+from terraflow.agentic.services.file_events import (
     drain_file_events,
     emit_file_event,
     reset_file_events,

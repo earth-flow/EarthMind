@@ -14,10 +14,10 @@ import chromadb
 import chromadb.api.client
 import numpy as np
 from langchain_chroma import Chroma
-from earthmind.api.utils.kb_helpers import KBIngestionHelper
-from earthmind.services.database.models.memory_base.model import MemoryBase
-from earthmind.services.database.models.user.crud import get_user_by_id
-from earthmind.services.memory_base.kb_path_helpers import hash_session_id, validate_kb_path
+from terraflow.api.utils.kb_helpers import KBIngestionHelper
+from terraflow.services.database.models.memory_base.model import MemoryBase
+from terraflow.services.database.models.user.crud import get_user_by_id
+from terraflow.services.memory_base.kb_path_helpers import hash_session_id, validate_kb_path
 from sqlmodel import select
 
 from lfx.base.vectorstores.chroma_security import chroma_langchain_collection_kwargs
@@ -35,7 +35,7 @@ from lfx.services.deps import session_scope
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from earthmind.services.database.models.user.model import User
+    from terraflow.services.database.models.user.model import User
     from sqlmodel.ext.asyncio.session import AsyncSession
 
 

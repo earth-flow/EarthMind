@@ -3,108 +3,108 @@ title: Install custom dependencies
 slug: /install-custom-dependencies
 ---
 
-EarthMind provides optional dependency groups and support for custom dependencies to extend EarthMind functionality. This guide covers how to add dependencies for different EarthMind installations, including EarthMind Desktop and EarthMind OSS.
+Terraflow provides optional dependency groups and support for custom dependencies to extend Terraflow functionality. This guide covers how to add dependencies for different Terraflow installations, including Terraflow Desktop and Terraflow OSS.
 
-The EarthMind codebase uses three packages, each with its own `pyproject.toml` file:
+The Terraflow codebase uses three packages, each with its own `pyproject.toml` file:
 
-* The `main` package (`earthmind`) is managed by the root level `pyproject.toml`, and it includes end-user features and main application code, such as Langchain and OpenAI. The `main` package depends on the `base` package.
-* The `base` package (`earthmind-base`) is managed at `src/backend/base/pyproject.toml`, and it includes core infrastructure, such as the FastAPI web framework. The `base` package depends on the `lfx` package.
-* The `lfx` package is managed at `src/lfx/pyproject.toml`. LFX is a lightweight CLI tool for executing and serving EarthMind flows. The `lfx` package does not provide optional dependency groups for end users.
+* The `main` package (`terraflow`) is managed by the root level `pyproject.toml`, and it includes end-user features and main application code, such as Langchain and OpenAI. The `main` package depends on the `base` package.
+* The `base` package (`terraflow-base`) is managed at `src/backend/base/pyproject.toml`, and it includes core infrastructure, such as the FastAPI web framework. The `base` package depends on the `lfx` package.
+* The `lfx` package is managed at `src/lfx/pyproject.toml`. LFX is a lightweight CLI tool for executing and serving Terraflow flows. The `lfx` package does not provide optional dependency groups for end users.
 
-## Install custom dependencies in EarthMind Desktop {#earthmind-desktop}
+## Install custom dependencies in Terraflow Desktop {#terraflow-desktop}
 
-To add dependencies to EarthMind Desktop, add an entry for the package to the application's `requirements.txt` file:
+To add dependencies to Terraflow Desktop, add an entry for the package to the application's `requirements.txt` file:
 
-    * On macOS, the file is located at `/Users/USER/.earthmind/data/requirements.txt`.
-    * On Windows, the file is located at `C:\Users\USER\AppData\Roaming\com.EarthMind\data\requirements.txt`.
+    * On macOS, the file is located at `/Users/USER/.terraflow/data/requirements.txt`.
+    * On Windows, the file is located at `C:\Users\USER\AppData\Roaming\com.Terraflow\data\requirements.txt`.
 
 Add each dependency to `requirements.txt` on its own line in the format `DEPENDENCY==VERSION`, such as `matplotlib==3.10.0`.
 
-Restart EarthMind Desktop to install the dependencies.
+Restart Terraflow Desktop to install the dependencies.
 
-If you need to change or uninstall custom dependencies, edit the `requirements.txt` file, and then restart EarthMind Desktop.
+If you need to change or uninstall custom dependencies, edit the `requirements.txt` file, and then restart Terraflow Desktop.
 
-## Install custom dependencies in EarthMind OSS
+## Install custom dependencies in Terraflow OSS
 
-To install your own custom dependencies in your EarthMind environment, add them with your package manager.
+To install your own custom dependencies in your Terraflow environment, add them with your package manager.
 
-If you're working within a cloned EarthMind repository, add dependencies with `uv add` because there is already a `pyproject.toml` file for uv to reference:
+If you're working within a cloned Terraflow repository, add dependencies with `uv add` because there is already a `pyproject.toml` file for uv to reference:
 
 ```bash
 uv add DEPENDENCY
 ```
 
-### Install optional dependency groups for `earthmind`
+### Install optional dependency groups for `terraflow`
 
-The `earthmind` package (main) provides optional dependency groups that extend its functionality.
+The `terraflow` package (main) provides optional dependency groups that extend its functionality.
 
-By default, installing `earthmind` without any extras includes all dependencies listed in the `[project.dependencies]` section. Optional dependency groups are not installed by default and must be explicitly requested.
+By default, installing `terraflow` without any extras includes all dependencies listed in the `[project.dependencies]` section. Optional dependency groups are not installed by default and must be explicitly requested.
 
-These optional dependencies are listed in the [earthmind `pyproject.toml`](https://github.com/earthmind-ai/earthmind/blob/main/pyproject.toml) file under `[project.optional-dependencies]`.
+These optional dependencies are listed in the [terraflow `pyproject.toml`](https://github.com/terraflow-ai/terraflow/blob/main/pyproject.toml) file under `[project.optional-dependencies]`.
 
-Install dependency groups using pip's `[extras]` syntax. For example, to install `earthmind` with the `postgresql` dependency group, enter the following command:
+Install dependency groups using pip's `[extras]` syntax. For example, to install `terraflow` with the `postgresql` dependency group, enter the following command:
 
 ```bash
-uv pip install "earthmind[postgresql]"
+uv pip install "terraflow[postgresql]"
 ```
 
 To install multiple extras, use commas to separate each dependency group:
 
 ```bash
-uv pip install "earthmind[postgresql,openai]"
+uv pip install "terraflow[postgresql,openai]"
 ```
 
-### Install optional dependency groups for `earthmind-base`
+### Install optional dependency groups for `terraflow-base`
 
-`earthmind-base` is recommended when you want to deploy EarthMind with specific dependencies only.
-It contains the same codebase as `earthmind`, but `earthmind` includes `earthmind-base` as a dependency and adds many additional dependencies on top of it.
+`terraflow-base` is recommended when you want to deploy Terraflow with specific dependencies only.
+It contains the same codebase as `terraflow`, but `terraflow` includes `terraflow-base` as a dependency and adds many additional dependencies on top of it.
 
-The `earthmind-base` package provides its own optional dependency groups that are separate from those in the `earthmind` package. The `earthmind-base` package can be installed as a standalone package with these optional dependency groups.
+The `terraflow-base` package provides its own optional dependency groups that are separate from those in the `terraflow` package. The `terraflow-base` package can be installed as a standalone package with these optional dependency groups.
 
-By default, installing `earthmind-base` without any extras includes all dependencies listed in the `[project.dependencies]` section. Optional dependency groups are not installed by default and must be explicitly requested.
-These optional dependency groups are listed in the [earthmind-base `pyproject.toml`](https://github.com/earthmind-ai/earthmind/blob/main/src/backend/base/pyproject.toml) file under `[project.optional-dependencies]`.
+By default, installing `terraflow-base` without any extras includes all dependencies listed in the `[project.dependencies]` section. Optional dependency groups are not installed by default and must be explicitly requested.
+These optional dependency groups are listed in the [terraflow-base `pyproject.toml`](https://github.com/terraflow-ai/terraflow/blob/main/src/backend/base/pyproject.toml) file under `[project.optional-dependencies]`.
 
-Install `earthmind-base` with optional dependency groups using pip's `[extras]` syntax. For example, to install `earthmind-base` with the `postgresql` dependency group:
+Install `terraflow-base` with optional dependency groups using pip's `[extras]` syntax. For example, to install `terraflow-base` with the `postgresql` dependency group:
 
 ```bash
-uv pip install "earthmind-base[postgresql]"
+uv pip install "terraflow-base[postgresql]"
 ```
 
 To install multiple extras, use commas to separate each dependency group:
 
 ```bash
-uv pip install "earthmind-base[postgresql,openai]"
+uv pip install "terraflow-base[postgresql,openai]"
 ```
 
-To install all optional dependencies for `earthmind-base`, use the `complete` extra:
+To install all optional dependencies for `terraflow-base`, use the `complete` extra:
 
 ```bash
-uv pip install "earthmind-base[complete]"
+uv pip install "terraflow-base[complete]"
 ```
 
 ### Use a virtual environment to test custom dependencies
 
 When testing locally, use a virtual environment to isolate your dependencies and prevent conflicts with other Python projects.
 
-For example, if you want to experiment with a custom dependency like `matplotlib` with EarthMind:
+For example, if you want to experiment with a custom dependency like `matplotlib` with Terraflow:
 
 ```bash
 # Create and activate a virtual environment
-uv venv YOUR_EARTHMIND_VENV
-source YOUR_EARTHMIND_VENV/bin/activate
+uv venv YOUR_TERRAFLOW_VENV
+source YOUR_TERRAFLOW_VENV/bin/activate
 
-# Install earthmind and your additional dependency
-uv pip install earthmind matplotlib
+# Install terraflow and your additional dependency
+uv pip install terraflow matplotlib
 ```
 
-You can also install `earthmind-base` with specific optional dependency groups in your virtual environment:
+You can also install `terraflow-base` with specific optional dependency groups in your virtual environment:
 
 ```bash
-# Install earthmind-base with only the dependencies you need
-uv pip install "earthmind-base[postgresql,openai]" matplotlib
+# Install terraflow-base with only the dependencies you need
+uv pip install "terraflow-base[postgresql,openai]" matplotlib
 ```
 
-If you're working within a cloned EarthMind repository, add dependencies with `uv add` to reference the existing `pyproject.toml` files:
+If you're working within a cloned Terraflow repository, add dependencies with `uv add` to reference the existing `pyproject.toml` files:
 
 ```bash
 uv add matplotlib
@@ -112,9 +112,9 @@ uv add matplotlib
 
 The `uv add` command automatically updates the `uv.lock` file in the appropriate location.
 
-## Add dependencies to the EarthMind codebase
+## Add dependencies to the Terraflow codebase
 
-When contributing to the EarthMind codebase, you might need to add dependencies to EarthMind.
+When contributing to the Terraflow codebase, you might need to add dependencies to Terraflow.
 
 To add a dependency to the `main` package, run `uv add DEPENDENCY` from the project root.
 For example:
@@ -179,5 +179,5 @@ dev = [
 
 ## See also
 
-* [Containerize a EarthMind application](/develop-application)
+* [Containerize a Terraflow application](/develop-application)
 * [Create custom Python components](/components-custom-components)

@@ -1,35 +1,35 @@
-# EarthMind Documentation
+# Terraflow Documentation
 
-> Official documentation for EarthMind, a low-code platform for building and deploying AI-powered agents and workflows with a visual builder, API, and MCP server. Technical documentation for developers, data scientists, and teams building RAG and multi-agent applications.
+> Official documentation for Terraflow, a low-code platform for building and deploying AI-powered agents and workflows with a visual builder, API, and MCP server. Technical documentation for developers, data scientists, and teams building RAG and multi-agent applications.
 
-EarthMind is open source (MIT). Run locally with `uv run earthmind run` (Python 3.10–3.14, default http://127.0.0.1:7860). Also available as EarthMind Desktop (Windows, macOS). Key areas: get started (installation, quickstart, tutorials), flows (build, run via API or webhooks, test, import/export), agents and MCP, develop (config, storage, observability), deploy (Docker, Kubernetes, cloud), components reference, and API reference.
+Terraflow is open source (MIT). Run locally with `uv run terraflow run` (Python 3.10–3.14, default http://127.0.0.1:7860). Also available as Terraflow Desktop (Windows, macOS). Key areas: get started (installation, quickstart, tutorials), flows (build, run via API or webhooks, test, import/export), agents and MCP, develop (config, storage, observability), deploy (Docker, Kubernetes, cloud), components reference, and API reference.
 
 ## Docs
 
-- [About EarthMind](https://docs.earthmind.org/about-earthmind): Platform overview and introduction
-- [Install EarthMind](https://docs.earthmind.org/get-started-installation): Installation options (OSS, Docker, from source)
-- [Quickstart](https://docs.earthmind.org/get-started-quickstart): Get up and running quickly
-- [Use the visual editor](https://docs.earthmind.org/concepts-overview): Visual flow builder overview
-- [Trigger flows with the API](https://docs.earthmind.org/concepts-publish): Run flows via the EarthMind API
-- [Agents](https://docs.earthmind.org/agents): Agents and tools
-- [MCP client and server](https://docs.earthmind.org/mcp-client): Model Context Protocol integration
-- [Deployment overview](https://docs.earthmind.org/deployment-overview): How to deploy EarthMind
-- [Security](https://docs.earthmind.org/security): Deployment and security guidance
-- [Release notes](https://docs.earthmind.org/release-notes): Version history and release notes
+- [About Terraflow](https://docs.terraflow.org/about-terraflow): Platform overview and introduction
+- [Install Terraflow](https://docs.terraflow.org/get-started-installation): Installation options (OSS, Docker, from source)
+- [Quickstart](https://docs.terraflow.org/get-started-quickstart): Get up and running quickly
+- [Use the visual editor](https://docs.terraflow.org/concepts-overview): Visual flow builder overview
+- [Trigger flows with the API](https://docs.terraflow.org/concepts-publish): Run flows via the Terraflow API
+- [Agents](https://docs.terraflow.org/agents): Agents and tools
+- [MCP client and server](https://docs.terraflow.org/mcp-client): Model Context Protocol integration
+- [Deployment overview](https://docs.terraflow.org/deployment-overview): How to deploy Terraflow
+- [Security](https://docs.terraflow.org/security): Deployment and security guidance
+- [Release notes](https://docs.terraflow.org/release-notes): Version history and release notes
 
 ## Community
 
-- [GitHub repository](https://github.com/earthmind-ai/earthmind): Source code and issues
-- [EarthMind website](https://earthmind.org): Main product site
-- [EarthMind Desktop](https://earthmind.org/desktop): Desktop app download
+- [GitHub repository](https://github.com/terraflow-ai/terraflow): Source code and issues
+- [Terraflow website](https://terraflow.org): Main product site
+- [Terraflow Desktop](https://terraflow.org/desktop): Desktop app download
 - [Discord](https://discord.com/invite/EqksyE2EX9): Community chat
-- [Twitter/X](https://x.com/earthmind_ai): Updates and news
-- [YouTube](https://www.youtube.com/@EarthMind): Tutorials and demos
+- [Twitter/X](https://x.com/terraflow_ai): Updates and news
+- [YouTube](https://www.youtube.com/@Terraflow): Tutorials and demos
 
 ## Optional
 
-- [Build flows](https://docs.earthmind.org/concepts-flows): Concepts for building flows
-- [Test flows](https://docs.earthmind.org/concepts-playground): Playground and testing
-- [Components overview](https://docs.earthmind.org/concepts-components): Component reference introduction
-- [API reference](https://docs.earthmind.org/api-reference-api-examples): Get started with the EarthMind API
-- [Troubleshooting](https://docs.earthmind.org/troubleshoot): Troubleshooting guide
+- [Build flows](https://docs.terraflow.org/concepts-flows): Concepts for building flows
+- [Test flows](https://docs.terraflow.org/concepts-playground): Playground and testing
+- [Components overview](https://docs.terraflow.org/concepts-components): Component reference introduction
+- [API reference](https://docs.terraflow.org/api-reference-api-examples): Get started with the Terraflow API
+- [Troubleshooting](https://docs.terraflow.org/troubleshoot): Troubleshooting guide

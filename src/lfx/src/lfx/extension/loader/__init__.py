@@ -1,19 +1,19 @@
-"""Single-Bundle loader for the EarthMind Extension System.
+"""Single-Bundle loader for the Terraflow Extension System.
 
 This package turns a directory tree on disk (an Extension or a loose
-EARTHMIND_COMPONENTS_PATH entry) into a list of :class:`LoadedComponent`
+TERRAFLOW_COMPONENTS_PATH entry) into a list of :class:`LoadedComponent`
 records keyed by the namespaced ID ``ext:<bundle>:<Class>@<slot>``.
 
 Two entry points exist:
 
     1. :func:`load_extension` -- given a directory containing a v0 manifest
-       (extension.json or [tool.earthmind.extension] in pyproject.toml), walk
+       (extension.json or [tool.terraflow.extension] in pyproject.toml), walk
        the bundle directory it declares, import each module, collect every
        :class:`Component` subclass, and register them at the ``official``
        slot.  Multi-bundle manifests are rejected here a second time (the
        schema rejects them too; the loader re-checks at runtime).
 
-    2. :func:`discover_inline_bundles` -- given a list of EARTHMIND_COMPONENTS_PATH
+    2. :func:`discover_inline_bundles` -- given a list of TERRAFLOW_COMPONENTS_PATH
        directories, treat each immediate subfolder as a Bundle at the
        ``extra`` slot.  Walk order is platform-independent: paths are
        iterated in user-declared order, subfolders within a path are sorted
@@ -42,7 +42,7 @@ Internal layout (all underscore-prefixed; not part of the public surface):
     - ``_detection``   -- Component subclass identification (MRO heuristic).
     - ``_orchestrator``-- ``load_extension`` / ``discover_inline_bundles``;
                           path-safety, multi-bundle re-check, identity tuple.
-    - ``_plugins``     -- manifest-first precedence over ``earthmind.plugins``;
+    - ``_plugins``     -- manifest-first precedence over ``terraflow.plugins``;
                           installed-distribution discovery primitives.
 
 A future installed-package / seed-dir discovery flow will reuse

@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/flows/?remove_example_flows=false&components_only=false&get_all=true&header_flows=false&page=1&size=50`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/flows/?remove_example_flows=false&components_only=false&get_all=true&header_flows=false&page=1&size=50`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
 };
 

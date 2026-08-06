@@ -11,13 +11,13 @@ let isDataAttributeTrackingInitialized = false;
  *
  * Example - UI Interaction:
  * {
- *   href: "https://github.com/earthmind-ai/earthmind",
+ *   href: "https://github.com/terraflow-ai/terraflow",
  *   'data-event': 'UI Interaction',
  *   'data-action': 'clicked',
  *   'data-channel': 'docs',
  *   'data-element-id': 'social-github',
  *   'data-namespace': 'header',
- *   'data-platform-title': 'EarthMind'
+ *   'data-platform-title': 'Terraflow'
  * }
  *
  * Example - CTA Clicked:

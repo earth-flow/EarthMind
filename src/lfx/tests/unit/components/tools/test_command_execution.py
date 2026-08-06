@@ -25,7 +25,7 @@ def _auto_login(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 def sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
     shared = tmp_path / "shared"
     shared.mkdir(parents=True, exist_ok=True)
     return shared
@@ -101,9 +101,9 @@ class TestEnvIsolation:
     def test_should_not_leak_host_environment_secrets(
         self, component: CommandExecutionToolComponent, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("EARTHMIND_TEST_SECRET", "should-not-leak")
+        monkeypatch.setenv("TERRAFLOW_TEST_SECRET", "should-not-leak")
         tool = _run_command_tool(component)
-        result = json.loads(tool.func(command="printenv", args=["EARTHMIND_TEST_SECRET"]))
+        result = json.loads(tool.func(command="printenv", args=["TERRAFLOW_TEST_SECRET"]))
         # printenv exits non-zero and prints nothing when the var is unset in the child's env.
         assert result["status"] == "ok"
         assert result["returncode"] != 0

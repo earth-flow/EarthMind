@@ -2,13 +2,13 @@ from uuid import uuid4
 
 import pytest
 from httpx import AsyncClient
-from earthmind.services.auth.utils import get_auth_service
-from earthmind.services.database.models.flow.model import Flow
-from earthmind.services.database.models.transactions.model import TransactionTable
-from earthmind.services.database.models.user.model import User, UserRead
-from earthmind.services.database.models.vertex_builds.crud import log_vertex_build
-from earthmind.services.database.models.vertex_builds.model import VertexBuildBase
-from earthmind.services.deps import session_scope
+from terraflow.services.auth.utils import get_auth_service
+from terraflow.services.database.models.flow.model import Flow
+from terraflow.services.database.models.transactions.model import TransactionTable
+from terraflow.services.database.models.user.model import User, UserRead
+from terraflow.services.database.models.vertex_builds.crud import log_vertex_build
+from terraflow.services.database.models.vertex_builds.model import VertexBuildBase
+from terraflow.services.deps import session_scope
 
 
 @pytest.fixture

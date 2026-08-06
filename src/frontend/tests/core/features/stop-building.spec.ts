@@ -118,16 +118,16 @@ test(
     await page.getByTestId("int_int_chunk_overlap").fill("1");
 
     const timerCode = `
-# from earthmind.field_typing import Data
-from earthmind.custom import Component
-from earthmind.io import MessageTextInput, Output
-from earthmind.schema import Data
+# from terraflow.field_typing import Data
+from terraflow.custom import Component
+from terraflow.io import MessageTextInput, Output
+from terraflow.schema import Data
 import time
 
 class CustomComponent(Component):
     display_name = "Custom Component"
     description = "Use as a template to create your own component."
-    documentation: str = "https://docs.earthmind.org/components-custom-components"
+    documentation: str = "https://docs.terraflow.org/components-custom-components"
     icon = "custom_components"
     name = "CustomComponent"
 

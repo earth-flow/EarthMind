@@ -11,11 +11,11 @@ python:
   - ".github/workflows/ci.yml"
   - "src/lfx/src/lfx/_assets/component_index.json"
 components-changes:
-  - "src/backend/base/earthmind/components/**"
+  - "src/backend/base/terraflow/components/**"
   - "src/lfx/src/lfx/components/**"
   - "src/lfx/src/lfx/_assets/component_index.json"
 starter-projects-changes:
-  - "src/backend/base/earthmind/initial_setup/**"
+  - "src/backend/base/terraflow/initial_setup/**"
 frontend-tests:
   - "src/frontend/tests/**"
 frontend:
@@ -39,16 +39,16 @@ docker:
 
 # Test categories and their associated paths
 starter-projects:
-  - "src/backend/base/earthmind/initial_setup/**"
-  - "src/backend/base/earthmind/components/**"
-  - "src/backend/base/earthmind/services/**"
-  - "src/backend/base/earthmind/custom/**"
-  - "src/backend/base/earthmind/api/v1/chat.py"
+  - "src/backend/base/terraflow/initial_setup/**"
+  - "src/backend/base/terraflow/components/**"
+  - "src/backend/base/terraflow/services/**"
+  - "src/backend/base/terraflow/custom/**"
+  - "src/backend/base/terraflow/api/v1/chat.py"
   - "src/frontend/src/pages/MainPage/**"
   - "src/frontend/src/utils/reactflowUtils.ts"
   - "src/frontend/tests/extended/features/**"
-  - "src/backend/base/earthmind/custom/**"
-  - "src/backend/base/earthmind/graph/**"
+  - "src/backend/base/terraflow/custom/**"
+  - "src/backend/base/terraflow/graph/**"
 
 components:
   - "src/frontend/src/components/**"
@@ -65,14 +65,14 @@ components:
   - "src/frontend/tests/extended/integrations/**"
   - "src/frontend/tests/extended/features/**"
   - "src/frontend/tests/extended/regression/**"
-  - "src/backend/base/earthmind/custom/**"
-  - "src/backend/base/earthmind/schema/**"
-  - "src/backend/base/earthmind/graph/**"
-  - "src/backend/base/earthmind/utils/**"
-  - "src/backend/base/earthmind/custom/**"
-  - "src/backend/base/earthmind/components/**"
-  - "src/backend/base/earthmind/initial_setup/**"
-  - "src/backend/base/earthmind/serialization/**"
+  - "src/backend/base/terraflow/custom/**"
+  - "src/backend/base/terraflow/schema/**"
+  - "src/backend/base/terraflow/graph/**"
+  - "src/backend/base/terraflow/utils/**"
+  - "src/backend/base/terraflow/custom/**"
+  - "src/backend/base/terraflow/components/**"
+  - "src/backend/base/terraflow/initial_setup/**"
+  - "src/backend/base/terraflow/serialization/**"
   - "src/lfx/src/lfx/components/**"
   - "src/lfx/src/lfx/custom/**"
   - "src/lfx/src/lfx/schema/**"
@@ -80,7 +80,7 @@ components:
   - "src/lfx/src/lfx/_assets/component_index.json"
 
 workspace:
-  - "src/backend/base/earthmind/inputs/**"
+  - "src/backend/base/terraflow/inputs/**"
   - "src/lfx/src/lfx/inputs/**"
   - "src/frontend/src/components/core/parameterRenderComponent/**"
   - "src/frontend/src/CustomNodes/**"
@@ -95,15 +95,15 @@ workspace:
   - "src/frontend/tests/core/regression/**"
 
 api:
-  - "src/backend/base/earthmind/api/**"
+  - "src/backend/base/terraflow/api/**"
   - "src/frontend/src/controllers/**"
   - "src/frontend/tests/core/features/**"
   - "src/frontend/tests/extended/features/**"
   - "src/frontend/tests/extended/regression/**"
 
 database:
-  - "src/backend/base/earthmind/services/database/**"
-  - "src/backend/base/earthmind/alembic/**"
+  - "src/backend/base/terraflow/services/database/**"
+  - "src/backend/base/terraflow/alembic/**"
   - "src/frontend/src/controllers/**"
   - "src/frontend/tests/core/features/**"
   - "src/frontend/tests/extended/features/**"

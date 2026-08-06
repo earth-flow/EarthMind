@@ -66,7 +66,7 @@ class CugaComponent(ToolCallingAgentComponent):
 
     display_name: str = "Cuga"
     description: str = "Define the Cuga agent's instructions, then assign it a task."
-    documentation: str = "https://docs.earthmind.org/bundles-cuga"
+    documentation: str = "https://docs.terraflow.org/bundles-cuga"
     icon = "bot"
     name = "Cuga"
 

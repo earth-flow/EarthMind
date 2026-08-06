@@ -3,11 +3,11 @@
 from uuid import uuid4
 
 import pytest
-from earthmind.memory import aadd_messages, aget_messages, astore_message
-from earthmind.schema.message import Message
-from earthmind.services.database.models.message import MessageCreate, MessageRead
-from earthmind.services.database.models.message.model import MessageTable
-from earthmind.services.deps import session_scope
+from terraflow.memory import aadd_messages, aget_messages, astore_message
+from terraflow.schema.message import Message
+from terraflow.services.database.models.message import MessageCreate, MessageRead
+from terraflow.services.database.models.message.model import MessageTable
+from terraflow.services.deps import session_scope
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def sample_session_metadata():
         "region": "us-east-1",
         "retention_profile": "standard",
         "data_flags": {"pii": True, "sensitive": False},
-        "custom_fields": {"department": "engineering", "project": "earthmind"},
+        "custom_fields": {"department": "engineering", "project": "terraflow"},
     }
 
 
@@ -327,7 +327,7 @@ async def test_session_metadata_retrieval():
 @pytest.mark.usefixtures("client")
 async def test_messageupdate_with_session_metadata(sample_session_metadata):
     """Test MessageUpdate schema with session_metadata."""
-    from earthmind.services.database.models.message.model import MessageUpdate
+    from terraflow.services.database.models.message.model import MessageUpdate
 
     message_update = MessageUpdate(
         text="Updated text",

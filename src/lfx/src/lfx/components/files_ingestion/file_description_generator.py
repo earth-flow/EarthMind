@@ -2,7 +2,7 @@
 
 Takes file data from a Read File component, runs the full ingestion pipeline
 (docling convert -> markdown shorten -> LLM describe) in a subprocess to avoid
-memory issues, and outputs Data objects suitable for feeding into any EarthMind
+memory issues, and outputs Data objects suitable for feeding into any Terraflow
 vector store component.
 """
 

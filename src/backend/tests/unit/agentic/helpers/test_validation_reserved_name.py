@@ -22,7 +22,7 @@ to debug a generic ValidationError.
 
 from __future__ import annotations
 
-from earthmind.agentic.helpers.validation import validate_component_code
+from terraflow.agentic.helpers.validation import validate_component_code
 
 _RESERVED_NAME_CODE = (
     "from lfx.custom import Component\n"

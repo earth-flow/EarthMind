@@ -10,17 +10,17 @@ on:
   workflow_dispatch:
     inputs:
       nightly_tag:
-        description: "Nightly tag to test migration to (e.g., earthmindai/earthmind-nightly:latest)"
+        description: "Nightly tag to test migration to (e.g., terraflowai/terraflow-nightly:latest)"
         required: false
         type: string
-        default: "earthmindai/earthmind-nightly:latest"
+        default: "terraflowai/terraflow-nightly:latest"
   # Note: This workflow is called by nightly_build.yml after Docker images are built
 
 env:
   PYTHON_VERSION: "3.13"
-  POSTGRES_DB: earthmind_test
-  POSTGRES_USER: earthmind
-  POSTGRES_PASSWORD: earthmind_test_pass  # pragma: allowlist secret
+  POSTGRES_DB: terraflow_test
+  POSTGRES_USER: terraflow
+  POSTGRES_PASSWORD: terraflow_test_pass  # pragma: allowlist secret
 
 jobs:
   migration-pip-venv:
@@ -59,36 +59,36 @@ jobs:
           mkdir -p migration-test
           cd migration-test
 
-      - name: Install latest stable EarthMind with PostgreSQL
+      - name: Install latest stable Terraflow with PostgreSQL
         working-directory: migration-test
         run: |
-          echo "Installing latest stable earthmind[postgresql]..."
+          echo "Installing latest stable terraflow[postgresql]..."
           uv venv
           source .venv/bin/activate
-          uv pip install "earthmind[postgresql]"
+          uv pip install "terraflow[postgresql]"
 
           # Verify installation
-          python -c 'from importlib.metadata import version; print("Installed EarthMind version:", version("earthmind"))'
+          python -c 'from importlib.metadata import version; print("Installed Terraflow version:", version("terraflow"))'
 
       - name: Initialize database with stable version
         working-directory: migration-test
         env:
-          EARTHMIND_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}  # pragma: allowlist secret
+          TERRAFLOW_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}  # pragma: allowlist secret
         run: |
           source .venv/bin/activate
 
-          echo "Starting EarthMind to initialize database..."
+          echo "Starting Terraflow to initialize database..."
           # shellcheck disable=SC2016
           timeout 120 bash -c '
-            python -m earthmind run --host 127.0.0.1 --port 7860 --backend-only &
-            EARTHMIND_PID=$!
+            python -m terraflow run --host 127.0.0.1 --port 7860 --backend-only &
+            TERRAFLOW_PID=$!
             until curl -f http://127.0.0.1:7860/health_check 2>/dev/null; do
               sleep 2
             done
-            kill $EARTHMIND_PID
-            wait $EARTHMIND_PID 2>/dev/null || true
+            kill $TERRAFLOW_PID
+            wait $TERRAFLOW_PID 2>/dev/null || true
           ' || {
-            echo "Failed to start EarthMind stable version"
+            echo "Failed to start Terraflow stable version"
             exit 1
           }
 
@@ -97,13 +97,13 @@ jobs:
       - name: Create witness flow
         working-directory: migration-test
         env:
-          EARTHMIND_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          TERRAFLOW_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
         run: |
           source .venv/bin/activate
 
-          # Start EarthMind briefly to create test data
-          python -m earthmind run --host 127.0.0.1 --port 7860 --backend-only &
-          EARTHMIND_PID=$!
+          # Start Terraflow briefly to create test data
+          python -m terraflow run --host 127.0.0.1 --port 7860 --backend-only &
+          TERRAFLOW_PID=$!
 
           # Wait for startup
           timeout 60 bash -c 'until curl -f http://127.0.0.1:7860/health_check 2>/dev/null; do sleep 2; done'
@@ -112,7 +112,7 @@ jobs:
           TOKEN=$(curl -fsS http://127.0.0.1:7860/api/v1/auto_login | python3 -c "import json,sys; print(json.load(sys.stdin)['access_token'])")
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
             echo "❌ Failed to get authentication token"
-            kill $EARTHMIND_PID
+            kill $TERRAFLOW_PID
             exit 1
           fi
           echo "✅ Authentication token obtained"
@@ -147,9 +147,9 @@ jobs:
           fi
           echo "✅ Witness credential created successfully"
 
-          # Stop EarthMind
-          kill $EARTHMIND_PID
-          wait $EARTHMIND_PID 2>/dev/null || true
+          # Stop Terraflow
+          kill $TERRAFLOW_PID
+          wait $TERRAFLOW_PID 2>/dev/null || true
 
           echo "Witness data created (flow + credential)"
 
@@ -158,18 +158,18 @@ jobs:
         run: |
           source .venv/bin/activate
 
-          NIGHTLY_TAG="${{ inputs.nightly_tag || 'earthmindai/earthmind-nightly:latest' }}"
+          NIGHTLY_TAG="${{ inputs.nightly_tag || 'terraflowai/terraflow-nightly:latest' }}"
           echo "Upgrading to nightly version: $NIGHTLY_TAG"
 
           # Remove the stable install first. The nightly now publishes as a `.devN` pre-release of
-          # the canonical `earthmind` (same distribution as stable, different version), so a clean
+          # the canonical `terraflow` (same distribution as stable, different version), so a clean
           # uninstall avoids stale files and guarantees the dev version is what boots — otherwise
-          # `python -m earthmind` could keep running the stable version and no real nightly migration
+          # `python -m terraflow` could keep running the stable version and no real nightly migration
           # is exercised (false-positive test).
-          echo "Removing stable earthmind to force a clean install of the nightly dev version..."
-          uv pip uninstall -y earthmind earthmind-base || true
+          echo "Removing stable terraflow to force a clean install of the nightly dev version..."
+          uv pip uninstall -y terraflow terraflow-base || true
 
-          # Extract version from Docker tag (format: earthmindai/earthmind-nightly:v1.10.0.dev20260522)
+          # Extract version from Docker tag (format: terraflowai/terraflow-nightly:v1.10.0.dev20260522)
           if [[ "$NIGHTLY_TAG" == *":"* ]]; then
             VERSION="${NIGHTLY_TAG##*:}"
             echo "Extracted version from tag: $VERSION"
@@ -178,72 +178,72 @@ jobs:
             VERSION="${VERSION#v}"
             echo "Version for PyPI: $VERSION"
 
-            # Scope pre-release resolution to the earthmind stack only. uv accepts a
+            # Scope pre-release resolution to the terraflow stack only. uv accepts a
             # pre-release for a package when its own requirement carries a pre-release
-            # marker, but NOT via transitive pins (earthmind -> earthmind-base -> lfx ->
-            # earthmind-sdk are exact ==devN pins on nightlies), so each lockstep package
+            # marker, but NOT via transitive pins (terraflow -> terraflow-base -> lfx ->
+            # terraflow-sdk are exact ==devN pins on nightlies), so each lockstep package
             # must be requested directly. A global --prerelease=allow is NOT safe here:
             # it lets unrelated dependencies resolve to alphas (pydantic 2.14.0a1 broke
             # langchain-core imports on the first canonical-prerelease nightly).
-            # earthmind-sdk has its own version line, so an explicit .dev0 floor marks it
+            # terraflow-sdk has its own version line, so an explicit .dev0 floor marks it
             # pre-release-eligible while the lfx pin selects the exact version.
             if [[ "$VERSION" == "latest" ]]; then
               # Install latest nightly (canonical pre-release) from PyPI
-              uv pip install --upgrade 'earthmind[postgresql]>=0.0.0.dev0' 'earthmind-base>=0.0.0.dev0' 'lfx>=0.0.0.dev0' 'earthmind-sdk>=0.0.0.dev0'
+              uv pip install --upgrade 'terraflow[postgresql]>=0.0.0.dev0' 'terraflow-base>=0.0.0.dev0' 'lfx>=0.0.0.dev0' 'terraflow-sdk>=0.0.0.dev0'
             else
               # Install specific version
-              uv pip install --upgrade "earthmind[postgresql]==$VERSION" "earthmind-base==$VERSION" "lfx==$VERSION" 'earthmind-sdk>=0.0.0.dev0'
+              uv pip install --upgrade "terraflow[postgresql]==$VERSION" "terraflow-base==$VERSION" "lfx==$VERSION" 'terraflow-sdk>=0.0.0.dev0'
             fi
           else
             # Direct version string (strip 'v' prefix if present)
             VERSION="${NIGHTLY_TAG#v}"
-            uv pip install --upgrade "earthmind[postgresql]==$VERSION" "earthmind-base==$VERSION" "lfx==$VERSION" 'earthmind-sdk>=0.0.0.dev0'
+            uv pip install --upgrade "terraflow[postgresql]==$VERSION" "terraflow-base==$VERSION" "lfx==$VERSION" 'terraflow-sdk>=0.0.0.dev0'
           fi
 
           # Verify upgrade
-          python -c 'from importlib.metadata import version; print("Upgraded to EarthMind Nightly version:", version("earthmind"))'
+          python -c 'from importlib.metadata import version; print("Upgraded to Terraflow Nightly version:", version("terraflow"))'
 
       - name: Run migration and verify startup
         working-directory: migration-test
         env:
-          EARTHMIND_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}  # pragma: allowlist secret
+          TERRAFLOW_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}  # pragma: allowlist secret
         run: |
           source .venv/bin/activate
 
-          echo "Starting EarthMind nightly to run migrations..."
+          echo "Starting Terraflow nightly to run migrations..."
           # shellcheck disable=SC2016
           timeout 180 bash -c '
-            python -m earthmind run --host 127.0.0.1 --port 7860 --backend-only > earthmind_nightly.log 2>&1 &
-            EARTHMIND_PID=$!
+            python -m terraflow run --host 127.0.0.1 --port 7860 --backend-only > terraflow_nightly.log 2>&1 &
+            TERRAFLOW_PID=$!
 
             until curl -f http://127.0.0.1:7860/health_check 2>/dev/null; do
-              if ! kill -0 $EARTHMIND_PID 2>/dev/null; then
-                echo "EarthMind process died during startup"
-                cat earthmind_nightly.log
+              if ! kill -0 $TERRAFLOW_PID 2>/dev/null; then
+                echo "Terraflow process died during startup"
+                cat terraflow_nightly.log
                 exit 1
               fi
               sleep 2
             done
 
-            echo "EarthMind nightly started successfully"
-            kill $EARTHMIND_PID
-            wait $EARTHMIND_PID 2>/dev/null || true
+            echo "Terraflow nightly started successfully"
+            kill $TERRAFLOW_PID
+            wait $TERRAFLOW_PID 2>/dev/null || true
           ' || {
-            echo "Failed to start EarthMind nightly version"
-            cat earthmind_nightly.log || true
+            echo "Failed to start Terraflow nightly version"
+            cat terraflow_nightly.log || true
             exit 1
           }
 
       - name: Verify witness data persisted
         working-directory: migration-test
         env:
-          EARTHMIND_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          TERRAFLOW_DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
         run: |
           source .venv/bin/activate
 
-          # Start EarthMind to query data
-          python -m earthmind run --host 127.0.0.1 --port 7860 --backend-only &
-          EARTHMIND_PID=$!
+          # Start Terraflow to query data
+          python -m terraflow run --host 127.0.0.1 --port 7860 --backend-only &
+          TERRAFLOW_PID=$!
 
           timeout 60 bash -c 'until curl -f http://127.0.0.1:7860/health_check 2>/dev/null; do sleep 2; done'
 
@@ -251,7 +251,7 @@ jobs:
           TOKEN=$(curl -fsS http://127.0.0.1:7860/api/v1/auto_login | python3 -c "import json,sys; print(json.load(sys.stdin)['access_token'])")
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
             echo "❌ Failed to get authentication token"
-            kill $EARTHMIND_PID
+            kill $TERRAFLOW_PID
             exit 1
           fi
           echo "✅ Authentication token obtained"
@@ -265,7 +265,7 @@ jobs:
           else
             echo "❌ Witness flow NOT found after migration"
             cat flows_after_migration.json
-            kill $EARTHMIND_PID
+            kill $TERRAFLOW_PID
             exit 1
           fi
 
@@ -278,12 +278,12 @@ jobs:
           else
             echo "❌ Witness credential NOT found after migration"
             cat variables_after_migration.json
-            kill $EARTHMIND_PID
+            kill $TERRAFLOW_PID
             exit 1
           fi
 
-          kill $EARTHMIND_PID
-          wait $EARTHMIND_PID 2>/dev/null || true
+          kill $TERRAFLOW_PID
+          wait $TERRAFLOW_PID 2>/dev/null || true
 
       - name: Upload logs on failure
         if: failure()
@@ -314,12 +314,12 @@ jobs:
         run: |  # pragma: allowlist secret
           cat > docker-compose.yml <<'EOF'
           services:
-            earthmind:
-              image: earthmindai/earthmind:latest
+            terraflow:
+              image: terraflowai/terraflow:latest
               ports:
                 - "7860:7860"
               environment:  # pragma: allowlist secret
-                - EARTHMIND_DATABASE_URL=postgresql://earthmind:earthmind@postgres:5432/earthmind  # pragma: allowlist secret
+                - TERRAFLOW_DATABASE_URL=postgresql://terraflow:terraflow@postgres:5432/terraflow  # pragma: allowlist secret
               depends_on:
                 postgres:
                   condition: service_healthy
@@ -332,35 +332,35 @@ jobs:
             postgres:
               image: postgres:16
               environment:  # pragma: allowlist secret
-                - POSTGRES_USER=earthmind
-                - POSTGRES_PASSWORD=earthmind  # pragma: allowlist secret
-                - POSTGRES_DB=earthmind
+                - POSTGRES_USER=terraflow
+                - POSTGRES_PASSWORD=terraflow  # pragma: allowlist secret
+                - POSTGRES_DB=terraflow
               volumes:
-                - earthmind_postgres_data:/var/lib/postgresql/data
+                - terraflow_postgres_data:/var/lib/postgresql/data
               healthcheck:
-                test: ["CMD-SHELL", "pg_isready -U earthmind"]
+                test: ["CMD-SHELL", "pg_isready -U terraflow"]
                 interval: 10s
                 timeout: 5s
                 retries: 5
 
           volumes:
-            earthmind_postgres_data:
+            terraflow_postgres_data:
           EOF
 
-      - name: Start stable EarthMind with Docker Compose
+      - name: Start stable Terraflow with Docker Compose
         working-directory: docker-migration-test
         run: |
-          echo "Starting EarthMind stable version..."
+          echo "Starting Terraflow stable version..."
           docker compose up -d
 
-          echo "Waiting for EarthMind to be healthy..."
-          timeout 180 bash -c 'until docker compose exec -T earthmind curl -f http://localhost:7860/health_check 2>/dev/null; do sleep 5; done' || {
-            echo "EarthMind stable failed to start"
+          echo "Waiting for Terraflow to be healthy..."
+          timeout 180 bash -c 'until docker compose exec -T terraflow curl -f http://localhost:7860/health_check 2>/dev/null; do sleep 5; done' || {
+            echo "Terraflow stable failed to start"
             docker compose logs
             exit 1
           }
 
-          echo "EarthMind stable is running"
+          echo "Terraflow stable is running"
 
       - name: Create witness flow via API
         working-directory: docker-migration-test
@@ -403,43 +403,43 @@ jobs:
           fi
           echo "✅ Witness credential created successfully"
 
-      - name: Stop stable EarthMind (keep PostgreSQL volume)
+      - name: Stop stable Terraflow (keep PostgreSQL volume)
         working-directory: docker-migration-test
         run: |
-          echo "Stopping EarthMind stable..."
-          docker compose stop earthmind
-          docker compose rm -f earthmind
+          echo "Stopping Terraflow stable..."
+          docker compose stop terraflow
+          docker compose rm -f terraflow
 
       - name: Update to nightly image
         working-directory: docker-migration-test
         run: |
-          NIGHTLY_TAG="${{ inputs.nightly_tag || 'earthmindai/earthmind-nightly:latest' }}"
+          NIGHTLY_TAG="${{ inputs.nightly_tag || 'terraflowai/terraflow-nightly:latest' }}"
           # Strip 'v' prefix from version part — Docker images are published without it
-          # e.g. earthmindai/earthmind-nightly:v1.10.0.dev20260522 → earthmindai/earthmind-nightly:1.10.0.dev20260522
+          # e.g. terraflowai/terraflow-nightly:v1.10.0.dev20260522 → terraflowai/terraflow-nightly:1.10.0.dev20260522
           VERSION_PART="${NIGHTLY_TAG##*:}"
           IMAGE_NAME="${NIGHTLY_TAG%%:*}"
           DOCKER_TAG="${IMAGE_NAME}:${VERSION_PART#v}"
           echo "Updating to nightly: $DOCKER_TAG"
 
           # Update docker-compose.yml to use nightly image
-          sed -i "s|image: earthmindai/earthmind:latest|image: $DOCKER_TAG|" docker-compose.yml
+          sed -i "s|image: terraflowai/terraflow:latest|image: $DOCKER_TAG|" docker-compose.yml
 
           cat docker-compose.yml
 
-      - name: Start nightly EarthMind with same PostgreSQL volume
+      - name: Start nightly Terraflow with same PostgreSQL volume
         working-directory: docker-migration-test
         run: |
-          echo "Starting EarthMind nightly version..."
-          docker compose up -d earthmind
+          echo "Starting Terraflow nightly version..."
+          docker compose up -d terraflow
 
-          echo "Waiting for EarthMind nightly to be healthy..."
-          timeout 180 bash -c 'until docker compose exec -T earthmind curl -f http://localhost:7860/health_check 2>/dev/null; do sleep 5; done' || {
-            echo "EarthMind nightly failed to start"
-            docker compose logs earthmind
+          echo "Waiting for Terraflow nightly to be healthy..."
+          timeout 180 bash -c 'until docker compose exec -T terraflow curl -f http://localhost:7860/health_check 2>/dev/null; do sleep 5; done' || {
+            echo "Terraflow nightly failed to start"
+            docker compose logs terraflow
             exit 1
           }
 
-          echo "EarthMind nightly started successfully"
+          echo "Terraflow nightly started successfully"
 
       - name: Verify witness data persisted
         working-directory: docker-migration-test

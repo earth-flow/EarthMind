@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING
 import pytest
 from fastapi import HTTPException
 from fastapi.responses import Response
-from earthmind.agentic.api.files_router import get_file
+from terraflow.agentic.api.files_router import get_file
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -54,14 +54,14 @@ def _write_sandbox_file(sandbox_root: Path, user_id: str, relative_path: str, co
 def isolated_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Point the FS tool sandbox at a fresh tmp_path with AUTO_LOGIN disabled.
 
-    Why not ``monkeypatch.setenv("EARTHMIND_AUTO_LOGIN", "false")``: the settings
+    Why not ``monkeypatch.setenv("TERRAFLOW_AUTO_LOGIN", "false")``: the settings
     service is a process-wide singleton that caches ``AUTO_LOGIN`` on first
     access. The env var revert at test teardown doesn't un-cache the value,
     so subsequent tests in the suite (e.g., the flow_builder filesystem-tool
     tests) would inherit ``AUTO_LOGIN=False`` and fail because they don't
     bind a user_id. We pin the per-instance method instead — no global state.
     """
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
     from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
 
     monkeypatch.setattr(

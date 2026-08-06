@@ -22,7 +22,7 @@ class ApifyActorsComponent(Component):
         "Use Apify Actors to extract data from hundreds of places fast. "
         "This component can be used in a flow to retrieve data or as a tool with an agent."
     )
-    documentation: str = "https://docs.earthmind.org/bundles-apify"
+    documentation: str = "https://docs.terraflow.org/bundles-apify"
     icon = "Apify"
     name = "ApifyActors"
 
@@ -187,7 +187,7 @@ class ApifyActorsComponent(Component):
         if self._apify_client is None or self._apify_client.token != self.apify_token:
             self._apify_client = ApifyClient(self.apify_token)
             if httpx_client := self._apify_client.http_client.httpx_client:
-                httpx_client.headers["user-agent"] += "; Origin/earthmind"
+                httpx_client.headers["user-agent"] += "; Origin/terraflow"
         return self._apify_client
 
     def _get_actor_latest_build(self, actor_id: str) -> dict:

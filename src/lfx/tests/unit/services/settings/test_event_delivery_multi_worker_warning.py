@@ -5,7 +5,7 @@ job queue cannot deliver ``polling`` or ``streaming`` events across workers
 (events live in the in-process queue of whichever worker started the
 build).  The validator silently flips event_delivery to ``direct`` in that
 case — but the log message must spell out the requested mode, the forced
-fallback, and how to keep the original mode (EARTHMIND_JOB_QUEUE_TYPE=redis)
+fallback, and how to keep the original mode (TERRAFLOW_JOB_QUEUE_TYPE=redis)
 so a user diagnosing missing events can fix it without spelunking source.
 """
 
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 def _isolate_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Clear all env vars the validator inspects so tests are deterministic."""
-    for name in ("EARTHMIND_WORKERS", "EARTHMIND_JOB_QUEUE_TYPE", "EARTHMIND_EVENT_DELIVERY"):
+    for name in ("TERRAFLOW_WORKERS", "TERRAFLOW_JOB_QUEUE_TYPE", "TERRAFLOW_EVENT_DELIVERY"):
         monkeypatch.delenv(name, raising=False)
 
 
@@ -53,9 +53,9 @@ def _capture_warnings(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 def test_multi_worker_without_redis_forces_direct_delivery(monkeypatch: pytest.MonkeyPatch) -> None:
     """With workers=2 and the in-memory job queue, polling is rewritten to direct."""
     _isolate_env(monkeypatch)
-    monkeypatch.setenv("EARTHMIND_WORKERS", "2")
-    monkeypatch.setenv("EARTHMIND_JOB_QUEUE_TYPE", "asyncio")
-    monkeypatch.setenv("EARTHMIND_EVENT_DELIVERY", "polling")
+    monkeypatch.setenv("TERRAFLOW_WORKERS", "2")
+    monkeypatch.setenv("TERRAFLOW_JOB_QUEUE_TYPE", "asyncio")
+    monkeypatch.setenv("TERRAFLOW_EVENT_DELIVERY", "polling")
 
     warnings = _capture_warnings(monkeypatch)
     settings = Settings()
@@ -66,15 +66,15 @@ def test_multi_worker_without_redis_forces_direct_delivery(monkeypatch: pytest.M
     # to set to keep that mode — without these, the operator has no way to
     # connect a missing-events symptom to the root cause.
     assert "polling" in combined
-    assert "EARTHMIND_JOB_QUEUE_TYPE" in combined
+    assert "TERRAFLOW_JOB_QUEUE_TYPE" in combined
 
 
 def test_multi_worker_with_redis_keeps_requested_delivery(monkeypatch: pytest.MonkeyPatch) -> None:
     """With workers=2 and job_queue_type=redis, the requested delivery is preserved."""
     _isolate_env(monkeypatch)
-    monkeypatch.setenv("EARTHMIND_WORKERS", "2")
-    monkeypatch.setenv("EARTHMIND_JOB_QUEUE_TYPE", "redis")
-    monkeypatch.setenv("EARTHMIND_EVENT_DELIVERY", "streaming")
+    monkeypatch.setenv("TERRAFLOW_WORKERS", "2")
+    monkeypatch.setenv("TERRAFLOW_JOB_QUEUE_TYPE", "redis")
+    monkeypatch.setenv("TERRAFLOW_EVENT_DELIVERY", "streaming")
 
     settings = Settings()
 
@@ -84,9 +84,9 @@ def test_multi_worker_with_redis_keeps_requested_delivery(monkeypatch: pytest.Mo
 def test_single_worker_keeps_requested_delivery(monkeypatch: pytest.MonkeyPatch) -> None:
     """The override only applies when workers > 1 — single-worker setups are left alone."""
     _isolate_env(monkeypatch)
-    monkeypatch.setenv("EARTHMIND_WORKERS", "1")
-    monkeypatch.setenv("EARTHMIND_JOB_QUEUE_TYPE", "asyncio")
-    monkeypatch.setenv("EARTHMIND_EVENT_DELIVERY", "polling")
+    monkeypatch.setenv("TERRAFLOW_WORKERS", "1")
+    monkeypatch.setenv("TERRAFLOW_JOB_QUEUE_TYPE", "asyncio")
+    monkeypatch.setenv("TERRAFLOW_EVENT_DELIVERY", "polling")
 
     settings = Settings()
 
@@ -100,13 +100,13 @@ def test_multi_worker_no_warning_when_already_direct(monkeypatch: pytest.MonkeyP
     already the forced fallback, there is nothing to flag.
     """
     _isolate_env(monkeypatch)
-    monkeypatch.setenv("EARTHMIND_WORKERS", "2")
-    monkeypatch.setenv("EARTHMIND_JOB_QUEUE_TYPE", "asyncio")
-    monkeypatch.setenv("EARTHMIND_EVENT_DELIVERY", "direct")
+    monkeypatch.setenv("TERRAFLOW_WORKERS", "2")
+    monkeypatch.setenv("TERRAFLOW_JOB_QUEUE_TYPE", "asyncio")
+    monkeypatch.setenv("TERRAFLOW_EVENT_DELIVERY", "direct")
 
     warnings = _capture_warnings(monkeypatch)
     settings = Settings()
 
     assert settings.event_delivery == "direct"
     combined = " ".join(warnings)
-    assert "EARTHMIND_JOB_QUEUE_TYPE" not in combined
+    assert "TERRAFLOW_JOB_QUEUE_TYPE" not in combined

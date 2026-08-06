@@ -21,7 +21,7 @@ class ListHomeAssistantStates(LCToolComponent):
     documentation: str = "https://developers.home-assistant.io/docs/api/rest/"
     icon = "HomeAssistant"
 
-    # 1) Define fields to be received in EarthMind UI
+    # 1) Define fields to be received in Terraflow UI
     inputs = [
         SecretStrInput(
             name="ha_token",
@@ -50,7 +50,7 @@ class ListHomeAssistantStates(LCToolComponent):
         filter_domain: str = Field("", description="Filter domain (e.g., 'light'). If empty, returns all.")
 
     def run_model(self) -> Data:
-        """Execute the EarthMind component.
+        """Execute the Terraflow component.
 
         Uses self.ha_token, self.base_url, self.filter_domain as entered in the UI.
         Triggered when 'Run' is clicked directly without an agent.

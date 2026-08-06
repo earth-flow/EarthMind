@@ -19,8 +19,8 @@ class MCPSse(Component):
     tools = types.ListToolsResult
     tool_names = [str]
     display_name = "MCP Tools (SSE) [DEPRECATED]"
-    description = "Connects to an MCP server over SSE and exposes it's tools as earthmind tools to be used by an Agent."
-    documentation: str = "https://docs.earthmind.org/components-custom-components"
+    description = "Connects to an MCP server over SSE and exposes it's tools as terraflow tools to be used by an Agent."
+    documentation: str = "https://docs.terraflow.org/components-custom-components"
     icon = "code"
     name = "MCPSse"
     legacy = True

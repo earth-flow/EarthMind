@@ -10,16 +10,16 @@ import TabItem from '@theme/TabItem';
 Use global variables to store and reuse credentials and generic values across all of your flows.
 Global variables are typically used by components in flow, and you can use them in any field with the <Icon name="Globe" aria-hidden="true"/> global variable icon.
 
-In contrast, [environment variables](/environment-variables), like `EARTHMIND_PORT` or `EARTHMIND_LOG_LEVEL`, are generally for broader settings that configure how EarthMind runs.
-However, EarthMind can also source global variables from environment variables.
+In contrast, [environment variables](/environment-variables), like `TERRAFLOW_PORT` or `TERRAFLOW_LOG_LEVEL`, are generally for broader settings that configure how Terraflow runs.
+However, Terraflow can also source global variables from environment variables.
 
-EarthMind stores global variables in its internal database, and it encrypts the values using a secret key.
+Terraflow stores global variables in its internal database, and it encrypts the values using a secret key.
 
 ## Create a global variable
 
 To create a new global variable, follow these steps.
 
-1. In the EarthMind header, click your profile icon, and then select **Settings**.
+1. In the Terraflow header, click your profile icon, and then select **Settings**.
 2. Click **Global Variables**.
 
 3. Click **Add New**.
@@ -28,13 +28,13 @@ To create a new global variable, follow these steps.
 
 5. Optional: Select a **Type** for your global variable. The available types are **Generic** (default) and **Credential**.
 
-   EarthMind encrypts both **Generic** and **Credential** type global variables.
+   Terraflow encrypts both **Generic** and **Credential** type global variables.
    However, **Generic** variables aren't masked in the visual editor, whereas **Credential** variables are masked.
    **Session ID** fields don't accept **Credential** (masked) variables.
 
 6. Enter the **Value** for your global variable.
 
-7. Optional: Use the **Apply To Fields** menu to select one or more fields that you want EarthMind to automatically apply your global variable to. For example, if you select **OpenAI API Key**, EarthMind automatically applies the variable to any **OpenAI API Key** field.
+7. Optional: Use the **Apply To Fields** menu to select one or more fields that you want Terraflow to automatically apply your global variable to. For example, if you select **OpenAI API Key**, Terraflow automatically applies the variable to any **OpenAI API Key** field.
 
 8. Click **Save Variable**.
 
@@ -42,7 +42,7 @@ You can now select your global variable from any text input field that displays 
 
 ## Edit a global variable
 
-1. In the EarthMind header, click your profile icon, and then select **Settings**.
+1. In the Terraflow header, click your profile icon, and then select **Settings**.
 
 2. Click **Global Variables**.
 
@@ -57,7 +57,7 @@ You can now select your global variable from any text input field that displays 
 Deleting a global variable permanently deletes the value from the database.
 Flows that reference the deleted global variable will fail.
 
-1. In the EarthMind header, click your profile icon, and then select **Settings**.
+1. In the Terraflow header, click your profile icon, and then select **Settings**.
 
 2. Click **Global Variables**.
 
@@ -69,74 +69,74 @@ The global variable is deleted from the database.
 
 ## Add custom global variables from the environment {#add-custom-global-variables-from-the-environment}
 
-EarthMind can source custom global variables from your runtime environment.
-For information about how EarthMind detects and applies environment variables, see [EarthMind environment variables](/environment-variables).
+Terraflow can source custom global variables from your runtime environment.
+For information about how Terraflow detects and applies environment variables, see [Terraflow environment variables](/environment-variables).
 
-EarthMind automatically generates global variables based on [`constants.py`](https://github.com/earthmind-ai/earthmind/blob/main/src/lfx/src/lfx/services/settings/constants.py) if it detects any matching environment variables.
-For example, if you set `OPENAI_API_KEY` in your runtime environment, EarthMind automatically generates a global variable using that value.
+Terraflow automatically generates global variables based on [`constants.py`](https://github.com/terraflow-ai/terraflow/blob/main/src/lfx/src/lfx/services/settings/constants.py) if it detects any matching environment variables.
+For example, if you set `OPENAI_API_KEY` in your runtime environment, Terraflow automatically generates a global variable using that value.
 
-You can declare additional variables in `EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT`.
-For example, `EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT=WATSONX_PROJECT_ID,WATSONX_API_KEY` creates global variables named `WATSONX_PROJECT_ID` and `WATSONX_API_KEY` in EarthMind's database.
+You can declare additional variables in `TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT`.
+For example, `TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=WATSONX_PROJECT_ID,WATSONX_API_KEY` creates global variables named `WATSONX_PROJECT_ID` and `WATSONX_API_KEY` in Terraflow's database.
 Then, you can use these variables wherever they are needed in your component settings.
 
 <Tabs>
 <TabItem value="local" label="Local" default>
 
-If you installed EarthMind locally, set `EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT` in your EarthMind `.env` file:
+If you installed Terraflow locally, set `TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT` in your Terraflow `.env` file:
 
-1. Create or edit your EarthMind `.env` file.
+1. Create or edit your Terraflow `.env` file.
 
-2. Add the `EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT` environment variable as follows:
+2. Add the `TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT` environment variable as follows:
 
    You can specify the variables either as a comma-separated string with no spaces, or as a JSON list:
 
    ```text
    # Option 1: Comma-separated string (no spaces)
-   EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT=VARIABLE1,VARIABLE2
+   TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=VARIABLE1,VARIABLE2
 
    # Option 2: JSON list format
-   EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT=["VARIABLE1", "VARIABLE2"]
+   TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=["VARIABLE1", "VARIABLE2"]
    ```
 
-   Replace `VARIABLE1,VARIABLE2` with your additional variables that you want EarthMind to source from the environment, such as `CUSTOM_API_KEY,INTERNAL_SERVICE_URL` or `["CUSTOM_API_KEY", "INTERNAL_SERVICE_URL"]`.
+   Replace `VARIABLE1,VARIABLE2` with your additional variables that you want Terraflow to source from the environment, such as `CUSTOM_API_KEY,INTERNAL_SERVICE_URL` or `["CUSTOM_API_KEY", "INTERNAL_SERVICE_URL"]`.
 
 3. Save and close the file.
 
-4. Start EarthMind with the `.env` file:
+4. Start Terraflow with the `.env` file:
 
    ```bash
-   uv run earthmind run --env-file .env
+   uv run terraflow run --env-file .env
    ```
 
    Alternatively, you can set environment variables directly in the command line:
 
    ```bash
-   VARIABLE1="VALUE1" VARIABLE2="VALUE2" uv run earthmind run --env-file .env
+   VARIABLE1="VALUE1" VARIABLE2="VALUE2" uv run terraflow run --env-file .env
    ```
 
    The command-line variables override matching variables in the `.env` file.
-   Expose your environment variables to EarthMind in a manner that best suits your own environment.
+   Expose your environment variables to Terraflow in a manner that best suits your own environment.
 
-5. Confirm that EarthMind successfully sourced the global variables from the environment:
+5. Confirm that Terraflow successfully sourced the global variables from the environment:
 
-   1. In the EarthMind header, click your profile icon, and then select **Settings**.
+   1. In the Terraflow header, click your profile icon, and then select **Settings**.
 
    2. Click **Global Variables**, and then make sure that your environment variables appear in the **Global Variables** list.
 
 </TabItem>
 <TabItem value="docker" label="Docker">
 
-If you're using Docker, there are two ways that you can set `EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT`:
+If you're using Docker, there are two ways that you can set `TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT`:
 
 * On the command line:
 
    ```bash
    docker run -it --rm \
       -p 7860:7860 \
-      -e EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT="VARIABLE1,VARIABLE2" \
+      -e TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT="VARIABLE1,VARIABLE2" \
       -e VARIABLE1="VALUE1" \
       -e VARIABLE2="VALUE2" \
-      earthmindai/earthmind:latest
+      terraflowai/terraflow:latest
    ```
 
 * In your `.env` file:
@@ -147,39 +147,39 @@ If you're using Docker, there are two ways that you can set `EARTHMIND_VARIABLES
       --env-file .env \
       -e VARIABLE1="VALUE1" \
       -e VARIABLE2="VALUE2" \
-      earthmindai/earthmind:latest
+      terraflowai/terraflow:latest
    ```
 
-The list in `EARTHMIND_VARIABLES_TO_GET_FROM_ENVIRONMENT` includes only the variable names.
+The list in `TERRAFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT` includes only the variable names.
 You must ensure that these environment variables are defined in your Docker environment, such as with `-e` or otherwise.
 
 </TabItem>
 </Tabs>
 
-After starting EarthMind, go to your EarthMind **Settings** to confirm that the variables were created.
+After starting Terraflow, go to your Terraflow **Settings** to confirm that the variables were created.
 
 Only the **Name** and **Value** are taken from the environment.
-You can edit the variables in your EarthMind **Settings** if you want to configure additional options, such as the **Apply To Fields** option.
+You can edit the variables in your Terraflow **Settings** if you want to configure additional options, such as the **Apply To Fields** option.
 
 Global variables sourced from the environment are assigned the **Credential** type, which masks the values in the visual editor.
-However, EarthMind automatically encrypts _all_ global variables stored in the database.
+However, Terraflow automatically encrypts _all_ global variables stored in the database.
 
 ## Disallow global variables from the environment
 
-If you want to explicitly prevent EarthMind from sourcing global variables from the environment, set `EARTHMIND_STORE_ENVIRONMENT_VARIABLES=False` in your `.env` file.
+If you want to explicitly prevent Terraflow from sourcing global variables from the environment, set `TERRAFLOW_STORE_ENVIRONMENT_VARIABLES=False` in your `.env` file.
 
 ## Use environment variables for missing global variables {#use-environment-variables-for-missing-global-variables}
 
-If you want to automatically set fallback values for your global variables to environment variables, set `EARTHMIND_FALLBACK_TO_ENV_VAR=True` in your `.env` file.
-When this setting is enabled, if a global variable isn't found, EarthMind attempts to use an environment variable with the same name as a backup.
+If you want to automatically set fallback values for your global variables to environment variables, set `TERRAFLOW_FALLBACK_TO_ENV_VAR=True` in your `.env` file.
+When this setting is enabled, if a global variable isn't found, Terraflow attempts to use an environment variable with the same name as a backup.
 
-For example, assume you have the following EarthMind `.env` configuration, and your flow has a component that expects a `WATSONX_API_KEY` global variable:
+For example, assume you have the following Terraflow `.env` configuration, and your flow has a component that expects a `WATSONX_API_KEY` global variable:
 
 ```text
-EARTHMIND_FALLBACK_TO_ENV_VAR=True
+TERRAFLOW_FALLBACK_TO_ENV_VAR=True
 WATSONX_PROJECT_ID=your_project_id
 WATSONX_API_KEY=your_api_key
 ```
 
-When you run the flow, if there is no global variable named `WATSONX_API_KEY`, EarthMind looks for an environment variable named `WATSONX_API_KEY`.
-In this example, EarthMind uses the `WATSONX_API_KEY` value from the `.env` to run the flow.
+When you run the flow, if there is no global variable named `WATSONX_API_KEY`, Terraflow looks for an environment variable named `WATSONX_API_KEY`.
+In this example, Terraflow uses the `WATSONX_API_KEY` value from the `.env` to run the flow.

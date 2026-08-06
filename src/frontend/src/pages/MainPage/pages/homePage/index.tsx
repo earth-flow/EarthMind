@@ -10,7 +10,7 @@ import { useGetFolderQuery } from "@/controllers/API/queries/folders/use-get-fol
 import { CustomBanner } from "@/customization/components/custom-banner";
 import { CustomMcpServerTab } from "@/customization/components/custom-McpServerTab";
 import {
-  ENABLE_DATASTAX_EARTHMIND,
+  ENABLE_DATASTAX_TERRAFLOW,
   ENABLE_MCP,
 } from "@/customization/feature-flags";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
@@ -284,7 +284,7 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
         data-testid="cards-wrapper"
       >
         <div className="flex h-full w-full flex-col 3xl:container">
-          {ENABLE_DATASTAX_EARTHMIND && <CustomBanner />}
+          {ENABLE_DATASTAX_TERRAFLOW && <CustomBanner />}
           <div className="flex flex-1 flex-col justify-start p-4">
             <div className="flex h-full flex-col justify-start">
               <HeaderComponent

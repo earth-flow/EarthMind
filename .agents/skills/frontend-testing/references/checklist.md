@@ -1,6 +1,6 @@
 # Test Generation Checklist
 
-Verify each item before submitting test code for EarthMind frontend.
+Verify each item before submitting test code for Terraflow frontend.
 
 ## Pre-Writing
 

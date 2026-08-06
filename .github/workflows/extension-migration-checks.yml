@@ -9,7 +9,7 @@ on:
       - "src/lfx/src/lfx/extension/**"
       - "src/lfx/src/lfx/components/**"
       - "src/bundles/**"
-      - "src/backend/base/earthmind/api/**.py"
+      - "src/backend/base/terraflow/api/**.py"
       - ".github/workflows/extension-migration-checks.yml"
 
 jobs:

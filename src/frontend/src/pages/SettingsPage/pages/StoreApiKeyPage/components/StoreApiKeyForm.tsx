@@ -73,11 +73,11 @@ const StoreApiKeyFormComponent = ({
                 {t("store.createApiKey")}{" "}
                 <a
                   className="text-high-indigo underline"
-                  href="https://earthmind.store/"
+                  href="https://terraflow.store/"
                   target="_blank"
                   rel="noopener"
                 >
-                  earthmind.store
+                  terraflow.store
                 </a>
               </span>
             </div>

@@ -7,8 +7,8 @@ import {
 
 describe("assistant-panel.constants", () => {
   describe("ASSISTANT_TITLE", () => {
-    it("should be EarthMind Assistant", () => {
-      expect(ASSISTANT_TITLE).toBe("EarthMind Assistant");
+    it("should be Terraflow Assistant", () => {
+      expect(ASSISTANT_TITLE).toBe("Terraflow Assistant");
     });
   });
 

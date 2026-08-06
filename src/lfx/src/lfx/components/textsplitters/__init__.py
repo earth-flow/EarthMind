@@ -1,3 +1,3 @@
-"""EarthMind text splitters components."""
+"""Terraflow text splitters components."""
 
 __all__: list[str] = []

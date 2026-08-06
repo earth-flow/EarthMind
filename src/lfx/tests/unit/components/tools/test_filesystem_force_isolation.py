@@ -31,7 +31,7 @@ def _make_component(
     force_isolation: bool = False,
     sub_path: str = "",
 ) -> FileSystemToolComponent:
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(base_dir))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(base_dir))
     component = FileSystemToolComponent(root_path=sub_path)
     component._resolve_auto_login = lambda: auto_login  # type: ignore[method-assign]
     if user_id is not None:

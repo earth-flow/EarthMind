@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import UUID, uuid4
 
 import pytest
-from earthmind.agentic.utils.flow_graph import (
+from terraflow.agentic.utils.flow_graph import (
     get_flow_ascii_graph,
     get_flow_graph_representations,
     get_flow_graph_summary,
@@ -17,7 +17,7 @@ from earthmind.agentic.utils.flow_graph import (
 )
 from lfx.interface.components import component_cache
 
-MODULE = "earthmind.agentic.utils.flow_graph"
+MODULE = "terraflow.agentic.utils.flow_graph"
 
 FLOW_ID = str(uuid4())
 
@@ -95,7 +95,7 @@ async def test_get_flow_graph_summary_blocks_custom_components(monkeypatch):
     async def _get_flow(*_args, **_kwargs):
         return blocked_flow
 
-    monkeypatch.setattr("earthmind.agentic.utils.flow_graph.get_flow_by_id_or_endpoint_name", _get_flow)
+    monkeypatch.setattr("terraflow.agentic.utils.flow_graph.get_flow_by_id_or_endpoint_name", _get_flow)
     monkeypatch.setattr(
         "lfx.services.deps.get_settings_service",
         lambda: SimpleNamespace(settings=SimpleNamespace(allow_custom_components=False)),

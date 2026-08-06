@@ -1,4 +1,4 @@
-"""Entry point for the EarthMind MCP server.
+"""Entry point for the Terraflow MCP server.
 
 Usage:
     python -m lfx.mcp
@@ -6,8 +6,8 @@ Usage:
     lfx-mcp
 
 Environment variables:
-    EARTHMIND_SERVER_URL: EarthMind server URL (default: http://10.171.205.153:7860)
-    EARTHMIND_API_KEY: API key for authentication (skips login)
+    TERRAFLOW_SERVER_URL: Terraflow server URL (default: http://10.171.205.153:7860)
+    TERRAFLOW_API_KEY: API key for authentication (skips login)
 """
 
 from lfx.mcp.server import mcp

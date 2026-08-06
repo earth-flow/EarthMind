@@ -1,6 +1,6 @@
 """Milvus / Zilliz Cloud vector-store backend.
 
-Wraps ``langchain_milvus.vectorstores.Milvus`` so EarthMind Knowledge
+Wraps ``langchain_milvus.vectorstores.Milvus`` so Terraflow Knowledge
 Bases can target a self-hosted Milvus instance or a managed Zilliz Cloud
 serverless cluster. The connection is established via a URI + token pair
 (Zilliz Cloud serverless) or a plain URI (self-hosted Milvus without
@@ -8,7 +8,7 @@ auth).
 
 ``backend_config`` fields:
 
-* ``uri_variable`` — name of the EarthMind variable holding the Milvus /
+* ``uri_variable`` — name of the Terraflow variable holding the Milvus /
   Zilliz endpoint URI. Defaults to ``MILVUS_URI``. Required.
 * ``token_variable`` — name of the variable holding the auth token
   (Zilliz Cloud token or Milvus username:password). Optional; defaults
@@ -113,7 +113,7 @@ def _build_compat_langchain_milvus_class(base_class: type) -> type:
 
 
 class MilvusBackend(BaseVectorStoreBackend):
-    """Milvus / Zilliz Cloud as a EarthMind KB backend."""
+    """Milvus / Zilliz Cloud as a Terraflow KB backend."""
 
     backend_type = BackendType.MILVUS
 
@@ -140,7 +140,7 @@ class MilvusBackend(BaseVectorStoreBackend):
             uri = await self.resolve_secret(uri_variable)
             if not uri:
                 msg = (
-                    f"MilvusBackend needs either backend_config['uri'] or the {uri_variable!r} EarthMind variable "
+                    f"MilvusBackend needs either backend_config['uri'] or the {uri_variable!r} Terraflow variable "
                     "(or env var of the same name) populated with the Milvus / Zilliz endpoint URI."
                 )
                 raise ValueError(msg)

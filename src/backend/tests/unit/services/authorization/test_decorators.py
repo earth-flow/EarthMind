@@ -6,8 +6,8 @@ from uuid import uuid4
 
 import pytest
 from fastapi import HTTPException
-from earthmind.services.authorization.actions import FlowAction
-from earthmind.services.authorization.decorators import requires_flow_permission
+from terraflow.services.authorization.actions import FlowAction
+from terraflow.services.authorization.decorators import requires_flow_permission
 
 from ._common import install_audit_recorder, install_authz, install_settings
 

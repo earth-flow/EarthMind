@@ -185,9 +185,9 @@ def _run_sync(**kwargs: Any) -> dict[str, Any]:
 def _import_remote_run_request():
     """Import and return the SDK ``RunRequest`` model with a helpful error."""
     try:
-        from earthmind_sdk.models import RunRequest  # type: ignore[import-untyped]
+        from terraflow_sdk.models import RunRequest  # type: ignore[import-untyped]
     except ImportError as exc:
-        msg = "earthmind-sdk is required for remote flow testing. Install: pip install earthmind-sdk"
+        msg = "terraflow-sdk is required for remote flow testing. Install: pip install terraflow-sdk"
         raise ImportError(msg) from exc
     return RunRequest
 
@@ -390,15 +390,15 @@ class AsyncLocalFlowRunner(_BaseLocalFlowRunner):
 
 
 # ---------------------------------------------------------------------------
-# Remote runners (requires earthmind-sdk)
+# Remote runners (requires terraflow-sdk)
 # ---------------------------------------------------------------------------
 
 
 class RemoteFlowRunner(_BaseRemoteFlowRunner):
-    """Sync callable that runs flows against a live EarthMind instance.
+    """Sync callable that runs flows against a live Terraflow instance.
 
-    Returned by :func:`flow_runner` when ``--earthmind-env`` or
-    ``--earthmind-url`` is passed to pytest.  Call it like a function::
+    Returned by :func:`flow_runner` when ``--terraflow-env`` or
+    ``--terraflow-url`` is passed to pytest.  Call it like a function::
 
         def test_greeting(flow_runner):
             result = flow_runner("greeting-endpoint", "Hello!")
@@ -437,10 +437,10 @@ class RemoteFlowRunner(_BaseRemoteFlowRunner):
 
 
 class AsyncRemoteFlowRunner(_BaseRemoteFlowRunner):
-    """Async callable that runs flows against a live EarthMind instance.
+    """Async callable that runs flows against a live Terraflow instance.
 
-    Returned by :func:`async_flow_runner` when ``--earthmind-env`` or
-    ``--earthmind-url`` is passed to pytest.  Use with ``await``::
+    Returned by :func:`async_flow_runner` when ``--terraflow-env`` or
+    ``--terraflow-url`` is passed to pytest.  Use with ``await``::
 
         async def test_greeting(async_flow_runner):
             result = await async_flow_runner("greeting-endpoint", "Hello!")

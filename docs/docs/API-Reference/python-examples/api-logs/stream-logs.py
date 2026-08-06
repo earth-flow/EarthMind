@@ -2,8 +2,8 @@ import os
 
 import requests
 
-base = os.environ.get("EARTHMIND_URL") or os.environ.get("EARTHMIND_SERVER_URL", "")
-api_key = os.environ.get("EARTHMIND_API_KEY", "")
+base = os.environ.get("TERRAFLOW_URL") or os.environ.get("TERRAFLOW_SERVER_URL", "")
+api_key = os.environ.get("TERRAFLOW_API_KEY", "")
 
 # `/logs-stream` is an SSE endpoint. For doc example stability, only read a small
 # number of events, then close the connection.

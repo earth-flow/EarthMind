@@ -61,7 +61,7 @@ on:
           - ubuntu-latest
           - windows-latest
           - self-hosted
-          - '["self-hosted", "linux", "ARM64", "earthmind-ai-arm64-40gb-ephemeral"]'
+          - '["self-hosted", "linux", "ARM64", "terraflow-ai-arm64-40gb-ephemeral"]'
         default: ubuntu-latest
 
 env:
@@ -71,7 +71,7 @@ env:
   # This path is used for caching across workflows
   PLAYWRIGHT_BROWSERS_PATH: "ms-playwright"
   PLAYWRIGHT_VERSION: "1.59.1"
-  EARTHMIND_FEATURE_WXO_DEPLOYMENTS: "true"
+  TERRAFLOW_FEATURE_WXO_DEPLOYMENTS: "true"
 
 jobs:
   determine-test-suite:
@@ -298,7 +298,7 @@ jobs:
       ASTRA_DB_API_ENDPOINT: "${{ secrets.ASTRA_DB_API_ENDPOINT }}"
       ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}"
       TAVILY_API_KEY: "${{ secrets.TAVILY_API_KEY }}"
-      EARTHMIND_DEACTIVE_TRACING: "true"
+      TERRAFLOW_DEACTIVE_TRACING: "true"
     outputs:
       failed: ${{ steps.check-failure.outputs.failed }}
     steps:

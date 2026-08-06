@@ -30,7 +30,7 @@ jest.mock("@/customization/config-constants", () => ({
 }));
 
 // Mocking the customization layer for the user avatar is how we prove the
-// Desktop EarthMind Assistant avatar bug is fixed: the component must render
+// Desktop Terraflow Assistant avatar bug is fixed: the component must render
 // CustomProfileIcon (which the Desktop customization overrides to prepend an
 // absolute baseURL), not a bare <img> with a relative URL.
 jest.mock("@/customization/components/custom-profile-icon", () => ({
@@ -43,7 +43,7 @@ jest.mock("@/customization/components/custom-profile-icon", () => ({
   ),
 }));
 
-jest.mock("@/assets/earthmind_assistant.svg", () => "earthmind-icon.svg");
+jest.mock("@/assets/terraflow_assistant.svg", () => "terraflow-icon.svg");
 
 jest.mock("../assistant-component-result", () => ({
   AssistantComponentResult: ({
@@ -171,7 +171,7 @@ describe("AssistantMessageItem", () => {
       expect(screen.getByAltText("User")).toBeInTheDocument();
     });
 
-    // Regression guard: EarthMind Desktop shipped with a broken user avatar in
+    // Regression guard: Terraflow Desktop shipped with a broken user avatar in
     // the Assistant panel because the bare <img> used a relative URL that
     // resolved against the Tauri origin instead of the Python sidecar. The
     // fix routes the avatar through CustomProfileIcon so Desktop's
@@ -211,7 +211,7 @@ describe("AssistantMessageItem", () => {
   });
 
   describe("assistant messages", () => {
-    it("should render assistant label with EarthMind icon", () => {
+    it("should render assistant label with Terraflow icon", () => {
       const message = createMessage({
         role: "assistant",
         content: "Here is your component",
@@ -220,8 +220,8 @@ describe("AssistantMessageItem", () => {
 
       render(<AssistantMessageItem message={message} />);
 
-      expect(screen.getByText("EarthMind Assistant")).toBeInTheDocument();
-      expect(screen.getByAltText("EarthMind Assistant")).toBeInTheDocument();
+      expect(screen.getByText("Terraflow Assistant")).toBeInTheDocument();
+      expect(screen.getByAltText("Terraflow Assistant")).toBeInTheDocument();
     });
   });
 
@@ -282,7 +282,7 @@ describe("AssistantMessageItem", () => {
       // generic dotted "Generating document..." thinking line. The earlier
       // anti-glitch concern (a bordered streaming card morphing into the
       // file card) is addressed by using the icon-only minimal mode
-      // (animated EarthMind glyph), NOT the bordered streaming card — see
+      // (animated Terraflow glyph), NOT the bordered streaming card — see
       // the assistant-loading-state icon-mode test.
       const message = createMessage({
         role: "assistant",
@@ -368,7 +368,7 @@ describe("AssistantMessageItem", () => {
       const message = createMessage({
         role: "assistant",
         content:
-          "```python\nfrom earthmind.custom import Component\n\nclass MyComponent(Component):\n    pass\n```",
+          "```python\nfrom terraflow.custom import Component\n\nclass MyComponent(Component):\n    pass\n```",
         status: "streaming",
         progress: {
           step: "generating",
@@ -481,14 +481,14 @@ describe("AssistantMessageItem", () => {
     it("should render markdown for regular text content", () => {
       const message = createMessage({
         role: "assistant",
-        content: "EarthMind is a visual flow builder.",
+        content: "Terraflow is a visual flow builder.",
         status: "complete",
       });
 
       render(<AssistantMessageItem message={message} />);
 
       expect(screen.getByTestId("markdown-content")).toHaveTextContent(
-        "EarthMind is a visual flow builder.",
+        "Terraflow is a visual flow builder.",
       );
     });
 
@@ -512,7 +512,7 @@ describe("AssistantMessageItem", () => {
         "    def run(self) -> Data:\n",
         "        return Data(data={'result': 42})\n",
         "```\n\n",
-        "Save the file and restart EarthMind.",
+        "Save the file and restart Terraflow.",
       ].join("");
 
       const message = createMessage({

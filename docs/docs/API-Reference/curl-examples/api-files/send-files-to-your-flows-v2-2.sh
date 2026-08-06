@@ -1,7 +1,7 @@
 curl --request POST \
-  --url "$EARTHMIND_URL/api/v1/run/$FLOW_ID" \
+  --url "$TERRAFLOW_URL/api/v1/run/$FLOW_ID" \
   --header "Content-Type: application/json" \
-  --header "x-api-key: $EARTHMIND_API_KEY" \
+  --header "x-api-key: $TERRAFLOW_API_KEY" \
   --data '{
   "input_value": "what do you see?",
   "output_type": "chat",

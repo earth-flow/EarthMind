@@ -64,7 +64,7 @@ WORKDIR /tmp/src/frontend
 RUN --mount=type=cache,target=/root/.npm \
     npm ci \
     && ESBUILD_BINARY_PATH="" NODE_OPTIONS="--max-old-space-size=4096" JOBS=1 npm run build \
-    && cp -r build /app/src/backend/earthmind/frontend \
+    && cp -r build /app/src/backend/terraflow/frontend \
     && rm -rf /tmp/src/frontend
 
 WORKDIR /app
@@ -101,26 +101,26 @@ RUN useradd user -u 1000 -g 0 --no-create-home --home-dir /app/data
 COPY --from=builder --chown=1000 /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Pre-create EARTHMIND_CONFIG_DIR (the default location used by the docker_example
+# Pre-create TERRAFLOW_CONFIG_DIR (the default location used by the docker_example
 # compose file) with the non-root user as owner. When the official compose mounts
-# a fresh named volume at /app/earthmind, Docker copies this directory's ownership
+# a fresh named volume at /app/terraflow, Docker copies this directory's ownership
 # and permissions into the new volume, so the in-container uid=1000 user can
 # write secret_key, profile_pictures, etc. Without this, the volume is created
-# as root:root and EarthMind crashes during startup with PermissionError on
-# /app/earthmind/secret_key. See https://github.com/earthmind-ai/earthmind/issues/10437
-RUN mkdir -p /app/earthmind && chown -R 1000:0 /app/earthmind && chmod -R g+rwX /app/earthmind
+# as root:root and Terraflow crashes during startup with PermissionError on
+# /app/terraflow/secret_key. See https://github.com/terraflow-ai/terraflow/issues/10437
+RUN mkdir -p /app/terraflow && chown -R 1000:0 /app/terraflow && chmod -R g+rwX /app/terraflow
 
-LABEL org.opencontainers.image.title=earthmind
-LABEL org.opencontainers.image.authors=['EarthMind']
+LABEL org.opencontainers.image.title=terraflow
+LABEL org.opencontainers.image.authors=['Terraflow']
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.url=https://github.com/earthmind-ai/earthmind
-LABEL org.opencontainers.image.source=https://github.com/earthmind-ai/earthmind
+LABEL org.opencontainers.image.url=https://github.com/terraflow-ai/terraflow
+LABEL org.opencontainers.image.source=https://github.com/terraflow-ai/terraflow
 
 WORKDIR /app
 
-ENV EARTHMIND_HOST=0.0.0.0
-ENV EARTHMIND_PORT=7860
-ENV EARTHMIND_EVENT_DELIVERY=polling
+ENV TERRAFLOW_HOST=0.0.0.0
+ENV TERRAFLOW_PORT=7860
+ENV TERRAFLOW_EVENT_DELIVERY=polling
 
 USER 1000
-CMD ["python", "-m", "earthmind", "run", "--host", "0.0.0.0", "--backend-only"]
+CMD ["python", "-m", "terraflow", "run", "--host", "0.0.0.0", "--backend-only"]

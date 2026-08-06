@@ -148,9 +148,9 @@ function ApiInterceptor() {
 
     const isAuthorizedURL = (url) => {
       const authorizedDomains = [
-        "https://raw.githubusercontent.com/earthmind-ai/earthmind_examples/main/examples",
-        "https://api.github.com/repos/earthmind-ai/earthmind_examples/contents/examples",
-        "https://api.github.com/repos/earthmind-ai/earthmind",
+        "https://raw.githubusercontent.com/terraflow-ai/terraflow_examples/main/examples",
+        "https://api.github.com/repos/terraflow-ai/terraflow_examples/contents/examples",
+        "https://api.github.com/repos/terraflow-ai/terraflow",
         "auto_login",
       ];
 

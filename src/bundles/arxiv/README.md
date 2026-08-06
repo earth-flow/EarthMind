@@ -1,6 +1,6 @@
 # lfx-arxiv
 
-arXiv search component as a standalone EarthMind Extension Bundle.
+arXiv search component as a standalone Terraflow Extension Bundle.
 
 This is the second-pilot port that validates
 [`src/bundles/PORTING.md`](../PORTING.md) — the documented recipe for
@@ -14,8 +14,8 @@ arXiv's public Atom API for paper metadata.
 pip install lfx-arxiv
 ```
 
-The bundle is registered automatically via the `earthmind.extensions`
-entry-point.  After install, restart your EarthMind server; the
+The bundle is registered automatically via the `terraflow.extensions`
+entry-point.  After install, restart your Terraflow server; the
 `ArXivComponent` will appear in the palette under the `arxiv` bundle
 group.
 

@@ -142,9 +142,9 @@ class EmptyComponent(Component):
 
   it("should parse a realistic full component", () => {
     const code = `
-from earthmind.custom import Component
-from earthmind.io import MessageTextInput, Output
-from earthmind.schema.message import Message
+from terraflow.custom import Component
+from terraflow.io import MessageTextInput, Output
+from terraflow.schema.message import Message
 
 class TextUppercaseComponent(Component):
     description = "Converts text to uppercase"

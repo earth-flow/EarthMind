@@ -10,8 +10,8 @@ leak secrets in the caveat.
 from __future__ import annotations
 
 import pytest
-from earthmind.agentic.services.flow_probe_input import PROBE_INPUT_TEXT
-from earthmind.agentic.services.flow_verification import (
+from terraflow.agentic.services.flow_probe_input import PROBE_INPUT_TEXT
+from terraflow.agentic.services.flow_verification import (
     FlowVerificationStatus,
     verify_built_flow,
 )

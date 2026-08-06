@@ -14,52 +14,52 @@ import re
 # ---------------------------------------------------------------------------
 
 
-def _patch_main_pyproject(txt: str, earthmind_version: str, base_version: str) -> str:
-    txt = re.sub(r'^version = ".*"', f'version = "{earthmind_version}"', txt, flags=re.MULTILINE)
+def _patch_main_pyproject(txt: str, terraflow_version: str, base_version: str) -> str:
+    txt = re.sub(r'^version = ".*"', f'version = "{terraflow_version}"', txt, flags=re.MULTILINE)
     return re.sub(
-        r'"earthmind-base(?:\[[^\]]*\])?(?:==|>=|~=)[^"]*"',
-        f'"earthmind-base[complete]>={base_version}"',
+        r'"terraflow-base(?:\[[^\]]*\])?(?:==|>=|~=)[^"]*"',
+        f'"terraflow-base[complete]>={base_version}"',
         txt,
     )
 
 
-def _patch_earthmind_base_pyproject(txt: str, base_version: str, earthmind_version: str) -> str:
+def _patch_terraflow_base_pyproject(txt: str, base_version: str, terraflow_version: str) -> str:
     txt = re.sub(r'^version = ".*"', f'version = "{base_version}"', txt, flags=re.MULTILINE)
-    return re.sub(r'"lfx(?:~=|>=)[^"]*"', f'"lfx~={earthmind_version}"', txt)
+    return re.sub(r'"lfx(?:~=|>=)[^"]*"', f'"lfx~={terraflow_version}"', txt)
 
 
-def _patch_lfx_pyproject(txt: str, earthmind_version: str) -> str:
-    return re.sub(r'^version = ".*"', f'version = "{earthmind_version}"', txt, flags=re.MULTILINE)
+def _patch_lfx_pyproject(txt: str, terraflow_version: str) -> str:
+    return re.sub(r'^version = ".*"', f'version = "{terraflow_version}"', txt, flags=re.MULTILINE)
 
 
 # ---------------------------------------------------------------------------
-# earthmind-base pin in main pyproject.toml
+# terraflow-base pin in main pyproject.toml
 # ---------------------------------------------------------------------------
 
 
-class TestEarthMindBasePinSubstitution:
+class TestTerraflowBasePinSubstitution:
     V = "1.11.0"
     B = "0.11.0"
 
     def test_replaces_gte_with_extras(self):
         # Real format in pyproject.toml as of 1.10.0
-        txt = '    "earthmind-base[complete]>=0.10.0",'
-        assert '"earthmind-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
+        txt = '    "terraflow-base[complete]>=0.10.0",'
+        assert '"terraflow-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
 
     def test_replaces_equality_pin(self):
-        txt = '    "earthmind-base==0.10.0",'
-        assert '"earthmind-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
+        txt = '    "terraflow-base==0.10.0",'
+        assert '"terraflow-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
 
     def test_replaces_compatible_release_pin(self):
-        txt = '    "earthmind-base~=0.10.0",'
-        assert '"earthmind-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
+        txt = '    "terraflow-base~=0.10.0",'
+        assert '"terraflow-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
 
     def test_replaces_bare_gte_without_extras(self):
-        txt = '    "earthmind-base>=0.10.0",'
-        assert '"earthmind-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
+        txt = '    "terraflow-base>=0.10.0",'
+        assert '"terraflow-base[complete]>=0.11.0"' in _patch_main_pyproject(txt, self.V, self.B)
 
     def test_does_not_touch_workspace_line(self):
-        txt = "earthmind-base = { workspace = true }"
+        txt = "terraflow-base = { workspace = true }"
         assert _patch_main_pyproject(txt, self.V, self.B) == txt
 
     def test_updates_version_field(self):
@@ -69,16 +69,16 @@ class TestEarthMindBasePinSubstitution:
     def test_realistic_pyproject_fragment(self):
         txt = """\
 [project]
-name = "earthmind"
+name = "terraflow"
 version = "1.10.0"
 dependencies = [
-    "earthmind-base[complete]>=0.10.0",
+    "terraflow-base[complete]>=0.10.0",
     "httpx>=0.23.0",
 ]
 """
         result = _patch_main_pyproject(txt, "1.11.0", "0.11.0")
         assert 'version = "1.11.0"' in result
-        assert '"earthmind-base[complete]>=0.11.0"' in result
+        assert '"terraflow-base[complete]>=0.11.0"' in result
         assert '"httpx>=0.23.0"' in result  # unrelated dep untouched
 
 
@@ -94,33 +94,33 @@ class TestLfxPinSubstitution:
     def test_replaces_tilde_form(self):
         # Stable form written by make patch
         txt = '    "lfx~=1.10.0",'
-        assert '"lfx~=1.11.0"' in _patch_earthmind_base_pyproject(txt, self.B, self.V)
+        assert '"lfx~=1.11.0"' in _patch_terraflow_base_pyproject(txt, self.B, self.V)
 
     def test_replaces_gte_range_form(self):
         # Form written by release.yml after a pre-release build:
         # "lfx>=X.Y.Z,<X.(Y+1).dev0"
         txt = '    "lfx>=1.10.0,<1.11.dev0",'
-        assert '"lfx~=1.11.0"' in _patch_earthmind_base_pyproject(txt, self.B, self.V)
+        assert '"lfx~=1.11.0"' in _patch_terraflow_base_pyproject(txt, self.B, self.V)
 
     def test_does_not_touch_workspace_line(self):
         txt = "lfx = { workspace = true }"
-        assert _patch_earthmind_base_pyproject(txt, self.B, self.V) == txt
+        assert _patch_terraflow_base_pyproject(txt, self.B, self.V) == txt
 
     def test_updates_version_field(self):
         txt = 'version = "0.10.0"'
-        assert 'version = "0.11.0"' in _patch_earthmind_base_pyproject(txt, self.B, self.V)
+        assert 'version = "0.11.0"' in _patch_terraflow_base_pyproject(txt, self.B, self.V)
 
-    def test_realistic_earthmind_base_fragment(self):
+    def test_realistic_terraflow_base_fragment(self):
         txt = """\
 [project]
-name = "earthmind-base"
+name = "terraflow-base"
 version = "0.10.0"
 dependencies = [
     "lfx~=1.10.0",
     "pydantic>=2.0.0",
 ]
 """
-        result = _patch_earthmind_base_pyproject(txt, "0.11.0", "1.11.0")
+        result = _patch_terraflow_base_pyproject(txt, "0.11.0", "1.11.0")
         assert 'version = "0.11.0"' in result
         assert '"lfx~=1.11.0"' in result
         assert '"pydantic>=2.0.0"' in result  # unrelated dep untouched
@@ -129,14 +129,14 @@ dependencies = [
         """Simulates state after release.yml runs a pre-release build."""
         txt = """\
 [project]
-name = "earthmind-base"
+name = "terraflow-base"
 version = "0.10.3"
 dependencies = [
     "lfx>=1.10.3,<1.11.dev0",
     "pydantic>=2.0.0",
 ]
 """
-        result = _patch_earthmind_base_pyproject(txt, "0.11.0", "1.11.0")
+        result = _patch_terraflow_base_pyproject(txt, "0.11.0", "1.11.0")
         assert '"lfx~=1.11.0"' in result
         assert '"pydantic>=2.0.0"' in result
 
@@ -156,7 +156,7 @@ class TestLfxVersionSubstitution:
 [project]
 name = "lfx"
 version = "1.10.0"
-description = "Lightweight executor for EarthMind"
+description = "Lightweight executor for Terraflow"
 """
         result = _patch_lfx_pyproject(txt, "1.11.0")
         assert 'version = "1.11.0"' in result

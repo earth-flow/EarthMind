@@ -218,7 +218,7 @@ def _known_current_types() -> frozenset[str]:
 # Node-level rewrite
 # ---------------------------------------------------------------------------
 
-# Saved-flow node shape (current EarthMind): the canonical legacy reference
+# Saved-flow node shape (current Terraflow): the canonical legacy reference
 # lives at ``node["data"]["type"]`` and is the bare class name (e.g.
 # ``"OpenAIEmbeddings"``).  Older serializations also stored an
 # ``import_path`` at ``node["data"]["node"]["template"]["code"]["value"]``-

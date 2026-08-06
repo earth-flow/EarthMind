@@ -78,16 +78,16 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          version=$(uv tree 2>/dev/null | grep '^earthmind-base' | cut -d' ' -f2 | sed 's/^v//')
+          version=$(uv tree 2>/dev/null | grep '^terraflow-base' | cut -d' ' -f2 | sed 's/^v//')
           echo "Base version from pyproject.toml: $version"
 
           if [ ${{inputs.pre_release}} == "true" ]; then
-            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/earthmindai/earthmind/tags?page_size=100" | jq -r '.results[].name' | grep -E '^base-.*\.rc[0-9]+' | grep -vE '\-(amd64|arm64)$' | sed 's/^base-//' | sort -V | tail -n 1)
-            version="$(uv run ./scripts/ci/earthmind_pre_release_tag.py "$version" "$last_released_version")"
+            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/terraflowai/terraflow/tags?page_size=100" | jq -r '.results[].name' | grep -E '^base-.*\.rc[0-9]+' | grep -vE '\-(amd64|arm64)$' | sed 's/^base-//' | sort -V | tail -n 1)
+            version="$(uv run ./scripts/ci/terraflow_pre_release_tag.py "$version" "$last_released_version")"
             echo "Latest base pre-release version: $last_released_version"
             echo "Base pre-release version to be released: $version"
           else
-            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/earthmindai/earthmind/tags?page_size=100" | jq -r '.results[].name' | grep -E '^base-' | grep -vE '\-(amd64|arm64)$' | grep -v 'latest' | sed 's/^base-//' | sort -V | tail -n 1)
+            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/terraflowai/terraflow/tags?page_size=100" | jq -r '.results[].name' | grep -E '^base-' | grep -vE '\-(amd64|arm64)$' | grep -v 'latest' | sed 's/^base-//' | sort -V | tail -n 1)
             echo "Latest base release version: $last_released_version"
           fi
 
@@ -124,16 +124,16 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          version=$(uv tree 2>/dev/null | grep -E '^earthmind(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
+          version=$(uv tree 2>/dev/null | grep -E '^terraflow(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
           echo "Main version from pyproject.toml: $version"
 
           if [ ${{inputs.pre_release}} == "true" ]; then
-            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/earthmindai/earthmind/tags?page_size=100" | jq -r '.results[].name' | grep -E '\.rc[0-9]+' | grep -v '^base-' | grep -vE '\-(amd64|arm64)$' | sort -V | tail -n 1)
-            version="$(uv run ./scripts/ci/earthmind_pre_release_tag.py "$version" "$last_released_version")"
+            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/terraflowai/terraflow/tags?page_size=100" | jq -r '.results[].name' | grep -E '\.rc[0-9]+' | grep -v '^base-' | grep -vE '\-(amd64|arm64)$' | sort -V | tail -n 1)
+            version="$(uv run ./scripts/ci/terraflow_pre_release_tag.py "$version" "$last_released_version")"
             echo "Latest main pre-release version: $last_released_version"
             echo "Main pre-release version to be released: $version"
           else
-            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/earthmindai/earthmind/tags?page_size=100" | jq -r '.results[].name' | grep -v '^base-' | grep -vE '\-(amd64|arm64)$' | grep -v 'latest' | sort -V | tail -n 1)
+            last_released_version=$(curl -s "https://registry.hub.docker.com/v2/repositories/terraflowai/terraflow/tags?page_size=100" | jq -r '.results[].name' | grep -v '^base-' | grep -vE '\-(amd64|arm64)$' | grep -v 'latest' | sort -V | tail -n 1)
             echo "Latest main release version: $last_released_version"
           fi
 
@@ -155,10 +155,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -170,8 +170,8 @@ jobs:
         id: tags
         run: |
           version="${{ needs.determine-base-version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -226,10 +226,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -241,8 +241,8 @@ jobs:
         id: tags
         run: |
           version="${{ needs.determine-main-version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -297,10 +297,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -312,8 +312,8 @@ jobs:
         id: tags
         run: |
           version="${{ needs.determine-main-version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind-backend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-backend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow-backend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-backend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -335,7 +335,7 @@ jobs:
           context: .
           push: ${{ inputs.push_to_registry }}
           build-args: |
-            EARTHMIND_IMAGE=earthmindai/earthmind:${{ steps.version.outputs.version }}-${{ matrix.arch }}
+            TERRAFLOW_IMAGE=terraflowai/terraflow:${{ steps.version.outputs.version }}-${{ matrix.arch }}
           file: ./docker/build_and_push_backend.Dockerfile
           tags: ${{ steps.tags.outputs.docker_tags }}
           platforms: linux/${{ matrix.arch }}
@@ -356,7 +356,7 @@ jobs:
           context: .
           push: ${{ inputs.push_to_registry }}
           build-args: |
-            EARTHMIND_IMAGE=ghcr.io/earthmind-ai/earthmind:${{ steps.version.outputs.version }}-${{ matrix.arch }}
+            TERRAFLOW_IMAGE=ghcr.io/terraflow-ai/terraflow:${{ steps.version.outputs.version }}-${{ matrix.arch }}
           file: ./docker/build_and_push_backend.Dockerfile
           tags: ${{ steps.tags.outputs.ghcr_tags }}
           platforms: linux/${{ matrix.arch }}
@@ -372,10 +372,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -387,8 +387,8 @@ jobs:
         id: tags
         run: |
           version="${{ needs.determine-main-version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind-frontend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-frontend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow-frontend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-frontend:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -443,10 +443,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -458,8 +458,8 @@ jobs:
         id: tags
         run: |
           version="${{ needs.determine-main-version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind-ep:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-ep:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow-ep:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-ep:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -514,10 +514,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -529,8 +529,8 @@ jobs:
         id: tags
         run: |
           version="${{ needs.determine-main-version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -602,9 +602,9 @@ jobs:
         id: version
         run: |
           if [[ "${{ inputs.release_type }}" == "base" ]]; then
-            version=$(uv tree 2>/dev/null | grep 'earthmind-base' | awk '{print $3}' | sed 's/^v//' | head -n 1)
+            version=$(uv tree 2>/dev/null | grep 'terraflow-base' | awk '{print $3}' | sed 's/^v//' | head -n 1)
           else
-            version=$(uv tree 2>/dev/null | grep -E '^earthmind(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
+            version=$(uv tree 2>/dev/null | grep -E '^terraflow(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
           fi
           echo "Using version: $version"
           echo version=$version >> $GITHUB_OUTPUT
@@ -617,57 +617,57 @@ jobs:
             "base")
               version="${{ needs.determine-base-version.outputs.version }}"
               if [[ "${{ inputs.pre_release }}" == "true" ]]; then
-                echo "final_tags=earthmindai/earthmind:base-${version},ghcr.io/earthmind-ai/earthmind:base-${version}" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow:base-${version},ghcr.io/terraflow-ai/terraflow:base-${version}" >> $GITHUB_OUTPUT
               else
-                echo "final_tags=earthmindai/earthmind:base-${version},earthmindai/earthmind:base-latest,ghcr.io/earthmind-ai/earthmind:base-${version},ghcr.io/earthmind-ai/earthmind:base-latest" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow:base-${version},terraflowai/terraflow:base-latest,ghcr.io/terraflow-ai/terraflow:base-${version},ghcr.io/terraflow-ai/terraflow:base-latest" >> $GITHUB_OUTPUT
               fi
-              echo "arch_base=earthmindai/earthmind:base-${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind:base-${version}" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow:base-${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow:base-${version}" >> $GITHUB_OUTPUT
               ;;
             "main")
               if [[ "${{ inputs.pre_release }}" == "true" ]]; then
-                echo "final_tags=earthmindai/earthmind:${version},ghcr.io/earthmind-ai/earthmind:${version}" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow:${version},ghcr.io/terraflow-ai/terraflow:${version}" >> $GITHUB_OUTPUT
               else
-                echo "final_tags=earthmindai/earthmind:${version},earthmindai/earthmind:latest,ghcr.io/earthmind-ai/earthmind:${version},ghcr.io/earthmind-ai/earthmind:latest" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow:${version},terraflowai/terraflow:latest,ghcr.io/terraflow-ai/terraflow:${version},ghcr.io/terraflow-ai/terraflow:latest" >> $GITHUB_OUTPUT
               fi
-              echo "arch_base=earthmindai/earthmind:${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind:${version}" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow:${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow:${version}" >> $GITHUB_OUTPUT
               ;;
             "main-backend")
               if [[ "${{ inputs.pre_release }}" == "true" ]]; then
-                echo "final_tags=earthmindai/earthmind-backend:${version},ghcr.io/earthmind-ai/earthmind-backend:${version}" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-backend:${version},ghcr.io/terraflow-ai/terraflow-backend:${version}" >> $GITHUB_OUTPUT
               else
-                echo "final_tags=earthmindai/earthmind-backend:${version},earthmindai/earthmind-backend:latest,ghcr.io/earthmind-ai/earthmind-backend:${version},ghcr.io/earthmind-ai/earthmind-backend:latest" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-backend:${version},terraflowai/terraflow-backend:latest,ghcr.io/terraflow-ai/terraflow-backend:${version},ghcr.io/terraflow-ai/terraflow-backend:latest" >> $GITHUB_OUTPUT
               fi
-              echo "arch_base=earthmindai/earthmind-backend:${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind-backend:${version}" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow-backend:${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow-backend:${version}" >> $GITHUB_OUTPUT
               ;;
             "main-frontend")
               if [[ "${{ inputs.pre_release }}" == "true" ]]; then
-                echo "final_tags=earthmindai/earthmind-frontend:${version},ghcr.io/earthmind-ai/earthmind-frontend:${version}" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-frontend:${version},ghcr.io/terraflow-ai/terraflow-frontend:${version}" >> $GITHUB_OUTPUT
               else
-                echo "final_tags=earthmindai/earthmind-frontend:${version},earthmindai/earthmind-frontend:latest,ghcr.io/earthmind-ai/earthmind-frontend:${version},ghcr.io/earthmind-ai/earthmind-frontend:latest" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-frontend:${version},terraflowai/terraflow-frontend:latest,ghcr.io/terraflow-ai/terraflow-frontend:${version},ghcr.io/terraflow-ai/terraflow-frontend:latest" >> $GITHUB_OUTPUT
               fi
-              echo "arch_base=earthmindai/earthmind-frontend:${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind-frontend:${version}" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow-frontend:${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow-frontend:${version}" >> $GITHUB_OUTPUT
               ;;
             "main-ep")
               if [[ "${{ inputs.pre_release }}" == "true" ]]; then
-                echo "final_tags=earthmindai/earthmind-ep:${version},ghcr.io/earthmind-ai/earthmind-ep:${version}" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-ep:${version},ghcr.io/terraflow-ai/terraflow-ep:${version}" >> $GITHUB_OUTPUT
               else
-                echo "final_tags=earthmindai/earthmind-ep:${version},earthmindai/earthmind-ep:latest,ghcr.io/earthmind-ai/earthmind-ep:${version},ghcr.io/earthmind-ai/earthmind-ep:latest" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-ep:${version},terraflowai/terraflow-ep:latest,ghcr.io/terraflow-ai/terraflow-ep:${version},ghcr.io/terraflow-ai/terraflow-ep:latest" >> $GITHUB_OUTPUT
               fi
-              echo "arch_base=earthmindai/earthmind-ep:${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind-ep:${version}" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow-ep:${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow-ep:${version}" >> $GITHUB_OUTPUT
               ;;
             "main-all")
               if [[ "${{ inputs.pre_release }}" == "true" ]]; then
-                echo "final_tags=earthmindai/earthmind-all:${version},ghcr.io/earthmind-ai/earthmind-all:${version}" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-all:${version},ghcr.io/terraflow-ai/terraflow-all:${version}" >> $GITHUB_OUTPUT
               else
-                echo "final_tags=earthmindai/earthmind-all:${version},earthmindai/earthmind-all:latest,ghcr.io/earthmind-ai/earthmind-all:${version},ghcr.io/earthmind-ai/earthmind-all:latest" >> $GITHUB_OUTPUT
+                echo "final_tags=terraflowai/terraflow-all:${version},terraflowai/terraflow-all:latest,ghcr.io/terraflow-ai/terraflow-all:${version},ghcr.io/terraflow-ai/terraflow-all:latest" >> $GITHUB_OUTPUT
               fi
-              echo "arch_base=earthmindai/earthmind-all:${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind-all:${version}" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow-all:${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow-all:${version}" >> $GITHUB_OUTPUT
               ;;
             *)
               echo "Error: Invalid release_type: ${{ inputs.release_type }}" >&2
@@ -696,7 +696,7 @@ jobs:
             echo "Creating manifest for $tag"
 
             # Determine architecture-specific tags
-            if [[ "$tag" == *"earthmindai"* ]]; then
+            if [[ "$tag" == *"terraflowai"* ]]; then
               amd64_tag="${{ steps.tags.outputs.arch_base }}-amd64"
               arm64_tag="${{ steps.tags.outputs.arch_base }}-arm64"
             else

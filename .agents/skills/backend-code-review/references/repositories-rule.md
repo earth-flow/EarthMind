@@ -3,13 +3,13 @@
 ## Scope
 - Covers: when to reuse existing service abstractions, when to introduce new services, how to preserve dependency direction between route handlers and service/infrastructure implementations, and the ServiceFactory pattern.
 - Key directories:
-  - Services: `src/backend/base/earthmind/services/` (each service has `service.py` and `factory.py`)
-  - Model CRUD functions: `src/backend/base/earthmind/services/database/models/*/crud.py`
-  - Service base class: `earthmind.services.base.Service`
-  - Service factory base: `earthmind.services.factory.ServiceFactory`
-  - Service registry: `earthmind.services.manager.ServiceManager`
-  - Service types: `earthmind.services.schema.ServiceType`
-  - Dependency helpers: `earthmind.services.deps` (provides `get_service()`, `get_xxx_service()` functions)
+  - Services: `src/backend/base/terraflow/services/` (each service has `service.py` and `factory.py`)
+  - Model CRUD functions: `src/backend/base/terraflow/services/database/models/*/crud.py`
+  - Service base class: `terraflow.services.base.Service`
+  - Service factory base: `terraflow.services.factory.ServiceFactory`
+  - Service registry: `terraflow.services.manager.ServiceManager`
+  - Service types: `terraflow.services.schema.ServiceType`
+  - Dependency helpers: `terraflow.services.deps` (provides `get_service()`, `get_xxx_service()` functions)
 - Does NOT cover: SQLAlchemy session lifecycle and query-shape specifics (handled by `sqlalchemy-rule.md`), and table schema/migration design (handled by `db-schema-rule.md`).
 
 ## Rules
@@ -17,9 +17,9 @@
 ### Use existing services for DB operations; do not bypass with ad-hoc queries
 - Category: maintainability
 - Severity: suggestion
-- Description: EarthMind uses a service layer pattern rather than a repository pattern. Each service under `src/backend/base/earthmind/services/` encapsulates business logic and data access for its domain. If a service already handles operations for a given model/table, all reads/writes/queries for that table should go through the existing service (or its associated CRUD module). Additionally, many models have CRUD utility functions in `src/backend/base/earthmind/services/database/models/<model>/crud.py` that should be reused rather than duplicated.
+- Description: Terraflow uses a service layer pattern rather than a repository pattern. Each service under `src/backend/base/terraflow/services/` encapsulates business logic and data access for its domain. If a service already handles operations for a given model/table, all reads/writes/queries for that table should go through the existing service (or its associated CRUD module). Additionally, many models have CRUD utility functions in `src/backend/base/terraflow/services/database/models/<model>/crud.py` that should be reused rather than duplicated.
 - Suggested fix:
-  - First check `src/backend/base/earthmind/services/` and `src/backend/base/earthmind/services/database/models/<model>/crud.py` to verify whether the table/model already has a service or CRUD abstraction. If it exists, route all operations through it and add missing methods instead of bypassing it with ad-hoc SQLAlchemy queries.
+  - First check `src/backend/base/terraflow/services/` and `src/backend/base/terraflow/services/database/models/<model>/crud.py` to verify whether the table/model already has a service or CRUD abstraction. If it exists, route all operations through it and add missing methods instead of bypassing it with ad-hoc SQLAlchemy queries.
   - If no service or CRUD module exists, add methods to the most closely related existing service or CRUD module rather than scattering inline queries across route handlers.
 - Example:
   - Bad:
@@ -50,15 +50,15 @@
 ### Follow the ServiceFactory pattern for new services
 - Category: best practices
 - Severity: critical
-- Description: EarthMind manages services through `ServiceManager` which uses `ServiceFactory` instances to create and configure services. Each service consists of:
-  1. A base class or protocol (optional, for abstraction) inheriting from `earthmind.services.base.Service`
+- Description: Terraflow manages services through `ServiceManager` which uses `ServiceFactory` instances to create and configure services. Each service consists of:
+  1. A base class or protocol (optional, for abstraction) inheriting from `terraflow.services.base.Service`
   2. A concrete implementation in `service.py`
-  3. A factory class in `factory.py` inheriting from `earthmind.services.factory.ServiceFactory`
-  4. A `ServiceType` enum entry in `earthmind.services.schema`
-  5. A `get_xxx_service()` function in `earthmind.services.deps`
+  3. A factory class in `factory.py` inheriting from `terraflow.services.factory.ServiceFactory`
+  4. A `ServiceType` enum entry in `terraflow.services.schema`
+  5. A `get_xxx_service()` function in `terraflow.services.deps`
 
   New services must follow this pattern to integrate with the dependency injection system. The factory's `create()` method receives other services as arguments (resolved by name from the ServiceManager).
-- Suggested fix: When introducing a new service, create all required files following the existing pattern. Register the factory in `ServiceManager.get_factories()` and add a convenience getter in `earthmind.services.deps`.
+- Suggested fix: When introducing a new service, create all required files following the existing pattern. Register the factory in `ServiceManager.get_factories()` and add a convenience getter in `terraflow.services.deps`.
 - Example:
   - Bad:
     ```python
@@ -77,8 +77,8 @@
     ```
   - Good:
     ```python
-    # src/backend/base/earthmind/services/notification/service.py
-    from earthmind.services.base import Service
+    # src/backend/base/terraflow/services/notification/service.py
+    from terraflow.services.base import Service
 
     class NotificationService(Service):
         name = "notification_service"
@@ -89,9 +89,9 @@
         async def notify(self, user_id: UUID, message: str, session: AsyncSession) -> None:
             ...
 
-    # src/backend/base/earthmind/services/notification/factory.py
-    from earthmind.services.factory import ServiceFactory
-    from earthmind.services.notification.service import NotificationService
+    # src/backend/base/terraflow/services/notification/factory.py
+    from terraflow.services.factory import ServiceFactory
+    from terraflow.services.notification.service import NotificationService
 
     class NotificationServiceFactory(ServiceFactory):
         def __init__(self) -> None:
@@ -121,7 +121,7 @@
   - Bad:
     ```python
     # Unnecessary new service for a simple feature that belongs in an existing service
-    # src/backend/base/earthmind/services/flow_stats/service.py
+    # src/backend/base/terraflow/services/flow_stats/service.py
     class FlowStatsService(Service):
         name = "flow_stats_service"
 
@@ -132,7 +132,7 @@
   - Good:
     ```python
     # Add to existing flow-related code or a utility function
-    # src/backend/base/earthmind/services/database/models/flow/utils.py
+    # src/backend/base/terraflow/services/database/models/flow/utils.py
     def count_components(flow_data: dict | None) -> int:
         if not flow_data:
             return 0
@@ -142,13 +142,13 @@
 ### Access services through `get_service()` or dependency getters, not direct instantiation
 - Category: maintainability
 - Severity: critical
-- Description: Services are singletons managed by `ServiceManager`. They must be accessed through `get_service(ServiceType.XXX)` or the convenience functions in `earthmind.services.deps` (e.g., `get_settings_service()`, `get_variable_service()`). Direct instantiation bypasses the factory pattern, ignores lifecycle management, and can create multiple conflicting instances.
+- Description: Services are singletons managed by `ServiceManager`. They must be accessed through `get_service(ServiceType.XXX)` or the convenience functions in `terraflow.services.deps` (e.g., `get_settings_service()`, `get_variable_service()`). Direct instantiation bypasses the factory pattern, ignores lifecycle management, and can create multiple conflicting instances.
 - Suggested fix: Always use the provided dependency functions. In route handlers, use FastAPI's `Depends()` with the appropriate getter. In service-to-service calls, use `get_service()` or accept the dependency through the factory's `create()` method.
 - Example:
   - Bad:
     ```python
     # Direct instantiation bypasses the service manager
-    from earthmind.services.variable.service import DatabaseVariableService
+    from terraflow.services.variable.service import DatabaseVariableService
 
     async def some_function():
         settings = get_settings_service()
@@ -158,7 +158,7 @@
   - Good:
     ```python
     # Use the dependency getter
-    from earthmind.services.deps import get_variable_service
+    from terraflow.services.deps import get_variable_service
 
     async def some_function():
         variable_service = get_variable_service()
@@ -178,7 +178,7 @@
 ### CRUD modules complement services, not replace them
 - Category: best practices
 - Severity: suggestion
-- Description: Many EarthMind models have a `crud.py` file alongside their model definition (e.g., `models/message/crud.py`, `models/user/crud.py`). These CRUD modules contain reusable async functions for common database operations (get, list, create, update, delete). They are lower-level building blocks that services call internally. Route handlers should prefer calling service methods rather than CRUD functions directly, unless the operation is trivially simple and the model has no associated service.
+- Description: Many Terraflow models have a `crud.py` file alongside their model definition (e.g., `models/message/crud.py`, `models/user/crud.py`). These CRUD modules contain reusable async functions for common database operations (get, list, create, update, delete). They are lower-level building blocks that services call internally. Route handlers should prefer calling service methods rather than CRUD functions directly, unless the operation is trivially simple and the model has no associated service.
 - Suggested fix:
   - Services should call CRUD functions internally to avoid duplicating query logic.
   - Route handlers should call services, not CRUD functions, to maintain the layering.
@@ -187,7 +187,7 @@
   - Bad:
     ```python
     # Route handler calling CRUD directly, bypassing any business logic layer
-    from earthmind.services.database.models.message.crud import get_messages_by_flow_id
+    from terraflow.services.database.models.message.crud import get_messages_by_flow_id
 
     @router.get("/flows/{flow_id}/messages")
     async def list_messages(

@@ -12,13 +12,13 @@ module.exports = {
       items: [
         {
           type: "doc",
-          id: "Get-Started/about-earthmind",
-          label: "About EarthMind"
+          id: "Get-Started/about-terraflow",
+          label: "About Terraflow"
         },
         {
           type: "doc",
           id: "Get-Started/get-started-installation",
-          label: "Install EarthMind"
+          label: "Install Terraflow"
         },
         {
           type: "doc",
@@ -59,7 +59,7 @@ module.exports = {
             {
               type: "doc",
               id: "Flows/concepts-publish",
-              label: "Trigger flows with the EarthMind API"
+              label: "Trigger flows with the Terraflow API"
             },
             {
               type: "doc",
@@ -80,8 +80,8 @@ module.exports = {
         },
         {
           type: "doc",
-          id: "Flows/earthmind-assistant",
-          label: "Build flows and components with EarthMind Assistant"
+          id: "Flows/terraflow-assistant",
+          label: "Build flows and components with Terraflow Assistant"
         },
       ],
     },
@@ -101,7 +101,7 @@ module.exports = {
       items: [
         "Agents/mcp-client",
         "Agents/mcp-server",
-        "Agents/earthmind-mcp-client",
+        "Agents/terraflow-mcp-client",
         "Agents/mcp-component-astra",
       ],
     },
@@ -176,7 +176,7 @@ module.exports = {
         {
           type: "doc",
           id: "Develop/data-types",
-          label: "Use EarthMind data types"
+          label: "Use Terraflow data types"
         },
         {
           type: "doc",
@@ -186,7 +186,7 @@ module.exports = {
         {
           type: "doc",
           id: "Develop/configuration-cli",
-          label: "Use the EarthMind CLI"
+          label: "Use the Terraflow CLI"
         },
         {
           type: "category",
@@ -207,17 +207,17 @@ module.exports = {
         {
           type:"doc",
           id: "Deployment/deployment-overview",
-          label: "EarthMind deployment overview"
+          label: "Terraflow deployment overview"
         },
         {
           type: "doc",
           id: "Deployment/deployment-public-server",
-          label: "Deploy a public EarthMind server"
+          label: "Deploy a public Terraflow server"
         },
         {
           type: "doc",
           id: "Deployment/deployment-nginx-ssl",
-          label: "Deploy EarthMind with Nginx and SSL"
+          label: "Deploy Terraflow with Nginx and SSL"
         },
         {
           type: "doc",
@@ -232,12 +232,12 @@ module.exports = {
             {
               type: "doc",
               id: "Deployment/deployment-docker",
-              label: "EarthMind Docker images"
+              label: "Terraflow Docker images"
             },
             {
               type: "doc",
               id: "Deployment/deployment-caddyfile",
-              label: "Deploy EarthMind on a remote server"
+              label: "Deploy Terraflow on a remote server"
             },
             {
               type: "category",
@@ -296,12 +296,12 @@ module.exports = {
         {
           type: "doc",
           id: "Deployment/deployment-multi-worker",
-          label: "Deploy EarthMind with multiple workers",
+          label: "Deploy Terraflow with multiple workers",
         },
         {
           type: "doc",
           id: "Deployment/deployment-lfx-compatibility",
-          label: "LFX and EarthMind version compatibility",
+          label: "LFX and Terraflow version compatibility",
         },
         {
           type: "doc",
@@ -505,7 +505,7 @@ module.exports = {
         {
           type: "doc",
           id: "API-Reference/api-reference-api-examples",
-          label: "Get started with the EarthMind API",
+          label: "Get started with the Terraflow API",
         },
         {
           type: "doc",
@@ -544,7 +544,7 @@ module.exports = {
         "API-Reference/api-users",
         {
           type: "link",
-          label: "EarthMind API specification",
+          label: "Terraflow API specification",
           href: "/api",
         },
       ],
@@ -589,8 +589,8 @@ module.exports = {
         },
         {
           type: "doc",
-          id: "Support/luna-for-earthmind",
-          label: "IBM Elite Support for EarthMind",
+          id: "Support/luna-for-terraflow",
+          label: "IBM Elite Support for Terraflow",
         },
         {
           type: "doc",
@@ -603,7 +603,7 @@ module.exports = {
       type: "html",
       className: "sidebar-ad",
       value: `
-        <a href="https://www.earthmind.org/desktop" target="_blank" rel="noopener noreferrer" class="menu__link">
+        <a href="https://www.terraflow.org/desktop" target="_blank" rel="noopener noreferrer" class="menu__link">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <g clip-path="url(#clip0_1645_37)">
               <path d="M12 17H20C21.1046 17 22 16.1046 22 15V13M12 17H4C2.89543 17 2 16.1046 2 15V5C2 3.89543 2.89543 3 4 3H10M12 17V21M8 21H12M12 21H16M11.75 10.2917H13.2083L16.125 7.375H17.5833L20.5 4.45833H21.9583M16.125 11.75H17.5833L20.5 8.83333H21.9583M11.75 5.91667H13.2083L16.125 3H17.5833" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -616,7 +616,7 @@ module.exports = {
           </svg>
           <div class="sidebar-ad-text-container">
             <span class="sidebar-ad-text">Get started in minutes</span>
-            <span class="sidebar-ad-text sidebar-ad-text-gradient">Download EarthMind Desktop</span>
+            <span class="sidebar-ad-text sidebar-ad-text-gradient">Download Terraflow Desktop</span>
           </div>
         </a>
       `,

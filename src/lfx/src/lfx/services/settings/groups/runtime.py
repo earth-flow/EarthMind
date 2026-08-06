@@ -14,7 +14,7 @@ class RuntimeSettings(BaseModel):
     """
 
     dev: bool = False
-    """If True, EarthMind will run in development mode."""
+    """If True, Terraflow will run in development mode."""
 
     # Job Queue
     job_queue_type: Literal["asyncio", "redis"] = "asyncio"
@@ -92,7 +92,7 @@ class RuntimeSettings(BaseModel):
         # ``polling`` or ``streaming`` responses correctly: build events live in
         # the in-process queue of whichever worker started the job, and a later
         # poll/stream request may land on a different worker.  Switch to Redis
-        # (EARTHMIND_JOB_QUEUE_TYPE=redis) to share state across workers, or
+        # (TERRAFLOW_JOB_QUEUE_TYPE=redis) to share state across workers, or
         # accept ``direct`` delivery which keeps the whole exchange on one
         # worker.  The override below preserves backwards compatibility for
         # deployments that haven't set this explicitly; new explicit values are
@@ -103,7 +103,7 @@ class RuntimeSettings(BaseModel):
                 logger.warning(
                     "Multi-worker mode without a Redis-backed job queue cannot deliver "
                     "'%s' events across workers; forcing event_delivery='direct'. "
-                    "Set EARTHMIND_JOB_QUEUE_TYPE=redis to keep '%s' delivery in multi-worker setups.",
+                    "Set TERRAFLOW_JOB_QUEUE_TYPE=redis to keep '%s' delivery in multi-worker setups.",
                     requested,
                     requested,
                 )

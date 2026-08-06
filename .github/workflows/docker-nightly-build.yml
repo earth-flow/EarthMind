@@ -49,10 +49,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -72,11 +72,11 @@ jobs:
         id: version
         run: |
           echo "Extracting base version from pyproject.toml"
-          # Anchor to the earthmind-base workspace-root line (same pattern as the
-          # earthmind extraction below): the unanchored grep used to match a
+          # Anchor to the terraflow-base workspace-root line (same pattern as the
+          # terraflow extraction below): the unanchored grep used to match a
           # dependency line whose version sat in field 3, but uv tree now lists
-          # the earthmind-base root line first, which has no third field.
-          version=$(uv tree 2>/dev/null | grep -E '^earthmind-base[[:space:]]' | cut -d' ' -f2 | sed 's/^v//' | head -n 1)
+          # the terraflow-base root line first, which has no third field.
+          version=$(uv tree 2>/dev/null | grep -E '^terraflow-base[[:space:]]' | cut -d' ' -f2 | sed 's/^v//' | head -n 1)
 
 
           # Verify nightly tag format
@@ -92,8 +92,8 @@ jobs:
         id: tags
         run: |
           version="${{ steps.version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind-nightly:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-nightly:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow-nightly:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-nightly:base-${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -149,10 +149,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -172,7 +172,7 @@ jobs:
         id: version
         run: |
           echo "Extracting main version from pyproject.toml"
-          version=$(uv tree 2>/dev/null | grep -E '^earthmind(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
+          version=$(uv tree 2>/dev/null | grep -E '^terraflow(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
 
           # Verify nightly tag format
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.dev[0-9]+$ ]]; then
@@ -187,8 +187,8 @@ jobs:
         id: tags
         run: |
           version="${{ steps.version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind-nightly:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-nightly:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow-nightly:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-nightly:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -244,10 +244,10 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: [EarthMind-runner]
+            runner: [Terraflow-runner]
           - arch: arm64
             runner:
-              [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+              [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out the code
@@ -267,7 +267,7 @@ jobs:
         id: version
         run: |
           echo "Extracting main version from pyproject.toml"
-          version=$(uv tree 2>/dev/null | grep -E '^earthmind(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
+          version=$(uv tree 2>/dev/null | grep -E '^terraflow(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
 
           # Verify nightly tag format
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.dev[0-9]+$ ]]; then
@@ -282,8 +282,8 @@ jobs:
         id: tags
         run: |
           version="${{ steps.version.outputs.version }}"
-          echo "docker_tags=earthmindai/earthmind-nightly-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
-          echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-nightly-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "docker_tags=terraflowai/terraflow-nightly-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-nightly-all:${version}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Docker cleanup
         run: |
@@ -355,9 +355,9 @@ jobs:
         id: version
         run: |
           if [[ "${{ inputs.release_type }}" == "nightly-base" ]]; then
-            version=$(uv tree 2>/dev/null | grep -E '^earthmind-base[[:space:]]' | cut -d' ' -f2 | sed 's/^v//' | head -n 1)
+            version=$(uv tree 2>/dev/null | grep -E '^terraflow-base[[:space:]]' | cut -d' ' -f2 | sed 's/^v//' | head -n 1)
           else
-            version=$(uv tree 2>/dev/null | grep -E '^earthmind(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
+            version=$(uv tree 2>/dev/null | grep -E '^terraflow(-nightly)?[[:space:]]' | cut -d' ' -f2 | sed 's/^v//')
           fi
           echo "Using version: $version"
           echo version=$version >> $GITHUB_OUTPUT
@@ -368,19 +368,19 @@ jobs:
           version="${{ steps.version.outputs.version }}"
           case "${{ inputs.release_type }}" in
             "nightly-base")
-              echo "final_tags=earthmindai/earthmind-nightly:base-${version},earthmindai/earthmind-nightly:base-latest,ghcr.io/earthmind-ai/earthmind-nightly:base-${version},ghcr.io/earthmind-ai/earthmind-nightly:base-latest" >> $GITHUB_OUTPUT
-              echo "arch_base=earthmindai/earthmind-nightly:base-${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind-nightly:base-${version}" >> $GITHUB_OUTPUT
+              echo "final_tags=terraflowai/terraflow-nightly:base-${version},terraflowai/terraflow-nightly:base-latest,ghcr.io/terraflow-ai/terraflow-nightly:base-${version},ghcr.io/terraflow-ai/terraflow-nightly:base-latest" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow-nightly:base-${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow-nightly:base-${version}" >> $GITHUB_OUTPUT
               ;;
             "nightly-main")
-              echo "final_tags=earthmindai/earthmind-nightly:${version},earthmindai/earthmind-nightly:latest,ghcr.io/earthmind-ai/earthmind-nightly:${version},ghcr.io/earthmind-ai/earthmind-nightly:latest" >> $GITHUB_OUTPUT
-              echo "arch_base=earthmindai/earthmind-nightly:${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind-nightly:${version}" >> $GITHUB_OUTPUT
+              echo "final_tags=terraflowai/terraflow-nightly:${version},terraflowai/terraflow-nightly:latest,ghcr.io/terraflow-ai/terraflow-nightly:${version},ghcr.io/terraflow-ai/terraflow-nightly:latest" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow-nightly:${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow-nightly:${version}" >> $GITHUB_OUTPUT
               ;;
             "nightly-main-all")
-              echo "final_tags=earthmindai/earthmind-nightly-all:${version},earthmindai/earthmind-nightly-all:latest,ghcr.io/earthmind-ai/earthmind-nightly-all:${version},ghcr.io/earthmind-ai/earthmind-nightly-all:latest" >> $GITHUB_OUTPUT
-              echo "arch_base=earthmindai/earthmind-nightly-all:${version}" >> $GITHUB_OUTPUT
-              echo "ghcr_arch_base=ghcr.io/earthmind-ai/earthmind-nightly-all:${version}" >> $GITHUB_OUTPUT
+              echo "final_tags=terraflowai/terraflow-nightly-all:${version},terraflowai/terraflow-nightly-all:latest,ghcr.io/terraflow-ai/terraflow-nightly-all:${version},ghcr.io/terraflow-ai/terraflow-nightly-all:latest" >> $GITHUB_OUTPUT
+              echo "arch_base=terraflowai/terraflow-nightly-all:${version}" >> $GITHUB_OUTPUT
+              echo "ghcr_arch_base=ghcr.io/terraflow-ai/terraflow-nightly-all:${version}" >> $GITHUB_OUTPUT
               ;;
             *)
               echo "Error: Invalid release_type: ${{ inputs.release_type }}" >&2
@@ -409,7 +409,7 @@ jobs:
             echo "Creating manifest for $tag"
 
             # Determine architecture-specific tags
-            if [[ "$tag" == *"earthmindai"* ]]; then
+            if [[ "$tag" == *"terraflowai"* ]]; then
               amd64_tag="${{ steps.tags.outputs.arch_base }}-amd64"
               arm64_tag="${{ steps.tags.outputs.arch_base }}-arm64"
             else

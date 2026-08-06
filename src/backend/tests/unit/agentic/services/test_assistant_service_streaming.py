@@ -8,12 +8,12 @@ retry logic, and cancellation handling.
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from earthmind.agentic.services.assistant_service import (
+from terraflow.agentic.services.assistant_service import (
     execute_flow_with_validation_streaming,
 )
-from earthmind.agentic.services.flow_types import IntentResult
+from terraflow.agentic.services.flow_types import IntentResult
 
-MODULE = "earthmind.agentic.services.assistant_service"
+MODULE = "terraflow.agentic.services.assistant_service"
 
 
 def _make_intent(intent="question", translation="test"):
@@ -106,7 +106,7 @@ class TestQAResponse:
         ):
             gen = execute_flow_with_validation_streaming(
                 flow_filename="TestFlow",
-                input_value="what is earthmind?",
+                input_value="what is terraflow?",
                 global_variables={},
             )
             events = await _collect_events(gen)
@@ -125,7 +125,7 @@ class TestQAResponse:
         example code in explanatory answers from being treated as component generation.
         """
         component_code = (
-            "from earthmind.custom import Component\n\n"
+            "from terraflow.custom import Component\n\n"
             "class MyComponent(Component):\n"
             "    description = 'test'\n"
             "    inputs = []\n"
@@ -695,7 +695,7 @@ class TestFlowProposalReady:
     @pytest.mark.asyncio
     async def test_should_not_emit_flow_proposal_ready_for_question_intent(self):
         """Q&A path never emits the flow proposal signal."""
-        flow_gen = _make_flow_events([("token", "EarthMind is..."), ("end", {"result": "EarthMind is..."})])
+        flow_gen = _make_flow_events([("token", "Terraflow is..."), ("end", {"result": "Terraflow is..."})])
 
         with (
             patch(
@@ -708,7 +708,7 @@ class TestFlowProposalReady:
         ):
             gen = execute_flow_with_validation_streaming(
                 flow_filename="TestFlow",
-                input_value="what is earthmind",
+                input_value="what is terraflow",
                 global_variables={},
             )
             events = await _collect_events(gen)
@@ -770,7 +770,7 @@ class TestCurrentUserIdContextVarIsolation:
 
     @pytest.mark.asyncio
     async def test_should_not_leak_current_user_id_when_pre_try_setup_raises(self):
-        from earthmind.agentic.services.user_components_context import (
+        from terraflow.agentic.services.user_components_context import (
             current_user_id,
             reset_current_user_id,
         )

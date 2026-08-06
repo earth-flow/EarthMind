@@ -1,4 +1,4 @@
-"""lfx status -- compare local flow files against a remote EarthMind instance.
+"""lfx status -- compare local flow files against a remote Terraflow instance.
 
 Shows, for each local flow JSON, whether it is in sync with the remote,
 ahead (locally modified), brand new (not yet pushed), or missing entirely.
@@ -69,12 +69,12 @@ class FlowStatus:
 
 
 def _load_sdk() -> tuple[object, object, object, type]:
-    """Return (normalize_flow, flow_to_json, Client, EarthMindNotFoundError) from earthmind_sdk."""
+    """Return (normalize_flow, flow_to_json, Client, TerraflowNotFoundError) from terraflow_sdk."""
     sdk = load_sdk("status")
-    from earthmind_sdk.exceptions import EarthMindNotFoundError
-    from earthmind_sdk.serialization import flow_to_json, normalize_flow
+    from terraflow_sdk.exceptions import TerraflowNotFoundError
+    from terraflow_sdk.serialization import flow_to_json, normalize_flow
 
-    return normalize_flow, flow_to_json, sdk.Client, EarthMindNotFoundError
+    return normalize_flow, flow_to_json, sdk.Client, TerraflowNotFoundError
 
 
 def _flow_hash(flow_dict: dict, normalize_flow: object, flow_to_json: object) -> str:

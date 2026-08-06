@@ -23,7 +23,7 @@ def test_entry_rejects_two_legacy_forms() -> None:
     with pytest.raises(ValidationError):
         MigrationEntry(
             bare_class_name="OpenAIEmbeddings",
-            import_path="earthmind.components.openai.OpenAIEmbeddings",
+            import_path="terraflow.components.openai.OpenAIEmbeddings",
             target="ext:openai:OpenAIEmbeddings@official",
             added_in="1.10.0",
         )
@@ -102,7 +102,7 @@ def test_table_lookup_helpers() -> None:
         added_in="1.10.0",
     )
     imp = MigrationEntry(
-        import_path="earthmind.components.utilities.MergeDataComponent",
+        import_path="terraflow.components.utilities.MergeDataComponent",
         target="ext:utilities:MergeDataComponent@official",
         added_in="1.10.0",
     )
@@ -114,12 +114,12 @@ def test_table_lookup_helpers() -> None:
     table = MigrationTable(schema_version=1, entries=[bare, imp, legacy])
     assert table.lookup_bare("MergeDataComponent") is bare
     assert table.lookup_bare("Unknown") is None
-    assert table.lookup_import_path("earthmind.components.utilities.MergeDataComponent") is imp
+    assert table.lookup_import_path("terraflow.components.utilities.MergeDataComponent") is imp
     assert table.lookup_legacy_slot("ext:utilities:MergeDataComponent@official-pre-a") is legacy
     assert sorted(table.all_known_legacy_values()) == sorted(
         [
             "MergeDataComponent",
-            "earthmind.components.utilities.MergeDataComponent",
+            "terraflow.components.utilities.MergeDataComponent",
             "ext:utilities:MergeDataComponent@official-pre-a",
         ]
     )

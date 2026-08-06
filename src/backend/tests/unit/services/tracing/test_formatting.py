@@ -1,4 +1,4 @@
-"""Unit tests for earthmind.services.tracing.formatting.
+"""Unit tests for terraflow.services.tracing.formatting.
 
 Covers:
 - safe_int_tokens: happy path, edge cases, adversarial inputs
@@ -12,8 +12,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from earthmind.services.database.models.traces.model import SpanStatus, SpanTable, SpanType
-from earthmind.services.tracing.formatting import (
+from terraflow.services.database.models.traces.model import SpanStatus, SpanTable, SpanType
+from terraflow.services.tracing.formatting import (
     _CHAT_INPUT_SPAN_NAME,
     build_span_tree,
     extract_trace_io_from_rows,
@@ -315,7 +315,7 @@ class TestExtractTraceIoFromSpans:
     def test_should_match_chat_input_span_by_substring(self):
         """Span name only needs to *contain* the constant, not equal it."""
         span = _span(
-            name=f"EarthMind {_CHAT_INPUT_SPAN_NAME} Component",
+            name=f"Terraflow {_CHAT_INPUT_SPAN_NAME} Component",
             inputs={"input_value": "hi"},
             end_time=_dt(1),
         )
@@ -388,7 +388,7 @@ class TestExtractTraceIoFromRows:
 
     def test_should_match_chat_input_row_by_substring(self):
         row = _row(
-            name=f"EarthMind {_CHAT_INPUT_SPAN_NAME} Component",
+            name=f"Terraflow {_CHAT_INPUT_SPAN_NAME} Component",
             inputs={"input_value": "hi"},
             end_time=_dt(1),
         )

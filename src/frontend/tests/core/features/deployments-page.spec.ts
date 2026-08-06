@@ -7,8 +7,8 @@ import {
 } from "../../utils/deployment-mocks";
 
 test.skip(
-  process.env.EARTHMIND_FEATURE_WXO_DEPLOYMENTS !== "true",
-  "Requires EARTHMIND_FEATURE_WXO_DEPLOYMENTS=true",
+  process.env.TERRAFLOW_FEATURE_WXO_DEPLOYMENTS !== "true",
+  "Requires TERRAFLOW_FEATURE_WXO_DEPLOYMENTS=true",
 );
 
 async function navigateToDeploymentsTab(

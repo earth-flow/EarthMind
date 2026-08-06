@@ -15,7 +15,7 @@ Security model (read this before wiring the tool into any toolkit):
     tools, this component cannot inspect an arbitrary command's arguments to
     tell which ones are paths, so it cannot enforce that the process stays
     inside the sandbox. A command given an absolute path or ``..`` can read
-    or write anywhere the EarthMind server's OS user can.
+    or write anywhere the Terraflow server's OS user can.
   * The subprocess environment is rebuilt from an explicit allow-list (PATH,
     HOME, LANG, LC_ALL, TMPDIR, TERM) rather than inherited from
     ``os.environ`` — the server process's own environment may hold secrets
@@ -25,7 +25,7 @@ Security model (read this before wiring the tool into any toolkit):
     size, no core dumps) bound a single runaway process. They do not defend
     against a fork bomb (that needs RLIMIT_NPROC or cgroups, deliberately not
     set here — RLIMIT_NPROC is scoped to the real OS user, so setting it
-    inside a forked child could starve the EarthMind server process itself).
+    inside a forked child could starve the Terraflow server process itself).
 
 None of this amounts to OS-level sandboxing (container/namespace isolation).
 It is deliberately not wired into any toolkit by default — see

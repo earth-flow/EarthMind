@@ -15,7 +15,7 @@ class BaseTelemetryService(Service, ABC):
     """Abstract base class for telemetry services.
 
     Defines the minimal interface that all telemetry service implementations
-    must provide, whether minimal (LFX) or full-featured (EarthMind).
+    must provide, whether minimal (LFX) or full-featured (Terraflow).
     """
 
     @abstractmethod

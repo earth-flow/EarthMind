@@ -24,7 +24,7 @@ def _auto_login(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 def sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
     shared = tmp_path / "shared"
     shared.mkdir(parents=True, exist_ok=True)
     (shared / "not_docx.txt").write_text("hello", encoding="utf-8")

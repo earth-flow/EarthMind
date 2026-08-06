@@ -365,7 +365,7 @@ def run_build_config(
     # Check if the instance's class is a subclass of Component (but not Component itself)
     # If we have a Component that is a subclass of Component, that means
     # we have imported it
-    # If not, it means the component was loaded through EARTHMIND_COMPONENTS_PATH
+    # If not, it means the component was loaded through TERRAFLOW_COMPONENTS_PATH
     # and loaded from a file
     if is_a_preimported_component(custom_component):
         return custom_component.build_config(), custom_component

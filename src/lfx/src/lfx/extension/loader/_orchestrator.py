@@ -1,11 +1,11 @@
 """Load orchestration: turn a directory tree into a :class:`LoadResult`.
 
 This module wires the discovery + detection layers together and exposes the
-two public entry points the rest of EarthMind consumes:
+two public entry points the rest of Terraflow consumes:
 
     - :func:`load_extension` for an installed Extension (or filesystem dev
       checkout) that ships a v0 manifest.  Loads at the ``official`` slot.
-    - :func:`discover_inline_bundles` for ``EARTHMIND_COMPONENTS_PATH`` --
+    - :func:`discover_inline_bundles` for ``TERRAFLOW_COMPONENTS_PATH`` --
       every immediate subfolder of every path is one Bundle at the
       ``extra`` slot, with first-wins resolution across paths.
 
@@ -274,7 +274,7 @@ def load_extension(
             out like an Extension but is being loaded from a loose path.
         distribution: PEP-503 canonical name of the distribution this
             Extension was installed from.  ``None`` for filesystem-only
-            extensions (e.g. ``earthmind extension dev`` against a working
+            extensions (e.g. ``terraflow extension dev`` against a working
             tree before pip install).
         module_namespace: Top-level package name used when registering bundle
             modules in ``sys.modules``.  Defaults to ``_lfx_ext`` for normal
@@ -314,7 +314,7 @@ def load_extension(
                 location=str(root_path),
                 hint=(
                     "Create an extension.json at the extension root or add a "
-                    "[tool.earthmind.extension] section to pyproject.toml."
+                    "[tool.terraflow.extension] section to pyproject.toml."
                 ),
             )
         )
@@ -355,7 +355,7 @@ def load_extension(
                 content=str(declared),
                 hint=(
                     f"Update the manifest's lfx.compat to include "
-                    f'"{BUNDLE_API_VERSION!s}", or install a EarthMind whose '
+                    f'"{BUNDLE_API_VERSION!s}", or install a Terraflow whose '
                     f"BUNDLE_API_VERSION matches the bundle's declared compat."
                 ),
             )
@@ -402,7 +402,7 @@ def load_extension(
 
 
 # ---------------------------------------------------------------------------
-# Public entry point: discover_inline_bundles (EARTHMIND_COMPONENTS_PATH)
+# Public entry point: discover_inline_bundles (TERRAFLOW_COMPONENTS_PATH)
 # ---------------------------------------------------------------------------
 
 
@@ -458,7 +458,7 @@ def _read_inline_bundle_json(
     *,
     result: LoadResult | None = None,
 ) -> dict[str, str]:
-    """Read optional ``bundle.json`` from a EARTHMIND_COMPONENTS_PATH bundle.
+    """Read optional ``bundle.json`` from a TERRAFLOW_COMPONENTS_PATH bundle.
 
     A malformed or non-object file falls back to derived defaults so the
     dev loop keeps moving (the CLI ``extension validate`` is the right
@@ -509,7 +509,7 @@ def load_inline_bundle(
 
     Mirrors the per-bundle subset of :func:`discover_inline_bundles`, but
     targets one already-known bundle directory instead of walking a parent
-    EARTHMIND_COMPONENTS_PATH entry.  Used by the reload pipeline so a
+    TERRAFLOW_COMPONENTS_PATH entry.  Used by the reload pipeline so a
     bundle whose live ``source_path`` is the bundle directory itself (the
     shape recorded for inline @extra bundles) can be reloaded without
     confusing it with a manifest root.
@@ -578,7 +578,7 @@ def load_inline_bundle(
 def discover_inline_bundles(
     paths: Iterable[Path | str] | None,
 ) -> list[LoadResult]:
-    """Discover inline bundles from EARTHMIND_COMPONENTS_PATH at the @extra slot.
+    """Discover inline bundles from TERRAFLOW_COMPONENTS_PATH at the @extra slot.
 
     First-wins on duplicate bundle names across paths; the loser emits a
     typed ``duplicate-inline-bundle`` warning.
@@ -602,12 +602,12 @@ def discover_inline_bundles(
                 ExtensionError(
                     code="inline-path-missing",
                     message=(
-                        f"EARTHMIND_COMPONENTS_PATH entry {path_obj} does not exist or is not a directory; skipped."
+                        f"TERRAFLOW_COMPONENTS_PATH entry {path_obj} does not exist or is not a directory; skipped."
                     ),
                     location=str(path_obj),
                     content=str(path_obj),
                     hint=(
-                        "Remove the path from EARTHMIND_COMPONENTS_PATH or create the "
+                        "Remove the path from TERRAFLOW_COMPONENTS_PATH or create the "
                         "directory; the loader needs an existing parent dir to scan."
                     ),
                 )
@@ -630,7 +630,7 @@ def discover_inline_bundles(
                     message=f"{type(exc).__name__}: {exc}",
                     location=str(path_obj),
                     content=str(path_obj),
-                    hint=("Check filesystem permissions on the path or remove it from EARTHMIND_COMPONENTS_PATH."),
+                    hint=("Check filesystem permissions on the path or remove it from TERRAFLOW_COMPONENTS_PATH."),
                 )
             )
             results.append(unreadable_result)
@@ -669,7 +669,7 @@ def discover_inline_bundles(
                         message=(f"Inline bundle {name!r} already loaded from {seen_names[name]}; skipping {child}."),
                         location=f"{seen_names[name]} -> {child}",
                         content=name,
-                        hint=("Rename one of the bundle directories or remove it from EARTHMIND_COMPONENTS_PATH."),
+                        hint=("Rename one of the bundle directories or remove it from TERRAFLOW_COMPONENTS_PATH."),
                     )
                 )
                 results.append(result)

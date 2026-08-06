@@ -1,4 +1,4 @@
-"""MCP Composer service for EarthMind."""
+"""MCP Composer service for Terraflow."""
 
 from lfx.services.mcp_composer.factory import MCPComposerServiceFactory
 from lfx.services.mcp_composer.service import MCPComposerService

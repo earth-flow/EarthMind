@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Pull OpenAPI spec files from the earthmind-ai/sdk repository.
+"""Pull OpenAPI spec files from the terraflow-ai/sdk repository.
 
 This script is only for syncing external SDK specs when needed.
-It is not used by the main EarthMind OpenAPI generation workflow,
+It is not used by the main Terraflow OpenAPI generation workflow,
 which now relies on `docs/openapi/generate_openapi.py`.
 
 Usage:
@@ -18,10 +18,10 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-REPO = "earthmind-ai/sdk"
+REPO = "terraflow-ai/sdk"
 BRANCH = "main"
 SPECS_DIR = "specs"
-FILES = ["earthmind-workflows-openapi.json", "earthmind-openapi.json"]
+FILES = ["terraflow-workflows-openapi.json", "terraflow-openapi.json"]
 
 
 def fetch_file(repo: str, filepath: str, branch: str) -> str:

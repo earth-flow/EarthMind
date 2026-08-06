@@ -1,4 +1,4 @@
 curl -X PATCH \
-  "$EARTHMIND_URL/api/v1/monitor/messages/session/01ce083d-748b-4b8d-97b6-33adbb6a528a?new_session_id=different_session_id" \
+  "$TERRAFLOW_URL/api/v1/monitor/messages/session/01ce083d-748b-4b8d-97b6-33adbb6a528a?new_session_id=different_session_id" \
   -H "accept: application/json" \
-  -H "x-api-key: $EARTHMIND_API_KEY"
+  -H "x-api-key: $TERRAFLOW_API_KEY"

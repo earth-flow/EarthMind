@@ -1,8 +1,8 @@
 import os
 
 import pytest
-from earthmind.initial_setup.setup import load_starter_projects
-from earthmind.load import aload_flow_from_json
+from terraflow.initial_setup.setup import load_starter_projects
+from terraflow.load import aload_flow_from_json
 from lfx.graph import Graph
 
 # TODO: UPDATE BASIC EXAMPLE

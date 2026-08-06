@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { expect, test } from "../../fixtures";
-import { addFlowToTestOnEmptyEarthMind } from "../../utils/add-flow-to-test-on-empty-earthmind";
+import { addFlowToTestOnEmptyTerraflow } from "../../utils/add-flow-to-test-on-empty-terraflow";
 import { awaitBootstrapTest } from "../../utils/await-bootstrap-test";
 import { TEXTS } from "../../utils/constants/texts";
 import { generateRandomFilename } from "../../utils/generate-filename";
@@ -13,12 +13,12 @@ test(
   async ({ page }) => {
     await awaitBootstrapTest(page, { skipModal: true });
 
-    const firstRunEarthMind = await page
+    const firstRunTerraflow = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunEarthMind > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+    if (firstRunTerraflow > 0) {
+      await addFlowToTestOnEmptyTerraflow(page);
     }
 
     await page.waitForSelector('[data-testid="mainpage_title"]', {
@@ -58,12 +58,12 @@ test(
 
     await awaitBootstrapTest(page, { skipModal: true });
 
-    const firstRunEarthMind = await page
+    const firstRunTerraflow = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunEarthMind > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+    if (firstRunTerraflow > 0) {
+      await addFlowToTestOnEmptyTerraflow(page);
     }
 
     await page.waitForSelector('[data-testid="mainpage_title"]', {
@@ -101,12 +101,12 @@ test(
 
     await awaitBootstrapTest(page, { skipModal: true });
 
-    const firstRunEarthMind = await page
+    const firstRunTerraflow = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunEarthMind > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+    if (firstRunTerraflow > 0) {
+      await addFlowToTestOnEmptyTerraflow(page);
     }
 
     await page.waitForSelector('[data-testid="mainpage_title"]', {
@@ -169,12 +169,12 @@ test(
 
     await awaitBootstrapTest(page, { skipModal: true });
 
-    const firstRunEarthMind = await page
+    const firstRunTerraflow = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunEarthMind > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+    if (firstRunTerraflow > 0) {
+      await addFlowToTestOnEmptyTerraflow(page);
     }
 
     await page.waitForSelector('[data-testid="mainpage_title"]', {
@@ -241,12 +241,12 @@ test(
 
     await awaitBootstrapTest(page, { skipModal: true });
 
-    const firstRunEarthMind = await page
+    const firstRunTerraflow = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunEarthMind > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+    if (firstRunTerraflow > 0) {
+      await addFlowToTestOnEmptyTerraflow(page);
     }
 
     await page.waitForSelector('[data-testid="mainpage_title"]', {
@@ -340,12 +340,12 @@ test(
 
     await awaitBootstrapTest(page, { skipModal: true });
 
-    const firstRunEarthMind = await page
+    const firstRunTerraflow = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunEarthMind > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+    if (firstRunTerraflow > 0) {
+      await addFlowToTestOnEmptyTerraflow(page);
     }
 
     await page.waitForSelector('[data-testid="mainpage_title"]', {

@@ -1,10 +1,10 @@
-# Feature: EarthMind Assistant — MCP Flow Builder Integration
+# Feature: Terraflow Assistant — MCP Flow Builder Integration
 
 > Generated on: 2026-05-11 · Updated: 2026-05-12 · Updated: 2026-05-19 · Updated: 2026-05-27
 > Status: Draft
 > Owner: Engineering Team
 > Related PRs: #12575 (MCP integration), `feat/assistant-mcp-integration-clean` branch
-> Companion documents: [`earthmind-assistant.md`](./earthmind-assistant.md) — read first for base Assistant concepts (session model, SSE pipeline, provider configuration, off-topic guardrails); [`../../src/backend/base/earthmind/agentic/ARCHITECTURE.md`](../../src/backend/base/earthmind/agentic/ARCHITECTURE.md) — end-to-end Mermaid diagrams of the single-agent loop, MCP toolkit, and continuation flow.
+> Companion documents: [`terraflow-assistant.md`](./terraflow-assistant.md) — read first for base Assistant concepts (session model, SSE pipeline, provider configuration, off-topic guardrails); [`../../src/backend/base/terraflow/agentic/ARCHITECTURE.md`](../../src/backend/base/terraflow/agentic/ARCHITECTURE.md) — end-to-end Mermaid diagrams of the single-agent loop, MCP toolkit, and continuation flow.
 >
 > **2026-05-12 revision** folds in: refining-plan UX (`Dismiss` → revisable state with `Reset`), the `/skip-all` power-user preference (persistent, header badge, gate bypass), per-request tool result caching, inline build-task checklist, per-session conversation history (server-side ring buffer), shell-style input command history, the **per-user user-components registry** that lets validated-generated Components round-trip into `build_flow` requests, and the **dual Add/Replace action on flow proposals** that lets the user choose between additive merge (default, non-destructive) and full canvas replacement (legacy semantic). Each is treated as a first-class capability in the sections below — not an addendum.
 >
@@ -12,18 +12,18 @@
 >
 > **2026-05-19 (later same day)** adds two deterministic, LLM/language-agnostic guarantees: (1) **build+run lands on the canvas** — `RunFlow` emits an internal `flow_ran` signal on a successful run and a pure `_reconcile_flow_updates` helper auto-applies a built flow whenever it was also run this turn (running a flow the user cannot see is contradictory), retiring the fragile `_looks_like_run_request` prompt regex that broke on every paraphrase ("rode ele" / "run it") and produced the recurring "agent says it did, but didn't" bug; (2) **a run-time code-security gate** — `run_working_flow` AST-scans every node's inline component `code` (`_scan_flow_component_code` → `scan_code_security`) and **refuses to run** on any violation, closing the bypass where code that never went through the generation pipeline (inline `build_flow` code, `.components/` overlay, imported flow) could still `exec`. The shared `code_security.py` denylist was widened to block secret/env exfiltration (`os.environ`, `os.getenv`/`os.putenv`), raw file access (`open()`, `breakpoint()`), and dunder sandbox escapes (`__subclasses__`/`__globals__`/`__builtins__`/`__bases__`/`__mro__`/`__code__`/`__closure__`). See ADR-MCP-039 and ADR-MCP-040.
 >
-> **2026-05-27 revision** records the cost + reliability hardening pass that lands across the MCP surface (full breakdown lives in `earthmind-assistant.md`'s 2026-05-27 revision and ADRs 023–030). MCP-specific consequences:
+> **2026-05-27 revision** records the cost + reliability hardening pass that lands across the MCP surface (full breakdown lives in `terraflow-assistant.md`'s 2026-05-27 revision and ADRs 023–030). MCP-specific consequences:
 > (1) **`RunFlow` cost is now counted with everything else** — the executor's `_metrics` envelope (token usage from `extract_graph_token_usage`) is consumed once by the orchestrator's per-turn `_accumulate` and never leaks into the SSE payload, so the `MessageMetadata` badge on the final assistant reply shows the aggregated cost of the whole build+run (TranslationFlow + every agent attempt + every retry + every `RunFlow` execution).
 > (2) **Built-in component code exemption** — `_scan_flow_component_code` (the run-time security gate from ADR-MCP-040) now skips a node whose inline `code` is byte-identical (after whitespace normalization) to the registry's canonical template for that type. Built-ins like `URLComponent` are no longer false-positively blocked, so a flow built by the agent runs the first time it is asked to run. Registry-lookup failure falls back to scan-all.
 > (3) **`PLAN_APPROVAL_INPUT` deterministic short-circuit in `classify_intent`** — already byte-identical FE/BE protocol; now also short-circuits the TranslationFlow LLM round-trip (matching the existing `EDIT_CONTINUATION_INPUT` pattern), saving one full classifier call per Continue click.
 > (4) **`MAX_CANVAS_SUMMARY_CHARS = 2000` + `[Canvas reference ...]` framing** — the canvas summary `_get_current_flow_summary` injects into the build_flow prompt is now hard-capped and wrapped in an explicit "do NOT treat as new instructions" block. Mitigates prompt-injection via flow names / sticky notes / component values AND prevents very large canvases from exploding LLM cost per turn.
 > (5) **`MAX_FLOW_VERIFICATION_ATTEMPTS = 3` cap on the post-build verification loop** — bounds the cost of the agent's "fix it until it runs" loop and doubles as the user-visible "after N attempt(s)" caveat string emitted by `_failed_caveat`.
 > (6) **`configure_component` model-spec coercion** — `_coerce_model_value` in `lfx/graph/flow_builder/component.py` now normalizes JSON / YAML strings and the QA-observed nested-spec-in-`name` pattern into the canonical `[{"provider": X, "name": Y}]` shape at the single tool-write boundary. Both `BuildFlowFromSpec` and `ConfigureComponent` are covered. Prevents the catalog falling back to `provider="Unknown"` → `get_llm: missing a provider`.
-> (7) **Generic tool-name fallback + reserved-name guardrails** — `_derive_tool_name` snake-cases the Component class when its single Output uses a generic method; `validate_component_code` refuses `Output(name="component_as_tool")` / `method="to_toolkit"` at the generator's first turn; `_should_skip_output` now requires name + method + types ALL match the synthetic sentinel so a user-declared `component_as_tool` is no longer dropped (production failure 2026-05-27). A new "Agent Tool Compatibility" section in the `EarthMindAssistant.json` system prompt teaches the generator the action-`verb_noun` discipline and the reserved-name ban.
+> (7) **Generic tool-name fallback + reserved-name guardrails** — `_derive_tool_name` snake-cases the Component class when its single Output uses a generic method; `validate_component_code` refuses `Output(name="component_as_tool")` / `method="to_toolkit"` at the generator's first turn; `_should_skip_output` now requires name + method + types ALL match the synthetic sentinel so a user-declared `component_as_tool` is no longer dropped (production failure 2026-05-27). A new "Agent Tool Compatibility" section in the `TerraflowAssistant.json` system prompt teaches the generator the action-`verb_noun` discipline and the reserved-name ban.
 > (8) **Model-fallback chain on `model_not_found`** — the streaming orchestrator's inner swap loop walks `get_provider_model_candidates(provider)` when a model-unavailable error fires, without consuming a validation-retry slot; surfaces a named `format_models_exhausted_message` when exhausted.
 > (9) **`ModelInputComponent` defensive `recoverModelOption`** — repairs doubly-encoded model values produced by the assistant's `flow_update` pipeline so the Agent node's Language Model dropdown trigger never renders literal JSON.
 > (10) **Empty-state `ModelProviderModal` inline open** — the assistant's "Configure providers" CTA now opens the modal in-panel instead of navigating away.
-> See ADR-023 through ADR-030 in `earthmind-assistant.md` for full per-decision context; the MCP-specific impact is reflected in the glossary and behavior sections below.
+> See ADR-023 through ADR-030 in `terraflow-assistant.md` for full per-decision context; the MCP-specific impact is reflected in the glossary and behavior sections below.
 
 ---
 
@@ -45,11 +45,11 @@
 
 ### Summary
 
-The MCP Flow Builder extends the EarthMind Assistant from a single-component generator into a full flow-construction **and** documentation agent. Users describe what they want ("build me a chatbot that answers questions over a PDF", "change the model to gpt-4o", "add a memory component", "create a markdown file documenting this flow", "make a component, build a flow with it, then run it"), and **a single Agent** (`flow_builder_assistant.py`) equipped with a toolkit of Model-Context-Protocol (MCP) tools — the Claude Code / Codex pattern, NOT separate sub-agents or a multi-phase orchestrator — either **proposes a plan** (now **optional** — only on large/ambiguous builds; see ADR-MCP-036), **builds** a new flow (destructive `set_flow` always gated behind an explicit **Continue** review step), **edits** the existing canvas live, **generates a component / describes a flow's IO / runs the flow** via the `GenerateComponent` / `DescribeFlowIO` / `RunFlow` tools, or **writes/reads files** inside a sandboxed workspace — and chains these tool calls in one loop for multi-thing prompts. Single-thing requests are byte-identical to the prior behavior. Power users opt in to `/skip-all` to collapse every gate into a single fast path; everyone benefits from per-session conversation history, per-request tool-result caching, an inline build-task checklist, run metrics, and shell-style Up/Down recall in the input.
+The MCP Flow Builder extends the Terraflow Assistant from a single-component generator into a full flow-construction **and** documentation agent. Users describe what they want ("build me a chatbot that answers questions over a PDF", "change the model to gpt-4o", "add a memory component", "create a markdown file documenting this flow", "make a component, build a flow with it, then run it"), and **a single Agent** (`flow_builder_assistant.py`) equipped with a toolkit of Model-Context-Protocol (MCP) tools — the Claude Code / Codex pattern, NOT separate sub-agents or a multi-phase orchestrator — either **proposes a plan** (now **optional** — only on large/ambiguous builds; see ADR-MCP-036), **builds** a new flow (destructive `set_flow` always gated behind an explicit **Continue** review step), **edits** the existing canvas live, **generates a component / describes a flow's IO / runs the flow** via the `GenerateComponent` / `DescribeFlowIO` / `RunFlow` tools, or **writes/reads files** inside a sandboxed workspace — and chains these tool calls in one loop for multi-thing prompts. Single-thing requests are byte-identical to the prior behavior. Power users opt in to `/skip-all` to collapse every gate into a single fast path; everyone benefits from per-session conversation history, per-request tool-result caching, an inline build-task checklist, run metrics, and shell-style Up/Down recall in the input.
 
 ### Business Context
 
-The base Assistant (`earthmind-assistant.md`) generates one custom Python `Component` at a time. That covers writing leaf nodes but not the act of wiring them into a working flow — historically the user's job in the canvas. The MCP integration closes that gap: the Assistant can now **discover** components from the registry, **add**/**remove**/**connect**/**configure** them on the user's canvas, **propose field edits** with diff cards the user approves one-by-one, **build entire flows** from a spec when starting from an empty canvas, **author files** inside a per-user sandboxed workspace, and **negotiate plans** in markdown before touching anything destructive.
+The base Assistant (`terraflow-assistant.md`) generates one custom Python `Component` at a time. That covers writing leaf nodes but not the act of wiring them into a working flow — historically the user's job in the canvas. The MCP integration closes that gap: the Assistant can now **discover** components from the registry, **add**/**remove**/**connect**/**configure** them on the user's canvas, **propose field edits** with diff cards the user approves one-by-one, **build entire flows** from a spec when starting from an empty canvas, **author files** inside a per-user sandboxed workspace, and **negotiate plans** in markdown before touching anything destructive.
 
 Five user behaviors emerge from this:
 
@@ -68,7 +68,7 @@ Four cross-cutting capabilities support all five paths:
 
 ### Bounded Context
 
-**Context**: `Agentic` — AI-assisted flow construction inside EarthMind.
+**Context**: `Agentic` — AI-assisted flow construction inside Terraflow.
 
 This context owns:
 - MCP tool registration and per-request state isolated in `ContextVar` (`_working_flow_var`, `_flow_events_var`, `_file_events_var`, `_cache_var`).
@@ -79,7 +79,7 @@ This context owns:
 - **Per-session conversation buffer** (`ConversationBuffer`) — a process-local, in-memory ring buffer with cross-session LRU eviction, drained at the request boundary by `inject_conversation_history()` / `record_conversation_turn()` helpers in `assistant_service`.
 - **Per-request tool cache** (`lfx.mcp.tool_cache`) — ContextVar-scoped LRU keyed by `(tool_name, args)`, reset at request start alongside `_working_flow_var`.
 - **Per-user user-components registry** (`agentic/services/user_components.py` + `user_components_overlay.py` + `user_components_context.py`) — privileged backend writer persists validated Component code into a *reserved* `.components/` segment of the FS sandbox; the registry overlay merges those entries into `load_local_registry()` for the calling user (resolved via a new `_user_id_var` ContextVar set in `assistant_service` at request start). Wiped on every session-boundary event via `POST /api/v1/agentic/sessions/reset`.
-- **Power-user preferences** persisted client-side via three independent localStorage keys: `earthmind-assistant-skip-all`, `earthmind-assistant-input-history`, `earthmind-assistant-selected-model` (last one pre-existing).
+- **Power-user preferences** persisted client-side via three independent localStorage keys: `terraflow-assistant-skip-all`, `terraflow-assistant-input-history`, `terraflow-assistant-selected-model` (last one pre-existing).
 
 ### Related Contexts
 
@@ -95,7 +95,7 @@ This context owns:
 
 ## 2. Ubiquitous Language Glossary
 
-Terms below extend the glossary in `earthmind-assistant.md`. Where a term overlaps, the MCP-specific meaning is noted.
+Terms below extend the glossary in `terraflow-assistant.md`. Where a term overlaps, the MCP-specific meaning is noted.
 
 | Term | Definition | Code Reference |
 |------|------------|----------------|
@@ -118,8 +118,8 @@ Terms below extend the glossary in `earthmind-assistant.md`. Where a term overla
 | **flow_proposal_ready** | The progress step the backend emits *only* when at least one `set_flow` was observed during the run. The frontend uses it to render the Continue/Dismiss card. | `format_progress_event("flow_proposal_ready", ...)`, `saw_set_flow` flag |
 | **flow_preview event** | SSE event carrying the full flow JSON + node/edge counts + ASCII graph, used to render the mini-canvas preview. Distinct from `flow_update`. | `format_flow_preview_event`, `AgenticFlowPreviewEvent` |
 | **Tail Updates** | Defensive buffer for `flow_update` events that arrive *after* a `set_flow` in the same run. Per prompt this shouldn't happen, but if it does they replay on Continue. | `PendingFlowProposal.tailUpdates` |
-| **MCP Server (lfx)** | The FastMCP-based server in `lfx/mcp/server.py` exposing REST-backed tools (create_flow, run_flow, build_flow, batch). Talks to the EarthMind HTTP API. | `lfx/mcp/server.py`, `EarthMindClient` |
-| **MCP Server (agentic)** | A second FastMCP server in `earthmind/agentic/mcp/server.py` exposing template/component search and flow visualization tools directly against the database. | `earthmind/agentic/mcp/server.py` |
+| **MCP Server (lfx)** | The FastMCP-based server in `lfx/mcp/server.py` exposing REST-backed tools (create_flow, run_flow, build_flow, batch). Talks to the Terraflow HTTP API. | `lfx/mcp/server.py`, `TerraflowClient` |
+| **MCP Server (agentic)** | A second FastMCP server in `terraflow/agentic/mcp/server.py` exposing template/component search and flow visualization tools directly against the database. | `terraflow/agentic/mcp/server.py` |
 | **MCPToolPayload** | Telemetry event logged for every MCP tool invocation (tool name, success, duration, error type). | `_tracked` decorator in `lfx/mcp/server.py` |
 | **batch action** | An MCP tool that executes multiple actions sequentially, with `$N.field` reference resolution for chaining outputs to inputs. | `batch()` in `lfx/mcp/server.py` |
 | **manage_files intent** | TranslationFlow output that routes a request through the same `FlowBuilderAssistant` flow but signals the frontend to render the "Generating document..." thinking label instead of "Generating flow...". | `TRANSLATION_PROMPT` examples, `IntentResult.intent == "manage_files"` |
@@ -137,7 +137,7 @@ Terms below extend the glossary in `earthmind-assistant.md`. Where a term overla
 | **DismissedPlanStash** | Hook-local ref (`dismissedPlanMarkdownRef`) holding the last dismissed plan markdown. One-shot: cleared by `handleResetPlan`, by the next `propose_plan` event, and on `handleClearHistory` / `loadSession`. | `use-assistant-chat.ts` |
 | **RefinementInput** | The wrapped string sent to the backend when a refining plan is active: `[Previous plan you proposed … User refinement: <user text>]`. Predictable framing for prompt-injection resistance — the LLM is taught to treat the block as quoted, not as instructions. | `buildRefinementInput()` in `use-assistant-chat.ts` |
 | **ResetPlan handler** | Frontend handler that drops the stash and flips `planProposalStatus` to `dismissed` (terminal). Wired to the **Reset** button shown only in refining state. | `handleResetPlan()` |
-| **SkipAll preference** | Persistent power-user toggle stored in `localStorage` under `earthmind-assistant-skip-all`. When on, the agent's gates (plan card, set_flow proposal, validated-component Continue, document Continue) auto-approve and render no UI; the synthetic approval turn is invisible. | `readSkipAll()` / `writeSkipAll()` in `hooks/skip-all-storage.ts` |
+| **SkipAll preference** | Persistent power-user toggle stored in `localStorage` under `terraflow-assistant-skip-all`. When on, the agent's gates (plan card, set_flow proposal, validated-component Continue, document Continue) auto-approve and render no UI; the synthetic approval turn is invisible. | `readSkipAll()` / `writeSkipAll()` in `hooks/skip-all-storage.ts` |
 | **/skip-all slash command** | Local-only command the user types in the input. Exact match (trim) toggles `skipAll`; anything else (e.g. `/skip-all please`) is forwarded to the backend as a normal message. | `SKIP_ALL_COMMAND` constant + intercept in `handleSend` |
 | **SkipApprovalGate prop** | Prop on `AssistantMessageItem` that pre-sets `validationAnimationComplete = true` so a validated component (or written-file) result renders without the user clicking Continue. Sourced from `useAssistantChat().skipAll`. | `AssistantMessageItem.skipApprovalGate` |
 | **SkipAllBadge** | Muted "Skip-all" pill rendered next to the panel title when `skipAll` is on. Tooltip explains how to toggle off. | `AssistantHeader.skipAll` prop + `assistant-skip-all-badge` testid |
@@ -149,15 +149,15 @@ Terms below extend the glossary in `earthmind-assistant.md`. Where a term overla
 | **BuildTask** | Structured entry on `AssistantMessage.buildTasks[]` describing one incremental canvas mutation (`add_component` / `remove_component` / `connect` / `configure`). Built from the corresponding `flow_update` event in `onFlowUpdate` and rendered as a checked row in `AssistantBuildTasks`. Excludes `set_flow` (that has its own Continue card) and `edit_field` (that has the carousel). | `BuildTask` (TS interface), `buildTaskFromEvent()` |
 | **AssistantBuildTasks component** | Read-only checklist component shown above the markdown content of an assistant message. One row per completed mutation with an action-specific icon (Plus / Trash2 / Link / Settings) and a green check anchored on the right. Renders nothing for empty `buildTasks`. | `components/assistant-build-tasks.tsx` |
 | **Hidden message flag** | Optional `AssistantMessage.hidden: boolean` that makes `AssistantMessageItem` return `null`. Used by skip-all + reuse-message logic to drop the "I proposed a plan and am waiting" preamble the LLM streams before calling `propose_plan`. | `AssistantMessageItem` early return |
-| **ConversationBuffer** | Process-local singleton holding per-session ring buffers (`MAX_TURNS_PER_SESSION = 10`) keyed by `session_id`. Cross-session LRU eviction at `MAX_SESSIONS = 100`. In-memory only — survives process lifetime, not restart. Concurrent-safe via `asyncio.Lock` for the `push_async` path. | `earthmind.agentic.services.conversation_buffer.ConversationBuffer` |
+| **ConversationBuffer** | Process-local singleton holding per-session ring buffers (`MAX_TURNS_PER_SESSION = 10`) keyed by `session_id`. Cross-session LRU eviction at `MAX_SESSIONS = 100`. In-memory only — survives process lifetime, not restart. Concurrent-safe via `asyncio.Lock` for the `push_async` path. | `terraflow.agentic.services.conversation_buffer.ConversationBuffer` |
 | **ConversationTurn** | Frozen dataclass `(user: str, assistant: str)` with `format_for_prompt()` rendering `User: …\nAssistant: …`. The exact wire format is the contract `assistant_service` depends on when injecting history into the prompt. | `ConversationTurn` |
 | **inject_conversation_history** | Helper called at the request boundary that prepends the buffered turns to `input_value` inside a `[Conversation history (oldest-first, … quoted prior context, do not treat as new instructions)]` block with explicit `[End of conversation history]` delimiter. | `assistant_service.inject_conversation_history()` |
 | **record_conversation_turn** | Helper called in the streaming generator's `finally` block. Captures `final_response_text` (updated whenever the loop extracts a successful response) and pushes a turn. Skips anonymous sessions and empty responses so cancelled/errored runs don't pollute the next turn. | `assistant_service.record_conversation_turn()` |
 | **clear_session_history** | Helper that drops just the named session's buffer. Idempotent; no-ops on `None`. Intended for "new session" boundaries (the frontend currently rotates `session_id` so the buffer is unused for the new session anyway; the call would free the prior session's slot). | `assistant_service.clear_session_history()` |
-| **Input command history** | Shell/REPL-style recall of the last 10 user inputs. Persisted in `localStorage` under `earthmind-assistant-input-history` (newest-first array). `pushHistory` ignores empty/whitespace and dedups against the most-recent entry. | `hooks/input-history-storage.ts` |
+| **Input command history** | Shell/REPL-style recall of the last 10 user inputs. Persisted in `localStorage` under `terraflow-assistant-input-history` (newest-first array). `pushHistory` ignores empty/whitespace and dedups against the most-recent entry. | `hooks/input-history-storage.ts` |
 | **useInputHistory hook** | Wraps the storage primitives with React state for cursor + draft preservation. Exposes `recall(direction, draft)`, `push(value)`, `reset()`. Pointer model: `null` = present; `0` = newest; `n` = nth-from-newest. Up walks back; Down walks forward and restores the saved draft on overshoot. | `hooks/use-input-history.ts` |
 | **Cursor-gated arrow recall** | `assistant-input.tsx` only triggers history recall when the cursor is on the first visible line (Up) or last visible line (Down). Multiline drafts keep default cursor-movement behavior; history kicks in at the textarea edges. | `isCursorOnFirstLine` / `isCursorOnLastLine` helpers |
-| **UserComponentRegistry** | Per-user, file-backed overlay of the static base component registry. Validated Component classes generated by the assistant are persisted into ``<sandbox>/.components/<ClassName>.py`` and surfaced to ``build_flow`` / ``search_components`` / ``describe_component`` / ``add_component`` via a registry overlay that the MCP tools query in place of the bare base registry. | `earthmind.agentic.services.user_components`, `user_components_overlay` |
+| **UserComponentRegistry** | Per-user, file-backed overlay of the static base component registry. Validated Component classes generated by the assistant are persisted into ``<sandbox>/.components/<ClassName>.py`` and surfaced to ``build_flow`` / ``search_components`` / ``describe_component`` / ``add_component`` via a registry overlay that the MCP tools query in place of the bare base registry. | `terraflow.agentic.services.user_components`, `user_components_overlay` |
 | **`.components/` reserved segment** | Second entry in ``RESERVED_SEGMENTS`` (alongside ``.lfsig``). The agent's 5 FS tools (`read_file`, `write_file`, `edit_file`, `glob_search`, `grep_search`) refuse any path that contains this segment (case-insensitive via ``casefold()``). Only the privileged ``register_user_component`` helper may write here; the overlay loader may read. | `lfx/components/files_and_knowledge/filesystem.py:RESERVED_SEGMENTS` |
 | **`register_user_component`** | Privileged backend writer. Reuses ``FileSystemToolComponent._validate_root`` for sandbox resolution (HMAC-SHA256 hash, AUTO_LOGIN dispatch, refusal-without-user). Validates class name (CamelCase + Windows reserved devices + ``MAX_CLASS_NAME_LENGTH``). Writes atomically via ``tempfile.mkstemp`` + ``Path.replace`` inside ``.components/``. Returns the on-disk Path or raises ``UserComponentError``. | `agentic/services/user_components.py` |
 | **`register_user_component_if_valid`** | Best-effort wrapper called by ``assistant_service`` after Layer-2 validation succeeds. Swallows ``UserComponentError`` (input refusal: anonymous user, bad class name, oversized code) so the user's chat reply never fails on the auto-registration step — the component code was already streamed. Propagates genuine errors (disk full, permission denied) so monitors fire. | `register_user_component_if_valid()` |
@@ -171,7 +171,7 @@ Terms below extend the glossary in `earthmind-assistant.md`. Where a term overla
 | **`fireSessionReset` (frontend)** | Best-effort fetch wrapper used by ``useAssistantChat``. POSTs to the reset endpoint with ``credentials: "include"``; swallows any error so a network failure never blocks the user from typing — degrades to "one turn with stale components". | `hooks/use-assistant-chat.ts` |
 | **Flow-proposal apply mode** | Tri-button action set on the proposal card: **Add to canvas** (primary, additive — merges nodes/edges into existing canvas with collision-safe ID remap + bounding-box offset), **Replace canvas** (secondary, destructive — the legacy `setNodes(proposal.nodes)` semantic), **Dismiss** (no canvas change). The Hook `handleApplyFlowProposal(messageId, mode)` accepts `"add" \| "replace"`; default is `"replace"` to preserve backwards-compat with code paths that omit the arg. | `AssistantFlowPreview`, `handleApplyFlowProposal` |
 | **`mergeFlowIntoCanvas`** | Pure helper that produces the additive merge result. Three responsibilities: (1) remap proposal node IDs that collide with existing canvas IDs (preserves the `<ComponentType>-` prefix so downstream type-splitting code still works); (2) rewrite proposal edges so `source`/`target` track the remap, plus remap any edge ID collisions; (3) offset proposal nodes' positions to the right of the existing canvas's bounding box with a fixed gap. Empty existing canvas → return proposal as-is. | `helpers/merge-flow-into-canvas.ts` |
-| **Single-Agent Loop** | The 2026-05-19 architecture: ONE agent (`FlowBuilderAssistant`) plus the MCP toolkit, iterating tool calls until done — the Claude Code / Codex pattern. Multi-thing prompts are handled by the same loop chaining tools; the older separate sub-agents and multi-phase orchestration bolt-ons were retired. Single-thing requests are byte-identical to the prior behavior. | `flow_builder_assistant.py`, `src/backend/base/earthmind/agentic/ARCHITECTURE.md` |
+| **Single-Agent Loop** | The 2026-05-19 architecture: ONE agent (`FlowBuilderAssistant`) plus the MCP toolkit, iterating tool calls until done — the Claude Code / Codex pattern. Multi-thing prompts are handled by the same loop chaining tools; the older separate sub-agents and multi-phase orchestration bolt-ons were retired. Single-thing requests are byte-identical to the prior behavior. | `flow_builder_assistant.py`, `src/backend/base/terraflow/agentic/ARCHITECTURE.md` |
 | **`GenerateComponent`** | MCP tool that re-enters the **full component validation pipeline** mid-loop, registers the resulting user component, and returns its `class_name` so a subsequent `SearchComponentTypes` finds it. The single-loop equivalent of the standalone `generate_component` intent, callable as a step inside a compound build. | `GenerateComponent` (class) in `src/lfx/src/lfx/mcp/flow_builder_tools/` |
 | **`DescribeFlowIO`** | MCP tool that deterministically classifies a flow's inputs / outputs / tool components from the *actual wiring* (not guess-by-name). Scales to large flows where name heuristics break. Replaces the older name-based IO guessing. | `DescribeFlowIO` (class) in `flow_builder_tools/` |
 | **`RunFlow`** | MCP tool that executes the working / canvas flow and returns the result plus `RunMetrics`. The agent uses it to actually run what it built. All "run visual feedback" UI was removed — only the run and its result remain. | `RunFlow` (class) in `flow_builder_tools/`; `run_working_flow()` in `agentic/services/flow_run.py:133` |
@@ -181,7 +181,7 @@ Terms below extend the glossary in `earthmind-assistant.md`. Where a term overla
 | **`scan_code_security` / run-time gate** | Deterministic AST scanner (`code_security.py`) with a denylist of forbidden calls/attrs/modules (secret-env exfiltration, raw file access, dunder sandbox escapes). `run_working_flow` invokes it on **every node's inline `code`** before building/`exec`ing the graph (`_scan_flow_component_code`) and returns a refusal instead of running on any violation. | `scan_code_security()` in `agentic/helpers/code_security.py:181`; `_scan_flow_component_code()` in `agentic/services/flow_run.py:134` |
 | **`OrchestratingStep`** | The progress step / label (`orchestrating` / "Orchestrating...") shown for compound or build+run prompts, chosen by `decide_progress_step`. Distinct from `generating_flow` (single build) and `generating_document`. | `request_framing.decide_progress_step` (returns `"orchestrating", "Orchestrating..."`) |
 | **`EditContinuation`** | The mechanism that lets a single request finish deferred steps after a human-gated canvas edit: the user approves proposed edits → the frontend saves the flow → it silently re-sends the byte-identical `EDIT_CONTINUATION_INPUT` so the *same* request resumes (e.g. runs the flow). Bypasses the intent classifier (exact-string match) and only fires when a deferred step actually existed (`continuation_expected` gating). `configure_component` direct-apply runs in the same turn. | `EDIT_CONTINUATION_INPUT` / `PLAN_APPROVAL_INPUT` (byte-identical FE/BE), `continuation_expected` gate |
-| **`decide_progress_step`** | Pure, unit-testable selector that maps the request shape (compound / build+run / continuation / plan-approval / neutral) to a `(step, label)` pair. The run-detector that used to override intent pre-LLM is now consumed here as a post-LLM rescue only. | `decide_progress_step()` in `src/backend/base/earthmind/agentic/services/request_framing.py:20` |
+| **`decide_progress_step`** | Pure, unit-testable selector that maps the request shape (compound / build+run / continuation / plan-approval / neutral) to a `(step, label)` pair. The run-detector that used to override intent pre-LLM is now consumed here as a post-LLM rescue only. | `decide_progress_step()` in `src/backend/base/terraflow/agentic/services/request_framing.py:20` |
 | **`available_model_providers`** | Returns the list of model providers that have a configured API key in the supplied global variables — **no OpenAI obligation**. Drives the `[Available language models …]` prompt block and the rule forbidding running an Agent with no model. The chosen provider/model/api_key_var is bound to `agent_run_context` for the request. | `available_model_providers(global_variables)` in `agentic/services/flow_preparation.py:25` |
 | **`agent_run_context`** | `ContextVar[AgentRunModel | None]` carrying the request's `(provider, model_name, api_key_var)` so a mid-loop tool (e.g. `GenerateComponent`, `RunFlow`) uses the same model the request was configured with. Set via `set_agent_run_model(...)` at request start. Paired with `_current_flow_id_var` for the canvas flow id. | `agentic/services/agent_run_context.py` (`AgentRunModel`, `set_agent_run_model`) |
 | **`_RUN_FLOW_RE`** | The intentionally language-limited regex used by `_finalize` as a **post-LLM rescue** only — it promotes a `question` intent to `run_flow` when the user's text clearly asks to run. It is NEVER a pre-LLM override; the language-agnostic translate-then-classify path runs first. | `_RUN_FLOW_RE` + `_finalize()` in `agentic/services/helpers/intent_classification.py:30` |
@@ -199,7 +199,7 @@ Terms below extend the glossary in `earthmind-assistant.md`. Where a term overla
 | **`ModelFallbackChain`** | Inner `while swap_requested:` loop in the streaming orchestrator that, on `is_model_unavailable_error`, swaps `model_name` for the next entry from `get_provider_model_candidates(provider)` and re-runs THIS attempt without consuming a validation-retry slot. `tried_models` set is seeded with the resolver's default so the fallback walks past it. Auth / rate-limit / network errors fall through unchanged. Exhausted providers surface a named `format_models_exhausted_message`. | `tried_models` set + inner swap loop in `execute_flow_with_validation_streaming`; `is_model_unavailable_error`, `format_models_exhausted_message`, `_MODEL_UNAVAILABLE_MARKERS` in `helpers/error_handling.py`; `get_provider_model_candidates` in `services/provider_service.py` |
 | **`GenericToolNameFallback`** | `_derive_tool_name` rule in `lfx/base/tools/component_tool.py`: when a Component has exactly ONE tool-exposed Output AND its method name is in `_GENERIC_OUTPUT_METHOD_NAMES` (`output`, `process`, `build_output`, `run`, `execute`, `main`, `handler`, `build_result`), the LLM-facing tool name is derived from the snake_cased component class name (acronym-preserving: `HTTPClient` → `http_client`, `S3Bucket` → `s3_bucket`). Multi-output components keep method-derived names so tools don't collapse. | `_GENERIC_OUTPUT_METHOD_NAMES`, `_class_name_to_tool_name`, `_derive_tool_name` |
 | **`ReservedOutputName`** | The two synthetic-tool sentinels the wiring layer creates when a Component is flipped to Tool Mode: `Output.name = "component_as_tool"` + `Output.method = "to_toolkit"`. Generation-time `validate_component_code` rejects code that declares either with a hint to pick a value-descriptive name; runtime `_should_skip_output` was tightened to require name + method + types ALL match the synthetic so a user-declared `component_as_tool` is no longer dropped. | `_RESERVED_OUTPUT_NAME`, `_RESERVED_OUTPUT_METHOD` in `helpers/validation.py`; `_should_skip_output` in `lfx/base/tools/component_tool.py` |
-| **`AgentToolCompatibilitySection`** | "Agent Tool Compatibility" block in the `EarthMindAssistant.json` system prompt teaching the generator (1) action `verb_noun` method naming, (2) class-level `description` as LLM-facing tool description, (3) `tool_mode=True` discipline + clear `info=`, (4) NEVER use the reserved `component_as_tool`/`to_toolkit` names. The complementary defense to the runtime guardrails. | `EarthMindAssistant.json` system prompt |
+| **`AgentToolCompatibilitySection`** | "Agent Tool Compatibility" block in the `TerraflowAssistant.json` system prompt teaching the generator (1) action `verb_noun` method naming, (2) class-level `description` as LLM-facing tool description, (3) `tool_mode=True` discipline + clear `info=`, (4) NEVER use the reserved `component_as_tool`/`to_toolkit` names. The complementary defense to the runtime guardrails. | `TerraflowAssistant.json` system prompt |
 | **`RecoverModelOption`** | Frontend defensive helper that sanitizes a `ModelInput` value before reading `name` — repairs a doubly-encoded payload (the assistant's `flow_update` pipeline can leave the entire model list serialized into `value[0].name`) so the Agent node's Language Model dropdown trigger renders a plain readable model name instead of literal JSON like `[{"provider":"OpenAI",...]`. Complementary to the backend `SerializedModelCoercion`. | `recoverModelOption` in `parameterRenderComponent/components/modelInputComponent/helpers/recover-model-option.ts` |
 | **`DiagnosticErrorExtraction`** | `extract_friendly_error` now extracts the deepest meaningful cause via `_extract_deepest_meaningful_cause` (provider client `'message': '...'` repr first, then the part after `"Error building Component X:"`) before falling back to plain truncation. Surfaces actionable detail instead of the wrapper prefix `"Error building Component Agent"`. | `_extract_deepest_meaningful_cause`, `_PROVIDER_MESSAGE_RE`, `_COMPONENT_WRAPPER_PREFIX` in `helpers/error_handling.py` |
 | **`ApiKeyDiagnosticPreservation`** | `get_llm` captures `original_api_key_input` BEFORE the Global-Variable resolution step so the missing-API-key error can name the user's unresolved variable back to them (in addition to the canonical key). Empty / `"Unknown"` provider is replaced by an actionable "reselect a model from the dropdown" message instead of the nonsense `"Unknown API key … UNKNOWN_API_KEY"`. | `get_llm` in `lfx/base/models/unified_models/instantiation.py` |
@@ -336,7 +336,7 @@ Validated Component classes that the assistant generated for the user, persisted
 
 Shell/REPL-style command history for the assistant input textarea.
 
-- **Root**: `localStorage["earthmind-assistant-input-history"]` — JSON array, newest-first, max 10 entries.
+- **Root**: `localStorage["terraflow-assistant-input-history"]` — JSON array, newest-first, max 10 entries.
 - **Hook state**: `useInputHistory()` adds an in-memory pointer + saved-draft ref on top of the storage primitives.
 - **Invariants**:
   - `pushHistory(value)`: trims; ignores empty/whitespace; dedups against the most-recent entry; caps at 10 (oldest dropped).
@@ -392,13 +392,13 @@ The base Assistant event table still applies. The MCP integration adds:
 
 ### Feature: MCP Flow Builder
 
-**As a** EarthMind user
+**As a** Terraflow user
 **I want** to build and modify flows by chatting with an Assistant
 **So that** I can scaffold a working flow in seconds and iterate on it in natural language without dragging components
 
 ### Background
 
-- Given a user with an active EarthMind session.
+- Given a user with an active Terraflow session.
 - And at least one model provider is configured with a valid API key.
 - And the user has the assistant panel open on a flow page.
 
@@ -539,7 +539,7 @@ The base Assistant event table still applies. The MCP integration adds:
 ### Scenario: Off-topic and Q&A intents bypass the flow builder entirely
 
 - **Given** any canvas state.
-- **When** I ask "how does EarthMind integrate with Slack?" (Q&A) or "how does n8n work?" (off-topic).
+- **When** I ask "how does Terraflow integrate with Slack?" (Q&A) or "how does n8n work?" (off-topic).
 - **Then** the intent is `"question"` or `"off_topic"` (not `"build_flow"`).
 - **And** the `FlowBuilderAssistant` flow is NOT executed.
 - **And** behavior matches the base Assistant (Q&A token streaming or refusal message).
@@ -699,7 +699,7 @@ The base Assistant event table still applies. The MCP integration adds:
 - **Given** the input is empty.
 - **When** I type `/skip-all` (exact match, trim accepted) and press Enter.
 - **Then** `postAssistStream` is NOT called.
-- **And** `skipAll` flips and `localStorage["earthmind-assistant-skip-all"]` reflects the new value.
+- **And** `skipAll` flips and `localStorage["terraflow-assistant-skip-all"]` reflects the new value.
 - **And** an inline assistant message appears confirming the new state ("Skip-all mode enabled…" / "…disabled.").
 - **And** the next page reload restores the same `skipAll` value via `readSkipAll()`.
 
@@ -741,7 +741,7 @@ The base Assistant event table still applies. The MCP integration adds:
 
 - **Given** `skipAll === true`.
 - **When** the assistant panel renders.
-- **Then** `AssistantHeader` displays a muted "Skip-all" pill with the Zap icon next to "EarthMind Assistant" (testid `assistant-skip-all-badge`).
+- **Then** `AssistantHeader` displays a muted "Skip-all" pill with the Zap icon next to "Terraflow Assistant" (testid `assistant-skip-all-badge`).
 - **And** hovering shows a tooltip explaining how to toggle off.
 - **And** when `skipAll === false`, the badge is absent.
 
@@ -858,7 +858,7 @@ The base Assistant event table still applies. The MCP integration adds:
 
 ### Scenario: Input history — Up arrow recalls latest input
 
-- **Given** `localStorage["earthmind-assistant-input-history"]` holds `["latest", "older", "oldest"]`.
+- **Given** `localStorage["terraflow-assistant-input-history"]` holds `["latest", "older", "oldest"]`.
 - **When** the textarea is empty and I press `ArrowUp`.
 - **Then** the textarea value becomes `"latest"`.
 - **And** the cursor moves to the end of the recalled text (`setSelectionRange(text.length, text.length)`).
@@ -890,7 +890,7 @@ The base Assistant event table still applies. The MCP integration adds:
 
 - **Given** I send `"hello"`.
 - **When** I send `"hello"` again.
-- **Then** `localStorage["earthmind-assistant-input-history"]` contains only one `"hello"` (dedup against latest).
+- **Then** `localStorage["terraflow-assistant-input-history"]` contains only one `"hello"` (dedup against latest).
 - **When** I send `"world"` then `"hello"`.
 - **Then** history is `["hello", "world", "hello"]` (newest-first; non-adjacent duplicate is allowed).
 
@@ -988,7 +988,7 @@ The base Assistant event table still applies. The MCP integration adds:
 
 ### Scenario: User Component — registry overlay skips broken files silently
 
-- **Given** `.components/` contains a valid `SumComponent.py` and a corrupted `BrokenComponent.py` (not parseable Python — e.g. a partial write from a non-EarthMind source).
+- **Given** `.components/` contains a valid `SumComponent.py` and a corrupted `BrokenComponent.py` (not parseable Python — e.g. a partial write from a non-Terraflow source).
 - **When** `load_registry_with_user_overlay(user_id="user-alice")` runs.
 - **Then** the returned registry contains `SumComponent` (parses cleanly).
 - **And** `BrokenComponent` is **not** in the registry (skipped via `ast.parse` check).
@@ -1170,7 +1170,7 @@ Hold per-request state in `contextvars.ContextVar`:
 
 **Key Files:**
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — ContextVar declarations + helpers.
-- `src/backend/base/earthmind/agentic/services/assistant_service.py:247` — `reset_working_flow()` at start of request.
+- `src/backend/base/terraflow/agentic/services/assistant_service.py:247` — `reset_working_flow()` at start of request.
 
 ---
 
@@ -1352,8 +1352,8 @@ Mixing both in one server would conflate concerns — the canvas-scoped tools ne
 
 Maintain two FastMCP servers:
 
-- **`src/lfx/src/lfx/mcp/server.py`** — REST-backed tools (`create_flow`, `add_component`, `connect_components`, `run_flow`, `build_flow`, `batch`, …). Uses `EarthMindClient` HTTP client. Used by external MCP clients (Claude Desktop, Cursor, etc.).
-- **`src/backend/base/earthmind/agentic/mcp/server.py`** — DB-backed tools (template search, component search, flow visualization). Uses `session_scope()` directly. Powers internal Assistant capabilities.
+- **`src/lfx/src/lfx/mcp/server.py`** — REST-backed tools (`create_flow`, `add_component`, `connect_components`, `run_flow`, `build_flow`, `batch`, …). Uses `TerraflowClient` HTTP client. Used by external MCP clients (Claude Desktop, Cursor, etc.).
+- **`src/backend/base/terraflow/agentic/mcp/server.py`** — DB-backed tools (template search, component search, flow visualization). Uses `session_scope()` directly. Powers internal Assistant capabilities.
 
 The Assistant's `FlowBuilderAssistant` flow uses the **canvas-scoped** tool *classes* directly (imports from `lfx.mcp.flow_builder_tools`) — it does not go through the external MCP transport. This keeps in-process performance (no HTTP round-trip) while reusing the same tool definitions exposed externally.
 
@@ -1370,8 +1370,8 @@ The Assistant's `FlowBuilderAssistant` flow uses the **canvas-scoped** tool *cla
 
 **Key Files:**
 - `src/lfx/src/lfx/mcp/server.py` — external MCP server.
-- `src/backend/base/earthmind/agentic/mcp/server.py` — agentic MCP server.
-- `src/backend/base/earthmind/agentic/flows/flow_builder_assistant.py:10-20` — direct imports of tool classes.
+- `src/backend/base/terraflow/agentic/mcp/server.py` — agentic MCP server.
+- `src/backend/base/terraflow/agentic/flows/flow_builder_assistant.py:10-20` — direct imports of tool classes.
 
 ---
 
@@ -1409,7 +1409,7 @@ Before invoking the FlowBuilderAssistant graph, the streaming service calls `_ge
 
 #### Context
 
-External MCP clients calling EarthMind tools needed observability — without it, debugging integration issues (Claude Desktop failures, Cursor timeouts) was guesswork.
+External MCP clients calling Terraflow tools needed observability — without it, debugging integration issues (Claude Desktop failures, Cursor timeouts) was guesswork.
 
 #### Decision
 
@@ -1455,8 +1455,8 @@ Extend `flow_builder_assistant.py`'s toolkit with the 5 `FileSystemToolComponent
 - Prompt grew by ~30 lines (filesystem section).
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/flows/flow_builder_assistant.py` — `build_toolkit()` appends wrapped FS tools.
-- `src/backend/base/earthmind/agentic/services/assistant_service.py` — `is_document_request` flag drives the step label only; same `flow_filename = FLOW_BUILDER_ASSISTANT_FLOW`.
+- `src/backend/base/terraflow/agentic/flows/flow_builder_assistant.py` — `build_toolkit()` appends wrapped FS tools.
+- `src/backend/base/terraflow/agentic/services/assistant_service.py` — `is_document_request` flag drives the step label only; same `flow_filename = FLOW_BUILDER_ASSISTANT_FLOW`.
 
 ---
 
@@ -1487,8 +1487,8 @@ Skip the endpoint entirely. The agent's `write_file` already receives the file c
 - `edit_file` does not carry post-edit content (the wrapper has only `old_string`/`new_string`, not the final body). The Open modal shows "Preview not available" for edit events; the action card still allows the user to confirm the edit happened.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/file_events.py` — `wrap_file_tool_with_event` captures `kwargs["content"]` for `write_file`.
-- `src/backend/base/earthmind/agentic/helpers/sse.py` — `format_file_written_event` ships `content` when present.
+- `src/backend/base/terraflow/agentic/services/file_events.py` — `wrap_file_tool_with_event` captures `kwargs["content"]` for `write_file`.
+- `src/backend/base/terraflow/agentic/helpers/sse.py` — `format_file_written_event` ships `content` when present.
 - `src/frontend/.../components/assistant-file-card.tsx` — builds Blob from `file.content`.
 - `src/frontend/.../components/file-content-modal.tsx` — renders via `SanitizedMarkdown(chatMessage=content)`.
 
@@ -1520,7 +1520,7 @@ The proven `lfx.mcp.flow_builder_tools._flow_events_var` does the opposite: `res
 - Inside a single request, `asyncio.gather`-spawned tasks SHARE the deque. This is the desired behavior here, but a future change that needs per-task isolation would have to allocate its own ContextVar.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/file_events.py` — `reset_file_events()` allocates `deque()` in the parent.
+- `src/backend/base/terraflow/agentic/services/file_events.py` — `reset_file_events()` allocates `deque()` in the parent.
 - `src/backend/tests/unit/agentic/services/test_file_events.py` — `test_file_events_should_be_shared_across_asyncio_tasks_within_same_request` pins this behavior.
 
 ---
@@ -1646,7 +1646,7 @@ Skip-all is a UX preference (an opinion about how the user wants gates rendered)
 
 Three new files implement the preference end-to-end:
 
-- `hooks/skip-all-storage.ts` — pure primitives `readSkipAll()` / `writeSkipAll(bool)` with try/catch around `localStorage`. Storage key: `earthmind-assistant-skip-all`. Corrupt or non-`"true"` values fail closed (treated as off).
+- `hooks/skip-all-storage.ts` — pure primitives `readSkipAll()` / `writeSkipAll(bool)` with try/catch around `localStorage`. Storage key: `terraflow-assistant-skip-all`. Corrupt or non-`"true"` values fail closed (treated as off).
 - `useAssistantChat` exposes `skipAll: boolean` (initialized from storage), `toggleSkipAll()`, and an `isRefiningPlan` flag for the input.
 - The slash command `/skip-all` is intercepted at the **start** of `handleSend`. Match is exact (`content.trim() === SKIP_ALL_COMMAND`). On match: toggle state, write to storage, append an inline assistant message confirming the new state, return without calling the backend.
 - `AssistantHeader` accepts a `skipAll` prop and renders a neutral pill (`border-muted-foreground/30`, `bg-muted-foreground/10`, `Zap` icon, tooltip) next to the title — no banner, no modal, no settings page.
@@ -1809,7 +1809,7 @@ Three shapes for fixing this:
 
 #### Decision
 
-A new module `earthmind.agentic.services.conversation_buffer` exposes:
+A new module `terraflow.agentic.services.conversation_buffer` exposes:
 
 - `ConversationBuffer` class: `OrderedDict[session_id → deque[ConversationTurn]]`. Per-session deque bounded at `MAX_TURNS_PER_SESSION = 10` (FIFO drop). Cross-session bounded at `MAX_SESSIONS = 100` (LRU eviction on push). `asyncio.Lock` guarding `push_async` for concurrent same-session pushes.
 - `ConversationTurn(user: str, assistant: str)` frozen dataclass with `format_for_prompt() → "User: …\nAssistant: …"`. Deterministic so the LLM sees the same framing every time (prompt-injection resistance depends on predictable structure).
@@ -1834,8 +1834,8 @@ Integration in `assistant_service`:
 - The `finally`-block record means cancelled/errored turns don't pollute the buffer, but they ALSO don't show up — a user who cancels mid-response and asks a follow-up won't have the cancelled exchange referenced.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/conversation_buffer.py`.
-- `src/backend/base/earthmind/agentic/services/assistant_service.py` — `inject_conversation_history`, `record_conversation_turn`, `clear_session_history`; `final_response_text` tracking; `finally`-block recording.
+- `src/backend/base/terraflow/agentic/services/conversation_buffer.py`.
+- `src/backend/base/terraflow/agentic/services/assistant_service.py` — `inject_conversation_history`, `record_conversation_turn`, `clear_session_history`; `final_response_text` tracking; `finally`-block recording.
 - `src/backend/tests/unit/agentic/services/test_conversation_buffer.py` — 14 tests.
 - `src/backend/tests/unit/agentic/services/test_assistant_service_history.py`, `test_assistant_service_history_clear.py` — 9 integration tests.
 
@@ -1853,7 +1853,7 @@ The assistant input is a `<textarea>` with default keyboard handling. Arrow keys
 
 Add a shell-style command history:
 
-- `hooks/input-history-storage.ts`: pure primitives with localStorage under `earthmind-assistant-input-history` (newest-first JSON array). `pushHistory` trims, ignores empty, dedups against the most-recent entry, caps at 10. All operations defensive (try/catch).
+- `hooks/input-history-storage.ts`: pure primitives with localStorage under `terraflow-assistant-input-history` (newest-first JSON array). `pushHistory` trims, ignores empty, dedups against the most-recent entry, caps at 10. All operations defensive (try/catch).
 - `hooks/use-input-history.ts`: React hook wrapping the storage with a pointer + saved-draft ref. `recall(direction, draft)`:
   - `pointer === null` → first Up stashes the live draft and returns `history[0]`; first Down with no pointer returns null.
   - Up clamps at the oldest entry (bash semantics, no wrap).
@@ -1991,7 +1991,7 @@ This keeps the security boundary in one place (the `_validate_path` check), triv
 
 **Key Files:**
 - `src/lfx/src/lfx/components/files_and_knowledge/filesystem.py:RESERVED_SEGMENTS`, `_validate_path`.
-- `src/backend/base/earthmind/agentic/services/user_components.py`.
+- `src/backend/base/terraflow/agentic/services/user_components.py`.
 
 ---
 
@@ -2015,7 +2015,7 @@ Three shapes were considered:
 
 Add `_current_user_id_var: ContextVar[str | None]` to `agentic/services/user_components_context.py`. `assistant_service.execute_flow_with_validation_streaming` calls `set_current_user_id(user_id)` at request start (right after `reset_tool_cache()`) and `reset_current_user_id()` in the `finally`.
 
-The MCP tools call a thin helper `_load_registry_user_aware()` instead of bare `load_local_registry()`. The helper delegates to `earthmind.agentic.services.user_components_overlay.load_registry_for_current_user()` via a **lazy import inside a `try/except ImportError`** so the `lfx` package keeps standalone runnability — when earthmind isn't installed alongside (e.g., the FastMCP server running independently), the call falls back to the bare base registry.
+The MCP tools call a thin helper `_load_registry_user_aware()` instead of bare `load_local_registry()`. The helper delegates to `terraflow.agentic.services.user_components_overlay.load_registry_for_current_user()` via a **lazy import inside a `try/except ImportError`** so the `lfx` package keeps standalone runnability — when terraflow isn't installed alongside (e.g., the FastMCP server running independently), the call falls back to the bare base registry.
 
 The overlay function walks `<sandbox>/.components/*.py`, grafts each onto the platform's base `CustomComponent` template (preserves the rich `template` shape downstream consumers expect — `_type`, `code`, `outputs`, etc.), and merges into a fresh dict. Per-request caching is handled by the existing `cached_tool_call` infrastructure (the MCP tools already memoize `search_components` and `describe_component` results).
 
@@ -2032,11 +2032,11 @@ The overlay function walks `<sandbox>/.components/*.py`, grafts each onto the pl
 - The overlay grafts onto `CustomComponent` rather than introspecting the user's actual class. The runtime canvas executes the code via the same dynamic-component path as a user-pasted custom component, so this is correct — but the overlay's `template.input/output` shape is the generic CustomComponent's, not whatever the user's class declared. For `add_component` this is fine; if a future feature needs introspected I/O metadata, the overlay would have to call `build_custom_component_template()` at register time and cache the result.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/user_components_overlay.py` — overlay function + `load_registry_for_current_user()`.
-- `src/backend/base/earthmind/agentic/services/user_components_context.py` — `ContextVar` + setters.
+- `src/backend/base/terraflow/agentic/services/user_components_overlay.py` — overlay function + `load_registry_for_current_user()`.
+- `src/backend/base/terraflow/agentic/services/user_components_context.py` — `ContextVar` + setters.
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — `_load_registry_user_aware()` helper used by Search / Describe / AddComponent.
 - `src/lfx/src/lfx/graph/flow_builder/builder.py` — `build_flow_from_spec(spec, registry=None)` accepts injection.
-- `src/backend/base/earthmind/agentic/services/assistant_service.py` — `set_current_user_id` at request start + reset in `finally`.
+- `src/backend/base/terraflow/agentic/services/assistant_service.py` — `set_current_user_id` at request start + reset in `finally`.
 
 ---
 
@@ -2080,8 +2080,8 @@ The hook is called *before* `format_complete_event` so the SSE consumer's "valid
 - A future "Add to Canvas" UI could become a no-op for already-registered components. Documented; not a regression.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/user_components.py:register_user_component_if_valid`.
-- `src/backend/base/earthmind/agentic/services/assistant_service.py` — both validated paths call the hook.
+- `src/backend/base/terraflow/agentic/services/user_components.py:register_user_component_if_valid`.
+- `src/backend/base/terraflow/agentic/services/assistant_service.py` — both validated paths call the hook.
 
 ---
 
@@ -2134,9 +2134,9 @@ Frontend wiring:
 - Multi-tab: tab A wipes on mount, tab B (already mounted) sees its overlay disappear on the next request. Documented; same trade-off as the conversation buffer's per-replica behavior.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/api/sessions_router.py:reset_session` — the endpoint.
-- `src/backend/base/earthmind/agentic/services/user_components.py:clear_user_components`.
-- `src/backend/base/earthmind/api/router.py` — mounts `agentic_sessions_router`.
+- `src/backend/base/terraflow/agentic/api/sessions_router.py:reset_session` — the endpoint.
+- `src/backend/base/terraflow/agentic/services/user_components.py:clear_user_components`.
+- `src/backend/base/terraflow/api/router.py` — mounts `agentic_sessions_router`.
 - `src/frontend/.../hooks/use-assistant-chat.ts` — `fireSessionReset` + `useEffect` mount fire + `handleClearHistory` fire.
 
 ---
@@ -2147,7 +2147,7 @@ Frontend wiring:
 
 #### Context
 
-The on-disk path is `<BASE_DIR>/users/<32-hex-hash>/.components/<ClassName>.py`. Windows' legacy `MAX_PATH=260` chars is the default — long-path support requires a registry flag and is NOT enabled out of the box. A pathological `BASE_DIR` on Windows (`C:\Users\<long-username>\AppData\Local\earthmind\fs_tool\fs_sandbox`) consumes ~70 chars; the fixed sandbox structure (`\users\<32-hex>\.components\.py`) consumes ~50. Leaving ~140 chars for `<ClassName>` — but the LLM has no bound on its output and could generate an arbitrarily long class name (especially under runaway loops).
+The on-disk path is `<BASE_DIR>/users/<32-hex-hash>/.components/<ClassName>.py`. Windows' legacy `MAX_PATH=260` chars is the default — long-path support requires a registry flag and is NOT enabled out of the box. A pathological `BASE_DIR` on Windows (`C:\Users\<long-username>\AppData\Local\terraflow\fs_tool\fs_sandbox`) consumes ~70 chars; the fixed sandbox structure (`\users\<32-hex>\.components\.py`) consumes ~50. Leaving ~140 chars for `<ClassName>` — but the LLM has no bound on its output and could generate an arbitrarily long class name (especially under runaway loops).
 
 #### Decision
 
@@ -2174,7 +2174,7 @@ class_name length 250 exceeds max 64 (Windows MAX_PATH safeguard)
 - An LLM that insists on generating long names would loop on refusals; mitigated by the agent's prompt teaching it that shorter names are preferred.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/user_components.py:MAX_CLASS_NAME_LENGTH`, `_validate_class_name`.
+- `src/backend/base/terraflow/agentic/services/user_components.py:MAX_CLASS_NAME_LENGTH`, `_validate_class_name`.
 - `src/backend/tests/unit/agentic/services/test_user_components_registry.py` — three boundary tests.
 
 ---
@@ -2261,8 +2261,8 @@ Collapse to **one agent** (`FlowBuilderAssistant` in `flow_builder_assistant.py`
 - The single loop must be given good tools and prompt guidance; capability now lives in tool design + prompt, not in an orchestrator.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/flows/flow_builder_assistant.py` — the one agent.
-- `src/backend/base/earthmind/agentic/ARCHITECTURE.md` — end-to-end Mermaid diagrams.
+- `src/backend/base/terraflow/agentic/flows/flow_builder_assistant.py` — the one agent.
+- `src/backend/base/terraflow/agentic/ARCHITECTURE.md` — end-to-end Mermaid diagrams.
 
 ---
 
@@ -2289,7 +2289,7 @@ Add a `GenerateComponent` MCP tool (`flow_builder_tools/`) that re-enters the **
 
 **Key Files:**
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — `GenerateComponent`.
-- `src/backend/base/earthmind/agentic/services/user_components.py` — registration reuse.
+- `src/backend/base/terraflow/agentic/services/user_components.py` — registration reuse.
 
 ---
 
@@ -2342,7 +2342,7 @@ Add a `RunFlow` MCP tool (`flow_builder_tools/` → `run_working_flow()` in `age
 
 **Key Files:**
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — `RunFlow`.
-- `src/backend/base/earthmind/agentic/services/flow_run.py:65,133` — `extract_graph_token_usage`, `run_working_flow`.
+- `src/backend/base/terraflow/agentic/services/flow_run.py:65,133` — `extract_graph_token_usage`, `run_working_flow`.
 
 ---
 
@@ -2369,8 +2369,8 @@ On approval the frontend saves the flow, then silently re-sends the **byte-ident
 - The FE and BE must keep `EDIT_CONTINUATION_INPUT` / `PLAN_APPROVAL_INPUT` byte-identical; documented as a hard contract.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/helpers/intent_classification.py` — exact-match bypass.
-- `src/backend/base/earthmind/agentic/services/assistant_service.py` — `continuation_expected` gating.
+- `src/backend/base/terraflow/agentic/services/helpers/intent_classification.py` — exact-match bypass.
+- `src/backend/base/terraflow/agentic/services/assistant_service.py` — `continuation_expected` gating.
 
 ---
 
@@ -2396,8 +2396,8 @@ A built flow that contains an Agent needs a model. Earlier behavior leaned on Op
 - If no provider key is configured the build legitimately refuses to run an Agent (by design — better than a silent wrong default).
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/flow_preparation.py:25` — `available_model_providers`.
-- `src/backend/base/earthmind/agentic/services/agent_run_context.py` — `AgentRunModel`, `set_agent_run_model`.
+- `src/backend/base/terraflow/agentic/services/flow_preparation.py:25` — `available_model_providers`.
+- `src/backend/base/terraflow/agentic/services/agent_run_context.py` — `AgentRunModel`, `set_agent_run_model`.
 
 ---
 
@@ -2424,7 +2424,7 @@ Mandating a plan card before *every* build added a click and a round-trip even f
 
 **Key Files:**
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — `ProposePlan` (now optional in prompt usage).
-- `src/backend/base/earthmind/agentic/flows/flow_builder_assistant.py` — prompt guidance.
+- `src/backend/base/terraflow/agentic/flows/flow_builder_assistant.py` — prompt guidance.
 
 ---
 
@@ -2450,7 +2450,7 @@ The overlay now performs **real introspection**: `build_custom_component_templat
 - Introspection runs at register/overlay time (parses + builds the template); cost is bounded by the validation that already ran.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/services/user_components_overlay.py` — `build_custom_component_template(Component(_code=code))`.
+- `src/backend/base/terraflow/agentic/services/user_components_overlay.py` — `build_custom_component_template(Component(_code=code))`.
 
 ---
 
@@ -2477,7 +2477,7 @@ The overlay now performs **real introspection**: `build_custom_component_templat
 
 **Key Files:**
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — `build_flow` in-place mutation.
-- `src/backend/base/earthmind/agentic/services/flow_run.py` — run engine reads the shared working flow.
+- `src/backend/base/terraflow/agentic/services/flow_run.py` — run engine reads the shared working flow.
 
 ---
 
@@ -2508,14 +2508,14 @@ Decide by the **real action**, not by parsing the prompt:
 
 **Key Files:**
 - `src/lfx/src/lfx/mcp/flow_builder_tools/` — `_emit("flow_ran", flow_id=…)` on successful run.
-- `src/backend/base/earthmind/agentic/services/assistant_service.py:284` — `_reconcile_flow_updates`; wired at both drain sites (`:628`, `:733`).
+- `src/backend/base/terraflow/agentic/services/assistant_service.py:284` — `_reconcile_flow_updates`; wired at both drain sites (`:628`, `:733`).
 - `src/backend/tests/unit/agentic/services/test_flow_update_reconciliation.py`, `test_assistant_service_build_run_apply.py`, `test_run_flow_tool.py::TestRunFlowEmitsRanSignal` — the regression battery.
 
 ---
 
 ### ADR-MCP-040: Run-Time Code-Security Gate on `RunFlow` + Widened Denylist
 
-**Status**: Accepted (complements the generation-time scan of ADR-010 in `earthmind-assistant.md`)
+**Status**: Accepted (complements the generation-time scan of ADR-010 in `terraflow-assistant.md`)
 
 #### Context
 
@@ -2524,7 +2524,7 @@ The component-generation pipeline AST-scans LLM-produced code, but a flow can re
 #### Decision
 
 1. **Run-time gate**: before building/`exec`ing the graph, `run_working_flow` calls `_scan_flow_component_code(payload)` which runs `scan_code_security` on every node's inline `code`. Any violation returns `"Refused to run: unsafe component code detected — …"` (logged `assistant.run_flow.blocked_unsafe_code`) and the graph is **never built**. Deterministic; independent of which LLM produced the code.
-2. **Widened denylist** (surgical, in `code_security.py`): block secret/env exfiltration (`os.environ`, `os.getenv`/`os.putenv` — components must use EarthMind's variable/secret service), raw file access (`open()`, `breakpoint()`), and dunder sandbox escapes (`__subclasses__`/`__globals__`/`__builtins__`/`__bases__`/`__mro__`/`__code__`/`__closure__`). HTTP (`requests`/`socket`/`urllib`) was **deliberately not banned** — it would break legitimate API components and contradicts an existing design test; the focus is the crown jewels (secrets/env + escapes), keeping false positives near zero.
+2. **Widened denylist** (surgical, in `code_security.py`): block secret/env exfiltration (`os.environ`, `os.getenv`/`os.putenv` — components must use Terraflow's variable/secret service), raw file access (`open()`, `breakpoint()`), and dunder sandbox escapes (`__subclasses__`/`__globals__`/`__builtins__`/`__bases__`/`__mro__`/`__code__`/`__closure__`). HTTP (`requests`/`socket`/`urllib`) was **deliberately not banned** — it would break legitimate API components and contradicts an existing design test; the focus is the crown jewels (secrets/env + escapes), keeping false positives near zero.
 
 #### Consequences
 
@@ -2537,19 +2537,19 @@ The component-generation pipeline AST-scans LLM-produced code, but a flow can re
 - Prompt-injection-classification widening (input-side, not code-execution) was intentionally left out of scope to avoid blocking legitimate prompts.
 
 **Key Files:**
-- `src/backend/base/earthmind/agentic/helpers/code_security.py:181` — `scan_code_security`; denylist tables (`:115` `_SecurityChecker`).
-- `src/backend/base/earthmind/agentic/services/flow_run.py:134,160` — `_scan_flow_component_code`, gate in `run_working_flow`.
+- `src/backend/base/terraflow/agentic/helpers/code_security.py:181` — `scan_code_security`; denylist tables (`:115` `_SecurityChecker`).
+- `src/backend/base/terraflow/agentic/services/flow_run.py:134,160` — `_scan_flow_component_code`, gate in `run_working_flow`.
 - `src/backend/tests/unit/agentic/.../test_code_security.py`, `test_flow_run.py` — RED→GREEN, zero regression.
 
 ---
 
 ### ADR-MCP-041: Built-in Component Code Exemption for the Run-Time Security Gate
 
-**Status**: Accepted (refines ADR-MCP-040 — see also ADR-025 in `earthmind-assistant.md`)
+**Status**: Accepted (refines ADR-MCP-040 — see also ADR-025 in `terraflow-assistant.md`)
 
 #### Context
 
-The run-time gate from ADR-MCP-040 correctly refused any node whose inline `code` triggered a denylist violation. But trusted built-ins legitimately use forbidden patterns: `URLComponent` calls `importlib.util.find_spec("earthmind")` for optional dependency detection and `os.environ.get("HTTPS_PROXY")` for proxy config. After ADR-MCP-040 every run of a flow containing a built-in `URLComponent` was a false-positive "refused to run". Users saw the run blocked even though they had only ever asked the assistant to use stock registry components.
+The run-time gate from ADR-MCP-040 correctly refused any node whose inline `code` triggered a denylist violation. But trusted built-ins legitimately use forbidden patterns: `URLComponent` calls `importlib.util.find_spec("terraflow")` for optional dependency detection and `os.environ.get("HTTPS_PROXY")` for proxy config. After ADR-MCP-040 every run of a flow containing a built-in `URLComponent` was a false-positive "refused to run". Users saw the run blocked even though they had only ever asked the assistant to use stock registry components.
 
 #### Decision
 
@@ -2580,7 +2580,7 @@ Add a byte-identity-based exemption in `_scan_flow_component_code`:
 
 ### ADR-MCP-042: `configure_component` Serialized Model Spec Coercion
 
-**Status**: Accepted (see also ADR-029 in `earthmind-assistant.md`)
+**Status**: Accepted (see also ADR-029 in `terraflow-assistant.md`)
 
 #### Context
 
@@ -2614,7 +2614,7 @@ Coerce model values at the **single** `configure_component` choke point in `lfx/
 
 ### ADR-MCP-043: Per-Turn Usage / Duration Rollup over the Whole MCP Toolchain
 
-**Status**: Accepted (see also ADR-023 in `earthmind-assistant.md`)
+**Status**: Accepted (see also ADR-023 in `terraflow-assistant.md`)
 
 #### Context
 
@@ -2649,7 +2649,7 @@ The legacy `run_metrics` field on the `complete` payload is preserved for back-c
 
 ### ADR-MCP-044: Generic Tool-Name Fallback + Reserved-Name Guardrails
 
-**Status**: Accepted (see also ADR-026 in `earthmind-assistant.md`)
+**Status**: Accepted (see also ADR-026 in `terraflow-assistant.md`)
 
 #### Context
 
@@ -2659,7 +2659,7 @@ Tool-mode components produced by `GenerateComponent` (and by the standalone `gen
 
 Three independent layers of defense:
 
-1. **Prompt** (`EarthMindAssistant.json` system prompt): a new "Agent Tool Compatibility" section teaches the generator (a) action `verb_noun` method naming, (b) class-level `description` as LLM-facing tool description, (c) `tool_mode=True` discipline + clear `info=`, (d) NEVER use the reserved `component_as_tool`/`to_toolkit` names. With worked WRONG vs CORRECT examples.
+1. **Prompt** (`TerraflowAssistant.json` system prompt): a new "Agent Tool Compatibility" section teaches the generator (a) action `verb_noun` method naming, (b) class-level `description` as LLM-facing tool description, (c) `tool_mode=True` discipline + clear `info=`, (d) NEVER use the reserved `component_as_tool`/`to_toolkit` names. With worked WRONG vs CORRECT examples.
 2. **Generator-time validator** (`agentic/helpers/validation.py`): `validate_component_code` returns `ValidationResult(is_valid=False, ...)` with an actionable error if the code declares `Output(name="component_as_tool", ...)` (`_RESERVED_OUTPUT_NAME`) or `method="to_toolkit"` (`_RESERVED_OUTPUT_METHOD`). The retry loop produces a correctly-named output instead of silently failing at runtime.
 3. **Toolkit runtime** (`lfx/base/tools/component_tool.py`): 
    - `_GENERIC_OUTPUT_METHOD_NAMES = {"output", "process", "build_output", "run", "execute", "main", "handler", "build_result"}`.
@@ -2679,7 +2679,7 @@ Three independent layers of defense:
 - The class-name fallback is narrow (single-output components only) so multi-output toolkits keep distinct names — descriptive method names from the LLM still beat the class name (no override there)
 
 **Key Files:**
-- `src/backend/.../agentic/flows/EarthMindAssistant.json` — "Agent Tool Compatibility" section
+- `src/backend/.../agentic/flows/TerraflowAssistant.json` — "Agent Tool Compatibility" section
 - `src/backend/.../agentic/helpers/validation.py` — `_RESERVED_OUTPUT_NAME`, `_RESERVED_OUTPUT_METHOD`
 - `src/lfx/src/lfx/base/tools/component_tool.py` — `_GENERIC_OUTPUT_METHOD_NAMES`, `_class_name_to_tool_name`, `_derive_tool_name`, tightened `_should_skip_output`
 - `src/backend/tests/.../test_user_component_tool_name.py`, `test_component_generator_tool_prompt.py`, `test_validation_reserved_name.py` — coverage
@@ -2688,7 +2688,7 @@ Three independent layers of defense:
 
 ### ADR-MCP-045: `PLAN_APPROVAL_INPUT` Deterministic Short-Circuit in `classify_intent`
 
-**Status**: Accepted (see also ADR-MCP-006 / ADR-MCP-014 for the protocol-string contract; ADR-023 in `earthmind-assistant.md` for the cost rollup it complements)
+**Status**: Accepted (see also ADR-MCP-006 / ADR-MCP-014 for the protocol-string contract; ADR-023 in `terraflow-assistant.md` for the cost rollup it complements)
 
 #### Context
 
@@ -2804,7 +2804,7 @@ Add `MAX_FLOW_VERIFICATION_ATTEMPTS = 3` to `flow_types.py`. The cap doubles as 
 | Library | `FastMCP` | Both MCP servers use FastMCP for tool registration and SSE/stdio transport. |
 | Library | `lfx.custom.Component` | Base class for all flow-builder tools. |
 | Library | `lfx.io` (`MessageTextInput`, `Output`) | Declares tool inputs and outputs visible to the agent. |
-| Library | `httpx.AsyncClient` | `EarthMindClient` uses it for REST calls from the external MCP server. |
+| Library | `httpx.AsyncClient` | `TerraflowClient` uses it for REST calls from the external MCP server. |
 | Library | `contextvars.ContextVar` | Per-request isolation for working flow, event queue, file event queue, **tool result cache**. |
 | Library | `collections.OrderedDict` / `collections.deque` | LRU dispatch for ToolCache; per-session ring buffer for ConversationBuffer. |
 | Library | `asyncio.Lock` | Concurrent-safe `push_async` in ConversationBuffer. |
@@ -2921,7 +2921,7 @@ Failures are swallowed client-side (`try/catch` in `fireSessionReset`) — the u
 | `validate_flow` | `flow_id` | — | Streams build events; fast-fails on first error. |
 | `batch` | `actions: list` | — | Executes actions sequentially; supports `$N.field` refs. |
 
-#### MCP Server (agentic, `earthmind/agentic/mcp/server.py`)
+#### MCP Server (agentic, `terraflow/agentic/mcp/server.py`)
 
 | Tool | Inputs | Notes |
 |------|--------|-------|
@@ -2957,7 +2957,7 @@ These are not externally callable via MCP transport — they are imported direct
 | `cached_tool_call(tool_name, args, producer) → T` | Memoize the producer keyed by `(tool_name, json.dumps(args, sort_keys=True))`. Errors propagate without caching. |
 | `reset_tool_cache()` | Sets the ContextVar back to `None`. Called by `assistant_service` at request start. |
 
-#### Conversation Buffer (`earthmind.agentic.services.conversation_buffer`)
+#### Conversation Buffer (`terraflow.agentic.services.conversation_buffer`)
 
 | Symbol | Purpose |
 |--------|---------|
@@ -2967,7 +2967,7 @@ These are not externally callable via MCP transport — they are imported direct
 | `ConversationBuffer` | Singleton-friendly class; `push`, `push_async` (lock-protected), `get_recent(limit?)`, `clear`. |
 | `get_conversation_buffer()` | Module-level lazy-singleton accessor used by `assistant_service`. |
 
-#### User-Components Registry (`earthmind.agentic.services.user_components` + `user_components_overlay` + `user_components_context`)
+#### User-Components Registry (`terraflow.agentic.services.user_components` + `user_components_overlay` + `user_components_context`)
 
 | Symbol | Purpose |
 |--------|---------|
@@ -3155,7 +3155,7 @@ Inherits the base Assistant smoke tests. Add:
 - [ ] On a non-empty canvas: send a `propose_field_edit`-triggering request (e.g., "set the system prompt to 'You are a bakery assistant'"). Verify the FlowEditCarousel appears with Accept/Dismiss.
 - [ ] Verify sensitive field redaction: ask "what is the API key on the OpenAIModel?" and verify the agent does not echo the secret.
 - [ ] Verify off-topic guardrail still works: "how does n8n work?" → refusal message, no flow builder invocation.
-- [ ] Verify session isolation: open two EarthMind tabs, build a flow in each — proposals do not cross over.
+- [ ] Verify session isolation: open two Terraflow tabs, build a flow in each — proposals do not cross over.
 - [ ] Send a new message while a proposal is pending: verify auto-dismiss of the prior proposal.
 - [ ] Verify `mcp_tool_invocations_total` increments for each tool call (check metrics endpoint).
 - [ ] External MCP smoke (if Claude Desktop / Cursor is connected): list tools, call `list_flows`, `create_flow_from_spec`, `run_flow`. Verify auth flow via `login`.
@@ -3169,7 +3169,7 @@ Inherits the base Assistant smoke tests. Add:
 - [ ] Click **Reset** on a refining card: card greys out with line-through "Dismissed"; subsequent send does NOT prepend the prior plan.
 
 **Skip-all (ADR-MCP-016/017)**
-- [ ] Type `/skip-all` and press Enter: no backend call; inline assistant confirmation appears; header gains the "Skip-all" badge; `localStorage["earthmind-assistant-skip-all"] === "true"`.
+- [ ] Type `/skip-all` and press Enter: no backend call; inline assistant confirmation appears; header gains the "Skip-all" badge; `localStorage["terraflow-assistant-skip-all"] === "true"`.
 - [ ] Reload page: badge persists; `useAssistantChat().skipAll === true`.
 - [ ] Send "build me a flow with a web crawler" with skip-all on: NO plan card appears, NO flow-proposal Continue card appears, NO synthetic "User approved" user message in chat. One continuous "Generating flow…" until the final result text. Canvas materializes the flow.
 - [ ] Type `/skip-all` again: badge disappears; confirmation message says "disabled". Subsequent build behaves normally (plan card + Continue gates visible).
@@ -3220,7 +3220,7 @@ Inherits the base Assistant smoke tests. Add:
 - [ ] Click "New session": next `search_components` returns NO user-Component entries; the user's `.components/` dir is empty.
 - [ ] Reload the page: the same wipe happens on `useEffect` mount.
 - [ ] Load a SAVED session from history: the wipe is NOT triggered (continuing prior work).
-- [ ] Multi-user isolation: open EarthMind with two users in two browsers; user A registers `Foo`, user B's `search_components` does NOT see it.
+- [ ] Multi-user isolation: open Terraflow with two users in two browsers; user A registers `Foo`, user B's `search_components` does NOT see it.
 - [ ] Cross-OS smoke (CI matrix): same scenarios on Ubuntu / macOS / Windows runners; identical results.
 
 **Per-turn usage rollup (ADR-MCP-043)**
@@ -3260,13 +3260,13 @@ Inherits the base Assistant smoke tests. Add:
 C4Context
   title System Context — MCP Flow Builder
 
-  Person(user, "EarthMind User", "Builds and edits flows visually and through chat")
+  Person(user, "Terraflow User", "Builds and edits flows visually and through chat")
 
-  System(assistant, "EarthMind Assistant (MCP)", "Build/edit flows from natural language with live canvas feedback")
+  System(assistant, "Terraflow Assistant (MCP)", "Build/edit flows from natural language with live canvas feedback")
 
   System_Ext(llm, "LLM Provider", "OpenAI / Anthropic / Google / etc.")
   System_Ext(mcp_client, "External MCP Client", "Claude Desktop / Cursor / IDE")
-  System_Ext(canvas, "EarthMind Canvas", "ReactFlow surface owning user's flow state")
+  System_Ext(canvas, "Terraflow Canvas", "ReactFlow surface owning user's flow state")
 
   Rel(user, assistant, "Chats: build/edit flow")
   Rel(user, canvas, "Drags/drops, runs flow")
@@ -3307,7 +3307,7 @@ C4Container
   }
 
   System_Ext(llm, "LLM Provider")
-  ContainerDb(db, "EarthMind DB", "Postgres/SQLite", "Flows, templates, components")
+  ContainerDb(db, "Terraflow DB", "Postgres/SQLite", "Flows, templates, components")
 
   Rel(user, panel, "")
   Rel(panel, hook, "")
@@ -3599,9 +3599,9 @@ The MCP Flow Builder integration is pure Python (backend) and TypeScript/React (
 
 ### 10.4 Installation by Platform
 
-No installation step beyond running EarthMind. The MCP integration is built into the application.
+No installation step beyond running Terraflow. The MCP integration is built into the application.
 
-**To expose EarthMind as an MCP server to an external client (Claude Desktop / Cursor):**
+**To expose Terraflow as an MCP server to an external client (Claude Desktop / Cursor):**
 
 ```bash
 # Any platform — launch as a managed process

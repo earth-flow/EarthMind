@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from fastapi import HTTPException
-from earthmind.agentic.api.files_router import get_file
+from terraflow.agentic.api.files_router import get_file
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -25,7 +25,7 @@ def _make_user(user_id: str) -> SimpleNamespace:
 @pytest.fixture
 def auto_login_sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Pin AUTO_LOGIN=True per-instance + point at a fresh tmp_path."""
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
     from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponent
 
     monkeypatch.setattr(

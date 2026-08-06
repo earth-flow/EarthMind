@@ -30,8 +30,8 @@ test(
       window.process = window.process || {};
       const newEnv = {
         ...window.process.env,
-        EARTHMIND_AUTO_LOGIN: "false",
-        EARTHMIND_NEW_USER_IS_ACTIVE: "true",
+        TERRAFLOW_AUTO_LOGIN: "false",
+        TERRAFLOW_NEW_USER_IS_ACTIVE: "true",
       };
       Object.defineProperty(window.process, "env", {
         value: newEnv,
@@ -125,7 +125,7 @@ test(
     // Check that User A starts with an empty flows list
     expect(
       (
-        await page.waitForSelector("text=Welcome to EarthMind", {
+        await page.waitForSelector("text=Welcome to Terraflow", {
           timeout: 30000,
         })
       ).isVisible(),

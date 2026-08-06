@@ -19,7 +19,7 @@ def code_component_with_multiple_outputs():
 
 
 code_default = """
-from earthmind.custom import CustomComponent
+from terraflow.custom import CustomComponent
 
 from lfx.field_typing import BaseLanguageModel
 from langchain_classic.chains import LLMChain
@@ -137,7 +137,7 @@ def test_code_parser_parse_functions():
 
 def test_code_parser_parse_classes():
     """Test the parse_classes method of the CodeParser class."""
-    parser = CodeParser("from earthmind.custom import Component\n\nclass Test(Component): pass")
+    parser = CodeParser("from terraflow.custom import Component\n\nclass Test(Component): pass")
     tree = parser.get_tree()
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
@@ -316,7 +316,7 @@ def test_custom_component_get_code_tree_syntax_error():
 def test_custom_component_get_function_entrypoint_args_no_args():
     """Test CustomComponent.get_function_entrypoint_args with a build method with no arguments."""
     my_code = """
-from earthmind.custom import CustomComponent
+from terraflow.custom import CustomComponent
 class MyMainClass(CustomComponent):
     def build():
         pass"""
@@ -329,7 +329,7 @@ class MyMainClass(CustomComponent):
 def test_custom_component_get_function_entrypoint_return_type_no_return_type():
     """Test CustomComponent.get_function_entrypoint_return_type with a build method with no return type."""
     my_code = """
-from earthmind.custom import CustomComponent
+from terraflow.custom import CustomComponent
 class MyClass(CustomComponent):
     def build():
         pass"""

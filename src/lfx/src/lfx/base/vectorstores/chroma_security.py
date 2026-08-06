@@ -1,8 +1,8 @@
-"""Safe defaults for EarthMind-created Chroma collections.
+"""Safe defaults for Terraflow-created Chroma collections.
 
 Chroma collection configuration can persist server-side embedding functions.
 Some embedding functions accept model-loading kwargs such as trust_remote_code.
-EarthMind embeds client-side, so built-in collection creation should not register
+Terraflow embeds client-side, so built-in collection creation should not register
 server-side embedding code.
 """
 

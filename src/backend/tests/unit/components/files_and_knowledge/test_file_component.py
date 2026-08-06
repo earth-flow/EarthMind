@@ -3,7 +3,7 @@ import tempfile
 from unittest.mock import MagicMock, patch
 
 import pytest
-from earthmind.io import Output
+from terraflow.io import Output
 from lfx.components.files_and_knowledge.file import FileComponent
 
 

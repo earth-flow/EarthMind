@@ -20,7 +20,7 @@ def _version_callback(value: bool) -> None:
 
 app = typer.Typer(
     name="lfx",
-    help="lfx - EarthMind Executor",
+    help="lfx - Terraflow Executor",
     add_completion=False,
 )
 
@@ -36,7 +36,7 @@ def _app_callback(
         callback=_version_callback,
     ),
 ) -> None:
-    """Lfx - EarthMind Executor."""
+    """Lfx - Terraflow Executor."""
 
 
 # Register command groups (order determines help-panel ordering)

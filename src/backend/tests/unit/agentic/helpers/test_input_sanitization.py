@@ -6,18 +6,18 @@ Tests cover:
 - Input normalization (whitespace, null bytes)
 """
 
-from earthmind.agentic.helpers.input_sanitization import (
+from terraflow.agentic.helpers.input_sanitization import (
     REFUSAL_MESSAGE,
     sanitize_input,
 )
 
 
 class TestSanitizeInputCleanInputs:
-    """Tests that legitimate EarthMind questions pass sanitization."""
+    """Tests that legitimate Terraflow questions pass sanitization."""
 
-    def test_should_pass_normal_earthmind_question(self):
-        """Normal EarthMind question should pass."""
-        result = sanitize_input("How do I create a component in EarthMind?")
+    def test_should_pass_normal_terraflow_question(self):
+        """Normal Terraflow question should pass."""
+        result = sanitize_input("How do I create a component in Terraflow?")
         assert result.is_safe is True
         assert result.violation is None
 
@@ -44,12 +44,12 @@ class TestSanitizeInputCleanInputs:
 
     def test_should_pass_system_in_legitimate_context(self):
         """'system' in legitimate context should not trigger false positive."""
-        result = sanitize_input("How do I configure system settings in EarthMind?")
+        result = sanitize_input("How do I configure system settings in Terraflow?")
         assert result.is_safe is True
 
     def test_should_pass_portuguese_question(self):
-        """Portuguese EarthMind question should pass."""
-        result = sanitize_input("Como criar um fluxo no EarthMind?")
+        """Portuguese Terraflow question should pass."""
+        result = sanitize_input("Como criar um fluxo no Terraflow?")
         assert result.is_safe is True
 
 
@@ -171,9 +171,9 @@ class TestSanitizeInputNormalization:
 class TestRefusalMessage:
     """Tests for the refusal message constant."""
 
-    def test_refusal_message_mentions_earthmind(self):
-        """Refusal message should mention EarthMind to redirect the user."""
-        assert "EarthMind" in REFUSAL_MESSAGE
+    def test_refusal_message_mentions_terraflow(self):
+        """Refusal message should mention Terraflow to redirect the user."""
+        assert "Terraflow" in REFUSAL_MESSAGE
 
     def test_refusal_message_is_not_empty(self):
         """Refusal message should not be empty."""

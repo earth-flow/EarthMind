@@ -7,14 +7,14 @@ Tests cover:
 - Edge cases (syntax errors, empty code)
 """
 
-from earthmind.agentic.helpers.code_security import scan_code_security
+from terraflow.agentic.helpers.code_security import scan_code_security
 
 
 class TestScanCodeSecuritySafeCode:
     """Tests that safe component code passes the security scan."""
 
     def test_should_pass_basic_component(self):
-        """Basic EarthMind component should pass."""
+        """Basic Terraflow component should pass."""
         code = """
 from lfx.custom import Component
 from lfx.io import MessageTextInput, Output

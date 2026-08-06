@@ -1,5 +1,5 @@
 import pytest
-from earthmind.interface.utils import extract_input_variables_from_prompt
+from terraflow.interface.utils import extract_input_variables_from_prompt
 
 
 @pytest.mark.parametrize(

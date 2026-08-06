@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""EarthMind Load Test Setup CLI
+"""Terraflow Load Test Setup CLI
 
-This script sets up a complete EarthMind test environment by:
-1. Starting EarthMind (optional)
+This script sets up a complete Terraflow test environment by:
+1. Starting Terraflow (optional)
 2. Creating a test user account
 3. Authenticating and getting JWT tokens
 4. Creating API keys
@@ -10,10 +10,10 @@ This script sets up a complete EarthMind test environment by:
 6. Providing credentials for load testing
 
 Usage:
-    python setup_earthmind_test.py --help
-    python setup_earthmind_test.py --interactive
-    python setup_earthmind_test.py --flow "Basic Prompting"
-    python setup_earthmind_test.py --list-flows
+    python setup_terraflow_test.py --help
+    python setup_terraflow_test.py --interactive
+    python setup_terraflow_test.py --flow "Basic Prompting"
+    python setup_terraflow_test.py --list-flows
 """
 
 import argparse
@@ -24,7 +24,7 @@ import time
 
 
 async def get_starter_projects_from_api(host: str, access_token: str) -> list[dict]:
-    """Get starter projects from EarthMind API."""
+    """Get starter projects from Terraflow API."""
     import httpx
 
     # Ensure proper URL formatting
@@ -72,10 +72,10 @@ async def get_starter_projects_from_api(host: str, access_token: str) -> list[di
 
 
 async def list_available_flows(host: str, access_token: str) -> list[tuple[str, str, str]]:
-    """List all available starter project flows from EarthMind API.
+    """List all available starter project flows from Terraflow API.
 
     Args:
-        host: EarthMind host URL
+        host: Terraflow host URL
         access_token: JWT access token for authentication
 
     Returns:
@@ -131,7 +131,7 @@ async def get_flow_data_by_name(host: str, access_token: str, flow_name: str) ->
     """Get flow data for a specific starter project by name.
 
     Args:
-        host: EarthMind host URL
+        host: Terraflow host URL
         access_token: JWT access token for authentication
         flow_name: Name of the flow to retrieve
 
@@ -191,8 +191,8 @@ async def select_flow_interactive(host: str, access_token: str) -> str | None:
             return None
 
 
-async def setup_earthmind_environment(host: str, flow_name: str | None = None, interactive: bool = False) -> dict:
-    """Set up complete EarthMind environment with real starter project flows."""
+async def setup_terraflow_environment(host: str, flow_name: str | None = None, interactive: bool = False) -> dict:
+    """Set up complete Terraflow environment with real starter project flows."""
     try:
         import httpx
     except ImportError:
@@ -200,9 +200,9 @@ async def setup_earthmind_environment(host: str, flow_name: str | None = None, i
         print("Install with: pip install httpx")
         sys.exit(1)
 
-    # Configuration - use default EarthMind credentials
-    username = "earthmind"
-    password = "earthmind"
+    # Configuration - use default Terraflow credentials
+    username = "terraflow"
+    password = "terraflow"
 
     setup_state = {
         "host": host,
@@ -218,18 +218,18 @@ async def setup_earthmind_environment(host: str, flow_name: str | None = None, i
 
     async with httpx.AsyncClient(base_url=host, timeout=60.0) as client:
         # Step 1: Health check
-        print(f"\n1. Checking EarthMind health at {host}...")
+        print(f"\n1. Checking Terraflow health at {host}...")
         try:
             health_response = await client.get("/health")
             if health_response.status_code != 200:
                 raise Exception(f"Health check failed: {health_response.status_code}")
-            print("   ✅ EarthMind is running and accessible")
+            print("   ✅ Terraflow is running and accessible")
         except Exception as e:
             print(f"   ❌ Health check failed: {e}")
             raise
 
         # Step 2: Skip user creation, use default credentials
-        print("2. Using default EarthMind credentials...")
+        print("2. Using default Terraflow credentials...")
         print(f"   ✅ Using username: {username}")
 
         # Step 3: Login to get JWT token
@@ -320,7 +320,7 @@ async def setup_earthmind_environment(host: str, flow_name: str | None = None, i
 
         try:
             # Prepare flow data for upload
-            # Remove the id to let EarthMind generate a new one
+            # Remove the id to let Terraflow generate a new one
             flow_upload_data = flow_data.copy()
             if "id" in flow_upload_data:
                 del flow_upload_data["id"]
@@ -368,7 +368,7 @@ def print_setup_results(setup_state: dict):
 
     # Environment variables for easy copy-paste
     print("# Set environment variables:")
-    print(f"export EARTHMIND_HOST='{setup_state['host']}'")
+    print(f"export TERRAFLOW_HOST='{setup_state['host']}'")
     print(f"export API_KEY='{setup_state['api_key']}'")
     print(f"export FLOW_ID='{setup_state['flow_id']}'")
     print()
@@ -390,13 +390,13 @@ def print_setup_results(setup_state: dict):
 
     print("# Or use the runner script:")
     print(
-        f"python run_load_test.py --host {setup_state['host']} --no-start-earthmind --headless --users 25 --duration 120"
+        f"python run_load_test.py --host {setup_state['host']} --no-start-terraflow --headless --users 25 --duration 120"
     )
     print()
 
     print("# Generate HTML report:")
     print(
-        f"python run_load_test.py --host {setup_state['host']} --no-start-earthmind --headless --users 50 --duration 180 --html report.html"
+        f"python run_load_test.py --host {setup_state['host']} --no-start-terraflow --headless --users 50 --duration 180 --html report.html"
     )
 
     print(f"\n{'=' * 80}")
@@ -425,31 +425,31 @@ def save_credentials(setup_state: dict, output_file: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Set up EarthMind load test environment with real starter project flows",
+        description="Set up Terraflow load test environment with real starter project flows",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Interactive flow selection
-  python setup_earthmind_test.py --interactive
+  python setup_terraflow_test.py --interactive
 
   # Use specific flow
-  python setup_earthmind_test.py --flow "Memory Chatbot"
+  python setup_terraflow_test.py --flow "Memory Chatbot"
 
   # List available flows
-  python setup_earthmind_test.py --list-flows
+  python setup_terraflow_test.py --list-flows
 
   # Setup with custom host
-  python setup_earthmind_test.py --host http://localhost:8000 --interactive
+  python setup_terraflow_test.py --host http://localhost:8000 --interactive
 
   # Save credentials to file
-  python setup_earthmind_test.py --interactive --save-credentials test_creds.json
+  python setup_terraflow_test.py --interactive --save-credentials test_creds.json
         """,
     )
 
     parser.add_argument(
         "--host",
         default="http://localhost:7860",
-        help="EarthMind host URL (default: http://localhost:7860, use https:// for remote instances)",
+        help="Terraflow host URL (default: http://localhost:7860, use https:// for remote instances)",
     )
     parser.add_argument("--flow", help="Name of the starter project flow to use")
     parser.add_argument("--interactive", action="store_true", help="Interactive flow selection")
@@ -470,17 +470,17 @@ Examples:
                 sys.exit(1)
 
             # Quick authentication to access the API
-            username = "earthmind"
-            password = "earthmind"
+            username = "terraflow"
+            password = "terraflow"
 
             async with httpx.AsyncClient(base_url=args.host, timeout=30.0) as client:
                 # Health check
                 try:
                     health_response = await client.get("/health")
                     if health_response.status_code != 200:
-                        raise Exception(f"EarthMind not available at {args.host}")
+                        raise Exception(f"Terraflow not available at {args.host}")
                 except Exception as e:
-                    print(f"❌ Cannot connect to EarthMind at {args.host}: {e}")
+                    print(f"❌ Cannot connect to Terraflow at {args.host}: {e}")
                     sys.exit(1)
 
                 # Login to get access token
@@ -500,7 +500,7 @@ Examples:
 
                 except Exception as e:
                     print(f"❌ Authentication failed: {e}")
-                    print("Make sure EarthMind is running with default credentials (earthmind/earthmind)")
+                    print("Make sure Terraflow is running with default credentials (terraflow/terraflow)")
                     sys.exit(1)
 
                 # Get flows from API
@@ -532,7 +532,7 @@ Examples:
     try:
         # Run the setup
         setup_state = asyncio.run(
-            setup_earthmind_environment(host=args.host, flow_name=args.flow, interactive=args.interactive)
+            setup_terraflow_environment(host=args.host, flow_name=args.flow, interactive=args.interactive)
         )
 
         # Print results

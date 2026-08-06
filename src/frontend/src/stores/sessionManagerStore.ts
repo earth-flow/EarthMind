@@ -5,7 +5,7 @@ import type {
 } from "@/types/zustand/sessionManager";
 
 const LOCAL_SESSIONS_KEY = (flowId: string) =>
-  `earthmind_local_sessions_${flowId}`;
+  `terraflow_local_sessions_${flowId}`;
 
 function loadLocalSessions(flowId: string): string[] {
   try {

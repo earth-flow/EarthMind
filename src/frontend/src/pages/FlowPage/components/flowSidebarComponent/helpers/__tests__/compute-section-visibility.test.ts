@@ -107,7 +107,7 @@ describe("computeSectionVisibility", () => {
 
     // Regression: searching for "Agent" with MCP servers configured should
     // show both core components AND MCP results, not hide core components.
-    // See: https://github.com/earthmind-ai/earthmind/pull/11513
+    // See: https://github.com/terraflow-ai/terraflow/pull/11513
     it("should show BOTH components and MCP when search matches both", () => {
       const result = computeSectionVisibility({
         ...baseInput,

@@ -1,6 +1,6 @@
-"""lfx pull -- fetch flows from a remote EarthMind instance to local files.
+"""lfx pull -- fetch flows from a remote Terraflow instance to local files.
 
-Downloads flows from a live EarthMind instance, normalizes them for version
+Downloads flows from a live Terraflow instance, normalizes them for version
 control, and writes them to a local directory.  Repeated pulls are safe:
 existing files are overwritten with the latest remote state.
 

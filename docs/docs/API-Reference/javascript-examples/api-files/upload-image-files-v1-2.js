@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/run/a430cc57-06bb-4c11-be39-d3d4de68d2c4?stream=false`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/run/a430cc57-06bb-4c11-be39-d3d4de68d2c4?stream=false`;
 
 const options = {
   method: 'POST',
   headers: {
     "Content-Type": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
   body: JSON.stringify({
   "output_type": "chat",

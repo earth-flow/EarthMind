@@ -1,4 +1,4 @@
-"""Properties and Source schema classes copied from earthmind for lfx package."""
+"""Properties and Source schema classes copied from terraflow for lfx package."""
 
 from typing import Literal
 

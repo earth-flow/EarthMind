@@ -4,7 +4,7 @@ Tests the error categorization and user-friendly message generation.
 """
 
 import pytest
-from earthmind.agentic.helpers.error_handling import (
+from terraflow.agentic.helpers.error_handling import (
     ERROR_PATTERNS,
     MAX_ERROR_MESSAGE_LENGTH,
     MIN_MEANINGFUL_PART_LENGTH,

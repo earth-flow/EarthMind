@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 
 import { useInputHistory } from "../use-input-history";
 
-const STORAGE_KEY = "earthmind-assistant-input-history";
+const STORAGE_KEY = "terraflow-assistant-input-history";
 
 function seedHistory(entries: string[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));

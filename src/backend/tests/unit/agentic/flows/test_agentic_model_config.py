@@ -15,7 +15,7 @@ These tests assert the EXACT failing contract: the model class
 from __future__ import annotations
 
 import pytest
-from earthmind.agentic.flows.model_config import build_model_config
+from terraflow.agentic.flows.model_config import build_model_config
 from lfx.base.models.unified_models.class_registry import get_model_class
 
 

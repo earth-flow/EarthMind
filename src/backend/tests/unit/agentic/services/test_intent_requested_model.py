@@ -15,11 +15,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-MODULE = "earthmind.agentic.services.helpers.intent_classification"
+MODULE = "terraflow.agentic.services.helpers.intent_classification"
 
 
 async def _classify(response_json: str):
-    from earthmind.agentic.services.helpers.intent_classification import classify_intent
+    from terraflow.agentic.services.helpers.intent_classification import classify_intent
 
     with (
         patch(f"{MODULE}.execute_flow_file", new_callable=AsyncMock, return_value={"result": response_json}),

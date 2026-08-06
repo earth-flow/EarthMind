@@ -1,9 +1,9 @@
 const UTM_MEDIUM = "integration";
 const UTM_CAMPAIGN = "wxo-integration";
-const DEFAULT_UTM_SOURCE = "earthmind";
+const DEFAULT_UTM_SOURCE = "terraflow";
 
 function getUtmSource(): string {
-  const configured = import.meta.env.EARTHMIND_WXO_UTM_SOURCE;
+  const configured = import.meta.env.TERRAFLOW_WXO_UTM_SOURCE;
   return typeof configured === "string" && configured.length > 0
     ? configured
     : DEFAULT_UTM_SOURCE;

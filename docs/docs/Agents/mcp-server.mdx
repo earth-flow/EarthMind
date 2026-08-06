@@ -1,5 +1,5 @@
 ---
-title: Use EarthMind as an MCP server
+title: Use Terraflow as an MCP server
 slug: /mcp-server
 ---
 
@@ -7,39 +7,39 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Icon from "@site/src/components/icon";
 
-EarthMind integrates with the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) as both an MCP server and an MCP client.
+Terraflow integrates with the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) as both an MCP server and an MCP client.
 
-This page describes how to use EarthMind as an MCP server that exposes your flows as [tools](https://modelcontextprotocol.io/docs/concepts/tools) that [MCP clients](https://modelcontextprotocol.io/clients) can use when generating responses.
+This page describes how to use Terraflow as an MCP server that exposes your flows as [tools](https://modelcontextprotocol.io/docs/concepts/tools) that [MCP clients](https://modelcontextprotocol.io/clients) can use when generating responses.
 
-EarthMind MCP servers support both the **streamable HTTP** transport and **Server-Sent Events (SSE)** as a fallback.
+Terraflow MCP servers support both the **streamable HTTP** transport and **Server-Sent Events (SSE)** as a fallback.
 The default project MCP server configuration uses streamable HTTP transport at the URL path `/streamable`.
 
-For information about using EarthMind as an MCP client and managing MCP server connections within flows, see [Use EarthMind as an MCP client](/mcp-client).
+For information about using Terraflow as an MCP client and managing MCP server connections within flows, see [Use Terraflow as an MCP client](/mcp-client).
 
 ## Prerequisites
 
-* A [EarthMind project](/concepts-flows#projects) with at least one flow that has a [**Chat Output** component](/chat-input-and-output).
+* A [Terraflow project](/concepts-flows#projects) with at least one flow that has a [**Chat Output** component](/chat-input-and-output).
 
     The **Chat Output** component is required to use a flow as an MCP tool.
 
 * Any LTS version of [Node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed on your computer if you want to use MCP Inspector to [test and debug flows](#test-and-debug-flows).
 
-* [ngrok installed](https://ngrok.com/docs/getting-started/#1-install-ngrok) and an [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) if you want to [deploy a public EarthMind server](/deployment-public-server).
+* [ngrok installed](https://ngrok.com/docs/getting-started/#1-install-ngrok) and an [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) if you want to [deploy a public Terraflow server](/deployment-public-server).
 
 ## Serve flows as MCP tools {#select-flows-to-serve}
 
-When you create a [EarthMind project](/concepts-flows#projects), EarthMind automatically adds the project to your MCP server's configuration and makes the project's flows available as MCP tools.
+When you create a [Terraflow project](/concepts-flows#projects), Terraflow automatically adds the project to your MCP server's configuration and makes the project's flows available as MCP tools.
 
-If your EarthMind server has authentication enabled (`AUTO_LOGIN=false`), the project's MCP server is automatically configured with API key authentication, and a new API key is generated specifically for accessing the new project's flows.
+If your Terraflow server has authentication enabled (`AUTO_LOGIN=false`), the project's MCP server is automatically configured with API key authentication, and a new API key is generated specifically for accessing the new project's flows.
 For more information, see [MCP server authentication](#authentication).
 
 
-### Prevent automatic MCP server configuration for EarthMind projects
+### Prevent automatic MCP server configuration for Terraflow projects
 
-To disable automatic MCP server configuration for new projects, set the `EARTHMIND_ADD_PROJECTS_TO_MCP_SERVERS` environment variable to `false`.
+To disable automatic MCP server configuration for new projects, set the `TERRAFLOW_ADD_PROJECTS_TO_MCP_SERVERS` environment variable to `false`.
 For more information, see [MCP server environment variables](#mcp-server-environment-variables).
 
-### Selectively enable and disable MCP servers for EarthMind projects
+### Selectively enable and disable MCP servers for Terraflow projects
 
 With or without automatic MCP server configuration enabled, you can selectively enable and disable the projects that are exposed as MCP tools:
 
@@ -61,7 +61,7 @@ To prevent a flow from being used as a tool, clear the checkbox in the first col
 Tool names and descriptions help MCP clients determine which actions your flows provide and when to use those actions.
 It is recommended to provide clear, descriptive names and descriptions for all tools that you serve to MCP clients.
 
-To edit the names and descriptions of flow tools on a EarthMind MCP server, do the following:
+To edit the names and descriptions of flow tools on a Terraflow MCP server, do the following:
 
 1. Click the **MCP Server** tab on the [**Projects** page](/concepts-flows#projects), or, when editing a flow, click **Share**, and then select **MCP Server**.
 
@@ -79,12 +79,12 @@ To edit the names and descriptions of flow tools on a EarthMind MCP server, do t
 
 MCP clients use tool names and descriptions to determine which actions to use when generating responses.
 
-Because MCP clients treat your EarthMind project as a single MCP server with all of your enabled flows listed as tools, unclear names and descriptions can cause the agent to select tools incorrectly or inconsistently.
+Because MCP clients treat your Terraflow project as a single MCP server with all of your enabled flows listed as tools, unclear names and descriptions can cause the agent to select tools incorrectly or inconsistently.
 
 For example, a flow's default tool name is the flow ID, such as `adbbf8c7-0a34-493b-90ea-5e8b42f78b66`.
 This provides no information to an agent about the type of flow or its purpose.
 
-To provide more context about your flows, make sure to name and describe your flows clearly when configuring your EarthMind project's MCP server.
+To provide more context about your flows, make sure to name and describe your flows clearly when configuring your Terraflow project's MCP server.
 
 Think of these names and descriptions as function names and code comments.
 Use clear statements to describe the problems your flows solve.
@@ -98,7 +98,7 @@ For example, assume you create a flow based on the **Document Q&A** template tha
 
 - **Tool description**: `A flow for analyzing Emily's resume.`
 
-After connecting your EarthMind MCP server to Cursor, you can ask Cursor about the resume, such as `What job experience does Emily have?`.
+After connecting your Terraflow MCP server to Cursor, you can ask Cursor about the resume, such as `What job experience does Emily have?`.
 Using the context provided by your tool name and description, the agent can decide to use the `document_qa_for_resume` MCP tool to create a response about Emily's resume.
 If necessary, the agent asks permission to use the flow tool before generating the response.
 
@@ -116,29 +116,29 @@ However, the description mentions it's for "Emily's resume" not Alex's. I don't 
 
 ### Configure tool execution timeouts
 
-There are three ways to set tool execution timeouts: the MCP Tools component timeout setting, a global environment variable, and EarthMind's default fallback. How you configure these determines their effect in resolving the actual timeout limit for each tool call.
+There are three ways to set tool execution timeouts: the MCP Tools component timeout setting, a global environment variable, and Terraflow's default fallback. How you configure these determines their effect in resolving the actual timeout limit for each tool call.
 
-EarthMind times are evaluated in the following order:
+Terraflow times are evaluated in the following order:
 
 1. Per-component timeout is set directly on an MCP Tools component in your flow. To configure per-component timeout in the [**MCP Tools** component](/mcp-tools), open the advanced settings tab and enter a value in the **Tool Execution Timeout (seconds)** field. A value of `0` disables the per-component override and falls back to the global setting.
 
-2. Global timeout is set with the `EARTHMIND_MCP_TOOL_EXECUTION_TIMEOUT` environment variable. The default is 180 seconds.
+2. Global timeout is set with the `TERRAFLOW_MCP_TOOL_EXECUTION_TIMEOUT` environment variable. The default is 180 seconds.
 
-3. If neither `EARTHMIND_MCP_TOOL_EXECUTION_TIMEOUT` or `EARTHMIND_MCP_SERVER_TIMEOUT` is configured, EarthMind defaults to 180 seconds.
+3. If neither `TERRAFLOW_MCP_TOOL_EXECUTION_TIMEOUT` or `TERRAFLOW_MCP_SERVER_TIMEOUT` is configured, Terraflow defaults to 180 seconds.
 
-To support tool calls that take longer than 180 seconds, set `EARTHMIND_MCP_TOOL_EXECUTION_TIMEOUT` to a value greater than `180` to raise the global limit, or set the **Tool Execution Timeout (seconds)** field on a specific MCP Tools component to a value greater than `180` to raise the limit for that component only.
+To support tool calls that take longer than 180 seconds, set `TERRAFLOW_MCP_TOOL_EXECUTION_TIMEOUT` to a value greater than `180` to raise the global limit, or set the **Tool Execution Timeout (seconds)** field on a specific MCP Tools component to a value greater than `180` to raise the limit for that component only.
 
-If `EARTHMIND_MCP_SERVER_TIMEOUT` is set to a value greater than `EARTHMIND_MCP_TOOL_EXECUTION_TIMEOUT`, the server timeout takes precedence and becomes the actual limit for tool calls.
+If `TERRAFLOW_MCP_SERVER_TIMEOUT` is set to a value greater than `TERRAFLOW_MCP_TOOL_EXECUTION_TIMEOUT`, the server timeout takes precedence and becomes the actual limit for tool calls.
 
-{/* The anchor on this section (connect-clients-to-use-the-servers-actions) is currently a link target in the EarthMind UI. Do not change. */}
-## Connect clients to your EarthMind MCP server {#connect-clients-to-use-the-servers-actions}
+{/* The anchor on this section (connect-clients-to-use-the-servers-actions) is currently a link target in the Terraflow UI. Do not change. */}
+## Connect clients to your Terraflow MCP server {#connect-clients-to-use-the-servers-actions}
 
-EarthMind provides automatic installation and code snippets to help you deploy your EarthMind MCP servers to your local MCP clients.
+Terraflow provides automatic installation and code snippets to help you deploy your Terraflow MCP servers to your local MCP clients.
 
 <Tabs>
 <TabItem value="JSON" label="JSON" default>
 
-The JSON option allows you to connect a EarthMind MCP server to any local or remote MCP client.
+The JSON option allows you to connect a Terraflow MCP server to any local or remote MCP client.
 You can modify this process for any [MCP-compatible client](https://modelcontextprotocol.io/clients).
 
 1. Install any [MCP-compatible client](https://modelcontextprotocol.io/clients).
@@ -151,7 +151,7 @@ You can modify this process for any [MCP-compatible client](https://modelcontext
 
 3. Recommended: Configure [authentication](#authentication) for your MCP server.
 
-4. In EarthMind, on the **Projects** page, click the **MCP Server** tab.
+4. In Terraflow, on the **Projects** page, click the **MCP Server** tab.
 
 5. Click the **JSON** tab, copy the code snippet for your operating system, and then paste it into your client's MCP configuration file.
 For example:
@@ -165,19 +165,19 @@ For example:
             "mcp-proxy",
             "--transport",
             "streamablehttp",
-            "http://EARTHMIND_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
+            "http://TERRAFLOW_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
           ]
         }
       }
     }
     ```
 
-    The **MCP Server** tab automatically populates the `EARTHMIND_SERVER_ADDRESS` and `PROJECT_ID` values.
+    The **MCP Server** tab automatically populates the `TERRAFLOW_SERVER_ADDRESS` and `PROJECT_ID` values.
 
-    The default EarthMind server address is `http://localhost:7860`.
-    If you are using a [public EarthMind server](/deployment-public-server), the server address is automatically included.
+    The default Terraflow server address is `http://localhost:7860`.
+    If you are using a [public Terraflow server](/deployment-public-server), the server address is automatically included.
 
-    If your EarthMind server requires authentication, you must include your EarthMind API key or OAuth settings in the configuration.
+    If your Terraflow server requires authentication, you must include your Terraflow API key or OAuth settings in the configuration.
     For more information, see [MCP server authentication](#authentication).
 
 6. To include other environment variables with your MCP server command, add an `env` object with key-value pairs of environment variables. For example:
@@ -191,7 +191,7 @@ For example:
             "mcp-proxy",
             "--transport",
             "streamablehttp",
-            "http://EARTHMIND_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
+            "http://TERRAFLOW_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
           ],
           "env": {
             "KEY": "VALUE"
@@ -207,7 +207,7 @@ For example:
 
 7. Save and close your client's MCP configuration file.
 
-8. Confirm that your EarthMind MCP server is on the client's list of MCP servers.
+8. Confirm that your Terraflow MCP server is on the client's list of MCP servers.
 If necessary, restart your client to apply the modified configuration file.
 
 </TabItem>
@@ -215,46 +215,46 @@ If necessary, restart your client to apply the modified configuration file.
 
 :::info
 The auto install option is available only for specific MCP clients.
-Auto install requires the client to be installed locally so EarthMind can write to the client's configuration file.
+Auto install requires the client to be installed locally so Terraflow can write to the client's configuration file.
 If your client isn't supported, is installed remotely, or you need to pass additional environment variables, use the **JSON** option.
 :::
 
-1. Install [Cursor](https://docs.cursor.com/get-started/installation), [Claude](https://claude.ai/download), or [Windsurf](https://windsurf.com/download/editor) on the same computer where your EarthMind server is running.
+1. Install [Cursor](https://docs.cursor.com/get-started/installation), [Claude](https://claude.ai/download), or [Windsurf](https://windsurf.com/download/editor) on the same computer where your Terraflow server is running.
 
 2. Recommended: Configure [authentication](#authentication) for your MCP server.
 
-3. In EarthMind, on the **Projects** page, click the **MCP Server** tab.
+3. In Terraflow, on the **Projects** page, click the **MCP Server** tab.
 
 4. On the **Auto install** tab, find your MCP client provider, and then click <Icon name="Plus" aria-hidden="true"/> **Add**.
 
-    Your EarthMind project's MCP server is automatically added to the configuration file for your local Cursor, Claude, or Windsurf client.
+    Your Terraflow project's MCP server is automatically added to the configuration file for your local Cursor, Claude, or Windsurf client.
     For example, with Cursor, the server configuration is added to the `mcp.json` configuration file.
 
-    EarthMind attempts to add this configuration even if the selected client isn't installed.
+    Terraflow attempts to add this configuration even if the selected client isn't installed.
     To verify the installation, check the available MCP servers in your client.
 
 </TabItem>
 </Tabs>
 
-Once your MCP client is connected to your EarthMind project's MCP server, your flows are registered as tools.
+Once your MCP client is connected to your Terraflow project's MCP server, your flows are registered as tools.
 Cursor determines when to use tools based on your queries, and requests permissions when necessary.
 For more information, see the MCP documentation for your client, such as [Cursor's MCP documentation](https://docs.cursor.com/context/model-context-protocol).
 
 ## MCP server authentication {#authentication}
 
-Each [EarthMind project](/concepts-flows#projects) has its own MCP server with its own MCP server authentication settings.
+Each [Terraflow project](/concepts-flows#projects) has its own MCP server with its own MCP server authentication settings.
 
-When you create a new project, EarthMind automatically configures authentication for the project's MCP server based on your EarthMind server's authentication settings. If authentication is enabled (`AUTO_LOGIN=false`), the project is automatically configured with API key authentication, and a new API key is generated for accessing the project's flows.
+When you create a new project, Terraflow automatically configures authentication for the project's MCP server based on your Terraflow server's authentication settings. If authentication is enabled (`AUTO_LOGIN=false`), the project is automatically configured with API key authentication, and a new API key is generated for accessing the project's flows.
 
-To configure authentication for a EarthMind MCP server, go to the **Projects** page in EarthMind, click the **MCP Server** tab, click <Icon name="Fingerprint" aria-hidden="true"/> **Edit Auth**, and then select your preferred authentication method:
+To configure authentication for a Terraflow MCP server, go to the **Projects** page in Terraflow, click the **MCP Server** tab, click <Icon name="Fingerprint" aria-hidden="true"/> **Edit Auth**, and then select your preferred authentication method:
 
 <Tabs groupId="auth-type">
 <TabItem value="API key" label="API key">
 
-When authenticating your MCP server with a EarthMind API key, your project's MCP server **JSON** code snippets and **Auto install** configuration automatically include the `--headers` and `x-api-key` arguments in the **args** array (for streamable transport).
+When authenticating your MCP server with a Terraflow API key, your project's MCP server **JSON** code snippets and **Auto install** configuration automatically include the `--headers` and `x-api-key` arguments in the **args** array (for streamable transport).
 
-Click <Icon name="key" aria-hidden="true"/> **Generate API key** to automatically insert a new EarthMind API key into the code template.
-Alternatively, you can replace `YOUR_API_KEY` with an existing EarthMind API key.
+Click <Icon name="key" aria-hidden="true"/> **Generate API key** to automatically insert a new Terraflow API key into the code template.
+Alternatively, you can replace `YOUR_API_KEY` with an existing Terraflow API key.
 
 To add your API key to the configuration, use three separate entries in `args`: `"--headers"`, `"x-api-key"`, and your key value. For example:
 
@@ -270,7 +270,7 @@ To add your API key to the configuration, use three separate entries in `args`: 
         "--headers",
         "x-api-key",
         "YOUR_API_KEY",
-        "http://EARTHMIND_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
+        "http://TERRAFLOW_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable"
       ]
     }
   }
@@ -280,12 +280,12 @@ To add your API key to the configuration, use three separate entries in `args`: 
 </TabItem>
 <TabItem value="OAuth" label="OAuth">
 
-When OAuth is enabled, EarthMind automatically starts an [MCP Composer](https://pypi.org/project/mcp-composer) instance for your project, creating a secure client-side proxy between MCP clients and the `mcp-proxy` on your server.
+When OAuth is enabled, Terraflow automatically starts an [MCP Composer](https://pypi.org/project/mcp-composer) instance for your project, creating a secure client-side proxy between MCP clients and the `mcp-proxy` on your server.
 
-OAuth integration allows your EarthMind MCP server to authenticate users and applications through any OAuth 2.0 compliant service. When users or applications connect to your MCP server, they are redirected to your chosen OAuth provider to authenticate. Upon successful authentication, they are granted access to your flows as MCP tools.
+OAuth integration allows your Terraflow MCP server to authenticate users and applications through any OAuth 2.0 compliant service. When users or applications connect to your MCP server, they are redirected to your chosen OAuth provider to authenticate. Upon successful authentication, they are granted access to your flows as MCP tools.
 
-Before configuring OAuth in EarthMind, you must first set up an OAuth application with an external OAuth 2.0 service provider.
-You must register your EarthMind server as an OAuth client, and then obtain the required values to complete the configuration in EarthMind.
+Before configuring OAuth in Terraflow, you must first set up an OAuth application with an external OAuth 2.0 service provider.
+You must register your Terraflow server as an OAuth client, and then obtain the required values to complete the configuration in Terraflow.
 
 The following table describes the required values.
 [GitHub OAuth](https://github.com/settings/developers) is used for example purposes.
@@ -302,8 +302,8 @@ For more information, see your OAuth provider's documentation.
 | **Client Secret** | Your OAuth client secret | From your OAuth provider. | `1234567890abcdef1234567890abcdef12345678` |
 | **Authorization URL** | OAuth authorization endpoint | From your OAuth provider. | `https://github.com/login/oauth/authorize` |
 | **Token URL** | OAuth token endpoint for getting refresh tokens | From your OAuth provider. | `https://github.com/login/oauth/access_token` |
-| **MCP Scope** | Scope for MCP operations | You define this. As of EarthMind 1.6, `user` is the only available value. | `user` |
-| **Provider Scope** | OAuth provider scope | You define this. As of EarthMind 1.6, `openid` is the only available value. | `openid` |
+| **MCP Scope** | Scope for MCP operations | You define this. As of Terraflow 1.6, `user` is the only available value. | `user` |
+| **Provider Scope** | OAuth provider scope | You define this. As of Terraflow 1.6, `openid` is the only available value. | `openid` |
 
 To configure OAuth authentication:
 
@@ -311,13 +311,13 @@ To configure OAuth authentication:
 2. Configure the OAuth settings with the values from your OAuth deployment.
     All values are required.
 
-    The OAuth credentials are encrypted and stored securely in your EarthMind database.
+    The OAuth credentials are encrypted and stored securely in your Terraflow database.
 
 3. Click **Save**.
 
     Your MCP server's **JSON** code snippets and **Auto install** configuration are automatically updated with OAuth values. These are automatically used for new installations after enabling OAuth. However, you must manually update any existing installations, as explained in the next step.
 
-4. If you already installed your EarthMind MCP server in your MCP client, you must update your MCP client configuration to use the new OAuth settings after enabling OAuth on your MCP server.
+4. If you already installed your Terraflow MCP server in your MCP client, you must update your MCP client configuration to use the new OAuth settings after enabling OAuth on your MCP server.
 The client update method depends on how you installed the server on the client:
 
     - **Auto install**: Manually update your client's config file using the updated JSON snippet from the **JSON** tab, or repeat the steps in [Auto-install](#connect-clients-to-use-the-servers-actions) to re-install the client with the updated settings.
@@ -332,17 +332,17 @@ If your client doesn't open the OAuth window, try restarting the client to retri
 <TabItem value="None" label="None">
 
 When no authentication is configured, your MCP server becomes a public endpoint that anyone can access without providing credentials.
-Only use this option when EarthMind is running in a trusted environment.
+Only use this option when Terraflow is running in a trusted environment.
 
 </TabItem>
 </Tabs>
 
 
 
-{/* The anchor on this section (deploy-your-server-externally) is currently a link target in the EarthMind UI. Do not change. */}
-## Deploy your EarthMind MCP server externally {#deploy-your-server-externally}
+{/* The anchor on this section (deploy-your-server-externally) is currently a link target in the Terraflow UI. Do not change. */}
+## Deploy your Terraflow MCP server externally {#deploy-your-server-externally}
 
-To deploy your EarthMind MCP server externally, see [Deploy a public EarthMind server](/deployment-public-server).
+To deploy your Terraflow MCP server externally, see [Deploy a public Terraflow server](/deployment-public-server).
 
 ## Use MCP Inspector to test and debug flows {#test-and-debug-flows}
 
@@ -363,16 +363,16 @@ You can use MCP Inspector to monitor your flows and get insights into how they a
 2. Open a web browser and navigate to the MCP Inspector UI.
 The default address is `http://localhost:6274`.
 
-3. In the MCP Inspector UI, enter the connection details for your EarthMind project's MCP server.
+3. In the MCP Inspector UI, enter the connection details for your Terraflow project's MCP server.
     The field values depend on your server's method of [authentication](#authentication).
     <Tabs groupId="auth-type">
       <TabItem value="API key" label="API key" default>
 
         - **Transport Type**: Select **STDIO**.
         - **Command**: `uvx`
-        - **Arguments**: Enter the following list of arguments, separated by spaces. Replace the values for `YOUR_API_KEY`, `EARTHMIND_SERVER_ADDRESS`, and `PROJECT_ID` with the values from your EarthMind MCP server. For example:
+        - **Arguments**: Enter the following list of arguments, separated by spaces. Replace the values for `YOUR_API_KEY`, `TERRAFLOW_SERVER_ADDRESS`, and `PROJECT_ID` with the values from your Terraflow MCP server. For example:
             ```bash
-            mcp-proxy --headers x-api-key YOUR_API_KEY http://EARTHMIND_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable
+            mcp-proxy --headers x-api-key YOUR_API_KEY http://TERRAFLOW_SERVER_ADDRESS/api/v1/mcp/project/PROJECT_ID/streamable
             ```
 
       </TabItem>
@@ -389,7 +389,7 @@ The default address is `http://localhost:6274`.
       <TabItem value="None" label="None">
 
         - **Transport Type**: Select **SSE**.
-        - **URL**: Enter the EarthMind MCP server's endpoint. For example:
+        - **URL**: Enter the Terraflow MCP server's endpoint. For example:
             ```bash
             http://localhost:7860/api/v1/mcp/project/d359cbd4-6fa2-4002-9d53-fa05c645319c/streamable
             ```
@@ -406,33 +406,33 @@ The default address is `http://localhost:6274`.
 
 ## Restrict MCP server management to superusers {#restrict-mcp-server-management}
 
-To prevent non-superusers from editing MCP server connections, set `EARTHMIND_MCP_SERVERS_LOCKED=true`.
+To prevent non-superusers from editing MCP server connections, set `TERRAFLOW_MCP_SERVERS_LOCKED=true`.
 
 When set to `true`, non-superusers can use existing MCP servers that are already configured, but they cannot configure MCP server connections in the UI or API.
 Superusers retain full access to MCP server configuration.
 
-Locking the MCP server configuration for users does not disable EarthMind's built-in MCP server for serving flows as MCP tools.
+Locking the MCP server configuration for users does not disable Terraflow's built-in MCP server for serving flows as MCP tools.
 
 ## MCP server environment variables
 
-The following environment variables set behaviors related to your EarthMind projects' MCP servers:
+The following environment variables set behaviors related to your Terraflow projects' MCP servers:
 
 | Variable | Format | Default | Description |
 |----------|--------|---------|-------------|
-| `EARTHMIND_MCP_SERVER_ENABLED` | Boolean | `True` | Whether to initialize an MCP server for each of your EarthMind projects. If `false`, EarthMind doesn't initialize MCP servers. |
-| `EARTHMIND_MCP_SERVER_ENABLE_PROGRESS_NOTIFICATIONS` | Boolean | `False` | If `true`, EarthMind MCP servers send progress notifications. |
-| `EARTHMIND_MCP_SERVER_TIMEOUT` | Integer | `20` | Timeout in seconds for MCP connection setup and tool execution. See [Configure tool execution timeouts](#configure-tool-execution-timeouts). |
-| `EARTHMIND_MCP_TOOL_EXECUTION_TIMEOUT` | Integer | `180` | Global timeout in seconds for MCP tool calls. See [Configure tool execution timeouts](#configure-tool-execution-timeouts). |
-| `EARTHMIND_MCP_MAX_SESSIONS_PER_SERVER` | Integer | `10` | Maximum number of MCP sessions to keep per unique server. |
-| `EARTHMIND_ADD_PROJECTS_TO_MCP_SERVERS` | Boolean | `True` | Whether to automatically add newly created projects to the user's MCP servers configuration. If `false`, projects must be manually added to MCP servers. |
-| `EARTHMIND_MCP_SERVERS_LOCKED` | Boolean | `False` | If `true`, non-superusers cannot add, edit, or remove MCP server connections through the UI or API. Superusers retain full access. For more information, see [Restrict MCP server management to superusers](#restrict-mcp-server-management). |
+| `TERRAFLOW_MCP_SERVER_ENABLED` | Boolean | `True` | Whether to initialize an MCP server for each of your Terraflow projects. If `false`, Terraflow doesn't initialize MCP servers. |
+| `TERRAFLOW_MCP_SERVER_ENABLE_PROGRESS_NOTIFICATIONS` | Boolean | `False` | If `true`, Terraflow MCP servers send progress notifications. |
+| `TERRAFLOW_MCP_SERVER_TIMEOUT` | Integer | `20` | Timeout in seconds for MCP connection setup and tool execution. See [Configure tool execution timeouts](#configure-tool-execution-timeouts). |
+| `TERRAFLOW_MCP_TOOL_EXECUTION_TIMEOUT` | Integer | `180` | Global timeout in seconds for MCP tool calls. See [Configure tool execution timeouts](#configure-tool-execution-timeouts). |
+| `TERRAFLOW_MCP_MAX_SESSIONS_PER_SERVER` | Integer | `10` | Maximum number of MCP sessions to keep per unique server. |
+| `TERRAFLOW_ADD_PROJECTS_TO_MCP_SERVERS` | Boolean | `True` | Whether to automatically add newly created projects to the user's MCP servers configuration. If `false`, projects must be manually added to MCP servers. |
+| `TERRAFLOW_MCP_SERVERS_LOCKED` | Boolean | `False` | If `true`, non-superusers cannot add, edit, or remove MCP server connections through the UI or API. Superusers retain full access. For more information, see [Restrict MCP server management to superusers](#restrict-mcp-server-management). |
 
-## Troubleshoot EarthMind MCP servers {#troubleshooting-mcp-server}
+## Troubleshoot Terraflow MCP servers {#troubleshooting-mcp-server}
 
-For troubleshooting advice for MCP servers and clients, see [Troubleshoot EarthMind: MCP issues](/troubleshoot#mcp).
+For troubleshooting advice for MCP servers and clients, see [Troubleshoot Terraflow: MCP issues](/troubleshoot#mcp).
 
 ## See also
 
-* [Use EarthMind as an MCP client](/mcp-client)
+* [Use Terraflow as an MCP client](/mcp-client)
 * [Use a DataStax Astra DB MCP server](/mcp-component-astra)
 * [MCP server environment variables](/environment-variables#mcp)

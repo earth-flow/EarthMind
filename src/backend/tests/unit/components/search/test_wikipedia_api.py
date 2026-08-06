@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
-from earthmind.custom import Component
+from terraflow.custom import Component
 from lfx.components.wikipedia import WikipediaComponent
 from lfx.custom.utils import build_custom_component_template
 

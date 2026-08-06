@@ -42,7 +42,7 @@ class CouchbaseVectorStoreComponent(LCVectorStoreComponent):
             from couchbase.cluster import Cluster
             from couchbase.options import ClusterOptions
         except ImportError as e:
-            msg = "Failed to import Couchbase dependencies. Install it using `uv pip install earthmind[couchbase] --pre`"
+            msg = "Failed to import Couchbase dependencies. Install it using `uv pip install terraflow[couchbase] --pre`"
             raise ImportError(msg) from e
 
         try:

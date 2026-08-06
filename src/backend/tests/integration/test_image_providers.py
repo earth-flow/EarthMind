@@ -9,7 +9,7 @@ import base64
 import os
 
 import pytest
-from earthmind.utils.image import create_image_content_dict
+from terraflow.utils.image import create_image_content_dict
 
 from tests.api_keys import has_api_key
 

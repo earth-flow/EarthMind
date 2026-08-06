@@ -1,6 +1,6 @@
 """Vector-store backend abstraction for Knowledge Bases.
 
-Provides a thin wrapper over LangChain's ``VectorStore`` base so EarthMind's KB
+Provides a thin wrapper over LangChain's ``VectorStore`` base so Terraflow's KB
 subsystem can address multiple vector databases through a single interface.
 
 Public surface:

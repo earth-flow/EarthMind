@@ -43,7 +43,7 @@ on:
         options:
           - ubuntu-latest
           - self-hosted
-          - '["self-hosted", "linux", "ARM64", "earthmind-ai-arm64-40gb-ephemeral"]'
+          - '["self-hosted", "linux", "ARM64", "terraflow-ai-arm64-40gb-ephemeral"]'
         default: ubuntu-latest
 env:
   POETRY_VERSION: "1.8.2"
@@ -207,13 +207,13 @@ jobs:
 
       - name: Check Version
         id: check-version
-        # We need to print $3 because earthmind-base is a dependency of earthmind
+        # We need to print $3 because terraflow-base is a dependency of terraflow
         # For langlow we'd use print $2
         run: |
-          version=$(uv tree | grep 'earthmind-base' | awk '{print $3}' | sed 's/^v//' | head -n 1)
-          url="https://pypi.org/pypi/earthmind-base/json"
+          version=$(uv tree | grep 'terraflow-base' | awk '{print $3}' | sed 's/^v//' | head -n 1)
+          url="https://pypi.org/pypi/terraflow-base/json"
           if [ ${{ inputs.nightly }} == true ]; then
-            url="https://pypi.org/pypi/earthmind-base-nightly/json"
+            url="https://pypi.org/pypi/terraflow-base-nightly/json"
           fi
 
           last_released_version=$(curl -s $url | jq -r '.releases | keys | .[]' | sort -V | tail -n 1)
@@ -239,7 +239,7 @@ jobs:
         if: steps.check-version.outputs.skipped == 'false'
         run: |
           source new-venv/bin/activate
-          python -m earthmind run --host localhost --port 7860 --backend-only &
+          python -m terraflow run --host localhost --port 7860 --backend-only &
           SERVER_PID=$!
           # Wait for the server to start
           timeout 120 bash -c 'until curl -f http://localhost:7860/api/v1/auto_login; do sleep 5; done' || (echo "Server did not start in time" && kill $SERVER_PID && exit 1)

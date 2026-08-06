@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
-from earthmind.schema.data import Data
-from earthmind.utils.data_structure import (
+from terraflow.schema.data import Data
+from terraflow.utils.data_structure import (
     analyze_value,
     get_data_structure,
     get_sample_values,

@@ -1,5 +1,5 @@
 import type { Edge } from "@xyflow/react";
-import { EARTHMIND_SUPPORTED_TYPES } from "@/constants/constants";
+import { TERRAFLOW_SUPPORTED_TYPES } from "@/constants/constants";
 import { scapedJSONStringfy } from "@/utils/reactflowUtils";
 
 export type DisplayHandleTemplate = {
@@ -39,7 +39,7 @@ export const computeDisplayHandle = (
   }
 
   return !!(
-    (!EARTHMIND_SUPPORTED_TYPES.has(type ?? "") ||
+    (!TERRAFLOW_SUPPORTED_TYPES.has(type ?? "") ||
       (optionalHandle && optionalHandle.length > 0)) &&
     !(isToolMode && template.tool_mode) &&
     !hasRefreshButton

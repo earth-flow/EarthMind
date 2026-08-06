@@ -1,5 +1,5 @@
 ---
-title: EarthMind CLI
+title: Terraflow CLI
 slug: /configuration-cli
 ---
 
@@ -7,41 +7,41 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Icon from "@site/src/components/icon";
 
-The EarthMind command line interface is the main interface for managing and running the EarthMind server.
+The Terraflow command line interface is the main interface for managing and running the Terraflow server.
 
-The EarthMind CLI is automatically installed when you [install the EarthMind package](/get-started-installation).
-It isn't available for EarthMind Desktop.
+The Terraflow CLI is automatically installed when you [install the Terraflow package](/get-started-installation).
+It isn't available for Terraflow Desktop.
 
 ## How to use the CLI
 
-The EarthMind CLI can be invoked in several ways, depending on your installation method and environment.
+The Terraflow CLI can be invoked in several ways, depending on your installation method and environment.
 
-The recommended approach is to run the CLI with `uv run` from within a virtual environment where EarthMind is installed.
+The recommended approach is to run the CLI with `uv run` from within a virtual environment where Terraflow is installed.
 
-For example, to start EarthMind on the default port, run the following command:
+For example, to start Terraflow on the default port, run the following command:
 
     ```bash
-    uv run earthmind run
+    uv run terraflow run
     ```
 
-If EarthMind is installed globally or added to your PATH, you can execute the CLI directly with `earthmind`.
+If Terraflow is installed globally or added to your PATH, you can execute the CLI directly with `terraflow`.
 
     ```bash
-    earthmind run
+    terraflow run
     ```
 
 ## Precedence
 
-EarthMind CLI options override the values of [environment variables](/environment-variables) set in your terminal or primary `.env` file.
+Terraflow CLI options override the values of [environment variables](/environment-variables) set in your terminal or primary `.env` file.
 
-For example, if you have `EARTHMIND_PORT=7860` defined as an environment variable, and you run the CLI with `--port 7880`, then EarthMind sets the port to `7880` because the CLI option overrides the environment variable.
+For example, if you have `TERRAFLOW_PORT=7860` defined as an environment variable, and you run the CLI with `--port 7880`, then Terraflow sets the port to `7880` because the CLI option overrides the environment variable.
 
 This also applies to Boolean environment variables.
-For example, if you set `EARTHMIND_REMOVE_API_KEYS=True` in your `.env` file, you can change it to `False` at runtime by running the CLI with `--no-remove-api-keys`.
+For example, if you set `TERRAFLOW_REMOVE_API_KEYS=True` in your `.env` file, you can change it to `False` at runtime by running the CLI with `--no-remove-api-keys`.
 
-## EarthMind CLI options
+## Terraflow CLI options
 
-All EarthMind CLI commands support options that modify the command's behavior or set environment variables.
+All Terraflow CLI commands support options that modify the command's behavior or set environment variables.
 
 To set values for options, you can use either of the following syntax styles:
 
@@ -66,19 +66,19 @@ The following examples compare Boolean option forms for `REMOVE_API_KEYS`.
 <Tabs>
 <TabItem value="true" label="True" default>
 
-`--remove-api-keys` is equivalent to setting `EARTHMIND_REMOVE_API_KEYS=True` in `.env`:
+`--remove-api-keys` is equivalent to setting `TERRAFLOW_REMOVE_API_KEYS=True` in `.env`:
 
 ```bash
-uv run earthmind run --remove-api-keys
+uv run terraflow run --remove-api-keys
 ```
 
 </TabItem>
 <TabItem value="false" label="False">
 
-`--no-remove-api-keys` is equivalent to `EARTHMIND_REMOVE_API_KEYS=False` in `.env`:
+`--no-remove-api-keys` is equivalent to `TERRAFLOW_REMOVE_API_KEYS=False` in `.env`:
 
 ```bash
-uv run earthmind run --no-remove-api-keys
+uv run terraflow run --no-remove-api-keys
 ```
 
 </TabItem>
@@ -88,7 +88,7 @@ In the following command references, default values for Booleans include both th
 
 ### Universal options
 
-The following options are available for all EarthMind CLI commands:
+The following options are available for all Terraflow CLI commands:
 
 * `--version`, `-v`: Show the version and exit.
 * `--install-completion`: Install auto-completion for the current shell.
@@ -99,7 +99,7 @@ The following options are available for all EarthMind CLI commands:
 
 The following sections describe the available CLI commands and any additional options (beyond the [universal options](#universal-options)) available for each command.
 
-### earthmind
+### terraflow
 
 Running the CLI without any arguments prints a list of available options and commands.
 
@@ -107,38 +107,38 @@ Running the CLI without any arguments prints a list of available options and com
   <TabItem value="uv (recommended)" label="uv (recommended)" default>
 
 ```bash
-uv run earthmind
+uv run terraflow
 ```
 
   </TabItem>
   <TabItem value="Direct" label="Direct">
 
 ```bash
-earthmind
+terraflow
 ```
 
   </TabItem>
 </Tabs>
 
-### earthmind api-key {#earthmind-api-key}
+### terraflow api-key {#terraflow-api-key}
 
-Creates a EarthMind API key.
+Creates a Terraflow API key.
 
 You must be a superuser to create API keys with the CLI.
-For more information, see [EarthMind API keys](/api-keys-and-authentication#earthmind-api-keys).
+For more information, see [Terraflow API keys](/api-keys-and-authentication#terraflow-api-keys).
 
 <Tabs groupId="Invocation">
   <TabItem value="uv (recommended)" label="uv (recommended)" default>
 
 ```bash
-uv run earthmind api-key
+uv run terraflow api-key
 ```
 
   </TabItem>
   <TabItem value="Direct" label="Direct">
 
 ```bash
-earthmind api-key
+terraflow api-key
 ```
 
   </TabItem>
@@ -150,36 +150,36 @@ earthmind api-key
 |--------|---------|--------|-------------|
 | `--log-level` | `error` | String | The logging level. One of `debug`, `info`, `warning`, `error`, or `critical`. |
 
-### earthmind copy-db
+### terraflow copy-db
 
-Copies the EarthMind database files from the cache directory to the current EarthMind installation directory, which is the directory containing `__main__.py`.
-You can find the copy target directory by running `which earthmind`.
+Copies the Terraflow database files from the cache directory to the current Terraflow installation directory, which is the directory containing `__main__.py`.
+You can find the copy target directory by running `which terraflow`.
 
 The following files are copied if they exist in the cache directory:
 
-* `earthmind.db`: The main EarthMind database, stored in the user cache directory
-* `earthmind-pre.db`: The pre-release database, if it exists
+* `terraflow.db`: The main Terraflow database, stored in the user cache directory
+* `terraflow-pre.db`: The pre-release database, if it exists
 
 <Tabs groupId="Invocation">
   <TabItem value="uv (recommended)" label="uv (recommended)" default>
 
 ```bash
-uv run earthmind copy-db
+uv run terraflow copy-db
 ```
 
   </TabItem>
   <TabItem value="Direct" label="Direct">
 
 ```bash
-earthmind copy-db
+terraflow copy-db
 ```
 
   </TabItem>
 </Tabs>
 
-### earthmind migration
+### terraflow migration
 
-Manages EarthMind database schema changes using [Alembic](https://alembic.sqlalchemy.org/en/latest/), a database migration tool for SQLAlchemy.
+Manages Terraflow database schema changes using [Alembic](https://alembic.sqlalchemy.org/en/latest/), a database migration tool for SQLAlchemy.
 
 The `migration` command has two modes:
 
@@ -189,8 +189,8 @@ Use this mode to previews the changes that would be made to the database schema 
 * **Fix mode**: Applies the migrations to update the database schema.
 
     :::warning
-    `earthmind migration --fix` is a destructive operation that can delete data.
-    Always run `earthmind migration` first to preview the changes.
+    `terraflow migration --fix` is a destructive operation that can delete data.
+    Always run `terraflow migration` first to preview the changes.
     :::
 
 <Tabs groupId="Invocation">
@@ -199,7 +199,7 @@ Use this mode to previews the changes that would be made to the database schema 
 1. Run test mode:
 
   ```bash
-  uv run earthmind migration
+  uv run terraflow migration
   ```
 
 2. Preview the changes returned by the test to determine if it's safe to proceed with the migration.
@@ -207,7 +207,7 @@ Use this mode to previews the changes that would be made to the database schema 
 3. Run fix mode to apply the changes:
 
   ```bash
-  uv run earthmind migration --fix
+  uv run terraflow migration --fix
   ```
 
   </TabItem>
@@ -216,7 +216,7 @@ Use this mode to previews the changes that would be made to the database schema 
 1. Run test mode:
 
   ```bash
-  earthmind migration
+  terraflow migration
   ```
 
 2. Preview the changes returned by the test to determine if it's safe to proceed with the migration.
@@ -224,28 +224,28 @@ Use this mode to previews the changes that would be made to the database schema 
 3. Run fix mode to apply the changes:
 
   ```bash
-  earthmind migration --fix
+  terraflow migration --fix
   ```
 
   </TabItem>
 </Tabs>
 
-### earthmind run {#earthmind-run}
+### terraflow run {#terraflow-run}
 
-Starts the EarthMind server.
+Starts the Terraflow server.
 
 <Tabs groupId="Invocation">
   <TabItem value="uv (recommended)" label="uv (recommended)" default>
 
 ```bash
-uv run earthmind run [OPTIONS]
+uv run terraflow run [OPTIONS]
 ```
 
   </TabItem>
   <TabItem value="Direct" label="Direct">
 
 ```bash
-earthmind run [OPTIONS]
+terraflow run [OPTIONS]
 ```
 
   </TabItem>
@@ -253,81 +253,81 @@ earthmind run [OPTIONS]
 
 #### Options
 
-This command supports some common and non-sensitive configuration options for your EarthMind server.
+This command supports some common and non-sensitive configuration options for your Terraflow server.
 Other options must be set in the `.env` or your terminal.
-For more information EarthMind configuration options, see [EarthMind environment variables](/environment-variables).
+For more information Terraflow configuration options, see [Terraflow environment variables](/environment-variables).
 
 | Option | Default | Type | Description |
 |--------|---------|--------|-------------|
 | `--auto-saving` | `--auto-saving` (true) | Boolean | Whether to enable flow auto-saving in the visual editor. Use `--no-auto-saving` to disable flow auto-saving. |
 | `--auto-saving-interval` | `1000` | Integer | The interval for flow auto-saving in milliseconds. |
-| `--backend-only` | `--no-backend-only` (false) | Boolean | Whether to run EarthMind's backend service only (no frontend). Omit or use `--no-backend-only` to start both the frontend and backend. See [Start EarthMind in headless mode](#start-earthmind-in-headless-mode). |
+| `--backend-only` | `--no-backend-only` (false) | Boolean | Whether to run Terraflow's backend service only (no frontend). Omit or use `--no-backend-only` to start both the frontend and backend. See [Start Terraflow in headless mode](#start-terraflow-in-headless-mode). |
 | `--cache` | `async` | String | The type of [cache storage](/memory) to use. One of `async`, `redis`, `memory`, or `disk`. |
 | `--components-path` | Not set | String | The path to the directory containing your custom components. |
 | `--dev` | `--no-dev` (false) | Boolean | Whether to run in development mode (may contain bugs). |
-| `--env-file` | Not set | String | The path to the `.env` file containing EarthMind environment variables. See [Start EarthMind with a specific .env file](#start-earthmind-with-a-specific-env-file). |
-| `--frontend-path` | Not set | String | The path to the frontend directory containing build files. This is only used when [contributing to the EarthMind codebase](/contributing-how-to-contribute) or developing a custom EarthMind image that includes customized frontend code. |
-| `--health-check-max-retries` | `5` | Integer | The maximum number of retries for your EarthMind server's health check. |
-| `--host` | `localhost` | String | The host on which the EarthMind server will run. |
-| `--log-file` | `logs/earthmind.log` | String | The path to the log file for EarthMind. |
+| `--env-file` | Not set | String | The path to the `.env` file containing Terraflow environment variables. See [Start Terraflow with a specific .env file](#start-terraflow-with-a-specific-env-file). |
+| `--frontend-path` | Not set | String | The path to the frontend directory containing build files. This is only used when [contributing to the Terraflow codebase](/contributing-how-to-contribute) or developing a custom Terraflow image that includes customized frontend code. |
+| `--health-check-max-retries` | `5` | Integer | The maximum number of retries for your Terraflow server's health check. |
+| `--host` | `localhost` | String | The host on which the Terraflow server will run. |
+| `--log-file` | `logs/terraflow.log` | String | The path to the log file for Terraflow. |
 | `--log-level` | `critical` | String | The logging level as one of `debug`, `info`, `warning`, `error`, or `critical`. |
 | `--log-rotation` | Not set | String | The log rotation interval, either a time duration or file size. |
 | `--max-file-size-upload` | `1024` | Integer | The maximum size in megabytes for file uploads. |
-| `--open-browser` | `--no-open-browser` (false) | Boolean | Whether to open the system web browser on startup. Use `--open-browser` to open the system's default web browser when EarthMind starts. |
-| `--port` | `7860` | Integer | The port on which the EarthMind server will run. The server automatically selects a free port if the specified port is in use. |
-| `--remove-api-keys` | `--no-remove-api-keys` (false) | Boolean | Whether to remove API keys and tokens from flows saved in the EarthMind database. |
+| `--open-browser` | `--no-open-browser` (false) | Boolean | Whether to open the system web browser on startup. Use `--open-browser` to open the system's default web browser when Terraflow starts. |
+| `--port` | `7860` | Integer | The port on which the Terraflow server will run. The server automatically selects a free port if the specified port is in use. |
+| `--remove-api-keys` | `--no-remove-api-keys` (false) | Boolean | Whether to remove API keys and tokens from flows saved in the Terraflow database. |
 | `--ssl-cert-file-path` | Not set | String | The path to the SSL certificate file on the local system for SSL-encrypted connections. |
 | `--ssl-key-file-path` | Not set | String | The path to the SSL key file on the local system for SSL-encrypted connections. |
-| `--worker-timeout` | `300` | Integer | The EarthMind server worker timeout in seconds. |
-| `--workers` | `1` | Integer | The number of EarthMind server worker processes. |
+| `--worker-timeout` | `300` | Integer | The Terraflow server worker timeout in seconds. |
+| `--workers` | `1` | Integer | The number of Terraflow server worker processes. |
 
-#### Start EarthMind with a specific .env file {#start-earthmind-with-a-specific-env-file}
+#### Start Terraflow with a specific .env file {#start-terraflow-with-a-specific-env-file}
 
-The `--env-file` option starts EarthMind using the configuration defined in the given `.env` file.
+The `--env-file` option starts Terraflow using the configuration defined in the given `.env` file.
 Additional options appended to this command override the values in the `.env` file if there are duplicates.
 
-If `--env-file` is omitted or doesn't include all required variables, EarthMind uses the default values for those variables.
+If `--env-file` is omitted or doesn't include all required variables, Terraflow uses the default values for those variables.
 
 <Tabs groupId="Invocation">
   <TabItem value="uv (recommended)" label="uv (recommended)" default>
 
 ```bash
-uv run earthmind run --env-file PATH/TO/EARTHMIND/.env
+uv run terraflow run --env-file PATH/TO/TERRAFLOW/.env
 ```
 
   </TabItem>
   <TabItem value="Direct" label="Direct">
 
 ```bash
-earthmind run --env-file PATH/TO/EARTHMIND/.env
+terraflow run --env-file PATH/TO/TERRAFLOW/.env
 ```
 
   </TabItem>
 </Tabs>
 
-#### Start EarthMind in headless mode {#start-earthmind-in-headless-mode}
+#### Start Terraflow in headless mode {#start-terraflow-in-headless-mode}
 
-The `--backend-only` option starts EarthMind's backend service only.
-This headless mode has no frontend (visual editor), and you can only access the server programmatically with the EarthMind API and CLI.
+The `--backend-only` option starts Terraflow's backend service only.
+This headless mode has no frontend (visual editor), and you can only access the server programmatically with the Terraflow API and CLI.
 
 <Tabs groupId="Invocation">
   <TabItem value="uv (recommended)" label="uv (recommended)" default>
 
 ```bash
-uv run earthmind run --backend-only
+uv run terraflow run --backend-only
 ```
 
   </TabItem>
   <TabItem value="Direct" label="Direct">
 
 ```bash
-earthmind run --backend-only
+terraflow run --backend-only
 ```
 
   </TabItem>
 </Tabs>
 
-### earthmind superuser {#earthmind-superuser}
+### terraflow superuser {#terraflow-superuser}
 
 Creates a superuser account with the given username and password.
 
@@ -335,14 +335,14 @@ Creates a superuser account with the given username and password.
   <TabItem value="uv (recommended)" label="uv (recommended)" default>
 
 ```bash
-uv run earthmind superuser --username [NAME] --password [PASSWORD] [OPTIONS]
+uv run terraflow superuser --username [NAME] --password [PASSWORD] [OPTIONS]
 ```
 
   </TabItem>
   <TabItem value="Direct" label="Direct">
 
 ```bash
-earthmind superuser --username [NAME] --password [PASSWORD] [OPTIONS]
+terraflow superuser --username [NAME] --password [PASSWORD] [OPTIONS]
 ```
 
   </TabItem>
@@ -356,14 +356,14 @@ earthmind superuser --username [NAME] --password [PASSWORD] [OPTIONS]
 
 For this command, `--username` and `--password` aren't optional, and they have no default value.
 The command fails if you don't provide these arguments.
-For more information, see [`EARTHMIND_SUPERUSER` and `EARTHMIND_SUPERUSER_PASSWORD`](/api-keys-and-authentication#earthmind-superuser).
+For more information, see [`TERRAFLOW_SUPERUSER` and `TERRAFLOW_SUPERUSER_PASSWORD`](/api-keys-and-authentication#terraflow-superuser).
 
 #### Disable CLI superuser creation
 
-The `earthmind superuser` command is controlled by the [`EARTHMIND_ENABLE_SUPERUSER_CLI`](/api-keys-and-authentication#earthmind-enable-superuser-cli) environment variable:
+The `terraflow superuser` command is controlled by the [`TERRAFLOW_ENABLE_SUPERUSER_CLI`](/api-keys-and-authentication#terraflow-enable-superuser-cli) environment variable:
 
-* **`EARTHMIND_ENABLE_SUPERUSER_CLI=True` (default)**: The `earthmind superuser` command is available, and superuser creation is unrestricted.
-* **`EARTHMIND_ENABLE_SUPERUSER_CLI=False` (recommended)**: Disables the `earthmind superuser` command.
+* **`TERRAFLOW_ENABLE_SUPERUSER_CLI=True` (default)**: The `terraflow superuser` command is available, and superuser creation is unrestricted.
+* **`TERRAFLOW_ENABLE_SUPERUSER_CLI=False` (recommended)**: Disables the `terraflow superuser` command.
 For security reasons, this is recommended to prevent unauthorized superuser creation, especially in production environments.
 
-To disable the `earthmind superuser` command, you must set `EARTHMIND_ENABLE_SUPERUSER_CLI=False` in your EarthMind `.env` file, and then [start EarthMind with your `.env` file](#start-earthmind-with-a-specific-env-file).
+To disable the `terraflow superuser` command, you must set `TERRAFLOW_ENABLE_SUPERUSER_CLI=False` in your Terraflow `.env` file, and then [start Terraflow with your `.env` file](#start-terraflow-with-a-specific-env-file).

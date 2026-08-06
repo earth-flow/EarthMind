@@ -9,15 +9,15 @@ from uuid import UUID
 
 import httpx
 import pytest
-from earthmind_sdk import AsyncClient, Client
-from earthmind_sdk.exceptions import EarthMindHTTPError
-from earthmind_sdk.models import Flow
+from terraflow_sdk import AsyncClient, Client
+from terraflow_sdk.exceptions import TerraflowHTTPError
+from terraflow_sdk.models import Flow
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-_BASE_URL = "http://earthmind.test"
+_BASE_URL = "http://terraflow.test"
 _FLOW_ID = "00000000-0000-0000-0000-000000000042"
 
 _SAMPLE_FLOW: dict[str, Any] = {
@@ -250,7 +250,7 @@ def test_pull_returns_dict_without_output() -> None:
 @pytest.mark.unit
 def test_pull_raises_on_http_error() -> None:
     client = _sync_client(_MockTransport(status=404, body={"detail": "Not found"}))
-    with pytest.raises(EarthMindHTTPError):
+    with pytest.raises(TerraflowHTTPError):
         client.pull(_FLOW_ID)
     client.close()
 

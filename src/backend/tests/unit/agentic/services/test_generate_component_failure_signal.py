@@ -14,7 +14,7 @@ agent decides to say. A SUCCESSFUL generation must emit nothing.
 from __future__ import annotations
 
 import pytest
-from earthmind.agentic.services.component_events import (
+from terraflow.agentic.services.component_events import (
     drain_component_events,
     reset_component_events,
 )
@@ -34,7 +34,7 @@ async def test_should_emit_validation_failed_signal_when_generation_fails(monkey
         return {"validated": False, "validation_error": "Output method 'run' has no return statement"}
 
     monkeypatch.setattr(
-        "earthmind.agentic.services.assistant_service.execute_flow_with_validation",
+        "terraflow.agentic.services.assistant_service.execute_flow_with_validation",
         _failed_generation,
     )
 
@@ -58,7 +58,7 @@ async def test_should_not_emit_signal_when_generation_succeeds(monkeypatch, fres
         return {"validated": True, "class_name": "FooTool", "component_code": "class FooTool: ..."}
 
     monkeypatch.setattr(
-        "earthmind.agentic.services.assistant_service.execute_flow_with_validation",
+        "terraflow.agentic.services.assistant_service.execute_flow_with_validation",
         _ok_generation,
     )
 

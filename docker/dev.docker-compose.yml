@@ -1,23 +1,23 @@
 networks:
-  dev-earthmind:
+  dev-terraflow:
 
 services:
-  earthmind:
+  terraflow:
     build:
       context: ..
       dockerfile: docker/dev.Dockerfile
-    image: dev-earthmind
-    container_name: dev-earthmind
+    image: dev-terraflow
+    container_name: dev-terraflow
     restart: always
     ports:
       - "7860:7860"
       - "3000:3000"
     environment:
       - PYTHONDONTWRITEBYTECODE=1
-      - EARTHMIND_DATABASE_URL=postgresql://earthmind:earthmind@postgres:5432/earthmind
-      - EARTHMIND_SUPERUSER=earthmind
-      - EARTHMIND_SUPERUSER_PASSWORD=earthmind
-      - EARTHMIND_CONFIG_DIR=/var/lib/earthmind
+      - TERRAFLOW_DATABASE_URL=postgresql://terraflow:terraflow@postgres:5432/terraflow
+      - TERRAFLOW_SUPERUSER=terraflow
+      - TERRAFLOW_SUPERUSER_PASSWORD=terraflow
+      - TERRAFLOW_CONFIG_DIR=/var/lib/terraflow
     env_file:
       - ../.env
     volumes:
@@ -25,18 +25,18 @@ services:
     depends_on:
       - postgres
     networks:
-      -  dev-earthmind
+      -  dev-terraflow
 
 
   postgres:
     container_name: postgres
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_USER: earthmind
-      POSTGRES_PASSWORD: earthmind
-      POSTGRES_DB: earthmind
+      POSTGRES_USER: terraflow
+      POSTGRES_PASSWORD: terraflow
+      POSTGRES_DB: terraflow
     ports:
       - "5432:5432"
     networks:
-      -  dev-earthmind
+      -  dev-terraflow
 

@@ -2,17 +2,17 @@ import subprocess
 
 # Simulate the sed pattern from release.yml
 # The pattern should preserve trailing commas
-SED_PATTERN = 's|"earthmind-base[^"]*"|"earthmind-base[complete]>=0.8.0.rc3,<1.dev0"|g'
+SED_PATTERN = 's|"terraflow-base[^"]*"|"terraflow-base[complete]>=0.8.0.rc3,<1.dev0"|g'
 
 TEST_CASES = [
-    '    "earthmind-base[complete]~=0.8.0",',
-    '    "earthmind-base~=0.8.0",',
-    '    "earthmind-base[openai]~=0.8.0",',
-    '    "earthmind-base[complete]>=0.8.0,<1.dev0",',
-    '    "earthmind-base[complete]>=0.8.0.rc2,<1.dev0",',
+    '    "terraflow-base[complete]~=0.8.0",',
+    '    "terraflow-base~=0.8.0",',
+    '    "terraflow-base[openai]~=0.8.0",',
+    '    "terraflow-base[complete]>=0.8.0,<1.dev0",',
+    '    "terraflow-base[complete]>=0.8.0.rc2,<1.dev0",',
 ]
 
-EXPECTED = '    "earthmind-base[complete]>=0.8.0.rc3,<1.dev0",'
+EXPECTED = '    "terraflow-base[complete]>=0.8.0.rc3,<1.dev0",'
 
 
 def run_sed(input_line):

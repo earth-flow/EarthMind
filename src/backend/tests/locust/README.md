@@ -1,13 +1,13 @@
-# EarthMind Load Testing
+# Terraflow Load Testing
 
-This directory contains comprehensive load testing tools for both EarthMind and LFX APIs using Locust.
+This directory contains comprehensive load testing tools for both Terraflow and LFX APIs using Locust.
 
 ## 🔧 **Two Testing Systems**
 
-### **EarthMind API Testing** (Enhanced System)
+### **Terraflow API Testing** (Enhanced System)
 
-- Files: `earthmind_*.py`
-- Tests the main EarthMind application API
+- Files: `terraflow_*.py`
+- Tests the main Terraflow application API
 - Includes automatic setup, real starter projects, and comprehensive error logging
 
 ### **LFX API Testing** (Complex Serve)
@@ -23,8 +23,8 @@ This directory contains comprehensive load testing tools for both EarthMind and 
 - **Multiple User Types**: Different user behaviors to simulate realistic load patterns
 - **Load Test Shapes**: Predefined load patterns for different testing scenarios
 - **Comprehensive Metrics**: Performance grading and detailed reporting
-- **Enhanced Error Logging**: Detailed connection error analysis and EarthMind log capture
-- **Easy Setup**: One-command execution with automatic EarthMind startup
+- **Enhanced Error Logging**: Detailed connection error analysis and Terraflow log capture
+- **Easy Setup**: One-command execution with automatic Terraflow startup
 
 ## Quick Start
 
@@ -47,7 +47,7 @@ The easiest way to use the load testing system:
 make load_test_setup
 
 # 2. Run a quick test
-make load_test_earthmind_quick
+make load_test_terraflow_quick
 
 # 3. Run a full load test
 make load_test_run
@@ -61,18 +61,18 @@ make load_test_help
 
 ## 🌐 **Remote Instance Testing**
 
-For testing against a remote EarthMind instance:
+For testing against a remote Terraflow instance:
 
 ### Setup for Remote Testing
 
 ```bash
 # Using Makefile (recommended)
-make load_test_remote_setup EARTHMIND_HOST="https://your-remote-instance.com"
-make load_test_remote_run EARTHMIND_HOST="https://your-remote-instance.com"
+make load_test_remote_setup TERRAFLOW_HOST="https://your-remote-instance.com"
+make load_test_remote_run TERRAFLOW_HOST="https://your-remote-instance.com"
 
 # Or using Python scripts directly
-python earthmind_setup_test.py --host https://your-remote-instance.com --interactive
-python earthmind_run_load_test.py --host https://your-remote-instance.com --no-start-earthmind --headless --users 10 --duration 120
+python terraflow_setup_test.py --host https://your-remote-instance.com --interactive
+python terraflow_run_load_test.py --host https://your-remote-instance.com --no-start-terraflow --headless --users 10 --duration 120
 
 # Test remote instance before setup (optional)
 python diagnose_remote.py --host https://your-remote-instance.com --load-test 5
@@ -80,7 +80,7 @@ python diagnose_remote.py --host https://your-remote-instance.com --load-test 5
 
 ### Important Notes for Remote Testing
 
-- **Always use `--no-start-earthmind`** when testing remote instances
+- **Always use `--no-start-terraflow`** when testing remote instances
 - **Use HTTPS** for production remote instances
 - **Consider network latency** in your performance expectations
 - **Monitor both client and server resources** during testing
@@ -93,22 +93,22 @@ python diagnose_remote.py --host https://your-remote-instance.com --load-test 5
 
 #### Step 1: Setup (Run Once)
 
-Choose and set up a real EarthMind starter project for testing:
+Choose and set up a real Terraflow starter project for testing:
 
 ```bash
 # Interactive flow selection
-python earthmind_setup_test.py --interactive
+python terraflow_setup_test.py --interactive
 
 # Use specific flow
-python earthmind_setup_test.py --flow "Memory Chatbot"
+python terraflow_setup_test.py --flow "Memory Chatbot"
 
 # List available flows
-python earthmind_setup_test.py --list-flows
+python terraflow_setup_test.py --list-flows
 ```
 
 This will:
 
-- Use default EarthMind credentials (earthmind/earthmind)
+- Use default Terraflow credentials (terraflow/terraflow)
 - Generate API keys
 - Upload a real starter project flow
 - Provide credentials for load testing
@@ -117,40 +117,40 @@ This will:
 
 ```bash
 # Interactive mode with web UI
-python earthmind_run_load_test.py
+python terraflow_run_load_test.py
 
 # Headless mode with 20 users for 2 minutes
-python earthmind_run_load_test.py --headless --users 20 --duration 120
+python terraflow_run_load_test.py --headless --users 20 --duration 120
 
 # Use predefined load shape
-python earthmind_run_load_test.py --shape ramp100 --headless --users 100 --duration 180
+python terraflow_run_load_test.py --shape ramp100 --headless --users 100 --duration 180
 ```
 
 ### Advanced Usage
 
 ```bash
 # Setup with custom host (e.g., remote instance)
-python earthmind_setup_test.py --host https://your-remote-instance.com --interactive
+python terraflow_setup_test.py --host https://your-remote-instance.com --interactive
 
 # Save credentials to file
-python earthmind_setup_test.py --interactive --save-credentials my_test_creds.json
+python terraflow_setup_test.py --interactive --save-credentials my_test_creds.json
 
-# Test against existing remote EarthMind instance
-python earthmind_run_load_test.py --host https://your-remote-instance.com --no-start-earthmind
+# Test against existing remote Terraflow instance
+python terraflow_run_load_test.py --host https://your-remote-instance.com --no-start-terraflow
 
 # Save results to CSV and HTML
-python earthmind_run_load_test.py --headless --csv results --html report.html --users 50 --duration 300
+python terraflow_run_load_test.py --headless --csv results --html report.html --users 50 --duration 300
 
 # Direct Locust usage (after setup)
 export API_KEY="your-api-key-from-setup"
 export FLOW_ID="your-flow-id-from-setup"
-locust -f earthmind_locustfile.py --host http://localhost:7860
+locust -f terraflow_locustfile.py --host http://localhost:7860
 
 # Distributed testing (master)
-locust -f earthmind_locustfile.py --host http://localhost:7860 --master
+locust -f terraflow_locustfile.py --host http://localhost:7860 --master
 
 # Distributed testing (worker)
-locust -f earthmind_locustfile.py --host http://localhost:7860 --worker --master-host=localhost
+locust -f terraflow_locustfile.py --host http://localhost:7860 --worker --master-host=localhost
 ```
 
 ## User Types
@@ -175,24 +175,24 @@ Use with: `--shape ramp100` or `--shape stepramp`
 
 ## Environment Variables
 
-- `EARTHMIND_HOST`: Base URL for EarthMind server (default: http://localhost:7860)
+- `TERRAFLOW_HOST`: Base URL for Terraflow server (default: http://localhost:7860)
 - `SHAPE`: Load test shape (ramp100, stepramp)
 - `REQUEST_TIMEOUT`: Request timeout in seconds (default: 30.0)
 
 ## Architecture
 
-### Setup Process (`earthmind_setup_test.py`)
+### Setup Process (`terraflow_setup_test.py`)
 
-1. **Health Check**: Verify EarthMind is running
+1. **Health Check**: Verify Terraflow is running
 2. **Flow Selection**: Choose from 40+ real starter project flows
-3. **Authentication**: Login with default credentials (earthmind/earthmind)
+3. **Authentication**: Login with default credentials (terraflow/terraflow)
 4. **API Key Generation**: Create API key for load testing
 5. **Flow Upload**: Upload the selected starter project flow
 6. **Credential Export**: Provide environment variables for testing
 
 ### Real Starter Project Flows
 
-Instead of simple test flows, the system uses real EarthMind starter projects:
+Instead of simple test flows, the system uses real Terraflow starter projects:
 
 - **Basic Prompting**: Simple LLM interaction
 - **Memory Chatbot**: Conversational AI with memory
@@ -239,8 +239,8 @@ The test tracks:
 
 ### Common Issues
 
-1. **Setup Failed**: Ensure EarthMind is accessible and not in read-only mode
-2. **Authentication Errors**: Verify default credentials (earthmind/earthmind) are enabled
+1. **Setup Failed**: Ensure Terraflow is accessible and not in read-only mode
+2. **Authentication Errors**: Verify default credentials (terraflow/terraflow) are enabled
 3. **Flow Creation Failed**: Verify the user has permission to create flows
 4. **Connection Errors**: Check network connectivity and firewall settings
 5. **Status Code 0 Errors**: Usually indicates connection overload - reduce user count or spawn rate
@@ -249,8 +249,8 @@ The test tracks:
 
 For debugging, you can:
 
-1. Run EarthMind manually with `--log-level debug`
-2. Check the EarthMind logs for detailed error information
+1. Run Terraflow manually with `--log-level debug`
+2. Check the Terraflow logs for detailed error information
 3. Use the web UI to verify the test flow was created correctly
 4. Test API endpoints manually with curl or httpx
 5. Use the diagnostic tool for remote instances: `python diagnose_remote.py --host <url> --load-test 10`
@@ -259,7 +259,7 @@ For debugging, you can:
 
 If automatic setup fails, you can set up manually:
 
-1. Start EarthMind: `python -m earthmind run --auto-login`
+1. Start Terraflow: `python -m terraflow run --auto-login`
 2. Create a user account through the UI
 3. Create an API key in the settings
 4. Create a simple flow and note its ID
@@ -268,14 +268,14 @@ If automatic setup fails, you can set up manually:
 ```bash
 export API_KEY="your-api-key"
 export FLOW_ID="your-flow-id"
-locust -f earthmind_locustfile.py --host http://localhost:7860
+locust -f terraflow_locustfile.py --host http://localhost:7860
 ```
 
 ## Contributing
 
 When adding new user types or test scenarios:
 
-1. Inherit from `BaseEarthMindUser`
+1. Inherit from `BaseTerraflowUser`
 2. Implement task methods with `@task` decorator
 3. Use `self.make_request()` for consistent error handling
 4. Add appropriate weight and wait_time settings
@@ -286,25 +286,25 @@ When adding new user types or test scenarios:
 ### Basic Load Test
 
 ```bash
-python earthmind_run_load_test.py --headless --users 10 --duration 60
+python terraflow_run_load_test.py --headless --users 10 --duration 60
 ```
 
 ### Stress Test
 
 ```bash
-python earthmind_run_load_test.py --shape ramp100 --headless --users 100 --duration 300
+python terraflow_run_load_test.py --shape ramp100 --headless --users 100 --duration 300
 ```
 
 ### Performance Profiling
 
 ```bash
-python earthmind_run_load_test.py --shape stepramp --headless --csv profile_results
+python terraflow_run_load_test.py --shape stepramp --headless --csv profile_results
 ```
 
 ### Production Readiness Test
 
 ```bash
-python earthmind_run_load_test.py --users 50 --duration 600 --csv production_test --html production_report.html
+python terraflow_run_load_test.py --users 50 --duration 600 --csv production_test --html production_report.html
 ```
 
 ## 📊 HTML Reports
@@ -321,12 +321,12 @@ The system generates beautiful HTML reports with:
 
 ```bash
 # Generate comprehensive HTML report
-python earthmind_run_load_test.py --headless --users 25 --duration 120 --html detailed_report.html
+python terraflow_run_load_test.py --headless --users 25 --duration 120 --html detailed_report.html
 
 # Combined CSV + HTML reporting
-python earthmind_run_load_test.py --headless --users 100 --duration 300 --csv data --html analysis.html --shape ramp100
+python terraflow_run_load_test.py --headless --users 100 --duration 300 --csv data --html analysis.html --shape ramp100
 
 # Quick test with report
-python earthmind_setup_test.py --flow "Memory Chatbot"
-python earthmind_run_load_test.py --headless --users 10 --duration 60 --html quick_test.html
+python terraflow_setup_test.py --flow "Memory Chatbot"
+python terraflow_run_load_test.py --headless --users 10 --duration 60 --html quick_test.html
 ```

@@ -4,14 +4,14 @@ from unittest.mock import Mock
 
 import anyio
 import pytest
-from earthmind.services.storage.local import LocalStorageService
+from terraflow.services.storage.local import LocalStorageService
 
 
 @pytest.fixture
 def mock_settings_service():
     """Create a mock settings service."""
     settings_service = Mock()
-    settings_service.settings.config_dir = "/tmp/earthmind_test"  # noqa: S108
+    settings_service.settings.config_dir = "/tmp/terraflow_test"  # noqa: S108
     return settings_service
 
 
@@ -453,7 +453,7 @@ class TestLocalStorageServiceEdgeCases:
         Under concurrent execution, aiofile/caio would leak kernel AIO contexts
         causing EAGAIN after ~150-200 runs. This test verifies that writing a file
         and immediately reading it back works reliably under concurrency with the
-        aiofiles backend. See https://github.com/earthmind-ai/earthmind/issues/12414
+        aiofiles backend. See https://github.com/terraflow-ai/terraflow/issues/12414
         """
         flow_id = "concurrent_rw_flow"
         num_files = 50

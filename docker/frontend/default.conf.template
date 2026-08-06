@@ -5,7 +5,7 @@ events {}
 http {
     include /etc/nginx/mime.types;
     default_type text/plain;
-    client_max_body_size ${EARTHMIND_MAX_FILE_SIZE_UPLOAD}M;
+    client_max_body_size ${TERRAFLOW_MAX_FILE_SIZE_UPLOAD}M;
 
     types {
         text/html html;

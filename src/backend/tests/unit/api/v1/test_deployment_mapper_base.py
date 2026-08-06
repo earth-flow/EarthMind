@@ -8,16 +8,16 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
-from earthmind.api.v1.mappers.deployments import get_mapper_registry
-from earthmind.api.v1.mappers.deployments.base import BaseDeploymentMapper, DeploymentApiPayloads
-from earthmind.api.v1.mappers.deployments.contracts import (
+from terraflow.api.v1.mappers.deployments import get_mapper_registry
+from terraflow.api.v1.mappers.deployments.base import BaseDeploymentMapper, DeploymentApiPayloads
+from terraflow.api.v1.mappers.deployments.contracts import (
     CreatedSnapshotIds,
     CreateSnapshotBindings,
     FlowVersionPatch,
     UpdateSnapshotBindings,
 )
-from earthmind.api.v1.mappers.deployments.registry import DeploymentMapperRegistry
-from earthmind.api.v1.schemas.deployments import (
+from terraflow.api.v1.mappers.deployments.registry import DeploymentMapperRegistry
+from terraflow.api.v1.schemas.deployments import (
     DeploymentCreateRequest,
     DeploymentProviderAccountCreateRequest,
     DeploymentUpdateRequest,
@@ -749,7 +749,7 @@ def test_mapper_registry_get_returns_cached_instance_for_key() -> None:
 
 def test_base_mapper_resolve_verify_credentials_raises_not_implemented() -> None:
     """Base mapper does not implement create credential verification."""
-    from earthmind.api.v1.schemas.deployments import DeploymentProviderAccountCreateRequest
+    from terraflow.api.v1.schemas.deployments import DeploymentProviderAccountCreateRequest
 
     mapper = BaseDeploymentMapper()
     payload = DeploymentProviderAccountCreateRequest(
@@ -821,7 +821,7 @@ def _make_existing_account():
 
 def test_base_mapper_resolve_provider_account_update_name_only() -> None:
     """Only name is set; no other fields should appear."""
-    from earthmind.api.v1.schemas.deployments import DeploymentProviderAccountUpdateRequest
+    from terraflow.api.v1.schemas.deployments import DeploymentProviderAccountUpdateRequest
 
     mapper = BaseDeploymentMapper()
     payload = DeploymentProviderAccountUpdateRequest(name="new-name")
@@ -834,7 +834,7 @@ def test_base_mapper_resolve_provider_account_update_name_only() -> None:
 
 def test_base_mapper_resolve_provider_account_update_provider_data_raises() -> None:
     """Base mapper cannot resolve provider_data — raises NotImplementedError."""
-    from earthmind.api.v1.schemas.deployments import DeploymentProviderAccountUpdateRequest
+    from terraflow.api.v1.schemas.deployments import DeploymentProviderAccountUpdateRequest
 
     mapper = BaseDeploymentMapper()
     payload = DeploymentProviderAccountUpdateRequest(provider_data={"api_key": "key"})

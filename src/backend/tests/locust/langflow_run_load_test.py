@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""EarthMind Load Test Runner
+"""Terraflow Load Test Runner
 
-This script provides an easy way to run EarthMind load tests.
-For first-time setup, use setup_earthmind_test.py to create test credentials.
+This script provides an easy way to run Terraflow load tests.
+For first-time setup, use setup_terraflow_test.py to create test credentials.
 
 Usage:
     # First time setup (run once):
-    python setup_earthmind_test.py --interactive
+    python setup_terraflow_test.py --interactive
 
     # Then run load tests:
     python run_load_test.py --help
@@ -40,8 +40,8 @@ def run_command(cmd, check=True, capture_output=False):
             sys.exit(1)
 
 
-def check_earthmind_running(host):
-    """Check if EarthMind is already running."""
+def check_terraflow_running(host):
+    """Check if Terraflow is already running."""
     try:
         import httpx
 
@@ -122,34 +122,34 @@ def test_single_request(host):
         return False
 
 
-def wait_for_earthmind(host, timeout=60):
-    """Wait for EarthMind to be ready."""
-    print(f"Waiting for EarthMind to be ready at {host}...")
+def wait_for_terraflow(host, timeout=60):
+    """Wait for Terraflow to be ready."""
+    print(f"Waiting for Terraflow to be ready at {host}...")
     start_time = time.time()
 
     while time.time() - start_time < timeout:
-        if check_earthmind_running(host):
-            print("✅ EarthMind is ready!")
+        if check_terraflow_running(host):
+            print("✅ Terraflow is ready!")
             return True
         time.sleep(2)
 
-    print(f"❌ EarthMind did not start within {timeout} seconds")
+    print(f"❌ Terraflow did not start within {timeout} seconds")
     return False
 
 
-def start_earthmind(host, port):
-    """Start EarthMind server if not already running."""
-    if check_earthmind_running(host):
-        print(f"✅ EarthMind is already running at {host}")
+def start_terraflow(host, port):
+    """Start Terraflow server if not already running."""
+    if check_terraflow_running(host):
+        print(f"✅ Terraflow is already running at {host}")
         return None
 
-    print(f"Starting EarthMind server on port {port}...")
+    print(f"Starting Terraflow server on port {port}...")
 
-    # Start EarthMind in the background
+    # Start Terraflow in the background
     cmd = [
         sys.executable,
         "-m",
-        "earthmind",
+        "terraflow",
         "run",
         "--host",
         "0.0.0.0",
@@ -163,7 +163,7 @@ def start_earthmind(host, port):
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     # Wait for it to be ready
-    if wait_for_earthmind(host, timeout=60):
+    if wait_for_terraflow(host, timeout=60):
         return process
     process.terminate()
     return None
@@ -171,17 +171,17 @@ def start_earthmind(host, port):
 
 def run_locust_test(args):
     """Run the Locust load test."""
-    locust_file = Path(__file__).parent / "earthmind_locustfile.py"
+    locust_file = Path(__file__).parent / "terraflow_locustfile.py"
 
     # Check for required environment variables
     if not os.getenv("API_KEY"):
         print("❌ API_KEY environment variable not found!")
-        print("Run earthmind_setup_test.py first to create test credentials.")
+        print("Run terraflow_setup_test.py first to create test credentials.")
         sys.exit(1)
 
     if not os.getenv("FLOW_ID"):
         print("❌ FLOW_ID environment variable not found!")
-        print("Run earthmind_setup_test.py first to create test credentials.")
+        print("Run terraflow_setup_test.py first to create test credentials.")
         sys.exit(1)
 
     cmd = [
@@ -198,7 +198,7 @@ def run_locust_test(args):
         env["SHAPE"] = args.shape
 
     # Add other environment variables
-    env["EARTHMIND_HOST"] = args.host
+    env["TERRAFLOW_HOST"] = args.host
 
     if args.headless:
         cmd.extend(
@@ -240,7 +240,7 @@ def run_locust_test(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run EarthMind load tests with automatic setup",
+        description="Run Terraflow load tests with automatic setup",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -253,25 +253,25 @@ Examples:
   # Run with specific load shape
   python run_load_test.py --shape ramp100 --headless --users 100 --duration 180
 
-  # Run against existing EarthMind instance
-  python run_load_test.py --host http://localhost:8000 --no-start-earthmind
+  # Run against existing Terraflow instance
+  python run_load_test.py --host http://localhost:8000 --no-start-terraflow
 
   # Save results to CSV
   python run_load_test.py --headless --csv results --users 25 --duration 60
         """,
     )
 
-    # EarthMind options
+    # Terraflow options
     parser.add_argument(
         "--host",
         default="http://localhost:7860",
-        help="EarthMind host URL (default: http://localhost:7860, use https:// for remote instances)",
+        help="Terraflow host URL (default: http://localhost:7860, use https:// for remote instances)",
     )
-    parser.add_argument("--port", type=int, default=7860, help="Port to start EarthMind on (default: 7860)")
+    parser.add_argument("--port", type=int, default=7860, help="Port to start Terraflow on (default: 7860)")
     parser.add_argument(
-        "--no-start-earthmind",
+        "--no-start-terraflow",
         action="store_true",
-        help="Don't start EarthMind automatically (assume it's already running)",
+        help="Don't start Terraflow automatically (assume it's already running)",
     )
 
     # Load test options
@@ -296,31 +296,31 @@ Examples:
         print("Install with: pip install locust httpx")
         sys.exit(1)
 
-    earthmind_process = None
+    terraflow_process = None
 
     try:
-        # Start EarthMind if needed
-        if not args.no_start_earthmind:
+        # Start Terraflow if needed
+        if not args.no_start_terraflow:
             if args.host.startswith("https://") or not args.host.startswith("http://localhost"):
                 print(f"⚠️  Remote host detected: {args.host}")
-                print("   For remote instances, use --no-start-earthmind flag")
-                print("   Example: --host https://your-remote-instance.com --no-start-earthmind")
+                print("   For remote instances, use --no-start-terraflow flag")
+                print("   Example: --host https://your-remote-instance.com --no-start-terraflow")
                 sys.exit(1)
 
-            earthmind_process = start_earthmind(args.host, args.port)
-            if not earthmind_process:
-                print("❌ Failed to start EarthMind")
+            terraflow_process = start_terraflow(args.host, args.port)
+            if not terraflow_process:
+                print("❌ Failed to start Terraflow")
                 sys.exit(1)
         # Just check if it's running
-        elif not check_earthmind_running(args.host):
-            print(f"❌ EarthMind is not running at {args.host}")
+        elif not check_terraflow_running(args.host):
+            print(f"❌ Terraflow is not running at {args.host}")
             if args.host.startswith("https://"):
-                print("   Make sure your remote EarthMind instance is accessible")
+                print("   Make sure your remote Terraflow instance is accessible")
             else:
-                print("Either start EarthMind manually or remove --no-start-earthmind flag")
+                print("Either start Terraflow manually or remove --no-start-terraflow flag")
             sys.exit(1)
         else:
-            print(f"🔗 Using existing EarthMind instance at {args.host}")
+            print(f"🔗 Using existing Terraflow instance at {args.host}")
             if args.host.startswith("https://"):
                 print("   ✅ Remote instance mode")
 
@@ -338,15 +338,15 @@ Examples:
         print(f"❌ Error: {e}")
         sys.exit(1)
     finally:
-        # Clean up EarthMind process
-        if earthmind_process:
-            print("\nStopping EarthMind server...")
-            earthmind_process.terminate()
+        # Clean up Terraflow process
+        if terraflow_process:
+            print("\nStopping Terraflow server...")
+            terraflow_process.terminate()
             try:
-                earthmind_process.wait(timeout=10)
+                terraflow_process.wait(timeout=10)
             except subprocess.TimeoutExpired:
-                earthmind_process.kill()
-            print("✅ EarthMind server stopped")
+                terraflow_process.kill()
+            print("✅ Terraflow server stopped")
 
 
 if __name__ == "__main__":

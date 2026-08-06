@@ -28,9 +28,9 @@ export const useGetSystemMessageGenQuery: useQueryFunctionType<
       },
       {
         headers: {
-          "X-EarthMind-Global-Var-COMPONENT_ID": compId,
-          "X-EarthMind-Global-Var-FLOW_ID": flowId,
-          "X-EarthMind-Global-Var-FIELD_NAME": fieldName,
+          "X-Terraflow-Global-Var-COMPONENT_ID": compId,
+          "X-Terraflow-Global-Var-FLOW_ID": flowId,
+          "X-Terraflow-Global-Var-FIELD_NAME": fieldName,
         },
       },
     );

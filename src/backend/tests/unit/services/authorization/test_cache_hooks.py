@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
-from earthmind.services.authorization.service import EarthMindAuthorizationService
+from terraflow.services.authorization.service import TerraflowAuthorizationService
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def authz_service():
     settings = SimpleNamespace(
         auth_settings=SimpleNamespace(AUTHZ_ENABLED=False, AUTHZ_SUPERUSER_BYPASS=True),
     )
-    return EarthMindAuthorizationService(settings)
+    return TerraflowAuthorizationService(settings)
 
 
 @pytest.mark.anyio

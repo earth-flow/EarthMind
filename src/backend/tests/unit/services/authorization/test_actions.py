@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from earthmind.services.authorization.actions import (
+from terraflow.services.authorization.actions import (
     DeploymentAction,
     FileAction,
     FlowAction,

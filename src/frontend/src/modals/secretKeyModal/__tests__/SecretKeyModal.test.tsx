@@ -31,7 +31,7 @@ jest.mock("@radix-ui/react-form", () => ({
 }));
 
 jest.mock("@/customization/feature-flags", () => ({
-  ENABLE_DATASTAX_EARTHMIND: false,
+  ENABLE_DATASTAX_TERRAFLOW: false,
 }));
 
 jest.mock("@/customization/hooks/use-custom-generate-token", () => ({

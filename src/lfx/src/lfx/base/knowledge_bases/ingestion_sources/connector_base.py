@@ -3,7 +3,7 @@
 Cloud connectors (S3, Google Drive, OneDrive, SharePoint, IBM COS)
 differ from ``FileUploadSource`` / ``FolderSource`` in two ways:
 
-1. They need **credentials** — resolved from EarthMind's
+1. They need **credentials** — resolved from Terraflow's
    ``variable_service`` by variable-name reference, not embedded in
    the request payload. Storing variable *names* in ``source_config``
    (instead of the secrets themselves) means the ``ingestion_run``
@@ -45,11 +45,11 @@ class KBConnectorSource(KBIngestionSource):
     requires_credentials = True
 
     async def resolve_secret(self, variable_name: str) -> str | None:
-        """Return the value of a EarthMind variable, or ``None`` if absent.
+        """Return the value of a Terraflow variable, or ``None`` if absent.
 
         Order of resolution:
 
-        1. EarthMind's ``variable_service`` scoped to ``self.user_id``.
+        1. Terraflow's ``variable_service`` scoped to ``self.user_id``.
         2. Process env var of the same name (fallback so desktop /
            single-user deployments can skip the UI step).
 
@@ -79,7 +79,7 @@ class KBConnectorSource(KBIngestionSource):
         if not value:
             msg = (
                 f"Required credential variable {variable_name!r} is not "
-                "configured. Set it via EarthMind's variable settings or as "
+                "configured. Set it via Terraflow's variable settings or as "
                 "an environment variable on the server."
             )
             raise ValueError(msg)
@@ -97,7 +97,7 @@ class KBConnectorSource(KBIngestionSource):
             return None
 
     async def _lookup_variable(self, user_uuid: UUID, variable_name: str) -> str | None:
-        """Look up ``variable_name`` through EarthMind's variable service.
+        """Look up ``variable_name`` through Terraflow's variable service.
 
         Isolated so tests can patch a single seam. Wrapped in a broad
         try/except because the variable service can raise a handful of
@@ -146,7 +146,7 @@ class OAuthConnectorBase(KBConnectorSource):
       (via ``gcloud auth`` / Azure CLI / Google OAuth Playground /
       Microsoft MSAL sample) to obtain a long-lived refresh token.
     * User stores the refresh token plus OAuth client id/secret as
-      EarthMind variables.
+      Terraflow variables.
     * The connector mints a short-lived access token on every list /
       fetch call by POSTing the refresh token back to the provider.
 
@@ -203,7 +203,7 @@ class OAuthConnectorBase(KBConnectorSource):
 
         Kept small and httpx-based on purpose — we don't need the full
         google-auth / msal SDKs just for a single POST, and avoiding
-        those deps keeps EarthMind's install footprint tight.
+        those deps keeps Terraflow's install footprint tight.
         """
         import httpx
 

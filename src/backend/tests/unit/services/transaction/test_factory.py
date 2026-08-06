@@ -3,10 +3,10 @@
 from unittest.mock import MagicMock
 
 import pytest
-from earthmind.services.factory import ServiceFactory
-from earthmind.services.schema import ServiceType
-from earthmind.services.transaction.factory import TransactionServiceFactory
-from earthmind.services.transaction.service import TransactionService
+from terraflow.services.factory import ServiceFactory
+from terraflow.services.schema import ServiceType
+from terraflow.services.transaction.factory import TransactionServiceFactory
+from terraflow.services.transaction.service import TransactionService
 
 
 class TestTransactionServiceFactory:

@@ -1,6 +1,6 @@
 # lfx-duckduckgo
 
-DuckDuckGo Search component as a standalone EarthMind Extension Bundle.
+DuckDuckGo Search component as a standalone Terraflow Extension Bundle.
 
 This is the first provider extracted from `lfx.components.<provider>`
 into a separate distribution.  The bundle ships a single component,
@@ -13,8 +13,8 @@ via `langchain-community`.
 pip install lfx-duckduckgo
 ```
 
-The bundle is registered automatically via the `earthmind.extensions`
-entry-point.  After install, restart your EarthMind server; the
+The bundle is registered automatically via the `terraflow.extensions`
+entry-point.  After install, restart your Terraflow server; the
 `DuckDuckGoSearchComponent` will appear in the palette under the
 `duckduckgo` bundle group.
 

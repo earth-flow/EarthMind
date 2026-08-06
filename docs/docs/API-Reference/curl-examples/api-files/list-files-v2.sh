@@ -1,4 +1,4 @@
 curl -X GET \
-  "$EARTHMIND_URL/api/v2/files" \
+  "$TERRAFLOW_URL/api/v2/files" \
   -H "accept: application/json" \
-  -H "x-api-key: $EARTHMIND_API_KEY"
+  -H "x-api-key: $TERRAFLOW_API_KEY"

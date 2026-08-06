@@ -1,3 +1,3 @@
-FROM earthmindai/earthmind:latest
+FROM terraflowai/terraflow:latest
 
-ENTRYPOINT ["python", "-m", "earthmind", "run"]
+ENTRYPOINT ["python", "-m", "terraflow", "run"]

@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/monitor/messages/session/01ce083d-748b-4b8d-97b6-33adbb6a528a?new_session_id=different_session_id`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/monitor/messages/session/01ce083d-748b-4b8d-97b6-33adbb6a528a?new_session_id=different_session_id`;
 
 const options = {
   method: 'PATCH',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
 };
 

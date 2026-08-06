@@ -1,5 +1,5 @@
 import pytest
-from earthmind.schema.data import Data
+from terraflow.schema.data import Data
 from lfx.components.flow_controls.notify import NotifyComponent
 
 from tests.base import ComponentTestBaseWithoutClient
@@ -89,7 +89,7 @@ class TestNotifyComponent(ComponentTestBaseWithoutClient):
     async def test_component_inheritance(self, component_class, default_kwargs):
         """Test that component properly inherits from Component base class."""
         component = await self.component_setup(component_class, default_kwargs)
-        from earthmind.custom import Component
+        from terraflow.custom import Component
 
         assert isinstance(component, Component)
 

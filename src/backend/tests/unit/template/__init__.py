@@ -1,1 +1,1 @@
-"""Template testing module for EarthMind."""
+"""Template testing module for Terraflow."""

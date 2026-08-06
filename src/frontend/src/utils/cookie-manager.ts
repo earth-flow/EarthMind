@@ -1,9 +1,9 @@
 import { Cookies } from "react-cookie";
 import {
-  EARTHMIND_ACCESS_TOKEN,
-  EARTHMIND_API_TOKEN,
-  EARTHMIND_AUTO_LOGIN_OPTION,
-  EARTHMIND_REFRESH_TOKEN,
+  TERRAFLOW_ACCESS_TOKEN,
+  TERRAFLOW_API_TOKEN,
+  TERRAFLOW_AUTO_LOGIN_OPTION,
+  TERRAFLOW_REFRESH_TOKEN,
 } from "@/constants/constants";
 
 class CookieManager {
@@ -69,10 +69,10 @@ class CookieManager {
   }
 
   public clearAuthCookies(): void {
-    this.remove(EARTHMIND_ACCESS_TOKEN);
-    this.remove(EARTHMIND_API_TOKEN);
-    this.remove(EARTHMIND_REFRESH_TOKEN);
-    this.remove(EARTHMIND_AUTO_LOGIN_OPTION);
+    this.remove(TERRAFLOW_ACCESS_TOKEN);
+    this.remove(TERRAFLOW_API_TOKEN);
+    this.remove(TERRAFLOW_REFRESH_TOKEN);
+    this.remove(TERRAFLOW_AUTO_LOGIN_OPTION);
   }
 }
 

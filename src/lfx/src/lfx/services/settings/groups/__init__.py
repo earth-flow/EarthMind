@@ -1,4 +1,4 @@
-"""Logical groupings of EarthMind settings.
+"""Logical groupings of Terraflow settings.
 
 Each module defines a ``BaseModel`` mixin that owns a cohesive subset of fields
 plus their intra-group validators. They are composed into the final

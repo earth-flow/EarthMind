@@ -36,7 +36,7 @@ class TestSSRFSafeGet:
     def test_direct_internal_ip_is_blocked(self):
         """A literal internal IP is blocked before any request is made."""
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("requests.get") as mock_get,
             pytest.raises(SSRFProtectionError),
         ):
@@ -46,7 +46,7 @@ class TestSSRFSafeGet:
     def test_cloud_metadata_endpoint_is_blocked(self):
         """The cloud metadata endpoint is blocked before any request is made."""
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("requests.get") as mock_get,
             pytest.raises(SSRFProtectionError),
         ):
@@ -56,7 +56,7 @@ class TestSSRFSafeGet:
     def test_public_url_returns_response(self):
         """A public URL passes validation and returns the response."""
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch("requests.get", return_value=_response(200, body=b"feed")) as mock_get,
         ):
@@ -69,7 +69,7 @@ class TestSSRFSafeGet:
     def test_redirect_to_internal_is_blocked(self):
         """A public URL that redirects to an internal address is blocked at the redirect hop."""
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch(
                 "requests.get",
@@ -89,7 +89,7 @@ class TestSSRFSafeGet:
             _response(200, body=b"final"),
         ]
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch("requests.get", side_effect=responses) as mock_get,
         ):
@@ -102,7 +102,7 @@ class TestSSRFSafeGet:
         """A relative redirect Location resolves against the current URL and is followed."""
         responses = [_response(302, location="/next"), _response(200, body=b"final")]
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch("requests.get", side_effect=responses) as mock_get,
         ):
@@ -113,7 +113,7 @@ class TestSSRFSafeGet:
     def test_scheme_change_redirect_is_blocked(self):
         """A redirect that switches to a non-http(s) scheme is blocked."""
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch("requests.get", return_value=_response(302, location="file:///etc/passwd")),
             pytest.raises(SSRFProtectionError),
@@ -123,7 +123,7 @@ class TestSSRFSafeGet:
     def test_too_many_redirects_raises(self):
         """A redirect loop is bounded and raises instead of looping forever."""
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch(
                 "requests.get",
@@ -137,7 +137,7 @@ class TestSSRFSafeGet:
     def test_protection_disabled_allows_internal(self):
         """With SSRF protection disabled, no validation is applied (user opted out)."""
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "false"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "false"}),
             patch("requests.get", return_value=_response(200, body=b"internal")) as mock_get,
         ):
             response = ssrf_safe_get("http://127.0.0.1:8080/secret", timeout=5)
@@ -151,26 +151,26 @@ class TestSSRFSafeGet:
             "Authorization": "Bearer secret-token",
             "cookie": "session=abc",  # lowercase: stripping must be case-insensitive
             "Proxy-Authorization": "Basic xyz",
-            "User-Agent": "earthmind-test",
+            "User-Agent": "terraflow-test",
         }
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch("requests.get", side_effect=responses) as mock_get,
         ):
             ssrf_safe_get("http://feed.example.com/a", timeout=5, headers=headers)
         # First hop (intended host) keeps all headers; second hop (cross-host) drops the secrets.
         assert mock_get.call_args_list[0].kwargs["headers"] == headers
-        assert mock_get.call_args_list[1].kwargs["headers"] == {"User-Agent": "earthmind-test"}
+        assert mock_get.call_args_list[1].kwargs["headers"] == {"User-Agent": "terraflow-test"}
         # The caller's dict must not be mutated.
         assert "Authorization" in headers
 
     def test_same_host_redirect_keeps_headers(self):
         """Headers (including credentials) are preserved across a same-host redirect."""
         responses = [_response(302, location="http://feed.example.com/next"), _response(200, body=b"final")]
-        headers = {"Authorization": "Bearer secret-token", "User-Agent": "earthmind-test"}
+        headers = {"Authorization": "Bearer secret-token", "User-Agent": "terraflow-test"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_SSRF_PROTECTION_ENABLED": "true"}),
+            patch.dict(os.environ, {"TERRAFLOW_SSRF_PROTECTION_ENABLED": "true"}),
             patch("socket.getaddrinfo", side_effect=_resolve_public),
             patch("requests.get", side_effect=responses) as mock_get,
         ):

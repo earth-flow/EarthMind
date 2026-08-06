@@ -2,45 +2,45 @@
 # ci-push.sh
 #
 # PURPOSE
-#   Push (upsert) EarthMind flow JSON files to a remote EarthMind instance
+#   Push (upsert) Terraflow flow JSON files to a remote Terraflow instance
 #   using `lfx push`.  Stable flow IDs mean re-running always converges.
 #
 # USAGE
 #   chmod +x ci-push.sh
-#   export EARTHMIND_URL=https://staging.earthmind.example.com
-#   export EARTHMIND_API_KEY=<your-api-key>
+#   export TERRAFLOW_URL=https://staging.terraflow.example.com
+#   export TERRAFLOW_API_KEY=<your-api-key>
 #   ./ci-push.sh
 #
 # ENVIRONMENT VARIABLES — connection (pick one approach)
 #
 #   Approach A: direct URL + key (simplest)
-#     EARTHMIND_URL        URL of the target EarthMind instance.
-#     EARTHMIND_API_KEY    API key for that instance.
+#     TERRAFLOW_URL        URL of the target Terraflow instance.
+#     TERRAFLOW_API_KEY    API key for that instance.
 #
 #   Approach B: named environment from a TOML config
-#     EARTHMIND_ENV                 Name of the environment block.
+#     TERRAFLOW_ENV                 Name of the environment block.
 #                                  e.g. staging  or  production
-#     EARTHMIND_ENVIRONMENTS_FILE   Path to environments TOML.
-#                                  Default: earthmind-environments.toml
+#     TERRAFLOW_ENVIRONMENTS_FILE   Path to environments TOML.
+#                                  Default: terraflow-environments.toml
 #     <api_key_env var>            The env var named in api_key_env inside the
 #                                  TOML block.  Must be exported separately.
 #
 #   The TOML format:
 #
 #     [environments.staging]
-#     url         = "https://staging.earthmind.example.com"
-#     api_key_env  = "EARTHMIND_STAGING_API_KEY"
+#     url         = "https://staging.terraflow.example.com"
+#     api_key_env  = "TERRAFLOW_STAGING_API_KEY"
 #
 #     [environments.production]
-#     url         = "https://earthmind.example.com"
-#     api_key_env  = "EARTHMIND_PROD_API_KEY"
+#     url         = "https://terraflow.example.com"
+#     api_key_env  = "TERRAFLOW_PROD_API_KEY"
 #
 # ENVIRONMENT VARIABLES — behaviour
 #   FLOWS_DIR            Directory containing flow JSON files.
 #                        Default: flows/
-#   EARTHMIND_PROJECT     Project (folder) name on the remote instance.
+#   TERRAFLOW_PROJECT     Project (folder) name on the remote instance.
 #                        Default: (no project — flows go to the default folder)
-#   EARTHMIND_PROJECT_ID  Project UUID.  Takes precedence over EARTHMIND_PROJECT.
+#   TERRAFLOW_PROJECT_ID  Project UUID.  Takes precedence over TERRAFLOW_PROJECT.
 #   DRY_RUN              Set to "true" to show what would be pushed without
 #                        making any changes.  Default: false
 #   LFX_VERSION          lfx PEP 508 version specifier suffix appended directly
@@ -62,12 +62,12 @@ set -euo pipefail
 # ── Configuration ─────────────────────────────────────────────────────────── #
 
 FLOWS_DIR="${FLOWS_DIR:-flows/}"
-EARTHMIND_ENV="${EARTHMIND_ENV:-}"
-EARTHMIND_ENVIRONMENTS_FILE="${EARTHMIND_ENVIRONMENTS_FILE:-earthmind-environments.toml}"
-EARTHMIND_URL="${EARTHMIND_URL:-}"
-EARTHMIND_API_KEY="${EARTHMIND_API_KEY:-}"
-EARTHMIND_PROJECT="${EARTHMIND_PROJECT:-}"
-EARTHMIND_PROJECT_ID="${EARTHMIND_PROJECT_ID:-}"
+TERRAFLOW_ENV="${TERRAFLOW_ENV:-}"
+TERRAFLOW_ENVIRONMENTS_FILE="${TERRAFLOW_ENVIRONMENTS_FILE:-terraflow-environments.toml}"
+TERRAFLOW_URL="${TERRAFLOW_URL:-}"
+TERRAFLOW_API_KEY="${TERRAFLOW_API_KEY:-}"
+TERRAFLOW_PROJECT="${TERRAFLOW_PROJECT:-}"
+TERRAFLOW_PROJECT_ID="${TERRAFLOW_PROJECT_ID:-}"
 DRY_RUN="${DRY_RUN:-false}"
 LFX_VERSION="${LFX_VERSION:-}"
 
@@ -80,43 +80,43 @@ fi
 # ── Install lfx ───────────────────────────────────────────────────────────── #
 
 echo "==> Installing lfx${LFX_VERSION:+ ${LFX_VERSION}} ..."
-pip install --quiet "lfx${LFX_VERSION}" earthmind-sdk
+pip install --quiet "lfx${LFX_VERSION}" terraflow-sdk
 
 # ── Build environments file if using Approach B ───────────────────────────── #
 
-if [[ -n "${EARTHMIND_ENV}" && ! -f "${EARTHMIND_ENVIRONMENTS_FILE}" ]]; then
-  ENV_UPPER="${EARTHMIND_ENV^^}"
+if [[ -n "${TERRAFLOW_ENV}" && ! -f "${TERRAFLOW_ENVIRONMENTS_FILE}" ]]; then
+  ENV_UPPER="${TERRAFLOW_ENV^^}"
   ENV_UPPER="${ENV_UPPER//-/_}"
-  URL_VAR="EARTHMIND_${ENV_UPPER}_URL"
-  KEY_VAR="EARTHMIND_${ENV_UPPER}_API_KEY"
+  URL_VAR="TERRAFLOW_${ENV_UPPER}_URL"
+  KEY_VAR="TERRAFLOW_${ENV_UPPER}_API_KEY"
 
-  echo "==> Writing ${EARTHMIND_ENVIRONMENTS_FILE} for environment '${EARTHMIND_ENV}' ..."
+  echo "==> Writing ${TERRAFLOW_ENVIRONMENTS_FILE} for environment '${TERRAFLOW_ENV}' ..."
   printf '[environments.%s]\nurl = "%s"\napi_key_env = "%s"\n' \
-    "${EARTHMIND_ENV}" \
+    "${TERRAFLOW_ENV}" \
     "${!URL_VAR:-}" \
     "${KEY_VAR}" \
-    > "${EARTHMIND_ENVIRONMENTS_FILE}"
-  export EARTHMIND_ENVIRONMENTS_FILE
+    > "${TERRAFLOW_ENVIRONMENTS_FILE}"
+  export TERRAFLOW_ENVIRONMENTS_FILE
 fi
 
 # ── Build lfx push command ────────────────────────────────────────────────── #
 
 PUSH_CMD=(lfx push --dir "${FLOWS_DIR}")
 
-if [[ -n "${EARTHMIND_ENV}" ]]; then
-  PUSH_CMD+=(--env "${EARTHMIND_ENV}")
-elif [[ -n "${EARTHMIND_URL}" ]]; then
-  PUSH_CMD+=(--target "${EARTHMIND_URL}")
-  [[ -n "${EARTHMIND_API_KEY}" ]] && PUSH_CMD+=(--api-key "${EARTHMIND_API_KEY}")
+if [[ -n "${TERRAFLOW_ENV}" ]]; then
+  PUSH_CMD+=(--env "${TERRAFLOW_ENV}")
+elif [[ -n "${TERRAFLOW_URL}" ]]; then
+  PUSH_CMD+=(--target "${TERRAFLOW_URL}")
+  [[ -n "${TERRAFLOW_API_KEY}" ]] && PUSH_CMD+=(--api-key "${TERRAFLOW_API_KEY}")
 else
-  echo "ERROR: set EARTHMIND_ENV (Approach B) or EARTHMIND_URL (Approach A)" >&2
+  echo "ERROR: set TERRAFLOW_ENV (Approach B) or TERRAFLOW_URL (Approach A)" >&2
   exit 1
 fi
 
-if [[ -n "${EARTHMIND_PROJECT_ID}" ]]; then
-  PUSH_CMD+=(--project-id "${EARTHMIND_PROJECT_ID}")
-elif [[ -n "${EARTHMIND_PROJECT}" ]]; then
-  PUSH_CMD+=(--project "${EARTHMIND_PROJECT}")
+if [[ -n "${TERRAFLOW_PROJECT_ID}" ]]; then
+  PUSH_CMD+=(--project-id "${TERRAFLOW_PROJECT_ID}")
+elif [[ -n "${TERRAFLOW_PROJECT}" ]]; then
+  PUSH_CMD+=(--project "${TERRAFLOW_PROJECT}")
 fi
 
 [[ "${DRY_RUN}" == "true" ]] && PUSH_CMD+=(--dry-run)

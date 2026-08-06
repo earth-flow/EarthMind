@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-_API_V1 = Path(__file__).resolve().parents[4] / "base" / "earthmind" / "api" / "v1"
+_API_V1 = Path(__file__).resolve().parents[4] / "base" / "terraflow" / "api" / "v1"
 _FLOWS_FILE = _API_V1 / "flows.py"
 _PROJECTS_FILE = _API_V1 / "projects.py"
-_HELPERS_FLOW = Path(__file__).resolve().parents[4] / "base" / "earthmind" / "helpers" / "flow.py"
+_HELPERS_FLOW = Path(__file__).resolve().parents[4] / "base" / "terraflow" / "helpers" / "flow.py"
 
 
 def _parse_async_funcs(path: Path) -> dict[str, ast.AsyncFunctionDef]:

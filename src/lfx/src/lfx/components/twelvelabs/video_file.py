@@ -22,7 +22,7 @@ class VideoFileComponent(BaseFileComponent):
     description = "Load a video file in common video formats."
     icon = "TwelveLabs"
     name = "VideoFile"
-    documentation = "https://github.com/twelvelabs-io/twelvelabs-developer-experience/blob/main/integrations/EarthMind/TWELVE_LABS_COMPONENTS_README.md"
+    documentation = "https://github.com/twelvelabs-io/twelvelabs-developer-experience/blob/main/integrations/Terraflow/TWELVE_LABS_COMPONENTS_README.md"
 
     VALID_EXTENSIONS = [
         # Common video formats

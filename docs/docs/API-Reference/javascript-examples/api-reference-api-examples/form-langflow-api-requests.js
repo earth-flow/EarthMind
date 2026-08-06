@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_SERVER_URL ?? ""}/api/v1/run/${process.env.FLOW_ID ?? ""}?stream=false`;
+const url = `${process.env.TERRAFLOW_SERVER_URL ?? ""}/api/v1/run/${process.env.FLOW_ID ?? ""}?stream=false`;
 
 const options = {
   method: 'POST',
   headers: {
     "Content-Type": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
   body: JSON.stringify({
   "input_value": "hello world!",

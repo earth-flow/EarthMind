@@ -1,11 +1,11 @@
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "EARTHMIND_SERVER_URL/api/v1/",
+  baseURL: "TERRAFLOW_SERVER_URL/api/v1/",
   defaultHeaders: {
-    "x-api-key": "EARTHMIND_API_KEY"
+    "x-api-key": "TERRAFLOW_API_KEY"
   },
-  apiKey: "dummy-api-key" // Required by OpenAI SDK but not used by EarthMind
+  apiKey: "dummy-api-key" // Required by OpenAI SDK but not used by Terraflow
 });
 
 const response = await client.responses.create({

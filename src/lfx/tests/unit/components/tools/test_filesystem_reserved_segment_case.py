@@ -18,7 +18,7 @@ from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponen
 
 @pytest.fixture
 def component(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> FileSystemToolComponent:
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
     c = FileSystemToolComponent(root_path="", read_only=False)
     # Shared mode keeps the test focused on the reservation guard, not on
     # user-isolation plumbing.

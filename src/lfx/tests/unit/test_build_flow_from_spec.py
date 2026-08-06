@@ -133,7 +133,7 @@ edges:
         assert "nodes" in flow["data"]
         assert "edges" in flow["data"]
         assert "viewport" in flow["data"]
-        # Each node should have proper EarthMind structure
+        # Each node should have proper Terraflow structure
         for node in flow["data"]["nodes"]:
             assert "data" in node
             assert "id" in node["data"]

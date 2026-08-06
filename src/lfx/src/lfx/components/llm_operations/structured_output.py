@@ -26,7 +26,7 @@ from lfx.schema.table import EditMode
 class StructuredOutputComponent(Component):
     display_name = "Structured Output"
     description = "Uses an LLM to generate structured data. Ideal for extraction and consistency."
-    documentation: str = "https://docs.earthmind.org/structured-output"
+    documentation: str = "https://docs.terraflow.org/structured-output"
     name = "StructuredOutput"
     icon = "braces"
 

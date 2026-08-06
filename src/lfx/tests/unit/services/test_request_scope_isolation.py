@@ -144,10 +144,10 @@ async def test_no_env_fallback_suppresses_env_in_variable_service():
     assert not mock_getenv.call_args_list, f"os.getenv must not be consulted, got: {mock_getenv.call_args_list}"
 
 
-async def test_no_env_fallback_suppresses_earthmind_request_variables_env():
-    """Env fallback disabled + no active scope must not leak the process EARTHMIND_REQUEST_VARIABLES blob.
+async def test_no_env_fallback_suppresses_terraflow_request_variables_env():
+    """Env fallback disabled + no active scope must not leak the process TERRAFLOW_REQUEST_VARIABLES blob.
 
-    Regression: _get_request_variables() read os.getenv("EARTHMIND_REQUEST_VARIABLES")
+    Regression: _get_request_variables() read os.getenv("TERRAFLOW_REQUEST_VARIABLES")
     before the no-env-fallback gate, so an empty-global_vars request under
     --no-env-fallback (which binds the scope to None) still resolved credentials
     from the process env blob, violating the "never reads os.environ" contract.
@@ -155,7 +155,7 @@ async def test_no_env_fallback_suppresses_earthmind_request_variables_env():
     service = VariableService()
     scope_token = activate_request_variables(None)  # None == empty global_vars in serve
     flag_token = activate_no_env_fallback(disabled=True)
-    with patch.dict(os.environ, {"EARTHMIND_REQUEST_VARIABLES": '{"leaked_token": "SHOULD-NOT-LEAK"}'}):
+    with patch.dict(os.environ, {"TERRAFLOW_REQUEST_VARIABLES": '{"leaked_token": "SHOULD-NOT-LEAK"}'}):
         try:
             assert await service.get_variable("leaked_token") is None
         finally:
@@ -163,12 +163,12 @@ async def test_no_env_fallback_suppresses_earthmind_request_variables_env():
             reset_request_variables(scope_token)
 
 
-async def test_earthmind_request_variables_env_blob_used_when_fallback_enabled():
+async def test_terraflow_request_variables_env_blob_used_when_fallback_enabled():
     """Env blob resolves when fallback is enabled: null dropped, structured -> valid JSON string."""
     service = VariableService()
     scope_token = activate_request_variables(None)
     blob = '{"shared_token": "from-env-blob", "null_cred": null, "nested": {"a": 1}}'
-    with patch.dict(os.environ, {"EARTHMIND_REQUEST_VARIABLES": blob}):
+    with patch.dict(os.environ, {"TERRAFLOW_REQUEST_VARIABLES": blob}):
         try:
             assert await service.get_variable("shared_token") == "from-env-blob"
             # null is dropped (not the truthy string "None"); env/None fallthrough -> None.
@@ -189,7 +189,7 @@ async def test_no_env_fallback_flag_is_isolated_per_request():
     observed: dict[str, str | None] = {}
 
     async def strict_request() -> None:
-        # Active (non-None) scope so resolution never reads EARTHMIND_REQUEST_VARIABLES.
+        # Active (non-None) scope so resolution never reads TERRAFLOW_REQUEST_VARIABLES.
         scope = activate_request_variables({"unused": "x"})
         flag = activate_no_env_fallback(disabled=True)
         try:

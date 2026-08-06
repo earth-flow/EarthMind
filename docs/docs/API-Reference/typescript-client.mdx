@@ -1,76 +1,76 @@
 ---
-title: EarthMind TypeScript client
+title: Terraflow TypeScript client
 slug: /typescript-client
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-The EarthMind TypeScript client allows your TypeScript applications to programmatically interact with the EarthMind API.
+The Terraflow TypeScript client allows your TypeScript applications to programmatically interact with the Terraflow API.
 
-For the client code repository, see [earthmind-client-ts](https://github.com/datastax/earthmind-client-ts/).
+For the client code repository, see [terraflow-client-ts](https://github.com/datastax/terraflow-client-ts/).
 
-For the npm package, see [@datastax/earthmind-client](https://www.npmjs.com/package/@datastax/earthmind-client).
+For the npm package, see [@datastax/terraflow-client](https://www.npmjs.com/package/@datastax/terraflow-client).
 
-## Install the EarthMind TypeScript package
+## Install the Terraflow TypeScript package
 
-To install the EarthMind typescript client package, use one of the following commands:
+To install the Terraflow typescript client package, use one of the following commands:
 
 <Tabs>
 <TabItem value="npm" label="npm" default>
 
 ```bash
-npm install @datastax/earthmind-client
+npm install @datastax/terraflow-client
 ```
 
 </TabItem>
 <TabItem value="yarn" label="yarn">
 
 ```bash
-yarn add @datastax/earthmind-client
+yarn add @datastax/terraflow-client
 ```
 
 </TabItem>
 <TabItem value="pnpm" label="pnpm">
 
 ```bash
-pnpm add @datastax/earthmind-client
+pnpm add @datastax/terraflow-client
 ```
 
 </TabItem>
 </Tabs>
 
-## Initialize the EarthMind TypeScript client
+## Initialize the Terraflow TypeScript client
 
 1. Import the client into your code.
 
     ```tsx
-    import { EarthMindClient } from "@datastax/earthmind-client";
+    import { TerraflowClient } from "@datastax/terraflow-client";
     ```
 
-2. Initialize a `EarthMindClient` object to interact with your server:
+2. Initialize a `TerraflowClient` object to interact with your server:
 
     ```tsx
     const baseUrl = "BASE_URL";
     const apiKey = "API_KEY";
-    const client = new EarthMindClient({ baseUrl, apiKey });
+    const client = new TerraflowClient({ baseUrl, apiKey });
     ```
 
     Replace `BASE_URL` and `API_KEY` with values from your deployment.
-    The default EarthMind base URL is `http://localhost:7860`.
+    The default Terraflow base URL is `http://localhost:7860`.
     To create an API key, see [API keys and authentication](/api-keys-and-authentication).
 
 ## Connect to your server and get responses
 
-1. With your EarthMind client initialized, test the connection by calling your EarthMind server.
+1. With your Terraflow client initialized, test the connection by calling your Terraflow server.
 
     The following example runs a flow (`runFlow`) by sending the flow ID and a chat input string:
 
     ```tsx
-    import { EarthMindClient } from "@datastax/earthmind-client";
+    import { TerraflowClient } from "@datastax/terraflow-client";
 
     const baseUrl = "http://localhost:7860";
-    const client = new EarthMindClient({ baseUrl });
+    const client = new TerraflowClient({ baseUrl });
 
     async function runFlow() {
         const flowId = "aa5a238b-02c0-4f03-bc5c-cc3a83335cdf";
@@ -86,14 +86,14 @@ pnpm add @datastax/earthmind-client
 
     Replace the following:
 
-    * `baseUrl`: The URL of your EarthMind server.
+    * `baseUrl`: The URL of your Terraflow server.
     * `flowId`: The ID of the flow you want to run.
     * `input`: The chat input message you want to send to trigger the flow.
     This is only valid for flows with a **Chat Input** component.
 
-2. Review the result to confirm that the client connected to your EarthMind server.
+2. Review the result to confirm that the client connected to your Terraflow server.
 
-    The following example shows the response from a well-formed `runFlow` request that reached the EarthMind server and successfully started the flow:
+    The following example shows the response from a well-formed `runFlow` request that reached the Terraflow server and successfully started the flow:
 
     ```
     FlowResponse {
@@ -122,7 +122,7 @@ pnpm add @datastax/earthmind-client
 
 The TypeScript client can do more than just connect to your server and run a flow.
 
-This example builds on the quickstart with additional features for interacting with EarthMind:
+This example builds on the quickstart with additional features for interacting with Terraflow:
 
 1. Pass [tweaks](/concepts-publish#input-schema) as an object with the request.
 Tweaks are programmatic run-time overrides for component settings.
@@ -150,15 +150,15 @@ Tweaks are programmatic run-time overrides for component settings.
     ```
 
     The response is a [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream) of objects.
-    For more information on streaming EarthMind responses, see the [`/run` endpoint](/api-flows-run#run-flow).
+    For more information on streaming Terraflow responses, see the [`/run` endpoint](/api-flows-run#run-flow).
 
 4. Run the modified TypeScript application to run the flow with `tweaks`, `session_id`, and streaming:
 
     ```tsx
-    import { EarthMindClient } from "@datastax/earthmind-client";
+    import { TerraflowClient } from "@datastax/terraflow-client";
 
     const baseUrl = "http://localhost:7860";
-    const client = new EarthMindClient({ baseUrl });
+    const client = new TerraflowClient({ baseUrl });
 
     async function runFlow() {
         const flowId = "aa5a238b-02c0-4f03-bc5c-cc3a83335cdf";
@@ -181,7 +181,7 @@ Tweaks are programmatic run-time overrides for component settings.
 
     Replace the following:
 
-    * `baseUrl`: The URL of your EarthMind server.
+    * `baseUrl`: The URL of your Terraflow server.
     * `flowId`: The ID of the flow you want to run.
     * `input`: The chat input message you want to send to trigger the flow, assuming the flow has a **Chat Input** component.
     * `tweaks`: Any tweak modifiers to apply to the flow run.
@@ -268,32 +268,32 @@ Tweaks are programmatic run-time overrides for component settings.
 
     </details>
 
-## Retrieve EarthMind logs with the TypeScript client
+## Retrieve Terraflow logs with the TypeScript client
 
-To retrieve [EarthMind logs](/logging), you must enable log retrieval on your EarthMind server by including the following values in your EarthMind `.env` file:
+To retrieve [Terraflow logs](/logging), you must enable log retrieval on your Terraflow server by including the following values in your Terraflow `.env` file:
 
 ```text
-EARTHMIND_ENABLE_LOG_RETRIEVAL=True
-EARTHMIND_LOG_RETRIEVER_BUFFER_SIZE=10000
-EARTHMIND_LOG_LEVEL=DEBUG
+TERRAFLOW_ENABLE_LOG_RETRIEVAL=True
+TERRAFLOW_LOG_RETRIEVER_BUFFER_SIZE=10000
+TERRAFLOW_LOG_LEVEL=DEBUG
 ```
 
 The following example script starts streaming logs in the background, and then runs a flow so you can monitor the flow run:
 
 ```tsx
-import { EarthMindClient } from "@datastax/earthmind-client";
+import { TerraflowClient } from "@datastax/terraflow-client";
 
 const baseUrl = "http://localhost:7863";
 const flowId = "86f0bf45-0544-4e88-b0b1-8e622da7a7f0";
 
-async function runFlow(client: EarthMindClient) {
+async function runFlow(client: TerraflowClient) {
     const input = "Is anyone there?";
     const response = await client.flow(flowId).run(input);
     console.log('Flow response:', response);
 }
 
 async function main() {
-    const client = new EarthMindClient({ baseUrl: baseUrl });
+    const client = new TerraflowClient({ baseUrl: baseUrl });
 
     // Start streaming logs
     console.log('Starting log stream...');
@@ -311,7 +311,7 @@ main().catch(console.error);
 
 Replace the following:
 
-* `baseUrl`: The URL of your EarthMind server.
+* `baseUrl`: The URL of your Terraflow server.
 * `flowId`: The ID of the flow you want to run.
 * `input`: The chat input message you want to send to trigger the flow, assuming the flow has a **Chat Input** component.
 
@@ -380,7 +380,7 @@ Flow response: FlowResponse {
 }
 Log: Log {
   timestamp: 2025-05-30T11:49:18.094Z,
-  message: `2025-05-30T07:49:18.094364-0400 DEBUG Vertex OpenAIModel-RtlZm, result: <earthmind.graph.utils.UnbuiltResult object at 0x364d24dd0>, object: {'text_output': "Hey there! I'm here and ready to help you build something awesome with AI. What are you thinking about creating today?"}\n`
+  message: `2025-05-30T07:49:18.094364-0400 DEBUG Vertex OpenAIModel-RtlZm, result: <terraflow.graph.utils.UnbuiltResult object at 0x364d24dd0>, object: {'text_output': "Hey there! I'm here and ready to help you build something awesome with AI. What are you thinking about creating today?"}\n`
 }
 ```
 

@@ -3,9 +3,9 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pytest
-from earthmind.services.telemetry.opentelemetry import OpenTelemetry
-from earthmind.services.telemetry.schema import DeploymentPayload
-from earthmind.services.telemetry.service import TelemetryService
+from terraflow.services.telemetry.opentelemetry import OpenTelemetry
+from terraflow.services.telemetry.schema import DeploymentPayload
+from terraflow.services.telemetry.service import TelemetryService
 
 
 @pytest.fixture

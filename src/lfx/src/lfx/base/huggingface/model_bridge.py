@@ -130,4 +130,4 @@ class LangChainHFModel(Model):
 #         model=model,
 #         tools=[hf_tool],
 #     )
-#     rprint(code_agent.run("Search for EarthMind on DuckDuckGo and return the first result"))
+#     rprint(code_agent.run("Search for Terraflow on DuckDuckGo and return the first result"))

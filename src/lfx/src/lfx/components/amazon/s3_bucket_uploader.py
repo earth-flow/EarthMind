@@ -80,7 +80,7 @@ class S3BucketUploaderComponent(Component):
             value="By Data",
             info=(
                 "Choose the strategy to upload the file. By Data means that the source file "
-                "is parsed and stored as EarthMind data. By File Name means that the source "
+                "is parsed and stored as Terraflow data. By File Name means that the source "
                 "file is uploaded as is."
             ),
         ),

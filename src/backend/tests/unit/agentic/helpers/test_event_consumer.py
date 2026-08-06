@@ -3,7 +3,7 @@
 import asyncio
 import json
 
-from earthmind.agentic.services.helpers.event_consumer import consume_streaming_events, parse_event_data
+from terraflow.agentic.services.helpers.event_consumer import consume_streaming_events, parse_event_data
 
 
 class TestParseEventData:

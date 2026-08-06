@@ -44,7 +44,7 @@ class TestPortAvailability:
 
 
 class TestBackendAuthToken:
-    """Test internal Composer-to-EarthMind backend authentication config."""
+    """Test internal Composer-to-Terraflow backend authentication config."""
 
     def test_backend_auth_member_config_adds_internal_header(self, mcp_service):
         project_id = "backend-auth-test"

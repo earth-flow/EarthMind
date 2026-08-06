@@ -11,16 +11,16 @@ const isProduction = process.env.NODE_ENV === "production";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "EarthMind Documentation",
+  title: "Terraflow Documentation",
   tagline:
-    "EarthMind is a low-code app builder for RAG and multi-agent AI applications.",
+    "Terraflow is a low-code app builder for RAG and multi-agent AI applications.",
   favicon: "img/favicon.ico",
-  url: "https://docs.earthmind.org",
+  url: "https://docs.terraflow.org",
   baseUrl: process.env.BASE_URL ? process.env.BASE_URL : "/",
   onBrokenLinks: "throw",
   onBrokenAnchors: "warn",
-  organizationName: "earthmind-ai",
-  projectName: "earthmind",
+  organizationName: "terraflow-ai",
+  projectName: "terraflow",
   trailingSlash: false,
   staticDirectories: ["static"],
   markdown: {
@@ -178,7 +178,7 @@ const config = {
           },
           {
             id: "workflow",
-            spec: "openapi/earthmind-workflows-openapi.json",
+            spec: "openapi/terraflow-workflows-openapi.json",
             route: "/api/workflow",
           },
         ],
@@ -189,15 +189,15 @@ const config = {
     ],
   ],
   plugins: [
-    // Alias so MDX can import code from the EarthMind repo with !!raw-loader!@earthmind/src/...
-    function earthmindCodeImportPlugin(context) {
+    // Alias so MDX can import code from the Terraflow repo with !!raw-loader!@terraflow/src/...
+    function terraflowCodeImportPlugin(context) {
       return {
-        name: "earthmind-code-import",
+        name: "terraflow-code-import",
         configureWebpack() {
           return {
             resolve: {
               alias: {
-                "@earthmind": path.resolve(context.siteDir, ".."),
+                "@terraflow": path.resolve(context.siteDir, ".."),
               },
             },
           };
@@ -214,11 +214,11 @@ const config = {
           {
             to: "/",
             from: [
-              "/whats-new-a-new-chapter-earthmind",
-              "/👋 Welcome-to-EarthMind",
-              "/getting-started-welcome-to-earthmind",
+              "/whats-new-a-new-chapter-terraflow",
+              "/👋 Welcome-to-Terraflow",
+              "/getting-started-welcome-to-terraflow",
               "/guides-new-to-llms",
-              "/about-earthmind",
+              "/about-terraflow",
             ],
           },
           {
@@ -364,13 +364,13 @@ const config = {
           {
             to: "/bundles-google",
             from: [
-              "/integrations-setup-google-oauth-earthmind",
+              "/integrations-setup-google-oauth-terraflow",
               "/integrations-google-big-query",
             ],
           },
           {
             to: "/bundles-vertexai",
-            from: "/integrations-setup-google-cloud-vertex-ai-earthmind",
+            from: "/integrations-setup-google-cloud-vertex-ai-terraflow",
           },
           {
             to: "/develop-application",
@@ -452,7 +452,7 @@ const config = {
       navbar: {
         hideOnScroll: false,
         logo: {
-          alt: "EarthMind",
+          alt: "Terraflow",
           src: "img/lf-docs-light.svg",
           srcDark: "img/lf-docs-dark.svg",
         },
@@ -464,7 +464,7 @@ const config = {
           // right
           {
             position: "right",
-            href: "https://github.com/earthmind-ai/earthmind",
+            href: "https://github.com/terraflow-ai/terraflow",
             className: "header-github-link",
             target: "_blank",
             rel: null,
@@ -474,11 +474,11 @@ const config = {
             'data-channel': 'docs',
             'data-element-id': 'social-github',
             'data-namespace': 'header',
-            'data-platform-title': 'EarthMind'
+            'data-platform-title': 'Terraflow'
           },
           {
             position: "right",
-            href: "https://twitter.com/earthmind_ai",
+            href: "https://twitter.com/terraflow_ai",
             className: "header-twitter-link",
             target: "_blank",
             rel: null,
@@ -488,7 +488,7 @@ const config = {
             'data-channel': 'docs',
             'data-element-id': 'social-twitter',
             'data-namespace': 'header',
-            'data-platform-title': 'EarthMind'
+            'data-platform-title': 'Terraflow'
           },
           {
             position: "right",
@@ -502,7 +502,7 @@ const config = {
             'data-channel': 'docs',
             'data-element-id': 'social-discord',
             'data-namespace': 'header',
-            'data-platform-title': 'EarthMind'
+            'data-platform-title': 'Terraflow'
           },
         ],
       },
@@ -537,7 +537,7 @@ const config = {
             items: [
               {
                 html: `<div class="footer-links">
-                  <span>© ${new Date().getFullYear()} EarthMind</span>
+                  <span>© ${new Date().getFullYear()} Terraflow</span>
                   <span id="preferenceCenterContainer"> ·&nbsp; <a href="#" onclick="if(typeof window !== 'undefined' && window.truste && window.truste.eu && window.truste.eu.clickListener) { window.truste.eu.clickListener(); } return false;" style="cursor: pointer;">Manage Privacy Choices</a></span>
                   </div>`,
               },
@@ -549,7 +549,7 @@ const config = {
         appId: "UZK6BDPCVY",
         // public key, safe to commit
         apiKey: "adbd7686dceb1cd510d5ce20d04bf74c",
-        indexName: "earthmind",
+        indexName: "terraflow",
         contextualSearch: true,
         searchParameters: {},
         searchPagePath: "search",

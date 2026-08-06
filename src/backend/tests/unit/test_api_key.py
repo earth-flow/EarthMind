@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from earthmind.services.database.models.api_key import ApiKeyCreate
+from terraflow.services.database.models.api_key import ApiKeyCreate
 
 
 @pytest.fixture

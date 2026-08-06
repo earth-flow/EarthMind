@@ -152,7 +152,7 @@ class ALTKBaseTool(BaseTool):
             llm_client = get_llm(llm_client_type)
             llm_client_obj = llm_client(model=model_name, api_key=api_key)
         else:
-            logger.info("ALTK currently only supports OpenAI and Anthropic models through EarthMind.")
+            logger.info("ALTK currently only supports OpenAI and Anthropic models through Terraflow.")
             llm_client_obj = None
 
         return llm_client_obj
@@ -332,7 +332,7 @@ class ALTKBaseAgentComponent(AgentComponent):
                 and self.chat_history.__class__.__name__ == "Data"
             ):
                 input_dict["chat_history"] = data_to_messages(self.chat_history)
-            # Handle both lfx.schema.message.Message and earthmind.schema.message.Message types
+            # Handle both lfx.schema.message.Message and terraflow.schema.message.Message types
             if all(hasattr(m, "to_data") and callable(m.to_data) and "text" in m.data for m in self.chat_history):
                 input_dict["chat_history"] = data_to_messages(self.chat_history)
             if all(isinstance(m, Message) for m in self.chat_history):

@@ -103,7 +103,7 @@ class JSONFlow:
 
 def download_flow_from_github(name: str, version: str) -> JSONFlow:
     response = requests.get(
-        f"https://raw.githubusercontent.com/earthmind-ai/earthmind/v{version}/src/backend/base/earthmind/initial_setup/starter_projects/{name}.json",
+        f"https://raw.githubusercontent.com/terraflow-ai/terraflow/v{version}/src/backend/base/terraflow/initial_setup/starter_projects/{name}.json",
         timeout=10,
     )
     response.raise_for_status()
@@ -114,7 +114,7 @@ def download_flow_from_github(name: str, version: str) -> JSONFlow:
 def download_component_from_github(module: str, file_name: str, version: str) -> Component:
     version_string = f"v{version}" if version != "main" else version
     response = requests.get(
-        f"https://raw.githubusercontent.com/earthmind-ai/earthmind/{version_string}/src/backend/base/earthmind/components/{module}/{file_name}.py",
+        f"https://raw.githubusercontent.com/terraflow-ai/terraflow/{version_string}/src/backend/base/terraflow/components/{module}/{file_name}.py",
         timeout=10,
     )
     response.raise_for_status()

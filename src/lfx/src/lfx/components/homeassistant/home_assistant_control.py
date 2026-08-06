@@ -27,7 +27,7 @@ class HomeAssistantControl(LCToolComponent):
     documentation: str = "https://developers.home-assistant.io/docs/api/rest/"
     icon: str = "HomeAssistant"
 
-    # --- Input fields for EarthMind UI (token, URL) ---
+    # --- Input fields for Terraflow UI (token, URL) ---
     inputs = [
         SecretStrInput(
             name="ha_token",
@@ -67,7 +67,7 @@ class HomeAssistantControl(LCToolComponent):
         )
 
     def run_model(self) -> Data:
-        """Used when the 'Run' button is clicked in EarthMind.
+        """Used when the 'Run' button is clicked in Terraflow.
 
         - Uses default_action and default_entity_id entered in the UI.
         """
@@ -142,7 +142,7 @@ class HomeAssistantControl(LCToolComponent):
             return f"An unexpected error occurred: {e}"
 
     def _make_data_response(self, result: dict[str, Any] | str) -> Data:
-        """Returns a response in the EarthMind Data format."""
+        """Returns a response in the Terraflow Data format."""
         if isinstance(result, str):
             # Handle error messages
             return Data(text=result)

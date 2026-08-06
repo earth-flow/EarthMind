@@ -12,7 +12,7 @@ from lfx.services.storage.service import StorageService
 
 if TYPE_CHECKING:
     import anyio
-    from earthmind.services.session.service import SessionService
+    from terraflow.services.session.service import SessionService
 
     from lfx.services.settings.service import SettingsService
 

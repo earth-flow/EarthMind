@@ -11,6 +11,6 @@ export function getHealthCheckUrl(): string {
   return HEALTH_CHECK_URL || `${window.location.origin}/health`;
 }
 
-export const EarthMindButtonRedirectTarget = () => {
-  return "https://earthmind.org";
+export const TerraflowButtonRedirectTarget = () => {
+  return "https://terraflow.org";
 };

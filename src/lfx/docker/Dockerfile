@@ -64,11 +64,11 @@ COPY --from=builder --chown=1000 /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
 LABEL org.opencontainers.image.title=lfx
-LABEL org.opencontainers.image.authors=['EarthMind']
+LABEL org.opencontainers.image.authors=['Terraflow']
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.url=https://github.com/earthmind-ai/earthmind
-LABEL org.opencontainers.image.source=https://github.com/earthmind-ai/earthmind
-LABEL org.opencontainers.image.description="LFX - EarthMind Executor CLI Tool"
+LABEL org.opencontainers.image.url=https://github.com/terraflow-ai/terraflow
+LABEL org.opencontainers.image.source=https://github.com/terraflow-ai/terraflow
+LABEL org.opencontainers.image.description="LFX - Terraflow Executor CLI Tool"
 
 USER lfx
 WORKDIR /app/data

@@ -14,7 +14,7 @@ class RunFlowComponent(RunFlowBaseComponent):
         "Executes another flow from within the same project. Can also be used as a tool for agents."
         " \n **Select a Flow to use the tool mode**"
     )
-    documentation: str = "https://docs.earthmind.org/run-flow"
+    documentation: str = "https://docs.terraflow.org/run-flow"
     beta = True
     name = "RunFlow"
     icon = "Workflow"

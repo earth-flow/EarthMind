@@ -1,6 +1,6 @@
 """Per-request result cache for pure-read MCP tools.
 
-The EarthMind Assistant's flow-builder agent often re-invokes the same
+The Terraflow Assistant's flow-builder agent often re-invokes the same
 read-only tool with identical args inside a single build session — e.g.
 ``describe_component("ChatInput")`` called multiple times while wiring a
 graph, or ``search_components("LLM")`` issued from successive planning

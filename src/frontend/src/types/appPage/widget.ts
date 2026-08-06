@@ -55,7 +55,7 @@ export type KnowledgeGraphWidgetLayoutItem = {
 };
 
 /**
- * EarthMind has three independent file storage systems -- see file-ref.ts for
+ * Terraflow has three independent file storage systems -- see file-ref.ts for
  * the full explanation of v1/v2. "sandbox" is the third: the shared
  * FileSystemTool sandbox directory (see api/v1/sandbox_files.py), addressed
  * by its path relative to the sandbox root. Declared here (rather than in
@@ -126,7 +126,7 @@ export type WidgetLayoutItem =
  * A bridged Terrabox-generated file, as attached to a Data output's payload
  * under the `_generated_files` key by the backend
  * (lfx.interface.earthflow_terrabox.bridge_generated_files). Lives in
- * EarthMind's v2 (user-scoped) file storage, addressed by file_id.
+ * Terraflow's v2 (user-scoped) file storage, addressed by file_id.
  */
 export type GeneratedFileRef = {
   field: string;

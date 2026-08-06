@@ -16,7 +16,7 @@ def sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     via an empty sub_path. Tests that need isolated mode override
     ``_resolve_auto_login`` directly.
     """
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
     shared = tmp_path / "shared"
     shared.mkdir(parents=True, exist_ok=True)
     (shared / "hello.txt").write_text("line1\nline2\nline3\n", encoding="utf-8")
@@ -543,10 +543,10 @@ class TestBuildMetadata:
 
 
 # Note: TestRootPathAllowlist (Slice 27) was deleted with the refactor that
-# replaced the legacy EARTHMIND_FS_TOOL_ALLOWED_ROOTS env var and the Astra cloud
+# replaced the legacy TERRAFLOW_FS_TOOL_ALLOWED_ROOTS env var and the Astra cloud
 # special-case with the AUTO_LOGIN-driven model. The boundary guarantee that
 # class enforced (operator-controlled scope) is now provided by
-# EARTHMIND_FS_TOOL_BASE_DIR + AUTO_LOGIN dispatch — covered by
+# TERRAFLOW_FS_TOOL_BASE_DIR + AUTO_LOGIN dispatch — covered by
 # test_filesystem_isolation_integration.py.
 
 
@@ -955,7 +955,7 @@ class TestEmptyRootPathDoesNotLeakCwd:
         monkeypatch.chdir(cwd_dir)
 
         base = tmp_path / "base"
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(base))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(base))
 
         component = FileSystemToolComponent(root_path="", read_only=False)
         component._resolve_auto_login = lambda: True  # type: ignore[method-assign]
@@ -969,7 +969,7 @@ class TestEmptyRootPathDoesNotLeakCwd:
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, blank_value
     ) -> None:
         base = tmp_path / "base"
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(base))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(base))
 
         component = FileSystemToolComponent(root_path=blank_value, read_only=False)
         component._resolve_auto_login = lambda: True  # type: ignore[method-assign]
@@ -994,7 +994,7 @@ class TestEmptyRootPathDoesNotLeakCwd:
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, method_call
     ) -> None:
         base = tmp_path / "base"
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(base))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(base))
 
         component = FileSystemToolComponent(root_path="", read_only=False)
         component._resolve_auto_login = lambda: False  # type: ignore[method-assign]

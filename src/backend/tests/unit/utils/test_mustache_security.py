@@ -1,7 +1,7 @@
 """Tests for mustache security utilities."""
 
 import pytest
-from earthmind.utils.mustache_security import safe_mustache_render, validate_mustache_template
+from terraflow.utils.mustache_security import safe_mustache_render, validate_mustache_template
 
 
 class TestMustacheSecurity:
@@ -100,9 +100,9 @@ class TestMustacheSecurity:
     def test_safe_render_multiple_variables(self):
         """Test rendering with multiple variables."""
         template = "{{greeting}} {{name}}, welcome to {{place}}!"
-        variables = {"greeting": "Hello", "name": "Alice", "place": "EarthMind"}
+        variables = {"greeting": "Hello", "name": "Alice", "place": "Terraflow"}
         result = safe_mustache_render(template, variables)
-        assert result == "Hello Alice, welcome to EarthMind!"
+        assert result == "Hello Alice, welcome to Terraflow!"
 
     def test_safe_render_underscore_variables(self):
         """Test rendering with underscore variable names."""

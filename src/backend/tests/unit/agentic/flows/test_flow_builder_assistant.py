@@ -8,8 +8,8 @@ OPENAI_API_KEY is set.
 """
 
 import pytest
-from earthmind.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT, get_graph
-from earthmind.agentic.flows.translation_flow import TRANSLATION_PROMPT
+from terraflow.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT, get_graph
+from terraflow.agentic.flows.translation_flow import TRANSLATION_PROMPT
 
 from tests.api_keys import has_api_key
 
@@ -77,7 +77,7 @@ class TestFlowBuilderPrompt:
         re-planning. Drift between the protocol string and the prompt's
         recognizer phrase would break the whole 'execution stack'.
         """  # noqa: D205
-        from earthmind.agentic.services.flow_types import EDIT_CONTINUATION_INPUT
+        from terraflow.agentic.services.flow_types import EDIT_CONTINUATION_INPUT
 
         # The prompt must quote enough of the protocol string for the agent
         # to recognize the signal (cross-consistency with the constant).
@@ -277,7 +277,7 @@ class TestRunFlowToolWiring:
     """The agent must be able to run the canvas flow and discuss the result."""
 
     async def test_toolkit_should_include_run_flow_tool(self):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         tools = await build_toolkit()
         names = {getattr(t, "name", None) for t in tools}
@@ -306,7 +306,7 @@ class TestProposePlanInToolkit:
     """  # noqa: D205
 
     async def test_toolkit_should_include_propose_plan_tool(self):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         tools = await build_toolkit()
         names = {getattr(t, "name", None) for t in tools}
@@ -364,7 +364,7 @@ class TestGetGraph:
         flow_path = (
             Path(__file__).resolve().parent.parent.parent.parent.parent
             / "base"
-            / "earthmind"
+            / "terraflow"
             / "agentic"
             / "flows"
             / "flow_builder_assistant.py"
@@ -392,7 +392,7 @@ class TestGetGraph:
 
     async def test_load_graph_for_execution_twice(self):
         """Use the real flow_loader path -- the exact production code path."""
-        from earthmind.agentic.services.helpers.flow_loader import load_graph_for_execution, resolve_flow_path
+        from terraflow.agentic.services.helpers.flow_loader import load_graph_for_execution, resolve_flow_path
 
         flow_path, flow_type = resolve_flow_path("flow_builder_assistant")
 
@@ -409,7 +409,7 @@ class TestGetGraph:
         on the second call to get_graph(). This test ensures the prompt
         string is never mutated to a dict by the first call.
         """
-        from earthmind.agentic.services.helpers.flow_loader import load_graph_for_execution, resolve_flow_path
+        from terraflow.agentic.services.helpers.flow_loader import load_graph_for_execution, resolve_flow_path
 
         flow_path, flow_type = resolve_flow_path("flow_builder_assistant")
 
@@ -428,7 +428,7 @@ class TestFilesystemToolsInToolkit:
     """
 
     async def test_toolkit_should_include_filesystem_tools(self):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         tools = await build_toolkit()
         names = {getattr(t, "name", None) for t in tools}
@@ -439,7 +439,7 @@ class TestFilesystemToolsInToolkit:
 
     async def test_toolkit_should_keep_existing_canvas_tools(self):
         """Regression — adding filesystem tools must not drop the existing toolkit."""
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         tools = await build_toolkit()
         names = {getattr(t, "name", None) for t in tools}
@@ -453,10 +453,10 @@ class TestFilesystemToolsInToolkit:
         }.issubset(names)
 
     async def test_write_file_through_toolkit_should_emit_file_written_event(self, tmp_path, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -475,10 +475,10 @@ class TestFilesystemToolsInToolkit:
         assert events[0]["size"] == len(b"# Hello")
 
     async def test_edit_file_through_toolkit_should_emit_file_written_event(self, tmp_path, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -498,10 +498,10 @@ class TestFilesystemToolsInToolkit:
         assert events[0]["action"] == "edit_file"
 
     async def test_write_file_event_path_should_not_leak_base_dir(self, tmp_path, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -517,10 +517,10 @@ class TestFilesystemToolsInToolkit:
 
     async def test_failed_write_should_not_emit_event(self, tmp_path, monkeypatch):
         """Path traversal is refused by FileSystemTool — no event must follow."""
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -533,10 +533,10 @@ class TestFilesystemToolsInToolkit:
         assert drain_file_events() == []
 
     async def test_read_file_should_not_emit_event(self, tmp_path, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -554,14 +554,14 @@ class TestFlowBuilderPromptFilesystem:
     """B3 — the prompt mentions the filesystem tools so the agent uses them."""
 
     def test_prompt_should_mention_write_file(self):
-        from earthmind.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT
+        from terraflow.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT
 
         assert "write_file" in FLOW_BUILDER_PROMPT, (
             "Prompt must describe write_file so the LLM knows it can persist documentation files"
         )
 
     def test_prompt_should_mention_sandbox(self):
-        from earthmind.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT
+        from terraflow.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT
 
         prompt_lower = FLOW_BUILDER_PROMPT.lower()
         assert "sandbox" in prompt_lower or "workspace" in prompt_lower, (
@@ -577,7 +577,7 @@ class TestWordDocumentToolsInToolkit:
     """
 
     async def test_toolkit_should_include_docx_tools(self):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         tools = await build_toolkit()
         names = {getattr(t, "name", None) for t in tools}
@@ -593,10 +593,10 @@ class TestWordDocumentToolsInToolkit:
     async def test_docx_create_through_toolkit_should_emit_file_written_event(self, tmp_path, monkeypatch):
         import json
 
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -613,10 +613,10 @@ class TestWordDocumentToolsInToolkit:
     async def test_failed_docx_create_should_not_emit_event(self, tmp_path, monkeypatch):
         import json
 
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -627,10 +627,10 @@ class TestWordDocumentToolsInToolkit:
         assert drain_file_events() == []
 
     async def test_docx_read_should_not_emit_event(self, tmp_path, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
-        from earthmind.agentic.services.file_events import drain_file_events, reset_file_events
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.services.file_events import drain_file_events, reset_file_events
 
-        monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path))
+        monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path))
         reset_file_events()
 
         tools = await build_toolkit()
@@ -646,7 +646,7 @@ class TestWordDocumentToolsInToolkit:
 
 class TestFlowBuilderPromptWordDocuments:
     def test_prompt_should_mention_docx_tools(self):
-        from earthmind.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT
+        from terraflow.agentic.flows.flow_builder_assistant import FLOW_BUILDER_PROMPT
 
         assert "docx_create" in FLOW_BUILDER_PROMPT
         assert "docx_read" in FLOW_BUILDER_PROMPT
@@ -659,7 +659,7 @@ class TestCommandExecutionToolGating:
     """
 
     async def test_should_be_absent_from_toolkit_by_default(self, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         monkeypatch.delenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", raising=False)
         tools = await build_toolkit()
@@ -667,7 +667,7 @@ class TestCommandExecutionToolGating:
         assert "run_command" not in names
 
     async def test_should_be_present_when_enabled(self, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         monkeypatch.setenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", "1")
         tools = await build_toolkit()
@@ -676,7 +676,7 @@ class TestCommandExecutionToolGating:
 
     @pytest.mark.parametrize("off_value", ["0", "false", "no", "off", ""])
     async def test_should_treat_falsey_values_as_disabled(self, monkeypatch, off_value):
-        from earthmind.agentic.flows.flow_builder_assistant import build_toolkit
+        from terraflow.agentic.flows.flow_builder_assistant import build_toolkit
 
         monkeypatch.setenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", off_value)
         tools = await build_toolkit()
@@ -684,7 +684,7 @@ class TestCommandExecutionToolGating:
         assert "run_command" not in names
 
     def test_prompt_should_only_mention_run_command_when_enabled(self):
-        from earthmind.agentic.flows.flow_builder_assistant import CLI_TOOL_PROMPT_ADDENDUM, FLOW_BUILDER_PROMPT
+        from terraflow.agentic.flows.flow_builder_assistant import CLI_TOOL_PROMPT_ADDENDUM, FLOW_BUILDER_PROMPT
 
         # The base prompt constant must never mention a tool that build_toolkit()
         # only conditionally registers.
@@ -692,7 +692,7 @@ class TestCommandExecutionToolGating:
         assert "run_command" in CLI_TOOL_PROMPT_ADDENDUM
 
     def test_build_system_prompt_should_append_addendum_only_when_enabled(self, monkeypatch):
-        from earthmind.agentic.flows.flow_builder_assistant import build_system_prompt
+        from terraflow.agentic.flows.flow_builder_assistant import build_system_prompt
 
         monkeypatch.delenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", raising=False)
         assert "run_command" not in build_system_prompt()
@@ -706,7 +706,7 @@ class TestCommandExecutionToolGating:
         get_graph() must still build successfully once build_toolkit() and
         build_system_prompt() both branch on the flag.
         """
-        from earthmind.agentic.flows.flow_builder_assistant import get_graph
+        from terraflow.agentic.flows.flow_builder_assistant import get_graph
 
         monkeypatch.setenv("EARTHFLOW_ASSISTANT_CLI_TOOL_ENABLED", "1")
         graph = await get_graph()
@@ -724,7 +724,7 @@ class TestIntentClassificationBuildFlow:
     """
 
     async def test_simple_chat_flow_classified_as_build_flow(self):
-        from earthmind.agentic.services.helpers.intent_classification import classify_intent
+        from terraflow.agentic.services.helpers.intent_classification import classify_intent
 
         result = await classify_intent(
             text="simple chat flow",
@@ -736,7 +736,7 @@ class TestIntentClassificationBuildFlow:
         assert result.intent == "build_flow", f"Expected build_flow, got {result.intent}"
 
     async def test_build_rag_pipeline_classified_as_build_flow(self):
-        from earthmind.agentic.services.helpers.intent_classification import classify_intent
+        from terraflow.agentic.services.helpers.intent_classification import classify_intent
 
         result = await classify_intent(
             text="build me a RAG pipeline",
@@ -748,7 +748,7 @@ class TestIntentClassificationBuildFlow:
         assert result.intent == "build_flow", f"Expected build_flow, got {result.intent}"
 
     async def test_can_you_build_a_flow_classified_as_build_flow(self):
-        from earthmind.agentic.services.helpers.intent_classification import classify_intent
+        from terraflow.agentic.services.helpers.intent_classification import classify_intent
 
         result = await classify_intent(
             text="can you build a flow for me?",
@@ -760,7 +760,7 @@ class TestIntentClassificationBuildFlow:
         assert result.intent == "build_flow", f"Expected build_flow, got {result.intent}"
 
     async def test_create_component_not_classified_as_build_flow(self):
-        from earthmind.agentic.services.helpers.intent_classification import classify_intent
+        from terraflow.agentic.services.helpers.intent_classification import classify_intent
 
         result = await classify_intent(
             text="create a component that calls an API",

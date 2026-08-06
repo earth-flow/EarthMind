@@ -113,13 +113,13 @@ export default defineConfig({
   webServer: [
     {
       command:
-        "uv run uvicorn --factory earthmind.main:create_app --host localhost --port 7860 --loop asyncio --log-level error --no-access-log",
+        "uv run uvicorn --factory terraflow.main:create_app --host localhost --port 7860 --loop asyncio --log-level error --no-access-log",
       port: 7860,
       env: {
-        EARTHMIND_DATABASE_URL: "sqlite:///./temp",
-        EARTHMIND_AUTO_LOGIN: "true",
-        EARTHMIND_DEACTIVATE_TRACING: "true",
-        EARTHMIND_LOG_LEVEL: "ERROR",
+        TERRAFLOW_DATABASE_URL: "sqlite:///./temp",
+        TERRAFLOW_AUTO_LOGIN: "true",
+        TERRAFLOW_DEACTIVATE_TRACING: "true",
+        TERRAFLOW_LOG_LEVEL: "ERROR",
         DO_NOT_TRACK: "true",
       },
       stdout: "ignore",

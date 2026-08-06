@@ -28,7 +28,7 @@ def observable(observed_method: AsyncMethod) -> AsyncMethod:
     If an implementation is missing, the corresponding event publishing will be skipped without error.
 
     Payloads returned by these methods can include custom metrics by placing them
-    under the 'earthmind' key within the 'raw_events' dictionary.
+    under the 'terraflow' key within the 'raw_events' dictionary.
 
     Example:
         class MyClass:

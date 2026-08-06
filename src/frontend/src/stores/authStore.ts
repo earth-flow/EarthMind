@@ -2,9 +2,9 @@
 
 import { create } from "zustand";
 import {
-  EARTHMIND_ACCESS_TOKEN,
-  EARTHMIND_API_TOKEN,
-  EARTHMIND_REFRESH_TOKEN,
+  TERRAFLOW_ACCESS_TOKEN,
+  TERRAFLOW_API_TOKEN,
+  TERRAFLOW_REFRESH_TOKEN,
 } from "@/constants/constants";
 import type { AuthStoreType } from "@/types/zustand/auth";
 import { cookieManager, getCookiesInstance } from "@/utils/cookie-manager";
@@ -30,9 +30,9 @@ const useAuthStore = create<AuthStoreType>((set, get) => ({
     set({ authenticationErrorCount }),
 
   logout: async () => {
-    localStorage.removeItem(EARTHMIND_ACCESS_TOKEN);
-    localStorage.removeItem(EARTHMIND_API_TOKEN);
-    localStorage.removeItem(EARTHMIND_REFRESH_TOKEN);
+    localStorage.removeItem(TERRAFLOW_ACCESS_TOKEN);
+    localStorage.removeItem(TERRAFLOW_API_TOKEN);
+    localStorage.removeItem(TERRAFLOW_REFRESH_TOKEN);
 
     cookieManager.clearAuthCookies();
 

@@ -5,11 +5,11 @@ import time
 import uuid
 
 import pytest
-from earthmind.services.auth import utils as auth_utils
-from earthmind.services.database.models.api_key import crud as api_key_crud
-from earthmind.services.database.models.api_key.model import ApiKey
-from earthmind.services.database.models.user.model import User
-from earthmind.services.deps import get_settings_service
+from terraflow.services.auth import utils as auth_utils
+from terraflow.services.database.models.api_key import crud as api_key_crud
+from terraflow.services.database.models.api_key.model import ApiKey
+from terraflow.services.database.models.user.model import User
+from terraflow.services.deps import get_settings_service
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 logger = logging.getLogger(__name__)

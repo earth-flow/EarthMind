@@ -70,7 +70,7 @@ class ClickhouseVectorStoreComponent(LCVectorStoreComponent):
         except ImportError as e:
             msg = (
                 "Failed to import ClickHouse dependencies. "
-                "Install it using `uv pip install earthmind[clickhouse-connect] --pre`"
+                "Install it using `uv pip install terraflow[clickhouse-connect] --pre`"
             )
             raise ImportError(msg) from e
 

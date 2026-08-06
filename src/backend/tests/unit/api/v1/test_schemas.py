@@ -1,6 +1,6 @@
 import pytest
-from earthmind.api.v1.schemas import VertexBuildResponse
-from earthmind.serialization.constants import MAX_ITEMS_LENGTH
+from terraflow.api.v1.schemas import VertexBuildResponse
+from terraflow.serialization.constants import MAX_ITEMS_LENGTH
 
 expected_keys_vertex_build_response = {
     "id",

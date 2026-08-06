@@ -1,17 +1,17 @@
 """Helpers module for the lfx package.
 
-This module automatically chooses between the full earthmind implementation
+This module automatically chooses between the full terraflow implementation
 (when available) and the lfx implementation (when standalone).
 """
 
-from lfx.utils.earthmind_utils import has_earthmind_memory
+from lfx.utils.terraflow_utils import has_terraflow_memory
 
 # Import the appropriate implementation
-if has_earthmind_memory():
+if has_terraflow_memory():
     try:
-        # Import full earthmind implementation
+        # Import full terraflow implementation
         # Base Model
-        from earthmind.helpers.base_model import (
+        from terraflow.helpers.base_model import (
             BaseModel,
             SchemaField,
             build_model_from_schema,
@@ -19,12 +19,12 @@ if has_earthmind_memory():
         )
 
         # Custom
-        from earthmind.helpers.custom import (
+        from terraflow.helpers.custom import (
             format_type,
         )
 
         # Data
-        from earthmind.helpers.data import (
+        from terraflow.helpers.data import (
             clean_string,
             data_to_text,
             data_to_text_list,
@@ -33,7 +33,7 @@ if has_earthmind_memory():
         )
 
         # Flow
-        from earthmind.helpers.flow import (
+        from terraflow.helpers.flow import (
             build_schema_from_inputs,
             get_arg_names,
             get_flow_by_id_or_name,
@@ -45,7 +45,7 @@ if has_earthmind_memory():
             run_flow,
         )
     except ImportError:
-        # Fallback to lfx implementation if earthmind import fails
+        # Fallback to lfx implementation if terraflow import fails
         # Base Model
         from lfx.helpers.base_model import (
             BaseModel,

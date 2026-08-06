@@ -3,7 +3,7 @@
 The config layer owns ONE responsibility: turn environment configuration into a
 frozen ``IsolationConfig`` so the component code can treat it as immutable data.
 
-Single env var: ``EARTHMIND_FS_TOOL_BASE_DIR``. Pepper file is auto-derived under
+Single env var: ``TERRAFLOW_FS_TOOL_BASE_DIR``. Pepper file is auto-derived under
 ``<base>/.fs_pepper``. Behavior (shared vs isolated) is decided by the
 component at call time based on ``AUTO_LOGIN``, NOT by the config.
 """
@@ -39,7 +39,7 @@ class TestLoadIsolationConfig:
         from lfx.components.files_and_knowledge._filesystem_isolation import load_isolation_config
 
         custom_base = tmp_path / "custom_root"
-        env = {"EARTHMIND_FS_TOOL_BASE_DIR": str(custom_base)}
+        env = {"TERRAFLOW_FS_TOOL_BASE_DIR": str(custom_base)}
 
         config = load_isolation_config(env=env, default_config_dir=tmp_path)
 
@@ -49,7 +49,7 @@ class TestLoadIsolationConfig:
         from lfx.components.files_and_knowledge._filesystem_isolation import load_isolation_config
 
         custom_base = tmp_path / "custom_root"
-        env = {"EARTHMIND_FS_TOOL_BASE_DIR": str(custom_base)}
+        env = {"TERRAFLOW_FS_TOOL_BASE_DIR": str(custom_base)}
 
         config = load_isolation_config(env=env, default_config_dir=tmp_path)
 
@@ -61,7 +61,7 @@ class TestLoadIsolationConfig:
         # when an operator clears the var without thinking.
         from lfx.components.files_and_knowledge._filesystem_isolation import load_isolation_config
 
-        env = {"EARTHMIND_FS_TOOL_BASE_DIR": ""}
+        env = {"TERRAFLOW_FS_TOOL_BASE_DIR": ""}
 
         config = load_isolation_config(env=env, default_config_dir=tmp_path)
 

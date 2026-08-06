@@ -1,4 +1,4 @@
-import { ENABLE_DATASTAX_EARTHMIND } from "@/customization/feature-flags";
+import { ENABLE_DATASTAX_TERRAFLOW } from "@/customization/feature-flags";
 import {
   getApiSampleHeaders,
   getBaseUrl,
@@ -40,7 +40,7 @@ export function getCurlWebhookCode({
   "${baseUrl}" \\
   -H 'Content-Type: application/json' \\${
     webhookAuthEnable ? `\n  -H 'x-api-key: <your api key>' \\` : ""
-  }${ENABLE_DATASTAX_EARTHMIND ? `${getApiSampleHeaders("curl")}` : ""}
+  }${ENABLE_DATASTAX_TERRAFLOW ? `${getApiSampleHeaders("curl")}` : ""}
   -d '{"any": "data"}'
   `.trim();
 }

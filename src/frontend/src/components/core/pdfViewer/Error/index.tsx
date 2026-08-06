@@ -8,13 +8,13 @@ export default function ErrorComponent(): JSX.Element {
       <div className="chat-alert-box">
         <span className="flex gap-2">
           <IconComponent name="FileX2" />
-          <span className="earthmind-chat-span">
+          <span className="terraflow-chat-span">
             {t("output.pdfLoadErrorTitle")}
           </span>
         </span>
         <br />
-        <div className="earthmind-chat-desc">
-          <span className="earthmind-chat-desc-span">
+        <div className="terraflow-chat-desc">
+          <span className="terraflow-chat-desc-span">
             {t("output.pdfCheckFlow")}{" "}
           </span>
         </div>

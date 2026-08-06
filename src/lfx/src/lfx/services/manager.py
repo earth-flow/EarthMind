@@ -458,7 +458,7 @@ class ServiceManager:
 
         Args:
             service_key: ServiceType enum value (e.g., "database_service")
-            service_path: Import path (e.g., "earthmind.services.database.service:DatabaseService")
+            service_path: Import path (e.g., "terraflow.services.database.service:DatabaseService")
         """
         try:
             # Validate service_key matches ServiceType enum

@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 
 CACHE: dict[str, Any] = {}
 
-CACHE_DIR = user_cache_dir("earthmind", "earthmind")
+CACHE_DIR = user_cache_dir("terraflow", "terraflow")
 
-PREFIX = "earthmind_cache"
+PREFIX = "terraflow_cache"
 
 
 class CacheMiss:

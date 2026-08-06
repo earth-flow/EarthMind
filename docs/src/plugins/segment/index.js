@@ -56,7 +56,7 @@ function pluginSegment(context, options = {}) {
                   }
                 },
                 "commonProperties": {
-                  "productTitle": "IBM Elite Support for EarthMind",
+                  "productTitle": "IBM Elite Support for Terraflow",
                   "productCode": "5900BUB",
                   "productCodeType": "WWPC",
                   "UT30": "30AS5",

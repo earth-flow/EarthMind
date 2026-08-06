@@ -144,7 +144,7 @@ def _suppress_send_message(component: Any):
 class AgentComponent(ToolCallingAgentComponent):
     display_name: str = "Agent"
     description: str = "Define the agent's instructions, then enter a task to complete using tools."
-    documentation: str = "https://docs.earthmind.org/agents"
+    documentation: str = "https://docs.terraflow.org/agents"
     icon = "bot"
     beta = False
     name = "Agent"
@@ -654,7 +654,7 @@ class AgentComponent(ToolCallingAgentComponent):
         agent_message = self._build_initial_agent_message()
         token_usage_handler = TokenUsageCallbackHandler()
 
-        # Stream tokens to the event manager when running inside the EarthMind runtime.
+        # Stream tokens to the event manager when running inside the Terraflow runtime.
         # This is what powers the live-typing view in the chat UI.
         on_token_callback: OnTokenFunctionType | None = None
         if getattr(self, "_event_manager", None):

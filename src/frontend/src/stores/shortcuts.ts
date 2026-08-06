@@ -42,8 +42,8 @@ export const useShortcutsStore = create<shortcutsStoreType>((set, get) => ({
     });
   },
   getShortcutsFromStorage: () => {
-    if (localStorage.getItem("earthmind-shortcuts")) {
-      const savedShortcuts = localStorage.getItem("earthmind-shortcuts");
+    if (localStorage.getItem("terraflow-shortcuts")) {
+      const savedShortcuts = localStorage.getItem("terraflow-shortcuts");
       const savedArr = JSON.parse(savedShortcuts!);
       savedArr.forEach(({ name, shortcut }) => {
         const shortcutName = toCamelCase(name);

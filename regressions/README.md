@@ -27,7 +27,7 @@ Regression entry schema:
   "first_bad_version": "1.10.0",
   "last_known_good_version": "1.9.0",
   "resolved_in_version": "1.10.1",
-  "fix_pr": "https://github.com/earthmind-ai/earthmind/pull/12345",
+  "fix_pr": "https://github.com/terraflow-ai/terraflow/pull/12345",
   "workaround": "none"
 }
 ```

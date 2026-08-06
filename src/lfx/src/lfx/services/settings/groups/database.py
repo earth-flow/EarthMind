@@ -16,17 +16,17 @@ class DatabaseSettings(BaseModel):
     """
 
     save_db_in_config_dir: bool = False
-    """Define if earthmind database should be saved in EARTHMIND_CONFIG_DIR or in the earthmind directory
+    """Define if terraflow database should be saved in TERRAFLOW_CONFIG_DIR or in the terraflow directory
     (i.e. in the package directory)."""
 
     database_url: str | None = None
-    """Database URL for EarthMind. If not provided, EarthMind will use a SQLite database.
+    """Database URL for Terraflow. If not provided, Terraflow will use a SQLite database.
     The driver shall be an async one like `sqlite+aiosqlite` (`sqlite` and `postgresql`
     will be automatically converted to the async drivers `sqlite+aiosqlite` and
     `postgresql+psycopg` respectively)."""
 
     database_connection_retry: bool = False
-    """If True, EarthMind will retry to connect to the database if it fails."""
+    """If True, Terraflow will retry to connect to the database if it fails."""
 
     pool_size: int = 20
     """The number of connections to keep open in the connection pool.
@@ -42,7 +42,7 @@ class DatabaseSettings(BaseModel):
 
     migration_lock_namespace: str | None = None
     """Optional namespace identifier for PostgreSQL advisory lock during migrations.
-    If not provided, a hash of the database URL will be used. Useful when multiple EarthMind
+    If not provided, a hash of the database URL will be used. Useful when multiple Terraflow
     instances share the same database and need coordinated migration locking."""
 
     sqlite_pragmas: dict | None = {"synchronous": "NORMAL", "journal_mode": "WAL", "busy_timeout": 30000}
@@ -76,7 +76,7 @@ class DatabaseSettings(BaseModel):
 
     use_noop_database: bool = False
     """If True, disables all database operations and uses a no-op session.
-    Controlled by EARTHMIND_USE_NOOP_DATABASE env variable."""
+    Controlled by TERRAFLOW_USE_NOOP_DATABASE env variable."""
 
     @field_validator("use_noop_database", mode="before")
     @classmethod
@@ -93,32 +93,32 @@ class DatabaseSettings(BaseModel):
             msg = f"Invalid database_url provided: '{sanitized}'"
             raise ValueError(msg)
 
-        if earthmind_database_url := os.getenv("EARTHMIND_DATABASE_URL"):
-            value = earthmind_database_url
-            logger.debug("Using EARTHMIND_DATABASE_URL env variable")
+        if terraflow_database_url := os.getenv("TERRAFLOW_DATABASE_URL"):
+            value = terraflow_database_url
+            logger.debug("Using TERRAFLOW_DATABASE_URL env variable")
         else:
             if not info.data.get("config_dir"):
                 msg = "config_dir not set, please set it or provide a database_url"
                 raise ValueError(msg)
 
             from lfx.utils.version import get_version_info
-            from lfx.utils.version import is_pre_release as earthmind_is_pre_release
+            from lfx.utils.version import is_pre_release as terraflow_is_pre_release
 
             version = get_version_info()["version"]
-            is_pre_release = earthmind_is_pre_release(version)
+            is_pre_release = terraflow_is_pre_release(version)
 
             if info.data["save_db_in_config_dir"]:
                 database_dir = info.data["config_dir"]
             else:
                 try:
-                    import earthmind
+                    import terraflow
 
-                    database_dir = Path(earthmind.__file__).parent.resolve()
+                    database_dir = Path(terraflow.__file__).parent.resolve()
                 except ImportError:
                     database_dir = Path(__file__).parent.parent.parent.parent.resolve()
 
-            pre_db_file_name = "earthmind-pre.db"
-            db_file_name = "earthmind.db"
+            pre_db_file_name = "terraflow-pre.db"
+            db_file_name = "terraflow.db"
             new_pre_path = f"{database_dir}/{pre_db_file_name}"
             new_path = f"{database_dir}/{db_file_name}"
             final_path = None

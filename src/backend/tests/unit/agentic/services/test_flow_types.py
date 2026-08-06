@@ -5,9 +5,9 @@ Tests the dataclasses and constants used in flow execution.
 
 from pathlib import Path
 
-from earthmind.agentic.services.flow_types import (
+from terraflow.agentic.services.flow_types import (
     FLOWS_BASE_PATH,
-    EARTHMIND_ASSISTANT_FLOW,
+    TERRAFLOW_ASSISTANT_FLOW,
     MAX_VALIDATION_RETRIES,
     STREAMING_EVENT_TIMEOUT_SECONDS,
     STREAMING_QUEUE_MAX_SIZE,
@@ -29,7 +29,7 @@ def test_should_expose_max_flow_verification_attempts_constant_when_importing_fl
     Bug: PR-12575 round 6 — backend boot failure
     """
     # Importing flow_verification triggers the same import chain as boot.
-    from earthmind.agentic.services import flow_types
+    from terraflow.agentic.services import flow_types
 
     assert hasattr(flow_types, "MAX_FLOW_VERIFICATION_ATTEMPTS"), (
         "flow_verification.py imports MAX_FLOW_VERIFICATION_ATTEMPTS from "
@@ -48,7 +48,7 @@ def test_should_load_flow_verification_module_when_constant_is_present():
     constant. If this test passes, the boot path is clean.
     """
     # Must not raise ImportError.
-    from earthmind.agentic.services import flow_verification
+    from terraflow.agentic.services import flow_verification
 
     assert flow_verification.verify_built_flow is not None
 
@@ -172,10 +172,10 @@ class TestConstants:
         assert VALIDATION_UI_DELAY_SECONDS > 0
         assert VALIDATION_UI_DELAY_SECONDS < 2
 
-    def test_earthmind_assistant_flow_should_be_string(self):
-        """EARTHMIND_ASSISTANT_FLOW should be a non-empty string."""
-        assert isinstance(EARTHMIND_ASSISTANT_FLOW, str)
-        assert len(EARTHMIND_ASSISTANT_FLOW) > 0
+    def test_terraflow_assistant_flow_should_be_string(self):
+        """TERRAFLOW_ASSISTANT_FLOW should be a non-empty string."""
+        assert isinstance(TERRAFLOW_ASSISTANT_FLOW, str)
+        assert len(TERRAFLOW_ASSISTANT_FLOW) > 0
 
     def test_translation_flow_should_be_string(self):
         """TRANSLATION_FLOW should be a non-empty string."""

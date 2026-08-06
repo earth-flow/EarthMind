@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import pytest
-from earthmind.services.database.models.deployment.crud import create_deployment, update_deployment
-from earthmind.services.database.models.deployment.model import Deployment
+from terraflow.services.database.models.deployment.crud import create_deployment, update_deployment
+from terraflow.services.database.models.deployment.model import Deployment
 from lfx.services.adapters.deployment.schema import DeploymentType
 
 

@@ -2,7 +2,7 @@
 
 import json
 
-from earthmind.agentic.helpers.code_extraction import extract_flow_json
+from terraflow.agentic.helpers.code_extraction import extract_flow_json
 
 
 class TestExtractFlowJson:

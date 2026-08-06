@@ -1,4 +1,4 @@
-"""Composed ``Settings`` class for EarthMind.
+"""Composed ``Settings`` class for Terraflow.
 
 Fields live in per-group mixins under :mod:`lfx.services.settings.groups`.
 This module wires them together, configures env-var loading, and exposes the
@@ -102,13 +102,13 @@ class Settings(
     PathSettings,
     BaseSettings,
 ):
-    """Top-level EarthMind settings.
+    """Top-level Terraflow settings.
 
     Composed from per-group mixins. See module docstring for the inheritance
     order rationale.
     """
 
-    model_config = SettingsConfigDict(validate_assignment=True, extra="ignore", env_prefix="EARTHMIND_")
+    model_config = SettingsConfigDict(validate_assignment=True, extra="ignore", env_prefix="TERRAFLOW_")
 
     async def update_from_yaml(self, file_path: str, *, dev: bool = False) -> None:
         new_settings = await load_settings_from_yaml(file_path)

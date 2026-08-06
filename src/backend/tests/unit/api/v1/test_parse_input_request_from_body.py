@@ -14,8 +14,8 @@ import orjson
 import pytest
 from fastapi import FastAPI, Request
 from httpx import ASGITransport, AsyncClient
-from earthmind.api.v1.endpoints import parse_input_request_from_body
-from earthmind.api.v1.schemas import SimplifiedAPIRequest
+from terraflow.api.v1.endpoints import parse_input_request_from_body
+from terraflow.api.v1.schemas import SimplifiedAPIRequest
 
 
 def _build_app() -> FastAPI:

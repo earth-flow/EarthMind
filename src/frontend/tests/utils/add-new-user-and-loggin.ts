@@ -16,7 +16,7 @@ export const addNewUserAndLogin = async (page: Page) => {
   await page.addInitScript(() => {
     window.process = window.process || {};
 
-    const newEnv = { ...window.process.env, EARTHMIND_AUTO_LOGIN: "false" };
+    const newEnv = { ...window.process.env, TERRAFLOW_AUTO_LOGIN: "false" };
 
     Object.defineProperty(window.process, "env", {
       value: newEnv,

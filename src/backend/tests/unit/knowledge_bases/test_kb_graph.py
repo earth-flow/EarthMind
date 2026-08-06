@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-from earthmind.api.utils.kb_graph import (
+from terraflow.api.utils.kb_graph import (
     KB_GRAPH_MAX_NODES,
     KB_GRAPH_PERSISTED_CACHE_VERSION,
     _extract_chunk_triples,

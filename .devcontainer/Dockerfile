@@ -22,14 +22,14 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create the vscode user and group with the expected UID and GID (1000)
-RUN groupadd -g 1000 earthmind && \
-    useradd -m -u 1000 -g 1000 -s /bin/zsh earthmind && \
-    echo "earthmind ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN groupadd -g 1000 terraflow && \
+    useradd -m -u 1000 -g 1000 -s /bin/zsh terraflow && \
+    echo "terraflow ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Set default shell to Zsh
 SHELL ["/bin/zsh", "-c"]
 
-RUN echo 'export PS1="%~ %# "' >> /home/earthmind/.zshrc
+RUN echo 'export PS1="%~ %# "' >> /home/terraflow/.zshrc
 
 # Set the default user
-USER earthmind
+USER terraflow

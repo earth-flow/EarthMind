@@ -8,10 +8,10 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import PartialBasicComponentStructure from '../_partial-basic-component-structure.mdx';
 
-Create your own custom components to add any functionality you need to EarthMind, from API integrations to data processing.
+Create your own custom components to add any functionality you need to Terraflow, from API integrations to data processing.
 
-In EarthMind's node-based environment, each node is a "component" that performs discrete functions.
-Custom components in EarthMind are built upon:
+In Terraflow's node-based environment, each node is a "component" that performs discrete functions.
+Custom components in Terraflow are built upon:
 
 * The Python class that inherits from `Component`.
 * Class-level attributes that identify and describe the component.
@@ -19,11 +19,11 @@ Custom components in EarthMind are built upon:
 * Methods that define the component's behavior and logic.
 * Internal variables for [Error handling and logging](#error-handling-and-logging)
 
-Use the [Custom component quickstart](#quickstart) to add an example component to EarthMind, and then use the reference guide that follows for more advanced component customization.
+Use the [Custom component quickstart](#quickstart) to add an example component to Terraflow, and then use the reference guide that follows for more advanced component customization.
 
 ## Custom component quickstart {#quickstart}
 
-Create a custom `DataFrameProcessor` component by creating a Python file, saving it in the correct folder, including an `__init__.py` file, and loading it into EarthMind.
+Create a custom `DataFrameProcessor` component by creating a Python file, saving it in the correct folder, including an `__init__.py` file, and loading it into Terraflow.
 
 ### Create a Python file
 
@@ -31,15 +31,15 @@ Create a custom `DataFrameProcessor` component by creating a Python file, saving
 
 ### Save the custom component {#custom-component-path}
 
-Save the custom component in the EarthMind directory where the UI will discover and load it.
+Save the custom component in the Terraflow directory where the UI will discover and load it.
 
-By default, EarthMind looks for custom components in the `src/lfx/src/lfx/components` directory.
+By default, Terraflow looks for custom components in the `src/lfx/src/lfx/components` directory.
 
 When saving components in the default directory, components must be organized in a specific directory structure to be properly loaded and displayed in the visual editor.
 
 Components must be placed inside category folders, not directly in the base directory.
 
-The category folder name determines where the component appears in the EarthMind <Icon name="Component" aria-hidden="true" /> **Core components** menu.
+The category folder name determines where the component appears in the Terraflow <Icon name="Component" aria-hidden="true" /> **Core components** menu.
 For example, to add the example `DataFrameProcessor` component to the **Data** category, place it in the `data` subfolder:
 
 ```
@@ -49,10 +49,10 @@ src/lfx/src/lfx/components/
         └── dataframe_processor.py # Your custom component file
 ```
 
-If you're creating custom components in a different location using the `EARTHMIND_COMPONENTS_PATH` [environment variable](/environment-variables), components must be similarly organized in a specific directory structure to be displayed in the visual editor.
+If you're creating custom components in a different location using the `TERRAFLOW_COMPONENTS_PATH` [environment variable](/environment-variables), components must be similarly organized in a specific directory structure to be displayed in the visual editor.
 
 ```
-/your/custom/components/path/    # Base directory set by EARTHMIND_COMPONENTS_PATH
+/your/custom/components/path/    # Base directory set by TERRAFLOW_COMPONENTS_PATH
     └── category_name/
         ├── __init__.py
         └── custom_component.py
@@ -82,7 +82,7 @@ To increase the depth limit, modify `MAX_DEPTH` in `src/lfx/src/lfx/custom/direc
 
 ### Create the `__init__.py` file
 
-Each category directory **must** contain an `__init__.py` file for EarthMind to properly recognize and load the components.
+Each category directory **must** contain an `__init__.py` file for Terraflow to properly recognize and load the components.
 This is a Python package requirement that ensures the directory is treated as a module.
 
 To include the `DataFrameProcessor` component, create a file named `__init__.py` in your component's directory with the following content.
@@ -133,7 +133,7 @@ def __dir__() -> list[str]:
     return list(__all__)
 ```
 
-For an additional example of lazy loading, see the [FAISS component](https://github.com/earthmind-ai/earthmind/blob/main/src/lfx/src/lfx/components/FAISS/__init__.py).
+For an additional example of lazy loading, see the [FAISS component](https://github.com/terraflow-ai/terraflow/blob/main/src/lfx/src/lfx/components/FAISS/__init__.py).
 
 </details>
 
@@ -141,28 +141,28 @@ For an additional example of lazy loading, see the [FAISS component](https://git
 
 Ensure the application builds your component.
 
-1. To rebuild the backend and frontend, run `make install_frontend && make build_frontend && make install_backend && uv run earthmind run --port 7860`.
+1. To rebuild the backend and frontend, run `make install_frontend && make build_frontend && make install_backend && uv run terraflow run --port 7860`.
 
 2. Refresh the frontend application.
 Your new `DataFrameProcessor` component is available in the <Icon name="Component" aria-hidden="true" /> **Core components** menu under the **Data** category in the visual editor.
 
 ### Docker deployment
 
-When running EarthMind in Docker, mount your custom components directory and set the `EARTHMIND_COMPONENTS_PATH` environment variable in the `docker run` command to point to the custom components directory.
+When running Terraflow in Docker, mount your custom components directory and set the `TERRAFLOW_COMPONENTS_PATH` environment variable in the `docker run` command to point to the custom components directory.
 
 ```bash
 docker run -d \
-  --name earthmind \
+  --name terraflow \
   -p 7860:7860 \
   -v ./custom_components:/app/custom_components \
-  -e EARTHMIND_COMPONENTS_PATH=/app/custom_components \
-  earthmindai/earthmind:latest
+  -e TERRAFLOW_COMPONENTS_PATH=/app/custom_components \
+  terraflowai/terraflow:latest
 ```
 
 Create the same custom components directory structure as the example in [Save the custom component](#custom-component-path).
 
 ```
-/app/custom_components/          # EARTHMIND_COMPONENTS_PATH
+/app/custom_components/          # TERRAFLOW_COMPONENTS_PATH
     └── data/
         ├── __init__.py
         └── dataframe_processor.py
@@ -170,7 +170,7 @@ Create the same custom components directory structure as the example in [Save th
 
 ## How components execute
 
-EarthMind's engine manages:
+Terraflow's engine manages:
 
 1. **Instantiation**:  A component is created and internal structures are initialized.
 2. **Assigning Inputs**: Values from the visual editor or connections are assigned to component fields.
@@ -228,7 +228,7 @@ Inputs and outputs are **class-level configurations** that define how data flows
 
 ### Inputs
 
-Inputs are defined in a class-level `inputs` list. When EarthMind loads the component, it uses this list to render component fields and [ports](/concepts-components#component-ports) in the visual editor. Users or other components provide values or connections to fill these inputs.
+Inputs are defined in a class-level `inputs` list. When Terraflow loads the component, it uses this list to render component fields and [ports](/concepts-components#component-ports) in the visual editor. Users or other components provide values or connections to fill these inputs.
 
 An input is usually an instance of a class from `lfx.io` (such as `StrInput`, `DataInput`, or `MessageTextInput`).
 
@@ -251,9 +251,9 @@ The `BoolInput` creates a boolean toggle that's enabled by default with `value=T
 The `DropdownInput` provides a selection menu with three predefined options: "Fast", "Safe", and "Experimental".
 The `value="Safe"` sets "Safe" as the default selection, and you access the user's choice with `self.mode`.
 
-For a list of all available parameters, see the [BaseInputMixin definition](https://github.com/earthmind-ai/earthmind/blob/main/src/lfx/src/lfx/inputs/input_mixin.py) in the EarthMind codebase.
+For a list of all available parameters, see the [BaseInputMixin definition](https://github.com/terraflow-ai/terraflow/blob/main/src/lfx/src/lfx/inputs/input_mixin.py) in the Terraflow codebase.
 
-For a list of all available input types, see the [input type definitions](https://github.com/earthmind-ai/earthmind/blob/main/src/lfx/src/lfx/inputs/inputs.py) in the EarthMind codebase.
+For a list of all available input types, see the [input type definitions](https://github.com/terraflow-ai/terraflow/blob/main/src/lfx/src/lfx/inputs/inputs.py) in the Terraflow codebase.
 
 ```python
 from lfx.io import StrInput, DataInput, MultilineInput, IntInput, BoolInput, DropdownInput, FileInput, CodeInput, ModelInput, HandleInput, Output
@@ -261,7 +261,7 @@ from lfx.io import StrInput, DataInput, MultilineInput, IntInput, BoolInput, Dro
 
 ### Outputs
 
-Outputs are defined in a class-level `outputs` list. When EarthMind renders a component, each output becomes a connector point in the visual editor. When you connect something to an output, EarthMind automatically calls the corresponding method and passes the returned object to the next component.
+Outputs are defined in a class-level `outputs` list. When Terraflow renders a component, each output becomes a connector point in the visual editor. When you connect something to an output, Terraflow automatically calls the corresponding method and passes the returned object to the next component.
 
 An output is usually an instance of `Output` from `lfx.io`.
 
@@ -286,11 +286,11 @@ def build_df(self) -> DataFrame:
     return df
 ```
 
-The `Output` creates a connector point in the visual editor labeled **DataFrame Output**. The `name="df_out"` parameter identifies this output, while `display_name="DataFrame Output"` shows the label in the UI. The `method="build_df"` parameter tells EarthMind to call the `build_df` method when this output is connected to another component.
+The `Output` creates a connector point in the visual editor labeled **DataFrame Output**. The `name="df_out"` parameter identifies this output, while `display_name="DataFrame Output"` shows the label in the UI. The `method="build_df"` parameter tells Terraflow to call the `build_df` method when this output is connected to another component.
 
-The `build_df` method processes data and returns a `Table`. The `-> DataFrame` type annotation helps EarthMind validate connections and provides color-coding in the visual editor. You can also set `self.status` to show progress messages in the UI.
+The `build_df` method processes data and returns a `Table`. The `-> DataFrame` type annotation helps Terraflow validate connections and provides color-coding in the visual editor. You can also set `self.status` to show progress messages in the UI.
 
-For a complete list of all available parameters, see the [Output class definition](https://github.com/earthmind-ai/earthmind/blob/main/src/lfx/src/lfx/template/field/base.py) in the EarthMind codebase. Common parameters include:
+For a complete list of all available parameters, see the [Output class definition](https://github.com/terraflow-ai/terraflow/blob/main/src/lfx/src/lfx/template/field/base.py) in the Terraflow codebase. Common parameters include:
 
 **Additional return types:**
 * **`Message`**: Structured chat messages
@@ -333,7 +333,7 @@ outputs = [
 ]
 ```
 
-By default, components in EarthMind that produce multiple outputs only allow one output selection in the visual editor.
+By default, components in Terraflow that produce multiple outputs only allow one output selection in the visual editor.
 The component will have only one output port where the user can select the preferred output type.
 
 This behavior is controlled by the `group_outputs` parameter:
@@ -411,7 +411,7 @@ inputs = [
 
 ## Typed annotations
 
-In EarthMind, typed annotations allow EarthMind to visually guide users and maintain flow consistency.
+In Terraflow, typed annotations allow Terraflow to visually guide users and maintain flow consistency.
 Always annotate your output methods with return types like `-> Data`, `-> Message`, or `-> DataFrame` to enable proper visual editor color-coding and validation.
 Use `JSON`, `Message`, or `Table` wrappers instead of returning plain structures for better consistency. Stay consistent with types across your components to make flows predictable and easier to build.
 
@@ -467,7 +467,7 @@ def compute_sum(self) -> int:
 
 ## Enable dynamic fields
 
-In **EarthMind**, dynamic fields allow inputs to change or appear based on user interactions. You can make an input dynamic by setting `dynamic=True`. Optionally, setting `real_time_refresh=True` triggers the `update_build_config` method to adjust the input's visibility or properties in real time, creating a contextual visual editor experience that only exposes relevant fields based on the user's choices.
+In **Terraflow**, dynamic fields allow inputs to change or appear based on user interactions. You can make an input dynamic by setting `dynamic=True`. Optionally, setting `real_time_refresh=True` triggers the `update_build_config` method to adjust the input's visibility or properties in real time, creating a contextual visual editor experience that only exposes relevant fields based on the user's choices.
 
 In this example, the operator field triggers updates with `real_time_refresh=True`.
 The `regex_pattern` field is initially hidden and controlled with `dynamic=True`.
@@ -500,7 +500,7 @@ class RegexRouter(Component):
 
 ### Show or hide fields based on user selections
 
-When a user changes a field with `real_time_refresh=True`, EarthMind calls your `update_build_config` method.
+When a user changes a field with `real_time_refresh=True`, Terraflow calls your `update_build_config` method.
 
 This method lets you show, hide, or modify other fields based on what the user selected.
 
@@ -544,7 +544,7 @@ You can modify additional field properties in `update_build_config` other than j
 
 ## Error handling and logging
 
-You can raise standard Python exceptions such as `ValueError` or specialized exceptions like `ToolException` when validation fails. EarthMind automatically catches these and displays appropriate error messages in the visual editor, helping users quickly identify what went wrong.
+You can raise standard Python exceptions such as `ValueError` or specialized exceptions like `ToolException` when validation fails. Terraflow automatically catches these and displays appropriate error messages in the visual editor, helping users quickly identify what went wrong.
 
 ```python
 def compute_result(self) -> str:
@@ -563,7 +563,7 @@ def run_model(self) -> Data:
         return Data(data={"error": str(e)})
 ```
 
-EarthMind provides several tools to help you debug and manage component execution. You can use `self.status` to display short messages about execution results directly in the visual editor, making troubleshooting easier for users.
+Terraflow provides several tools to help you debug and manage component execution. You can use `self.status` to display short messages about execution results directly in the visual editor, making troubleshooting easier for users.
 
 ```python
 def parse_data(self) -> Data:
@@ -585,7 +585,7 @@ if not self.user_input or len(self.user_input.strip()) == 0:
 
 You can log key execution details inside components using `self.log()`. These logs are stored as structured data and displayed in the "Logs" or "Events" section of the component's detail view, and can be accessed later through the **Logs** button in the visual editor or exported files.
 
-Component logs are distinct from EarthMind's main application logging system. `self.log()` creates component-specific logs that appear in the UI, while EarthMind's main logging system uses [structlog](https://www.structlog.org) for application-level logging  that outputs to `earthmind.log` files. For more information, see [Logs](/logging).
+Component logs are distinct from Terraflow's main application logging system. `self.log()` creates component-specific logs that appear in the UI, while Terraflow's main logging system uses [structlog](https://www.structlog.org) for application-level logging  that outputs to `terraflow.log` files. For more information, see [Logs](/logging).
 
 This example logs a message when the component starts processing a file.
 
@@ -594,6 +594,6 @@ def process_file(self, file_path: str):
 self.log(f"Processing file {file_path}")
 ```
 
-## Contribute custom components to EarthMind
+## Contribute custom components to Terraflow
 
-To contribute your custom component to the EarthMind project, see [Contribute components](/contributing-components).
+To contribute your custom component to the Terraflow project, see [Contribute components](/contributing-components).

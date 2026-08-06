@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
-from earthmind.schema.dotdict import dotdict
-from earthmind.utils.component_utils import (
+from terraflow.schema.dotdict import dotdict
+from terraflow.utils.component_utils import (
     DEFAULT_FIELDS,
     add_fields,
     delete_fields,

@@ -1,7 +1,7 @@
 import base64
 
 import pytest
-from earthmind.utils.image import convert_image_to_base64, create_data_url, create_image_content_dict
+from terraflow.utils.image import convert_image_to_base64, create_data_url, create_image_content_dict
 
 
 @pytest.fixture

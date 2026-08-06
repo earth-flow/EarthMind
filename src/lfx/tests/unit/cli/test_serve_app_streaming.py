@@ -112,7 +112,7 @@ def multi_serve_app(mock_graphs, mock_metas, monkeypatch):
     from lfx.services.deps import get_settings_service
 
     # Set required environment variable
-    monkeypatch.setenv("EARTHMIND_API_KEY", "test-api-key")
+    monkeypatch.setenv("TERRAFLOW_API_KEY", "test-api-key")
     monkeypatch.setattr(get_settings_service().settings, "allow_custom_components", True)
 
     with patch("lfx.cli.serve_app.execute_graph_with_capture") as mock_execute:
@@ -146,7 +146,7 @@ def multi_serve_app(mock_graphs, mock_metas, monkeypatch):
 def mock_api_key(monkeypatch):
     """Mock API key for authentication."""
     # Set the required environment variable
-    monkeypatch.setenv("EARTHMIND_API_KEY", "test-api-key")
+    monkeypatch.setenv("TERRAFLOW_API_KEY", "test-api-key")
 
     with patch("lfx.cli.serve_app.verify_api_key") as mock_verify:
         mock_verify.return_value = True
@@ -426,7 +426,7 @@ class TestMultiServeStreaming:
         monkeypatch,
     ):
         """Test that /stream returns an error stream when validation blocks the flow."""
-        monkeypatch.setenv("EARTHMIND_API_KEY", "test-api-key")
+        monkeypatch.setenv("TERRAFLOW_API_KEY", "test-api-key")
         mock_graphs["flow1"].raw_graph_data = _blocked_raw_graph()
 
         registry = FlowRegistry()
@@ -481,7 +481,7 @@ class TestMultiServeStreaming:
     @pytest.mark.asyncio
     async def test_stream_setup_error_returns_valid_json(self, mock_graphs, mock_metas, monkeypatch):
         """Error messages with special characters must not break the SSE JSON payload."""
-        monkeypatch.setenv("EARTHMIND_API_KEY", "test-api-key")
+        monkeypatch.setenv("TERRAFLOW_API_KEY", "test-api-key")
 
         registry = FlowRegistry()
         for flow_id, graph in mock_graphs.items():

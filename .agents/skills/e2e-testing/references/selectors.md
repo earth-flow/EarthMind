@@ -1,6 +1,6 @@
-# EarthMind E2E Selector Catalog
+# Terraflow E2E Selector Catalog
 
-This is the canonical reference for `data-testid` selectors used in EarthMind E2E tests. When adding new interactive elements, follow these naming conventions and add the element to this catalog.
+This is the canonical reference for `data-testid` selectors used in Terraflow E2E tests. When adding new interactive elements, follow these naming conventions and add the element to this catalog.
 
 ## Naming Convention
 

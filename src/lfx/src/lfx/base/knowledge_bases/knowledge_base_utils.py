@@ -135,15 +135,15 @@ async def get_knowledge_bases(kb_root: Path, user_id: UUID | str) -> list[str]:
     if not kb_root.exists():
         return []
 
-    # Lazy imports: earthmind's DB models aren't part of the lfx
+    # Lazy imports: terraflow's DB models aren't part of the lfx
     # standalone install, and lfx's validate-rewrite layer can't
     # substitute ``lfx.services.database.models.user.crud`` (no such
     # module). Deferring the imports to call time keeps this module
     # importable under ``lfx run <starter>.json``, which is exercised
     # by the starter-projects smoke test.
-    from earthmind.services.database.models.knowledge_base import KnowledgeBaseRecord
-    from earthmind.services.database.models.user.crud import get_user_by_id
-    from earthmind.services.deps import session_scope
+    from terraflow.services.database.models.knowledge_base import KnowledgeBaseRecord
+    from terraflow.services.database.models.user.crud import get_user_by_id
+    from terraflow.services.deps import session_scope
     from sqlmodel import select
 
     # Get the current user
@@ -173,10 +173,10 @@ async def get_knowledge_bases(kb_root: Path, user_id: UUID | str) -> list[str]:
         return []
 
     # Recovery-only disk fallback for users with zero DB rows. Inlined
-    # sentinel check: lfx must stay importable without the earthmind API
+    # sentinel check: lfx must stay importable without the terraflow API
     # package, so we cannot reach for KBStorageHelper. The string literal
     # is kept in lockstep with KB_DELETED_SENTINEL in
-    # src/backend/base/earthmind/api/utils/kb_helpers.py via a unit test
+    # src/backend/base/terraflow/api/utils/kb_helpers.py via a unit test
     # that asserts the two values are equal.
     deleted_marker = ".kb_deleted"
     return [

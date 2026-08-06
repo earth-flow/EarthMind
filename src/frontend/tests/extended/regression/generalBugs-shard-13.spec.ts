@@ -80,7 +80,7 @@ test(
 
     await page.getByTestId("shared-button-flow").click();
 
-    await page.waitForSelector("text=Publish workflow to the EarthMind Store.", {
+    await page.waitForSelector("text=Publish workflow to the Terraflow Store.", {
       timeout: 10000,
     });
     await page.waitForSelector('[data-testid="shared-button-flow"]', {

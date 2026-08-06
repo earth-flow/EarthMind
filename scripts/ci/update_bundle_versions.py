@@ -1,7 +1,7 @@
 """Rename ``lfx-*`` bundle packages to their ``-nightly`` counterparts.
 
 Bundles under ``src/bundles/*`` follow the same package-rename convention as
-``earthmind``, ``earthmind-base``, ``lfx``, and ``earthmind-sdk``: for nightly
+``terraflow``, ``terraflow-base``, ``lfx``, and ``terraflow-sdk``: for nightly
 builds, the distribution is published as ``<name>-nightly`` so the regular
 (non-nightly) PyPI name stays untouched.
 
@@ -87,7 +87,7 @@ def rename_bundle_pyproject(pyproject_path: Path, lfx_version: str, dev_n: str) 
 
     # Entry-point key. The key may already be the nightly form on a re-run.
     entry_point_pattern = re.compile(
-        rf'(\[project\.entry-points\."earthmind\.extensions"\]\s*\n)'
+        rf'(\[project\.entry-points\."terraflow\.extensions"\]\s*\n)'
         rf"{re.escape(base_name)}(?:-nightly)?"
         rf'(\s*=\s*"[^"]+")'
     )

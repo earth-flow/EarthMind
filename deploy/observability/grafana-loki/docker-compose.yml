@@ -16,9 +16,9 @@ services:
     container_name: lf-promtail
     volumes:
       - ./promtail/config.yml:/etc/promtail/config.yml
-      # Mount the directory that holds your earthmind JSON log file.
-      # Override EARTHMIND_LOG_DIR to point at your real log location.
-      - ${EARTHMIND_LOG_DIR:-./logs}:/var/log/earthmind:ro
+      # Mount the directory that holds your terraflow JSON log file.
+      # Override TERRAFLOW_LOG_DIR to point at your real log location.
+      - ${TERRAFLOW_LOG_DIR:-./logs}:/var/log/terraflow:ro
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       loki:

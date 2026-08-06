@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const REDIRECT_SESSION_KEY = "earthmind_login_redirect";
+const REDIRECT_SESSION_KEY = "terraflow_login_redirect";
 
 export function useSanitizeRedirectUrl() {
   const [searchParams] = useSearchParams();

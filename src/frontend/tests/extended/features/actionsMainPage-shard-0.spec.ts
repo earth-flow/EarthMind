@@ -1,5 +1,5 @@
 import { expect, test } from "../../fixtures";
-import { addFlowToTestOnEmptyEarthMind } from "../../utils/add-flow-to-test-on-empty-earthmind";
+import { addFlowToTestOnEmptyTerraflow } from "../../utils/add-flow-to-test-on-empty-terraflow";
 import { adjustScreenView } from "../../utils/adjust-screen-view";
 import { awaitBootstrapTest } from "../../utils/await-bootstrap-test";
 
@@ -83,7 +83,7 @@ test(
       .getByTestId("new_project_btn_empty_page")
       .count();
     if (countEmptyButton > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+      await addFlowToTestOnEmptyTerraflow(page);
     }
     await page.getByTestId("upload-project-button").last().click();
   },

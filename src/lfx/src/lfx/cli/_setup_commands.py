@@ -40,7 +40,7 @@ def register(app: typer.Typer) -> None:
             example=example,
         )
 
-    @app.command(name="login", help="Validate credentials against a remote EarthMind instance", rich_help_panel="Setup")
+    @app.command(name="login", help="Validate credentials against a remote Terraflow instance", rich_help_panel="Setup")
     def login_command_wrapper(
         env: str | None = typer.Option(
             None,
@@ -56,15 +56,15 @@ def register(app: typer.Typer) -> None:
         target: str | None = typer.Option(
             None,
             "--target",
-            help="EarthMind instance URL (inline override — skips config file lookup).",
+            help="Terraflow instance URL (inline override — skips config file lookup).",
         ),
         api_key: str | None = typer.Option(
             None,
             "--api-key",
-            help="API key for the EarthMind instance (used with --target or to override config).",
+            help="API key for the Terraflow instance (used with --target or to override config).",
         ),
     ) -> None:
-        """Test connectivity and authentication for a EarthMind environment (lazy-loaded)."""
+        """Test connectivity and authentication for a Terraflow environment (lazy-loaded)."""
         from lfx.cli.login import login_command
 
         login_command(

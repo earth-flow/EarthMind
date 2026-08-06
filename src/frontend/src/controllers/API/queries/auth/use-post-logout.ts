@@ -1,6 +1,6 @@
 import {
   IS_AUTO_LOGIN,
-  EARTHMIND_AUTO_LOGIN_OPTION,
+  TERRAFLOW_AUTO_LOGIN_OPTION,
 } from "@/constants/constants";
 import useAuthStore from "@/stores/authStore";
 import useFlowStore from "@/stores/flowStore";
@@ -24,7 +24,7 @@ export const useLogout: useMutationFunctionType<undefined, void> = (
   async function logoutUser(): Promise<any> {
     const autoLogin =
       useAuthStore.getState().autoLogin ||
-      getAuthCookie(cookies, EARTHMIND_AUTO_LOGIN_OPTION) === "auto" ||
+      getAuthCookie(cookies, TERRAFLOW_AUTO_LOGIN_OPTION) === "auto" ||
       isAutoLoginEnv;
 
     if (autoLogin) {

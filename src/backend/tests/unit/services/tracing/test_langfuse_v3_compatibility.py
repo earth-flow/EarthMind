@@ -33,7 +33,7 @@ def langfuse_env_vars():
 @pytest.fixture(autouse=True)
 def reset_langfuse_shared_client():
     """Clear the cached Langfuse client between tests so mocks don't leak."""
-    from earthmind.services.tracing.langfuse import _reset_shared_client_for_tests
+    from terraflow.services.tracing.langfuse import _reset_shared_client_for_tests
 
     _reset_shared_client_for_tests()
     yield
@@ -107,7 +107,7 @@ class TestLangfuseTracerV3Compatibility:
 
     def test_tracer_initialization_does_not_crash(self):
         """Tracer should initialize without crashing (may not be ready without server)."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         # Should not raise an exception
         tracer = LangFuseTracer(
@@ -175,7 +175,7 @@ class TestLangfuseTracerFunctionality:
 
     def test_tracer_uses_v3_api_for_initialization(self, mock_langfuse):
         """Verify tracer uses start_span instead of removed trace() method."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         tracer = LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -193,8 +193,8 @@ class TestLangfuseTracerFunctionality:
         mock_langfuse["root_span"].update_trace.assert_called()
 
     def test_trace_user_id_uses_auth_user_when_no_tracing_override(self, mock_langfuse):
-        """``trace.userId`` should be the authenticated EarthMind user (pre-#9505 behavior)."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        """``trace.userId`` should be the authenticated Terraflow user (pre-#9505 behavior)."""
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -215,10 +215,10 @@ class TestLangfuseTracerFunctionality:
 
         Regression for GitHub issue #9505 / PR #13266 review: external Langfuse
         consumers depend on ``trace.userId`` continuing to mean the authenticated
-        EarthMind user. The caller-supplied override surfaces as
-        ``metadata.earthmind.tracing_user_id`` instead.
+        Terraflow user. The caller-supplied override surfaces as
+        ``metadata.terraflow.tracing_user_id`` instead.
         """
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -232,11 +232,11 @@ class TestLangfuseTracerFunctionality:
 
         update_kwargs = mock_langfuse["root_span"].update_trace.call_args.kwargs
         assert update_kwargs["user_id"] == "auth-user"
-        assert update_kwargs["metadata"] == {"earthmind.tracing_user_id": "end-user-456"}
+        assert update_kwargs["metadata"] == {"terraflow.tracing_user_id": "end-user-456"}
 
     def test_tracing_user_id_equal_to_auth_user_is_not_stamped(self, mock_langfuse):
         """When the override matches the auth user there is nothing extra to record."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -254,7 +254,7 @@ class TestLangfuseTracerFunctionality:
 
     def test_add_trace_creates_child_span(self, mock_langfuse):
         """Test that add_trace creates a child span using v3 API."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         tracer = LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -278,7 +278,7 @@ class TestLangfuseTracerFunctionality:
 
     def test_end_trace_updates_and_ends_span(self, mock_langfuse):
         """Test that end_trace updates span with output and ends it."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         tracer = LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -297,7 +297,7 @@ class TestLangfuseTracerFunctionality:
 
     def test_end_updates_root_span_and_trace(self, mock_langfuse):
         """Test that end() updates both root span and trace, then ends."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         tracer = LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -321,7 +321,7 @@ class TestLangfuseTracerFunctionality:
 
     def test_get_langchain_callback_uses_trace_context(self, mock_langfuse):
         """Test that get_langchain_callback creates handler with trace context."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         tracer = LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -345,7 +345,7 @@ class TestLangfuseTracerFunctionality:
 
     def test_get_langchain_callback_includes_parent_span_id(self, mock_langfuse):
         """Test that callback handler gets parent span ID for proper nesting."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         tracer = LangFuseTracer(
             trace_name="test-flow - flow-123",
@@ -371,7 +371,7 @@ class TestLangfuseTracerFunctionality:
 class TestLangfuseClientSingleton:
     """Verify the Langfuse client is constructed once and reused across flow runs.
 
-    Regression test for https://github.com/earthmind-ai/earthmind/issues/9066.
+    Regression test for https://github.com/terraflow-ai/terraflow/issues/9066.
     """
 
     def test_single_client_for_multiple_flow_runs(self):
@@ -380,7 +380,7 @@ class TestLangfuseClientSingleton:
         Background threads (task_manager, prompt_cache, OTel exporters) are
         spawned per client and never joined, so a per-run client leaks threads.
         """
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         n_runs = 5
 
@@ -404,7 +404,7 @@ class TestLangfuseClientSingleton:
 
     def test_end_calls_client_flush(self):
         """end() must flush buffered events so they're sent before the trace finishes."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         with patch("langfuse.Langfuse") as mock_langfuse_class:
             mock_langfuse_class.create_trace_id = MagicMock(return_value="a" * 32)
@@ -426,7 +426,7 @@ class TestLangfuseClientSingleton:
 
     def test_end_swallows_flush_errors(self):
         """A failing flush() must not break flow end."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         with patch("langfuse.Langfuse") as mock_langfuse_class:
             mock_langfuse_class.create_trace_id = MagicMock(return_value="a" * 32)
@@ -450,7 +450,7 @@ class TestLangfuseClientSingleton:
 
     def test_feedback_helper_reuses_shared_client(self):
         """`_get_langfuse_client()` (used by feedback scoring) must reuse the singleton."""
-        from earthmind.services.tracing.langfuse import _get_langfuse_client
+        from terraflow.services.tracing.langfuse import _get_langfuse_client
 
         with patch("langfuse.Langfuse") as mock_langfuse_class:
             mock_client = MagicMock()
@@ -464,7 +464,7 @@ class TestLangfuseClientSingleton:
 
     def test_credential_change_creates_new_client(self):
         """Rotating credentials should produce a fresh client, not reuse the stale one."""
-        from earthmind.services.tracing.langfuse import _get_langfuse_client
+        from terraflow.services.tracing.langfuse import _get_langfuse_client
 
         with patch("langfuse.Langfuse") as mock_langfuse_class:
             mock_langfuse_class.return_value = MagicMock()
@@ -489,10 +489,10 @@ class TestLangfuseClientSingleton:
 class TestLangfuseIsolatedTracerProvider:
     """Verify Langfuse is initialized with an isolated OTel ``TracerProvider``.
 
-    Regression test for https://github.com/earthmind-ai/earthmind/issues/13319.
+    Regression test for https://github.com/terraflow-ai/terraflow/issues/13319.
 
     Without an explicit ``tracer_provider``, the Langfuse v3 SDK registers
-    itself as the global OTel tracer provider. Because ``earthmind.main`` calls
+    itself as the global OTel tracer provider. Because ``terraflow.main`` calls
     ``FastAPIInstrumentor.instrument_app(app)`` (which uses the global
     provider), every FastAPI HTTP request span would then be exported to
     Langfuse — flooding traces with health checks, flow list calls, and other
@@ -502,7 +502,7 @@ class TestLangfuseIsolatedTracerProvider:
 
     def test_shared_client_uses_isolated_tracer_provider(self):
         """``Langfuse(...)`` must receive an explicit, non-global ``TracerProvider``."""
-        from earthmind.services.tracing.langfuse import _get_langfuse_client
+        from terraflow.services.tracing.langfuse import _get_langfuse_client
         from opentelemetry.sdk.trace import TracerProvider
 
         with patch("langfuse.Langfuse") as mock_langfuse_class:
@@ -525,7 +525,7 @@ class TestLangfuseIsolatedTracerProvider:
         emit HTTP request spans into Langfuse, which is the symptom reported
         in #13319.
         """
-        from earthmind.services.tracing.langfuse import _get_langfuse_client
+        from terraflow.services.tracing.langfuse import _get_langfuse_client
         from opentelemetry import trace as otel_trace_api
 
         before = otel_trace_api.get_tracer_provider()
@@ -541,7 +541,7 @@ class TestLangfuseIsolatedTracerProvider:
 
 
 class TestLangfuseSetupFailureVisibility:
-    """Regression for https://github.com/earthmind-ai/earthmind/issues/13317.
+    """Regression for https://github.com/terraflow-ai/terraflow/issues/13317.
 
     On Docker v1.9.3 (Python 3.14 + pydantic<2.13) langfuse fails to import
     with ``pydantic.v1.errors.ConfigError`` and the tracer was silently
@@ -555,11 +555,11 @@ class TestLangfuseSetupFailureVisibility:
 
     def test_auth_check_failure_logs_warning(self):
         """A failed auth_check must log a WARNING so users see the problem."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         with (
             patch("langfuse.Langfuse") as mock_langfuse_class,
-            patch("earthmind.services.tracing.langfuse.logger") as mock_logger,
+            patch("terraflow.services.tracing.langfuse.logger") as mock_logger,
         ):
             mock_langfuse_class.create_trace_id = MagicMock(return_value="a" * 32)
             mock_client = MagicMock()
@@ -580,11 +580,11 @@ class TestLangfuseSetupFailureVisibility:
 
     def test_auth_check_exception_logs_warning(self):
         """A connection error during auth_check must log a WARNING, not debug."""
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         with (
             patch("langfuse.Langfuse") as mock_langfuse_class,
-            patch("earthmind.services.tracing.langfuse.logger") as mock_logger,
+            patch("terraflow.services.tracing.langfuse.logger") as mock_logger,
         ):
             mock_langfuse_class.create_trace_id = MagicMock(return_value="a" * 32)
             mock_client = MagicMock()
@@ -612,11 +612,11 @@ class TestLangfuseSetupFailureVisibility:
         pydantic<2.13, just raised later in the path. The previous ``debug``
         log meant users got no signal at all.
         """
-        from earthmind.services.tracing.langfuse import LangFuseTracer
+        from terraflow.services.tracing.langfuse import LangFuseTracer
 
         with (
             patch("langfuse.Langfuse") as mock_langfuse_class,
-            patch("earthmind.services.tracing.langfuse.logger") as mock_logger,
+            patch("terraflow.services.tracing.langfuse.logger") as mock_logger,
         ):
             mock_langfuse_class.create_trace_id = MagicMock(return_value="a" * 32)
             mock_client = MagicMock()

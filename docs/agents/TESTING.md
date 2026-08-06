@@ -41,11 +41,11 @@ Every subclass provides three fixtures:
 
 1. **`component_class`** — the component class under test.
 2. **`default_kwargs`** — dict of kwargs to instantiate the component (can be empty).
-3. **`file_names_mapping`** — list of `VersionComponentMapping` entries mapping each historical EarthMind version (from `src/backend/tests/constants.py::SUPPORTED_VERSIONS`) to module/file names. Use `DID_NOT_EXIST` for versions before the component was added.
+3. **`file_names_mapping`** — list of `VersionComponentMapping` entries mapping each historical Terraflow version (from `src/backend/tests/constants.py::SUPPORTED_VERSIONS`) to module/file names. Use `DID_NOT_EXIST` for versions before the component was added.
 
 ```python
 from tests.base import ComponentTestBaseWithClient, VersionComponentMapping, DID_NOT_EXIST
-from earthmind.components.my_namespace import MyComponent
+from terraflow.components.my_namespace import MyComponent
 
 class TestMyComponent(ComponentTestBaseWithClient):
     @pytest.fixture

@@ -939,7 +939,7 @@ class Vertex:
         if hasattr(self, "raw_event_metrics"):
             metrics = self.raw_event_metrics({"component_id": self.id})
 
-        return StepStartedEvent(step_name=self.display_name, raw_event={"earthmind": metrics})
+        return StepStartedEvent(step_name=self.display_name, raw_event={"terraflow": metrics})
 
     def after_callback_event(self, result, *args, **kwargs) -> StepFinishedEvent:  # noqa: ARG002
         """Should be a AGUI compatible event.
@@ -949,4 +949,4 @@ class Vertex:
         metrics = {}
         if hasattr(self, "raw_event_metrics"):
             metrics = self.raw_event_metrics({"component_id": self.id})
-        return StepFinishedEvent(step_name=self.display_name, raw_event={"earthmind": metrics})
+        return StepFinishedEvent(step_name=self.display_name, raw_event={"terraflow": metrics})

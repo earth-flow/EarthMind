@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 
-from earthmind.api.v1.mappers.deployments.base import BaseDeploymentMapper
+from terraflow.api.v1.mappers.deployments.base import BaseDeploymentMapper
 from lfx.services.adapters.deployment.schema import (
     DeploymentCreateResult,
     DeploymentListResult,

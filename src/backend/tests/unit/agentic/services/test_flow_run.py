@@ -7,14 +7,14 @@ from dataclasses import dataclass, field
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from earthmind.agentic.services.flow_run import (
+from terraflow.agentic.services.flow_run import (
     MAX_RESULT_CHARS,
     extract_graph_token_usage,
     extract_run_result_text,
     run_working_flow,
 )
 
-MODULE = "earthmind.agentic.services.flow_run"
+MODULE = "terraflow.agentic.services.flow_run"
 
 
 # Lightweight stand-ins mirroring the real shapes:

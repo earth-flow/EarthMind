@@ -7,76 +7,76 @@ import Icon from "@site/src/components/icon";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-EarthMind produces logs for individual flows and the EarthMind application itself using the [structlog](https://www.structlog.org) library for logging.
+Terraflow produces logs for individual flows and the Terraflow application itself using the [structlog](https://www.structlog.org) library for logging.
 
-By default, OSS EarthMind writes logs to stdout. To write logs to a file, set `EARTHMIND_LOG_FILE` to the desired path.
+By default, OSS Terraflow writes logs to stdout. To write logs to a file, set `TERRAFLOW_LOG_FILE` to the desired path.
 
 ## Log storage
 
-The `EARTHMIND_CONFIG_DIR` environment variable controls where EarthMind stores its configuration and data files. The default location depends on your operating system:
+The `TERRAFLOW_CONFIG_DIR` environment variable controls where Terraflow stores its configuration and data files. The default location depends on your operating system:
 
-- **EarthMind Desktop**:
+- **Terraflow Desktop**:
 
-    - **macOS**: `/Users/<username>/Library/Logs/com.EarthMindDesktop`
-    - **Windows**: `C:\Users\<username>\AppData\Local\com.EarthMindDesktop\logs`
+    - **macOS**: `/Users/<username>/Library/Logs/com.TerraflowDesktop`
+    - **Windows**: `C:\Users\<username>\AppData\Local\com.TerraflowDesktop\logs`
 
-- **OSS EarthMind** (all installation methods, including `uv pip install` and `git clone`):
+- **OSS Terraflow** (all installation methods, including `uv pip install` and `git clone`):
 
-    - **macOS**: `/Users/<username>/Library/Caches/earthmind`
-    - **Linux**: `/home/<username>/.cache/earthmind`
-    - **Windows/WSL**: `C:\Users\<username>\AppData\Local\earthmind\earthmind\Cache`
+    - **macOS**: `/Users/<username>/Library/Caches/terraflow`
+    - **Linux**: `/home/<username>/.cache/terraflow`
+    - **Windows/WSL**: `C:\Users\<username>\AppData\Local\terraflow\terraflow\Cache`
 
-To customize log storage locations and behaviors, set the following [EarthMind environment variables](/environment-variables) in your EarthMind `.env` file, and then start EarthMind with `uv run earthmind run --env-file .env`:
+To customize log storage locations and behaviors, set the following [Terraflow environment variables](/environment-variables) in your Terraflow `.env` file, and then start Terraflow with `uv run terraflow run --env-file .env`:
 
 | Variable | Format | Default | Description |
 |----------|--------|---------|-------------|
-| `EARTHMIND_CONFIG_DIR` | String | Varies | Set the EarthMind configuration directory where files and logs are stored. Default path depends on your installation, as described in the preceding list. |
-| `EARTHMIND_ENABLE_LOG_RETRIEVAL` | Boolean | `False` | Enables retrieval of logs from your EarthMind instance with [Logs endpoints](/api-logs). |
-| `EARTHMIND_ENVIRONMENT` | String | Not set | Adds an `environment` field to every JSON log record when set (`staging`, `production`, etc.). Omitted otherwise. |
-| `EARTHMIND_LOG_ENV` | String | `default` | Primary log format controller. `container` or `container_json`: JSON format via [`JSONRenderer`](https://www.structlog.org/en/stable/api.html#structlog.processors.JSONRenderer). `container_csv`: Key-value format. `default` or unset: uses `EARTHMIND_PRETTY_LOGS` to determine format. See [JSON log format](#json-log-format). |
-| `EARTHMIND_LOG_FILE` | String | Not set | Sets the log file storage location. For example, `EARTHMIND_LOG_FILE=path/to/logfile.log`. If not set, logs are written to stdout. |
-| `EARTHMIND_LOG_FORMAT` | String | Not set | Set to `key_value` for key-value format or `console` for [`ConsoleRenderer`](https://www.structlog.org/en/stable/console-output.html). Only applies when `EARTHMIND_LOG_ENV=default` and `EARTHMIND_PRETTY_LOGS=true`. |
-| `EARTHMIND_LOG_LEVEL` | String | `ERROR` | Global log level. One of `DEBUG`, `INFO`, `WARNING`, `ERROR`, or `CRITICAL`. |
-| `EARTHMIND_LOG_LEVELS` | String | Not set | Per-logger level overrides as `name=LEVEL,name=LEVEL`. Overrides `EARTHMIND_LOG_LEVEL` for specific loggers without changing the global default. Malformed entries raise a `UserWarning` at startup. Example: `sqlalchemy.engine=WARNING,httpx=INFO`. |
-| `EARTHMIND_LOG_REDACT_KEYS` | String | Not set | Comma-separated extra keys to scrub from JSON log records, on top of the defaults (`password`, `api_key`, `token`, `authorization`, `cookie`, etc.). |
-| `EARTHMIND_LOG_RETRIEVER_BUFFER_SIZE` | Integer | `10000` | Buffer size for log retrieval when `EARTHMIND_ENABLE_LOG_RETRIEVAL=True`. Must be greater than `0`. |
-| `EARTHMIND_LOG_ROTATION` | String | `1 day` | Controls log file rotation by time (`1 day`, `12 hours`, `1 week`) or size (`10 MB`, `1 GB`). Set to `None` to disable rotation. |
-| `EARTHMIND_LOG_TRACE_LOCALS` | Boolean | `false` | Include frame locals in structured tracebacks. Off by default because locals can leak secrets; enable only for local debugging. |
-| `EARTHMIND_NATIVE_TRACING` | Boolean | `true` | Enables the tracer to record execution traces in the EarthMind database for use in Trace View. Set to `false` to disable. |
-| `EARTHMIND_PRETTY_LOGS` | Boolean | `True` | Controls output format when `EARTHMIND_LOG_ENV=default` or unset. `true`: [`ConsoleRenderer`](https://www.structlog.org/en/stable/console-output.html) (human-readable). `false`: JSON format. |
-| `EARTHMIND_SERVICE_NAME` | String | `earthmind` | Value of the `service` field on every JSON log record. Used as a label by log aggregators. See [Grafana and Loki](./observability-grafana-loki.mdx). |
-| `EARTHMIND_VERSION` | String | Not set | Adds a `version` field to every JSON log record when set. Omitted otherwise. |
+| `TERRAFLOW_CONFIG_DIR` | String | Varies | Set the Terraflow configuration directory where files and logs are stored. Default path depends on your installation, as described in the preceding list. |
+| `TERRAFLOW_ENABLE_LOG_RETRIEVAL` | Boolean | `False` | Enables retrieval of logs from your Terraflow instance with [Logs endpoints](/api-logs). |
+| `TERRAFLOW_ENVIRONMENT` | String | Not set | Adds an `environment` field to every JSON log record when set (`staging`, `production`, etc.). Omitted otherwise. |
+| `TERRAFLOW_LOG_ENV` | String | `default` | Primary log format controller. `container` or `container_json`: JSON format via [`JSONRenderer`](https://www.structlog.org/en/stable/api.html#structlog.processors.JSONRenderer). `container_csv`: Key-value format. `default` or unset: uses `TERRAFLOW_PRETTY_LOGS` to determine format. See [JSON log format](#json-log-format). |
+| `TERRAFLOW_LOG_FILE` | String | Not set | Sets the log file storage location. For example, `TERRAFLOW_LOG_FILE=path/to/logfile.log`. If not set, logs are written to stdout. |
+| `TERRAFLOW_LOG_FORMAT` | String | Not set | Set to `key_value` for key-value format or `console` for [`ConsoleRenderer`](https://www.structlog.org/en/stable/console-output.html). Only applies when `TERRAFLOW_LOG_ENV=default` and `TERRAFLOW_PRETTY_LOGS=true`. |
+| `TERRAFLOW_LOG_LEVEL` | String | `ERROR` | Global log level. One of `DEBUG`, `INFO`, `WARNING`, `ERROR`, or `CRITICAL`. |
+| `TERRAFLOW_LOG_LEVELS` | String | Not set | Per-logger level overrides as `name=LEVEL,name=LEVEL`. Overrides `TERRAFLOW_LOG_LEVEL` for specific loggers without changing the global default. Malformed entries raise a `UserWarning` at startup. Example: `sqlalchemy.engine=WARNING,httpx=INFO`. |
+| `TERRAFLOW_LOG_REDACT_KEYS` | String | Not set | Comma-separated extra keys to scrub from JSON log records, on top of the defaults (`password`, `api_key`, `token`, `authorization`, `cookie`, etc.). |
+| `TERRAFLOW_LOG_RETRIEVER_BUFFER_SIZE` | Integer | `10000` | Buffer size for log retrieval when `TERRAFLOW_ENABLE_LOG_RETRIEVAL=True`. Must be greater than `0`. |
+| `TERRAFLOW_LOG_ROTATION` | String | `1 day` | Controls log file rotation by time (`1 day`, `12 hours`, `1 week`) or size (`10 MB`, `1 GB`). Set to `None` to disable rotation. |
+| `TERRAFLOW_LOG_TRACE_LOCALS` | Boolean | `false` | Include frame locals in structured tracebacks. Off by default because locals can leak secrets; enable only for local debugging. |
+| `TERRAFLOW_NATIVE_TRACING` | Boolean | `true` | Enables the tracer to record execution traces in the Terraflow database for use in Trace View. Set to `false` to disable. |
+| `TERRAFLOW_PRETTY_LOGS` | Boolean | `True` | Controls output format when `TERRAFLOW_LOG_ENV=default` or unset. `true`: [`ConsoleRenderer`](https://www.structlog.org/en/stable/console-output.html) (human-readable). `false`: JSON format. |
+| `TERRAFLOW_SERVICE_NAME` | String | `terraflow` | Value of the `service` field on every JSON log record. Used as a label by log aggregators. See [Grafana and Loki](./observability-grafana-loki.mdx). |
+| `TERRAFLOW_VERSION` | String | Not set | Adds a `version` field to every JSON log record when set. Omitted otherwise. |
 
 ## View logs in real-time
 
-By default, OSS EarthMind writes logs to stdout. To write logs to a file that you can tail, do the following:
+By default, OSS Terraflow writes logs to stdout. To write logs to a file that you can tail, do the following:
 
-1. Set `EARTHMIND_LOG_FILE` to a file path in your `.env` file:
+1. Set `TERRAFLOW_LOG_FILE` to a file path in your `.env` file:
 
    ```text
-   EARTHMIND_LOG_FILE=/path/to/earthmind.log
+   TERRAFLOW_LOG_FILE=/path/to/terraflow.log
    ```
 
-2. Start EarthMind with your `.env` file:
+2. Start Terraflow with your `.env` file:
 
    ```bash
-   uv run earthmind run --env-file .env
+   uv run terraflow run --env-file .env
    ```
 
-3. Change to the directory where you set `EARTHMIND_LOG_FILE`:
+3. Change to the directory where you set `TERRAFLOW_LOG_FILE`:
 
     <Tabs groupId="cd-command">
     <TabItem value="macOS" label="macOS" default>
 
     ```bash
-    cd /Users/**USERNAME**/Library/Caches/earthmind
+    cd /Users/**USERNAME**/Library/Caches/terraflow
     ```
 
     </TabItem>
     <TabItem value="Windows" label="Windows">
 
     ```cmd
-    cd C:\Users\**USERNAME**\AppData\Local\com.EarthMindDesktop\logs
+    cd C:\Users\**USERNAME**\AppData\Local\com.TerraflowDesktop\logs
     ```
 
     </TabItem>
@@ -88,20 +88,20 @@ By default, OSS EarthMind writes logs to stdout. To write logs to a file that yo
     <TabItem value="macOS" label="macOS" default>
 
     ```bash
-    tail -f earthmind.log
+    tail -f terraflow.log
     ```
 
     </TabItem>
     <TabItem value="Windows" label="Windows">
 
     ```cmd
-    Get-Content -Wait -Path earthmind.log
+    Get-Content -Wait -Path terraflow.log
     ```
 
     </TabItem>
     </Tabs>
 
-    If you don't see new log entries, check that EarthMind is running, and perform some actions to generate logs events. You can also check the terminal where you started EarthMind to see if logs are being printed there.
+    If you don't see new log entries, check that Terraflow is running, and perform some actions to generate logs events. You can also check the terminal where you started Terraflow to see if logs are being printed there.
 
 
 ## Flow and component logs
@@ -136,7 +136,7 @@ For example, the following `Message` data could be the output from a **Chat Inpu
 In the case of Input/Output components, the original input might not be structured as a `Message` object.
 For example, a language model component can pass a raw text response to a **Chat Output** component that is then transformed into a `Message` object.
 
-You can find `.log` files for flows at your EarthMind installation's log storage location.
+You can find `.log` files for flows at your Terraflow installation's log storage location.
 For filepaths, see [Log storage](#log-storage).
 
 ### View chat logs
@@ -150,9 +150,9 @@ When debugging issues with the format or content of a flow's output, it can help
 
 To view the output produced by a single component during the most recent run, click <Icon name="TextSearch" aria-hidden="true"/> **Inspect output** on the component in the visual editor.
 
-## Access EarthMind Desktop logs {#desktop-logs}
+## Access Terraflow Desktop logs {#desktop-logs}
 
-If you encounter issues with EarthMind Desktop, you might need to access startup logs for debugging.
+If you encounter issues with Terraflow Desktop, you might need to access startup logs for debugging.
 Follow the steps for your operating system.
 
 <Tabs>
@@ -160,7 +160,7 @@ Follow the steps for your operating system.
 
 1. Open Terminal and run:
    ```bash
-   cd ~/Library/Logs/com.EarthMindDesktop
+   cd ~/Library/Logs/com.TerraflowDesktop
    ```
 
 2. To open the folder and view the log files, run the command:
@@ -168,7 +168,7 @@ Follow the steps for your operating system.
    open .
    ```
 
-3. Locate the `earthmind.log` file.
+3. Locate the `terraflow.log` file.
 
 </TabItem>
 <TabItem value="windows" label="Windows">
@@ -176,7 +176,7 @@ Follow the steps for your operating system.
 1. Open the Command Prompt (CMD), and then run the following command:
 
    ```cmd
-   cd %LOCALAPPDATA%\com.EarthMindDesktop\cache
+   cd %LOCALAPPDATA%\com.TerraflowDesktop\cache
    ```
 
 2. Open the folder and view the log files:
@@ -185,14 +185,14 @@ Follow the steps for your operating system.
    start .
    ```
 
-3. Locate the `earthmind.log` file.
+3. Locate the `terraflow.log` file.
 
 </TabItem>
 </Tabs>
 
-You can use the log file to investigate the issue on your own, add context to a [GitHub Issue](/contributing-github-issues), or send it to [support](/luna-for-earthmind) for debugging assistance.
+You can use the log file to investigate the issue on your own, add context to a [GitHub Issue](/contributing-github-issues), or send it to [support](/luna-for-terraflow) for debugging assistance.
 
-The log file is only created when EarthMind Desktop runs. If you don't see a log file, try starting EarthMind Desktop first, then check for the log file.
+The log file is only created when Terraflow Desktop runs. If you don't see a log file, try starting Terraflow Desktop first, then check for the log file.
 
 ## Log format
 
@@ -201,12 +201,12 @@ By default, structlog uses [`ConsoleRenderer`](https://www.structlog.org/en/stab
 For example:
 
 ```text
-2026-05-17T18:18:29Z [info     ] incoming request    logger=earthmind.api.run flow_id=flow-718 user_id=user-4823
+2026-05-17T18:18:29Z [info     ] incoming request    logger=terraflow.api.run flow_id=flow-718 user_id=user-4823
 ```
 
 ### JSON log format
 
-Set `EARTHMIND_LOG_ENV=container` to switch structlog's terminal processor to [`JSONRenderer`](https://www.structlog.org/en/stable/api.html#structlog.processors.JSONRenderer), so every line written to stdout is a JSON object containing the event message, level, timestamp, logger name, exception structure, and service metadata.
+Set `TERRAFLOW_LOG_ENV=container` to switch structlog's terminal processor to [`JSONRenderer`](https://www.structlog.org/en/stable/api.html#structlog.processors.JSONRenderer), so every line written to stdout is a JSON object containing the event message, level, timestamp, logger name, exception structure, and service metadata.
 
 A typical record in JSON mode looks like the following:
 
@@ -214,9 +214,9 @@ A typical record in JSON mode looks like the following:
 {
   "event": "incoming request",
   "level": "info",
-  "logger": "earthmind.api.run",
+  "logger": "terraflow.api.run",
   "timestamp": "2026-05-17T18:18:29.100798Z",
-  "service": "earthmind",
+  "service": "terraflow",
   "version": "1.10.0",
   "environment": "production",
   "user_id": "user-4823",
@@ -237,9 +237,9 @@ When a log record includes an exception, the `exception` field contains a struct
 {
   "event": "flow run failed",
   "level": "error",
-  "logger": "earthmind.api.run",
+  "logger": "terraflow.api.run",
   "timestamp": "2026-05-17T18:18:32.412Z",
-  "service": "earthmind",
+  "service": "terraflow",
   "exception": [
     {
       "exc_type": "ConnectionError",
@@ -252,7 +252,7 @@ When a log record includes an exception, the `exception` field contains a struct
 }
 ```
 
-Frame locals, which are local variables at each stack frame, are intentionally excluded by default because they can contain API keys, request bodies, and environment values. Set `EARTHMIND_LOG_TRACE_LOCALS=true` to include them for local debugging.
+Frame locals, which are local variables at each stack frame, are intentionally excluded by default because they can contain API keys, request bodies, and environment values. Set `TERRAFLOW_LOG_TRACE_LOCALS=true` to include them for local debugging.
 
 #### Stdlib loggers
 

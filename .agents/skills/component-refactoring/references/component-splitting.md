@@ -1,6 +1,6 @@
 # Component Splitting Patterns
 
-This document provides detailed guidance on splitting large components into smaller, focused components in EarthMind.
+This document provides detailed guidance on splitting large components into smaller, focused components in Terraflow.
 
 ## When to Split Components
 
@@ -563,11 +563,11 @@ function FieldList<T>({ fields, renderField, renderEmpty }: FieldListProps<T>) {
 />
 ```
 
-## EarthMind-Specific Splitting Guidelines
+## Terraflow-Specific Splitting Guidelines
 
 ### Splitting GenericNode Components
 
-The `GenericNode` component is one of the most complex components in EarthMind. When splitting:
+The `GenericNode` component is one of the most complex components in Terraflow. When splitting:
 
 1. Keep the main `index.tsx` as an orchestrator that composes sub-components.
 2. Parameter rendering goes in `components/NodeInputField/`.

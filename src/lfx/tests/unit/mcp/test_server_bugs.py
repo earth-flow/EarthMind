@@ -106,7 +106,7 @@ class TestLoginSessionIsolation:
         srv._client_var.set(session_client)
         srv._shared_client = shared_client
 
-        with patch.object(srv, "EarthMindClient", return_value=_make_mock_client()):
+        with patch.object(srv, "TerraflowClient", return_value=_make_mock_client()):
             await srv.login("user", "pass", "http://localhost:7860")
 
         session_client.close.assert_called_once()
@@ -122,7 +122,7 @@ class TestLoginSessionIsolation:
         srv._shared_client = shared_client
 
         new_client = _make_mock_client()
-        with patch.object(srv, "EarthMindClient", return_value=new_client):
+        with patch.object(srv, "TerraflowClient", return_value=new_client):
             await srv.login("user", "pass", "http://localhost:7860")
 
         shared_client.close.assert_not_called()
@@ -137,7 +137,7 @@ class TestLoginSessionIsolation:
         srv._registry_var.set({"session": "registry"})
 
         new_client = _make_mock_client()
-        with patch.object(srv, "EarthMindClient", return_value=new_client):
+        with patch.object(srv, "TerraflowClient", return_value=new_client):
             await srv.login("user", "pass", "http://localhost:7860")
 
         assert srv._registry_var.get() is None

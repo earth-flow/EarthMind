@@ -11,12 +11,12 @@ the original in-tree registration:
 * **Entry point** under the ``lfx.ingestion_source.adapters`` group::
 
       [project.entry-points."lfx.ingestion_source.adapters"]
-      box = "earthmind_box.source:BoxSource"
+      box = "terraflow_box.source:BoxSource"
 
 * **Config file** — ``lfx.toml`` (preferred) or ``pyproject.toml``::
 
       [ingestion_source.adapters]
-      box = "earthmind_box.source:BoxSource"
+      box = "terraflow_box.source:BoxSource"
 
 Both paths resolve to the same registry as an import-time
 ``register_source(...)`` call. Sources are instantiated per request

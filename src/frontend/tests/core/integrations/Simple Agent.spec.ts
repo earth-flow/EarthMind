@@ -20,7 +20,7 @@ withEventDeliveryModes(
     await page
       .getByTestId("input-chat-playground")
       .last()
-      .fill("Hello, tell me about EarthMind.");
+      .fill("Hello, tell me about Terraflow.");
 
     await page.getByTestId("button-send").last().click();
 

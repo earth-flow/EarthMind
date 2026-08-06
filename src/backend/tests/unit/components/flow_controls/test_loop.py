@@ -4,8 +4,8 @@ from uuid import UUID
 import orjson
 import pytest
 from httpx import AsyncClient
-from earthmind.memory import aget_messages
-from earthmind.services.database.models.flow import FlowCreate
+from terraflow.memory import aget_messages
+from terraflow.services.database.models.flow import FlowCreate
 from lfx.components.data_source.url import URLComponent
 from lfx.components.flow_controls import LoopComponent
 from lfx.components.input_output import ChatOutput
@@ -131,7 +131,7 @@ def loop_flow():
     """Complete loop flow that processes multiple URLs through a loop."""
     # Create URL component to fetch content from multiple sources
     url_component = URLComponent()
-    url_component.set(urls=["https://docs.earthmind.org/"])
+    url_component.set(urls=["https://docs.terraflow.org/"])
 
     # Create SplitText component to chunk the content
     split_text_component = SplitTextComponent()

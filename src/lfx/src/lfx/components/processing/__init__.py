@@ -1,4 +1,4 @@
-"""Processing components for EarthMind."""
+"""Processing components for Terraflow."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 [project]
-name = "earthmind"
+name = "terraflow"
 version = "1.10.0"
 description = "A Python package with a built-in web application"
 requires-python = ">=3.10,<3.15"
@@ -7,23 +7,23 @@ license = "MIT"
 keywords = ["nlp", "langchain", "openai", "gpt", "gui"]
 readme = "README.md"
 maintainers = [
-    { name = "Carlos Coelho", email = "carlos@earthmind.org" },
+    { name = "Carlos Coelho", email = "carlos@terraflow.org" },
     { name = "Cristhian Zanforlin", email = "cristhian.lousa@gmail.com" },
-    { name = "Gabriel Almeida", email = "gabriel@earthmind.org" },
+    { name = "Gabriel Almeida", email = "gabriel@terraflow.org" },
     { name = "Lucas Eduoli", email = "lucaseduoli@gmail.com" },
     { name = "Otávio Anovazzi", email = "otavio2204@gmail.com" },
-    { name = "Rodrigo Nader", email = "rodrigo@earthmind.org" },
+    { name = "Rodrigo Nader", email = "rodrigo@terraflow.org" },
     { name = "Italo dos Anjos", email = "italojohnnydosanjos@gmail.com" },
 ]
 # Define your main dependencies here
 dependencies = [
-    "earthmind-base[complete]>=0.10.0",
-    # earthmind-extensions:bundle-deps-start
+    "terraflow-base[complete]>=0.10.0",
+    # terraflow-extensions:bundle-deps-start
     "lfx-duckduckgo>=0.1.0",
     "lfx-arxiv>=0.1.0",
     "lfx-ibm>=0.1.0",
     "lfx-docling>=0.1.0",
-    # earthmind-extensions:bundle-deps-end
+    # terraflow-extensions:bundle-deps-end
 ]
 
 
@@ -75,16 +75,16 @@ url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
 [tool.uv.sources]
-earthmind-base = { workspace = true }
-earthmind = { workspace = true }
+terraflow-base = { workspace = true }
+terraflow = { workspace = true }
 lfx = { workspace = true }
-earthmind-sdk = { workspace = true }
-# earthmind-extensions:bundle-sources-start
+terraflow-sdk = { workspace = true }
+# terraflow-extensions:bundle-sources-start
 lfx-duckduckgo = { workspace = true }
 lfx-arxiv = { workspace = true }
 lfx-ibm = { workspace = true }
 lfx-docling = { workspace = true }
-# earthmind-extensions:bundle-sources-end
+# terraflow-extensions:bundle-sources-end
 torch = { index = "pytorch-cpu" }
 torchvision = { index = "pytorch-cpu" }
 terrabox = { git = "ssh://git@github.com/earth-flow/terrabox.git", tag = "v0.1.1" }
@@ -94,22 +94,22 @@ members = [
     "src/backend/base",
     ".",
     "src/lfx",
-    "src/earthmind-stepflow",
+    "src/terraflow-stepflow",
     "src/sdk",
-    # earthmind-extensions:bundle-members-start
+    # terraflow-extensions:bundle-members-start
     "src/bundles/duckduckgo",
     "src/bundles/arxiv",
     "src/bundles/ibm",
     "src/bundles/docling",
-    # earthmind-extensions:bundle-members-end
+    # terraflow-extensions:bundle-members-end
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/backend/earthmind"]
+packages = ["src/backend/terraflow"]
 
 [project.urls]
-Repository = "https://github.com/earthmind-ai/earthmind"
-Documentation = "https://docs.earthmind.org"
+Repository = "https://github.com/terraflow-ai/terraflow"
+Documentation = "https://docs.terraflow.org"
 
 [project.optional-dependencies]
 docling = [
@@ -176,7 +176,7 @@ override-dependencies = [
 ]
 
 [project.scripts]
-earthmind = "earthmind.earthmind_launcher:main"
+terraflow = "terraflow.terraflow_launcher:main"
 
 [tool.codespell]
 skip = '.git,*.pdf,*.svg,*.pdf,*.yaml,*.ipynb,poetry.lock,*.min.js,*.css,package-lock.json,*.trig.,**/node_modules/**,./stuff/*,*.csv'
@@ -220,7 +220,7 @@ command_line = """
     --cov --cov-report=term --cov-report=html
     --instafail -ra -n auto -m "not api_key_required"
 """
-source = ["src/backend/base/earthmind/"]
+source = ["src/backend/base/terraflow/"]
 omit = ["*/alembic/*", "tests/*", "*/__init__.py"]
 
 
@@ -238,7 +238,7 @@ directory = "coverage"
 [tool.ruff]
 target-version = "py310"
 exclude = [
-    "src/backend/base/earthmind/alembic/*",
+    "src/backend/base/terraflow/alembic/*",
     "src/frontend/tests/assets/*",
     "src/lfx/src/lfx/_assets/component_index.json",
     "docs/**/API-Reference/python-examples/**",
@@ -307,23 +307,23 @@ external = ["RUF027"]
     "TRY003",  # Long exception messages
     "EM101",   # String literals in exceptions
 ]
-"src/backend/base/earthmind/alembic/versions/*" = ["INP001", "D415", "PGH003"]
-"src/backend/base/earthmind/custom/__init__.py" = [
+"src/backend/base/terraflow/alembic/versions/*" = ["INP001", "D415", "PGH003"]
+"src/backend/base/terraflow/custom/__init__.py" = [
     "I001",  # Import order affects initialization - must import custom module first
 ]
-"src/backend/base/earthmind/api/v1/*" = [
+"src/backend/base/terraflow/api/v1/*" = [
     "TCH",  # FastAPI needs to evaluate types at runtime
 ]
-"src/backend/base/earthmind/api/v2/*" = [
+"src/backend/base/terraflow/api/v2/*" = [
     "TCH",  # FastAPI needs to evaluate types at runtime
 ]
-"src/backend/base/earthmind/__main__.py" = [
+"src/backend/base/terraflow/__main__.py" = [
     "B008",  # Typer CLI requires function calls in defaults
 ]
-"src/backend/base/earthmind/services/cache/*" = [
+"src/backend/base/terraflow/services/cache/*" = [
     "S301",  # Pickle usage is intentional for caching
 ]
-"src/backend/base/earthmind/services/tracing/*" = [
+"src/backend/base/terraflow/services/tracing/*" = [
     "SLF001",  # Third-party library private member access (langwatch, opik)
 ]
 "src/lfx/src/lfx/base/curl/parse.py" = [
@@ -412,13 +412,13 @@ external = ["RUF027"]
     "FBT001", # Bool flags are the standard typer pattern
     "FBT003", # Boolean positional values in typer.Option() calls
 ]
-"src/backend/base/earthmind/api/utils/*" = [
+"src/backend/base/terraflow/api/utils/*" = [
     "TCH",  # Imports are used at runtime (FastAPI deps, SQLAlchemy queries, model constructors)
 ]
-"src/sdk/src/earthmind_sdk/_http.py" = [
+"src/sdk/src/terraflow_sdk/_http.py" = [
     "TCH",  # httpx is used at runtime (response object methods)
 ]
-"src/sdk/src/earthmind_sdk/environments.py" = [
+"src/sdk/src/terraflow_sdk/environments.py" = [
     "TRY003", # Contextual error messages are necessary here
     "EM102",  # f-string messages assigned before raise where possible
 ]
@@ -441,7 +441,7 @@ external = ["RUF027"]
     "SLF001",
     "BLE001",  # allow broad-exception catching in tests
 ]
-"src/backend/base/earthmind/tests/*" = [
+"src/backend/base/terraflow/tests/*" = [
     "D1",
     "PLR2004",
     "S101",
@@ -472,7 +472,7 @@ external = ["RUF027"]
     "T201",    # Print statements (needed for CLI output)
     "S603",    # Subprocess calls (needed for running commands)
     "S607",    # Starting process with partial executable path
-    "S104",    # Binding to all interfaces (needed for EarthMind server)
+    "S104",    # Binding to all interfaces (needed for Terraflow server)
     "S105",    # Hardcoded passwords (test credentials)
     "FBT001",  # Boolean-typed positional arguments (common in CLI)
     "FBT002",  # Boolean default arguments (common in CLI tools)

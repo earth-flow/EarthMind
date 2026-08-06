@@ -40,7 +40,7 @@ export const getKnowledgeBaseBackendTarget = (
   }
 
   if (backendType === "chroma") {
-    return "Stored locally in EarthMind";
+    return "Stored locally in Terraflow";
   }
 
   if (backendType === "opensearch") {

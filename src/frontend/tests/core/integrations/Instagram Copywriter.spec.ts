@@ -55,7 +55,7 @@ test(
       .getByRole("button", { name: TEXTS.playground, exact: true })
       .click();
     await page
-      .getByText("Create a EarthMind post", { exact: true })
+      .getByText("Create a Terraflow post", { exact: true })
       .last()
       .isVisible();
 

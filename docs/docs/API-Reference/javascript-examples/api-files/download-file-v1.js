@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/files/download/${process.env.FLOW_ID ?? ""}/2024-12-30_15-19-43_your_file.txt`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/files/download/${process.env.FLOW_ID ?? ""}/2024-12-30_15-19-43_your_file.txt`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
 };
 

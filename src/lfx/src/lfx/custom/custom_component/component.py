@@ -1712,7 +1712,7 @@ class Component(CustomComponent):
     def get_project_name(self):
         if hasattr(self, "_tracing_service") and self.tracing_service:
             return self.tracing_service.project_name
-        return "EarthMind"
+        return "Terraflow"
 
     def log(self, message: LoggableType | list[LoggableType], name: str | None = None) -> None:
         """Logs a message.
@@ -1830,7 +1830,7 @@ class Component(CustomComponent):
     async def send_message(self, message: Message, id_: str | None = None, *, skip_db_update: bool = False):
         """Send a message with optional database update control.
 
-        This is the central method for sending messages in EarthMind. It handles:
+        This is the central method for sending messages in Terraflow. It handles:
         - Message storage in the database (unless skipped)
         - Event emission to the frontend
         - Streaming support

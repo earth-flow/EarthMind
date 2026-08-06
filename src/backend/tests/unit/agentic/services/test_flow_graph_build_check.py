@@ -13,9 +13,9 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from earthmind.agentic.services.flow_graph_build_check import BuildCheckResult, build_check
+from terraflow.agentic.services.flow_graph_build_check import BuildCheckResult, build_check
 
-MODULE = "earthmind.agentic.services.flow_graph_build_check"
+MODULE = "terraflow.agentic.services.flow_graph_build_check"
 _FLOW = {"id": "f", "name": "f", "data": {"nodes": [{"id": "A"}], "edges": []}}
 
 

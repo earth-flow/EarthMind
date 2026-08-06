@@ -125,7 +125,7 @@ export const DEPLOY_RESPONSE = {
   status: "deploying",
   provider_data: {
     display_name: "My Deployment",
-    name: "earthmind_my_deployment_abc12345",
+    name: "terraflow_my_deployment_abc12345",
   },
 };
 

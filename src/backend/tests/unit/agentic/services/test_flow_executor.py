@@ -11,22 +11,22 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException
-from earthmind.agentic.services.flow_executor import (
+from terraflow.agentic.services.flow_executor import (
     _run_graph_with_events,
     execute_flow_file,
     execute_flow_file_streaming,
     extract_response_text,
 )
-from earthmind.agentic.services.flow_types import (
+from terraflow.agentic.services.flow_types import (
     FLOWS_BASE_PATH,
     STREAMING_EVENT_TIMEOUT_SECONDS,
     STREAMING_QUEUE_MAX_SIZE,
     FlowExecutionResult,
 )
-from earthmind.agentic.services.helpers.event_consumer import parse_event_data
+from terraflow.agentic.services.helpers.event_consumer import parse_event_data
 from lfx.utils.flow_validation import CustomComponentValidationError
 
-MODULE = "earthmind.agentic.services.flow_executor"
+MODULE = "terraflow.agentic.services.flow_executor"
 
 
 class TestFlowExecutionResult:
@@ -313,11 +313,11 @@ class TestExecuteFlowFile:
 
         with (
             patch(
-                "earthmind.agentic.services.flow_executor.resolve_flow_path",
+                "terraflow.agentic.services.flow_executor.resolve_flow_path",
                 return_value=(Path("/fake/path/test.py"), "python"),
             ),
             patch(
-                "earthmind.agentic.services.flow_executor.load_graph_for_execution",
+                "terraflow.agentic.services.flow_executor.load_graph_for_execution",
                 new_callable=AsyncMock,
                 side_effect=CustomComponentValidationError(validation_error),
             ),
@@ -516,7 +516,7 @@ class TestExecuteFlowFileStreamingEvents:
         ``original_error_message`` for internal callers (the assistant retry loop)
         to feed into extract_friendly_error.
         """
-        from earthmind.agentic.services.flow_types import FlowExecutionError
+        from terraflow.agentic.services.flow_types import FlowExecutionError
 
         async def mock_consume(*_args, **_kwargs):
             yield ("end", None)
@@ -789,11 +789,11 @@ class TestTracingIntegration:
 
         with (
             patch(
-                "earthmind.agentic.services.flow_executor.resolve_flow_path",
+                "terraflow.agentic.services.flow_executor.resolve_flow_path",
                 return_value=(Path("/fake/path/test.py"), "python"),
             ),
             patch(
-                "earthmind.agentic.services.flow_executor.load_graph_for_execution",
+                "terraflow.agentic.services.flow_executor.load_graph_for_execution",
                 new_callable=AsyncMock,
                 side_effect=CustomComponentValidationError(validation_error),
             ),

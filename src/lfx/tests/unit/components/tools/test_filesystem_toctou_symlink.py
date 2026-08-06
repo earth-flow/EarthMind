@@ -22,7 +22,7 @@ from lfx.components.files_and_knowledge.filesystem import FileSystemToolComponen
 
 @pytest.fixture
 def base_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(tmp_path / "fs"))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(tmp_path / "fs"))
     return tmp_path
 
 

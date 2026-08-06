@@ -10,7 +10,7 @@ jest.mock("@/customization/utils/custom-get-host-protocol", () => ({
 
 // Mock the feature flag
 jest.mock("@/customization/feature-flags", () => ({
-  ENABLE_DATASTAX_EARTHMIND: false,
+  ENABLE_DATASTAX_TERRAFLOW: false,
 }));
 
 describe("getCurlWebhookCode", () => {

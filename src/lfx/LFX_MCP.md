@@ -1,16 +1,16 @@
 # LFX MCP Server
 
-`lfx-mcp` is an MCP (Model Context Protocol) server that gives any MCP-compatible client full programmatic control over a EarthMind instance to build and run flows.
+`lfx-mcp` is an MCP (Model Context Protocol) server that gives any MCP-compatible client full programmatic control over a Terraflow instance to build and run flows.
 
 The server is implemented in `src/lfx/src/lfx/mcp/` using [FastMCP](https://github.com/jlowin/fastmcp).
-It connects to EarthMind's REST API.
+It connects to Terraflow's REST API.
 Flow data is never cached server-side, so every mutating tool does a GET → modify → PATCH cycle.
 The component registry is cached on first access per session.
 
 ## Prerequisites
 
-- A running EarthMind instance
-- A EarthMind API key
+- A running Terraflow instance
+- A Terraflow API key
 - `lfx` installed (`uv pip install lfx`), **or** `uv` installed if you want to run via `uvx` without a permanent install
 
 ## Connect a client
@@ -22,19 +22,19 @@ Set the command to `lfx-mcp` (or `uvx --from lfx lfx-mcp`) and pass the followin
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `EARTHMIND_SERVER_URL` | URL of your EarthMind instance | `http://localhost:7860` |
-| `EARTHMIND_API_KEY` | API key for authentication | — |
+| `TERRAFLOW_SERVER_URL` | URL of your Terraflow instance | `http://localhost:7860` |
+| `TERRAFLOW_API_KEY` | API key for authentication | — |
 
 For example, to connect to Claude Desktop, add the following to the Claude Desktop configuration file at `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "earthmind": {
+    "terraflow": {
       "command": "lfx-mcp",
       "env": {
-        "EARTHMIND_SERVER_URL": "http://localhost:7860",
-        "EARTHMIND_API_KEY": "<your-api-key>"
+        "TERRAFLOW_SERVER_URL": "http://localhost:7860",
+        "TERRAFLOW_API_KEY": "<your-api-key>"
       }
     }
   }
@@ -46,12 +46,12 @@ If `lfx` is not installed globally, use it through `uvx` instead.
 ```json
 {
   "mcpServers": {
-    "earthmind": {
+    "terraflow": {
       "command": "uvx",
       "args": ["--from", "lfx", "lfx-mcp"],
       "env": {
-        "EARTHMIND_SERVER_URL": "http://localhost:7860",
-        "EARTHMIND_API_KEY": "<your-api-key>"
+        "TERRAFLOW_SERVER_URL": "http://localhost:7860",
+        "TERRAFLOW_API_KEY": "<your-api-key>"
       }
     }
   }
@@ -66,7 +66,7 @@ The server exposes the following tool groups to the connected MCP client.
 
 | Tool | Description |
 |------|-------------|
-| `login` | Authenticate with a EarthMind server using username and password. Not needed if `EARTHMIND_API_KEY` is set. |
+| `login` | Authenticate with a Terraflow server using username and password. Not needed if `TERRAFLOW_API_KEY` is set. |
 
 ### Flows
 
@@ -86,7 +86,7 @@ The server exposes the following tool groups to the connected MCP client.
 
 | Tool | Description |
 |------|-------------|
-| `list_starter_projects` | List EarthMind's built-in example flows |
+| `list_starter_projects` | List Terraflow's built-in example flows |
 | `use_starter_project` | Create a new flow from a starter project template |
 
 ### Components
@@ -133,7 +133,7 @@ The server exposes the following tool groups to the connected MCP client.
 
 The server's instructions describe the intended usage pattern:
 
-1. Authenticate — call `login`, or set `EARTHMIND_API_KEY` before starting
+1. Authenticate — call `login`, or set `TERRAFLOW_API_KEY` before starting
 2. Discover components — use `search_component_types` or `describe_component_type`
 3. Build a flow — use `create_flow_from_spec` for a complete flow in one call, or step-by-step with `create_flow` → `add_component` → `configure_component` → `connect_components`
 4. Run the flow — call `run_flow`
@@ -159,13 +159,13 @@ The `batch` tool lets you send multiple actions in a single call, with `$N.field
 
 ## Quickstart: build and run a flow with Claude Code
 
-This example shows how to connect Claude Code to a running EarthMind instance using `lfx-mcp`, then build, validate, and run a chatbot flow from your terminal.
+This example shows how to connect Claude Code to a running Terraflow instance using `lfx-mcp`, then build, validate, and run a chatbot flow from your terminal.
 
 ### Prerequisites
 
-- A EarthMind server running at `http://localhost:7860`
-- A EarthMind API key. Create one in the EarthMind UI under **Settings → EarthMind API → Create new API key**.
-- An OpenAI API key. This example uses EarthMind's Agent component with OpenAI. Add your OpenAI API key as a Global Variable in EarthMind under **Settings → Global Variables** so all flows can use it automatically, or pass it explicitly when prompted. If you prefer a different provider, adjust the prompt accordingly.
+- A Terraflow server running at `http://localhost:7860`
+- A Terraflow API key. Create one in the Terraflow UI under **Settings → Terraflow API → Create new API key**.
+- An OpenAI API key. This example uses Terraflow's Agent component with OpenAI. Add your OpenAI API key as a Global Variable in Terraflow under **Settings → Global Variables** so all flows can use it automatically, or pass it explicitly when prompted. If you prefer a different provider, adjust the prompt accordingly.
 - `uv` installed. The `uvx` command used to run `lfx-mcp` requires `uv`. For more information, see the [uv docs](https://docs.astral.sh/uv/getting-started/installation/).
 - Claude Code installed. For more information, see the [Claude Code docs](https://docs.anthropic.com/en/docs/claude-code).
 
@@ -175,9 +175,9 @@ Run the following command in your terminal.
 Replacing the placeholder values with your actual keys:
 
 ```bash
-claude mcp add earthmind \
-  -e EARTHMIND_SERVER_URL=http://localhost:7860 \
-  -e EARTHMIND_API_KEY=<YOUR_EARTHMIND_API_KEY> \
+claude mcp add terraflow \
+  -e TERRAFLOW_SERVER_URL=http://localhost:7860 \
+  -e TERRAFLOW_API_KEY=<YOUR_TERRAFLOW_API_KEY> \
   -- uvx --from lfx lfx-mcp
 ```
 
@@ -190,10 +190,10 @@ claude mcp list
 The output should include:
 
 ```
-earthmind: uvx --from lfx lfx-mcp
+terraflow: uvx --from lfx lfx-mcp
 ```
 
-This confirms that Claude Code knows to spawn an `lfx-mcp` process when it needs to talk to EarthMind.
+This confirms that Claude Code knows to spawn an `lfx-mcp` process when it needs to talk to Terraflow.
 
 3. Start Claude Code in your terminal:
 
@@ -205,7 +205,7 @@ claude
 For example:
 
 ```
-Create a simple agent chatbot flow in EarthMind using OpenAI, validate the flow, and then run it with the message "What is EarthMind?"
+Create a simple agent chatbot flow in Terraflow using OpenAI, validate the flow, and then run it with the message "What is Terraflow?"
 ```
 
 Given this instruction, Claude Code will typically do the following:
@@ -215,10 +215,10 @@ Given this instruction, Claude Code will typically do the following:
     3. Validate that every component is correctly connected using `validate_flow`.
     4. Run the flow using `run_flow` and return the response.
 
-The flow appears in your EarthMind UI at `http://localhost:7860` because `lfx-mcp` creates it through the EarthMind API. The answer is printed in your terminal:
+The flow appears in your Terraflow UI at `http://localhost:7860` because `lfx-mcp` creates it through the Terraflow API. The answer is printed in your terminal:
 
 ```
-EarthMind is a visual workflow builder for AI-powered agents. It lets you
+Terraflow is a visual workflow builder for AI-powered agents. It lets you
 connect LLMs, tools, and data sources in a drag-and-drop UI, then expose
 the result as an API endpoint or run it from the command line.
 ```
@@ -229,14 +229,14 @@ the result as an API endpoint or run it from the command line.
 Use `uvx --from lfx lfx-mcp`, not `uvx lfx-mcp`. The `lfx-mcp` binary ships inside the `lfx` package, and there is no standalone `lfx-mcp` package on PyPI.
 
 * 403 Forbidden when Claude Code tries to use tools
-The API key is invalid or expired. Create a new API key in EarthMind under **Settings → EarthMind API**, and then remove and re-add the MCP server:
+The API key is invalid or expired. Create a new API key in Terraflow under **Settings → Terraflow API**, and then remove and re-add the MCP server:
 ```bash
-claude mcp remove earthmind
-claude mcp add earthmind \
-  -e EARTHMIND_SERVER_URL=http://localhost:7860 \
-  -e EARTHMIND_API_KEY=<YOUR_EARTHMIND_API_KEY> \
+claude mcp remove terraflow
+claude mcp add terraflow \
+  -e TERRAFLOW_SERVER_URL=http://localhost:7860 \
+  -e TERRAFLOW_API_KEY=<YOUR_TERRAFLOW_API_KEY> \
   -- uvx --from lfx lfx-mcp
 ```
 
 * Flow validation fails with an LLM provider error
-The API key for your LLM provider is not configured. Add it as a Global Variable in EarthMind (**Settings → Global Variables → Add**), and then ask Claude Code to validate the flow again.
+The API key for your LLM provider is not configured. Add it as a Global Variable in Terraflow (**Settings → Global Variables → Add**), and then ask Claude Code to validate the flow again.

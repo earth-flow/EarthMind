@@ -35,7 +35,7 @@ const mockAPIData: APIDataType = {
       icon: "cirleQuestionMark",
       base_classes: ["Data"],
       display_name: "Mock Component",
-      documentation: "https://docs.earthmind.org/",
+      documentation: "https://docs.terraflow.org/",
       minimized: false,
       custom_fields: {},
       output_types: [],

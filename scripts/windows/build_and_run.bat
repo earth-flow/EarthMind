@@ -1,5 +1,5 @@
 @echo off
-echo Starting EarthMind build and run process...
+echo Starting Terraflow build and run process...
 
 REM Check if .env file exists and set env file flag
 set "USE_ENV_FILE="
@@ -11,7 +11,7 @@ if exist "%ENV_PATH%" (
     set "USE_ENV_FILE=1"
 ) else (
     echo .env file not found at: %ENV_PATH%
-    echo EarthMind will use default configuration
+    echo Terraflow will use default configuration
 )
 
 echo.
@@ -57,21 +57,21 @@ if not exist "src\frontend\build" (
     set BUILD_DIR=src\frontend\build
 )
 
-echo Copying from %BUILD_DIR% to src\backend\base\earthmind\frontend\
+echo Copying from %BUILD_DIR% to src\backend\base\terraflow\frontend\
 REM Create target directory if it doesn't exist
-if not exist "src\backend\base\earthmind\frontend" (
-    mkdir "src\backend\base\earthmind\frontend"
+if not exist "src\backend\base\terraflow\frontend" (
+    mkdir "src\backend\base\terraflow\frontend"
 )
 
 REM Remove existing files in target directory (FORCES CLEAN REPLACEMENT)
 echo Removing existing files from target directory...
-if exist "src\backend\base\earthmind\frontend\*" (
-    del /q /s "src\backend\base\earthmind\frontend\*"
-    for /d %%d in ("src\backend\base\earthmind\frontend\*") do rmdir /s /q "%%d"
+if exist "src\backend\base\terraflow\frontend\*" (
+    del /q /s "src\backend\base\terraflow\frontend\*"
+    for /d %%d in ("src\backend\base\terraflow\frontend\*") do rmdir /s /q "%%d"
 )
 
 REM Copy all files from build directory
-xcopy "%BUILD_DIR%\*" "src\backend\base\earthmind\frontend\" /e /i /y
+xcopy "%BUILD_DIR%\*" "src\backend\base\terraflow\frontend\" /e /i /y
 if errorlevel 1 (
     echo Error: Failed to copy build files
     pause
@@ -81,7 +81,7 @@ if errorlevel 1 (
 echo Build files copied successfully!
 
 echo.
-echo Step 4: Running EarthMind...
+echo Step 4: Running Terraflow...
 echo.
 echo Attention: Wait until uvicorn is running before opening the browser
 echo.
@@ -89,16 +89,16 @@ REM Change to project root directory for uv
 cd "%PROJECT_ROOT%"
 if defined USE_ENV_FILE (
     echo Using env file: .env
-    uv run --env-file ".env" earthmind run
+    uv run --env-file ".env" terraflow run
 ) else (
-    uv run earthmind run
+    uv run terraflow run
 )
 if errorlevel 1 (
-    echo Error: Failed to run earthmind
+    echo Error: Failed to run terraflow
     pause
     exit /b 1
 )
 
 echo.
-echo EarthMind build and run process completed!
+echo Terraflow build and run process completed!
 pause

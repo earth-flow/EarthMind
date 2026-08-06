@@ -92,7 +92,7 @@ describe("HelpDropdownView", () => {
     expect(openLink).toHaveBeenCalledWith("https://bugs");
 
     fireEvent.click(
-      screen.getByTestId("canvas_controls_dropdown_get_earthmind_desktop"),
+      screen.getByTestId("canvas_controls_dropdown_get_terraflow_desktop"),
     );
     expect(openLink).toHaveBeenCalledWith("https://desktop");
 

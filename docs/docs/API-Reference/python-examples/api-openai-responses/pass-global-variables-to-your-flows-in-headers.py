@@ -2,14 +2,14 @@ import os
 
 import requests
 
-url = f"{os.getenv('EARTHMIND_SERVER_URL', '')}/api/v1/responses"
+url = f"{os.getenv('TERRAFLOW_SERVER_URL', '')}/api/v1/responses"
 
 headers = {
-    "x-api-key": f"{os.getenv('EARTHMIND_API_KEY', '')}",
+    "x-api-key": f"{os.getenv('TERRAFLOW_API_KEY', '')}",
     "Content-Type": "application/json",
-    "X-EARTHMIND-GLOBAL-VAR-OPENAI_API_KEY": "sk-...",
-    "X-EARTHMIND-GLOBAL-VAR-USER_ID": "user123",
-    "X-EARTHMIND-GLOBAL-VAR-ENVIRONMENT": "production",
+    "X-TERRAFLOW-GLOBAL-VAR-OPENAI_API_KEY": "sk-...",
+    "X-TERRAFLOW-GLOBAL-VAR-USER_ID": "user123",
+    "X-TERRAFLOW-GLOBAL-VAR-ENVIRONMENT": "production",
 }
 
 payload = {"model": "your-flow-id", "input": "Hello"}

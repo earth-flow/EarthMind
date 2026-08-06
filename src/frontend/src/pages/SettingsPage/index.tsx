@@ -4,8 +4,8 @@ import SideBarButtonsComponent from "@/components/core/sidebarComponent";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { CustomStoreSidebar } from "@/customization/components/custom-store-sidebar";
 import {
-  ENABLE_DATASTAX_EARTHMIND,
-  ENABLE_EARTHMIND_STORE,
+  ENABLE_DATASTAX_TERRAFLOW,
+  ENABLE_TERRAFLOW_STORE,
   ENABLE_PROFILE_ICONS,
 } from "@/customization/feature-flags";
 import useAuthStore from "@/stores/authStore";
@@ -114,9 +114,9 @@ export default function SettingsPage(): JSX.Element {
   );
 
   // TODO: Remove this on cleanup
-  if (!ENABLE_DATASTAX_EARTHMIND) {
-    const earthmindItems = CustomStoreSidebar(true, ENABLE_EARTHMIND_STORE);
-    sidebarNavItems.splice(2, 0, ...earthmindItems);
+  if (!ENABLE_DATASTAX_TERRAFLOW) {
+    const terraflowItems = CustomStoreSidebar(true, ENABLE_TERRAFLOW_STORE);
+    sidebarNavItems.splice(2, 0, ...terraflowItems);
   }
 
   return (

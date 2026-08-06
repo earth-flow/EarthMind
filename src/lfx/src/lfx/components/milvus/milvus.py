@@ -75,7 +75,7 @@ class MilvusVectorStoreComponent(LCVectorStoreComponent):
     icon = "Milvus"
 
     inputs = [
-        StrInput(name="collection_name", display_name="Collection Name", value="earthmind"),
+        StrInput(name="collection_name", display_name="Collection Name", value="terraflow"),
         StrInput(name="collection_description", display_name="Collection Description", value=""),
         StrInput(
             name="uri",

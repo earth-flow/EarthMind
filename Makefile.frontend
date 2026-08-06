@@ -1,4 +1,4 @@
-# Frontend-specific Makefile for EarthMind
+# Frontend-specific Makefile for Terraflow
 # This file contains all frontend-related targets
 
 # Variables
@@ -40,9 +40,9 @@ build_frontend: ## build the frontend static files
 	@echo 'Building frontend static files...'
 	@cd $(FRONTEND_DIR) && CI='' npm run build 2>&1 || { echo "\nBuild failed! Error output above ☝️"; exit 1; }
 	@echo 'Clearing destination directory...'
-	$(call CLEAR_DIRS,src/backend/base/earthmind/frontend)
+	$(call CLEAR_DIRS,src/backend/base/terraflow/frontend)
 	@echo 'Copying build files...'
-	@cp -r $(FRONTEND_DIR)/build/. src/backend/base/earthmind/frontend
+	@cp -r $(FRONTEND_DIR)/build/. src/backend/base/terraflow/frontend
 	@echo '==== Frontend build complete ===='
 
 ######################

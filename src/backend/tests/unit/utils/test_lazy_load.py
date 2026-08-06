@@ -1,5 +1,5 @@
 import pytest
-from earthmind.utils.lazy_load import LazyLoadDictBase
+from terraflow.utils.lazy_load import LazyLoadDictBase
 
 
 class TestLazyLoadDictBase:

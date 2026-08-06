@@ -66,7 +66,7 @@ class BackendType(str, Enum):
     MILVUS = "milvus"
 
 
-# Keys EarthMind always writes into ``Document.metadata`` for every chunk.
+# Keys Terraflow always writes into ``Document.metadata`` for every chunk.
 # Kept here so every backend and helper agrees on the schema.
 METADATA_KEY_SOURCE = "source"
 METADATA_KEY_SOURCE_TYPE = "source_type"
@@ -117,7 +117,7 @@ class BaseVectorStoreBackend(ABC):
     Wraps a LangChain ``VectorStore``: subclasses provide
     ``_build_vector_store`` and override ``storage_size_bytes`` /
     ``teardown`` / ``iter_documents`` where the LangChain primitives don't
-    line up with what EarthMind needs.
+    line up with what Terraflow needs.
 
     Backends should be lightweight to construct; heavy resources (a Chroma
     persistent client, a MongoDB connection) are the backend's own concern
@@ -157,12 +157,12 @@ class BaseVectorStoreBackend(ABC):
             return None
 
     async def resolve_secret(self, variable_name: str) -> str | None:
-        """Look up ``variable_name`` through EarthMind's variable service.
+        """Look up ``variable_name`` through Terraflow's variable service.
 
         Resolution order matches the connector ingestion sources
         (``connector_base.ConnectorIngestionSource.resolve_secret``):
 
-        1. EarthMind's ``variable_service`` scoped to ``self.user_id``.
+        1. Terraflow's ``variable_service`` scoped to ``self.user_id``.
         2. Process env var of the same name as a fallback for desktop /
            single-user deployments that skip the UI step.
 
@@ -206,7 +206,7 @@ class BaseVectorStoreBackend(ABC):
         if not value:
             msg = (
                 f"Required credential variable {variable_name!r} is not "
-                "configured. Set it via EarthMind's variable settings or as "
+                "configured. Set it via Terraflow's variable settings or as "
                 "an environment variable on the server."
             )
             raise ValueError(msg)

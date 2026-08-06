@@ -2,7 +2,7 @@
 
 from hypothesis import given
 from hypothesis import strategies as st
-from earthmind.services.telemetry.schema import MAX_TELEMETRY_URL_SIZE, ComponentInputsPayload
+from terraflow.services.telemetry.schema import MAX_TELEMETRY_URL_SIZE, ComponentInputsPayload
 
 
 def test_chunk_fields_exist():

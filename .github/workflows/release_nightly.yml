@@ -1,21 +1,21 @@
-name: EarthMind Nightly Build
-run-name: EarthMind Nightly Release by @${{ github.actor }}
+name: Terraflow Nightly Build
+run-name: Terraflow Nightly Release by @${{ github.actor }}
 
 on:
   workflow_call:
     inputs:
       build_docker_base:
-        description: "Build Docker Image for EarthMind Nightly Base"
+        description: "Build Docker Image for Terraflow Nightly Base"
         required: true
         type: boolean
         default: false
       build_docker_main:
-        description: "Build Docker Image for EarthMind Nightly"
+        description: "Build Docker Image for Terraflow Nightly"
         required: true
         type: boolean
         default: false
       build_docker_ep:
-        description: "Build Docker Image for EarthMind Nightly with Entrypoint"
+        description: "Build Docker Image for Terraflow Nightly with Entrypoint"
         required: false
         type: boolean
         default: false
@@ -81,8 +81,8 @@ jobs:
         run: |
           name=$(grep '^name = "' src/sdk/pyproject.toml | head -n 1 | sed 's/.*"\(.*\)".*/\1/')
           version=$(grep '^version = "' src/sdk/pyproject.toml | head -n 1 | sed 's/.*"\(.*\)".*/\1/')
-          if [ "$name" != "earthmind-sdk" ]; then
-            echo "Name $name does not match earthmind-sdk. Exiting the workflow."
+          if [ "$name" != "terraflow-sdk" ]; then
+            echo "Name $name does not match terraflow-sdk. Exiting the workflow."
             exit 1
           fi
           if [ "v$version" != "${{ inputs.nightly_tag_sdk }}" ]; then
@@ -109,7 +109,7 @@ jobs:
           version=$(echo $version | sed 's/^v//')
           echo "version=$version" >> $GITHUB_OUTPUT
 
-      - name: Build earthmind-sdk for distribution
+      - name: Build terraflow-sdk for distribution
         run: |
           make sdk_build args="--wheel"
 
@@ -131,7 +131,7 @@ jobs:
 
       # PyPI publishing moved to after cross-platform testing
 
-      - name: Upload earthmind-sdk Artifact
+      - name: Upload terraflow-sdk Artifact
         uses: actions/upload-artifact@v6
         with:
           name: dist-nightly-sdk
@@ -144,7 +144,7 @@ jobs:
           path: src/lfx/dist
 
   build-nightly-base:
-    name: Build EarthMind Nightly Base
+    name: Build Terraflow Nightly Base
     needs: [build-nightly-lfx]
     if: ${{ always() && (needs.build-nightly-lfx.result == 'success' || inputs.build_lfx == false) }}
     runs-on: ubuntu-latest
@@ -189,14 +189,14 @@ jobs:
       - name: Verify Nightly Name and Version
         id: verify
         run: |
-          # Root the tree at earthmind-base; it prints as a top-level `earthmind-base v<ver>` line,
-          # so a bare `grep earthmind-base` would read the version into $name and leave $version empty.
-          name=$(uv tree --package earthmind-base | head -n 1 | awk '{print $1}')
-          version=$(uv tree --package earthmind-base | head -n 1 | awk '{print $2}')
-          # Strip extras from package name (e.g., "earthmind-base[complete]" -> "earthmind-base")
+          # Root the tree at terraflow-base; it prints as a top-level `terraflow-base v<ver>` line,
+          # so a bare `grep terraflow-base` would read the version into $name and leave $version empty.
+          name=$(uv tree --package terraflow-base | head -n 1 | awk '{print $1}')
+          version=$(uv tree --package terraflow-base | head -n 1 | awk '{print $2}')
+          # Strip extras from package name (e.g., "terraflow-base[complete]" -> "terraflow-base")
           name_without_extras=$(echo $name | sed 's/\[.*\]//')
-          if [ "$name_without_extras" != "earthmind-base" ]; then
-            echo "Name $name_without_extras does not match earthmind-base. Exiting the workflow."
+          if [ "$name_without_extras" != "terraflow-base" ]; then
+            echo "Name $name_without_extras does not match terraflow-base. Exiting the workflow."
             echo "skipped=true" >> $GITHUB_OUTPUT
             exit 1
           fi
@@ -210,13 +210,13 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "skipped=false" >> $GITHUB_OUTPUT
 
-      - name: Build EarthMind Base for distribution
+      - name: Build Terraflow Base for distribution
         run: |
           rm -rf src/backend/base/dist
           rm -rf dist
           make build base=true args="--no-sources --wheel"
 
-      - name: Test EarthMind Base CLI
+      - name: Test Terraflow Base CLI
         run: |
           # TODO: Unsure why the whl is not built in src/backend/base/dist
           mkdir src/backend/base/dist
@@ -224,7 +224,7 @@ jobs:
           # Install with [complete] extra to test all optional dependencies
           WHEEL_FILE=$(ls src/backend/base/dist/*.whl)
           uv pip install "${WHEEL_FILE}[complete]"
-          uv run python -m earthmind run --host localhost --port 7860 --backend-only &
+          uv run python -m terraflow run --host localhost --port 7860 --backend-only &
           SERVER_PID=$!
           # Wait for the server to start
           timeout 120 bash -c 'until curl -f http://localhost:7860/api/v1/auto_login; do sleep 2; done' || (echo "Server did not start in time" && kill $SERVER_PID && exit 1)
@@ -248,7 +248,7 @@ jobs:
           path: src/backend/base/dist
 
   build-nightly-main:
-    name: Build EarthMind Nightly Main
+    name: Build Terraflow Nightly Main
     needs: [build-nightly-base]
     runs-on: ubuntu-latest
     outputs:
@@ -294,16 +294,16 @@ jobs:
             echo "Installing LFX from built wheel..."
             uv pip install --force-reinstall --no-deps lfx-dist/*.whl
           fi
-          echo "Installing earthmind-base from built wheel..."
+          echo "Installing terraflow-base from built wheel..."
           uv pip install --force-reinstall --no-deps base-dist/*.whl
 
       - name: Verify Nightly Name and Version
         id: verify
         run: |
-          name=$(uv tree | grep -E '^earthmind[[:space:]]' | awk '{print $1}')
-          version=$(uv tree | grep -E '^earthmind[[:space:]]' | awk '{print $2}')
-          if [ "$name" != "earthmind" ]; then
-            echo "Name $name does not match earthmind. Exiting the workflow."
+          name=$(uv tree | grep -E '^terraflow[[:space:]]' | awk '{print $1}')
+          version=$(uv tree | grep -E '^terraflow[[:space:]]' | awk '{print $2}')
+          if [ "$name" != "terraflow" ]; then
+            echo "Name $name does not match terraflow. Exiting the workflow."
             exit 1
           fi
           if [ "$version" != "${{ inputs.nightly_tag_release }}" ]; then
@@ -317,12 +317,12 @@ jobs:
         if: needs.build-nightly-base.outputs.skipped == 'false'
         run: sleep 300 # wait for 5 minutes to ensure PyPI propagation of base
 
-      - name: Build EarthMind Main for distribution
+      - name: Build Terraflow Main for distribution
         run: make build main=true args="--no-sources --wheel"
-      - name: Test EarthMind Main CLI
+      - name: Test Terraflow Main CLI
         run: |
           uv pip install dist/*.whl
-          uv run python -m earthmind run --host localhost --port 7860 --backend-only &
+          uv run python -m terraflow run --host localhost --port 7860 --backend-only &
           SERVER_PID=$!
           # Wait for the server to start
           timeout 120 bash -c 'until curl -f http://localhost:7860/health_check; do sleep 2; done' || (echo "Server did not start in time" && kill $SERVER_PID && exit 1)
@@ -337,12 +337,12 @@ jobs:
             echo "Server terminated successfully"
           fi
 
-      - name: Prepare EarthMind Main artifact
+      - name: Prepare Terraflow Main artifact
         run: |
           shopt -s nullglob
-          MAIN_WHEELS=(dist/earthmind-*.whl)
+          MAIN_WHEELS=(dist/terraflow-*.whl)
           if [ ${#MAIN_WHEELS[@]} -ne 1 ]; then
-            echo "Expected exactly one earthmind wheel in dist/, found ${#MAIN_WHEELS[@]}"
+            echo "Expected exactly one terraflow wheel in dist/, found ${#MAIN_WHEELS[@]}"
             ls -la dist/
             exit 1
           fi
@@ -411,7 +411,7 @@ jobs:
         with:
           ref: ${{ inputs.nightly_tag_release }}
           persist-credentials: true
-      - name: Download earthmind-sdk artifact
+      - name: Download terraflow-sdk artifact
         uses: actions/download-artifact@v7
         with:
           name: dist-nightly-sdk
@@ -429,7 +429,7 @@ jobs:
           make sdk_publish
 
   publish-nightly-base:
-    name: Publish EarthMind Base Nightly to PyPI
+    name: Publish Terraflow Base Nightly to PyPI
     needs: [build-nightly-base, test-cross-platform, publish-nightly-lfx]
     if: ${{ always() && needs.build-nightly-base.result == 'success' && needs.test-cross-platform.result == 'success' && (needs.publish-nightly-lfx.result == 'success' || inputs.build_lfx == false) }}
     runs-on: ubuntu-latest
@@ -458,7 +458,7 @@ jobs:
           make publish base=true
 
   publish-nightly-main:
-    name: Publish EarthMind Main Nightly to PyPI
+    name: Publish Terraflow Main Nightly to PyPI
     needs: [build-nightly-main, test-cross-platform, publish-nightly-base]
     if: ${{ always() && needs.build-nightly-main.result == 'success' && needs.test-cross-platform.result == 'success' && needs.publish-nightly-base.result == 'success' }}
     runs-on: ubuntu-latest
@@ -486,7 +486,7 @@ jobs:
           make publish main=true
 
   call_docker_build_base:
-    name: Call Docker Build Workflow for EarthMind Base
+    name: Call Docker Build Workflow for Terraflow Base
     if: ${{ always() && inputs.build_docker_base }}
     needs: [build-nightly-base, build-nightly-main]
     uses: ./.github/workflows/docker-nightly-build.yml
@@ -497,7 +497,7 @@ jobs:
     secrets: inherit
 
   call_docker_build_main:
-    name: Call Docker Build Workflow for EarthMind
+    name: Call Docker Build Workflow for Terraflow
     if: ${{ always() && inputs.build_docker_main }}
     needs: [build-nightly-main, call_docker_build_base]
     uses: ./.github/workflows/docker-nightly-build.yml
@@ -509,7 +509,7 @@ jobs:
 
   # TODO: Uncomment this when our runner can fit the builds that contain pytorch (and other large dependencies)
   # call_docker_build_main_all:
-  #   name: Call Docker Build Workflow for earthmind-all
+  #   name: Call Docker Build Workflow for terraflow-all
   #   if: always() && ${{ inputs.build_docker_main == 'true' }}
   #   needs: [build-nightly-main]
   #   uses: ./.github/workflows/docker-nightly-build.yml
@@ -520,7 +520,7 @@ jobs:
   #   secrets: inherit
 
   # call_docker_build_main_ep:
-  #   name: Call Docker Build Workflow for EarthMind with Entrypoint
+  #   name: Call Docker Build Workflow for Terraflow with Entrypoint
   #   if: ${{ always() && inputs.build_docker_ep }}
   #   needs: [build-nightly-main, call_docker_build_main]
   #   uses: ./.github/workflows/docker-build-v2.yml

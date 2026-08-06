@@ -234,7 +234,7 @@ def http_status_for_deployment_error(exc: DeploymentServiceError) -> int:
     domain exception instance, it returns the HTTP status code that an API
     layer should use when surfacing the error to a client.
 
-    Order mirrors the except-chain priority in the EarthMind route layer:
+    Order mirrors the except-chain priority in the Terraflow route layer:
     more specific exception types are checked before their parents.
     """
     if isinstance(exc, ResourceConflictError):

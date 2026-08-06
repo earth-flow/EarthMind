@@ -42,7 +42,7 @@ class AreduceComponent(BaseAgenticComponent):
         "Analyze the entire input dataframe at once and generate a new dataframe "
         "following the instruction and the required schema"
     )
-    documentation: str = "https://docs.earthmind.org/bundles-agentics"
+    documentation: str = "https://docs.terraflow.org/bundles-agentics"
     icon = "Agentics"
 
     inputs = [

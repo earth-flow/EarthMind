@@ -6,7 +6,7 @@ by Akash Joshi / Anderson Filho: ``get_model_name`` returns ``"Custom"`` for
 is set on a different attribute than the one ``next()`` happens to find first.
 """
 
-# langchain-ibm / ibm-watsonx-ai are core earthmind-base deps importable on every
+# langchain-ibm / ibm-watsonx-ai are core terraflow-base deps importable on every
 # supported Python version (3.10-3.14), so import directly: a hard failure here
 # surfaces a real import regression instead of silently skipping the suite.
 # (ibm-watsonx-ai 1.5.13 fixed the Python 3.14 StrEnum initialization

@@ -231,10 +231,10 @@ jobs:
     steps:
       - name: Send failure notification to Slack
         env:
-          WEBHOOK_URL: ${{ secrets.EARTHMIND_ENG_SLACK_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.TERRAFLOW_ENG_SLACK_WEBHOOK_URL }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
-            echo "EARTHMIND_ENG_SLACK_WEBHOOK_URL not set; skipping Slack alert"
+            echo "TERRAFLOW_ENG_SLACK_WEBHOOK_URL not set; skipping Slack alert"
             exit 0
           fi
           # --fail-with-body: a Slack 4xx (e.g. rotated/revoked webhook) must

@@ -1,7 +1,7 @@
 """Sync the ``lfx`` runtime-dependency floor in every ``src/bundles/*`` package.
 
 After a ``make patch v=X.Y.Z`` version bump, each bundle's ``lfx`` dependency
-floor must track EarthMind/LFX's ``major.minor`` line: a bundle published from
+floor must track Terraflow/LFX's ``major.minor`` line: a bundle published from
 the X.Y release is built against that lfx's BUNDLE_API surface, so it must be
 guaranteed to resolve an lfx new enough to carry it.  Before the LFX 0.5.x ->
 1.10.0 realignment (#13176) the generated floor was a flat ``lfx>=0.5.0`` with
@@ -13,7 +13,7 @@ pre-release of the current minor line, capped below the next lfx major.  The
 ``.dev0`` floor (not ``X.Y.0``) is load-bearing: nightlies off a release
 branch are canonical ``X.Y.0.devN`` pre-releases, and PEP 440 sorts those
 BELOW ``X.Y.0`` -- a plain ``>=X.Y.0`` floor makes the branch's own nightly
-``lfx`` unresolvable against its own bundles (earthmind-base pins
+``lfx`` unresolvable against its own bundles (terraflow-base pins
 ``lfx==X.Y.0.devN`` exactly, so the resolver cannot back off).  ``X.Y.0.dev0``
 is the lowest version PEP 440 admits in the line, so every devN / rcN / final
 satisfies it while older minor lines stay excluded.  The cap is a coarse
@@ -58,7 +58,7 @@ _VERSION_RE = re.compile(r"^(\d+)\.(\d+)\.\d+")
 
 
 def lfx_floor_spec(version: str) -> str:
-    """Return the bundle ``lfx`` dependency spec for a EarthMind/LFX version.
+    """Return the bundle ``lfx`` dependency spec for a Terraflow/LFX version.
 
     ``"1.11.0"`` -> ``"lfx>=1.11.0.dev0,<2.0.0"`` (floor at the minor line's
     first pre-release so the branch's own ``X.Y.0.devN`` nightlies resolve --
@@ -107,7 +107,7 @@ def main() -> None:
     Usage:
         sync_bundle_lfx_pin.py <version>
 
-    ``version`` is the EarthMind/LFX release version (e.g. ``1.10.0``).
+    ``version`` is the Terraflow/LFX release version (e.g. ``1.10.0``).
     """
     expected_args = 2
     if len(sys.argv) != expected_args:

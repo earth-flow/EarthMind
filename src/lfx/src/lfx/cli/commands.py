@@ -307,10 +307,10 @@ def serve_command(
 
     try:
         api_key = get_api_key()
-        verbose_print("EARTHMIND_API_KEY is configured")
+        verbose_print("TERRAFLOW_API_KEY is configured")
     except ValueError as e:
         typer.echo(str(e), err=True)
-        typer.echo("Set the EARTHMIND_API_KEY environment variable before serving.", err=True)
+        typer.echo("Set the TERRAFLOW_API_KEY environment variable before serving.", err=True)
         raise typer.Exit(1) from e
 
     valid_log_levels = {"debug", "info", "warning", "error", "critical"}
@@ -325,7 +325,7 @@ def serve_command(
         typer.echo("Error: --workers must be at least 1.", err=True)
         raise typer.Exit(1)
 
-    os.environ["EARTHMIND_PRETTY_LOGS"] = "false"
+    os.environ["TERRAFLOW_PRETTY_LOGS"] = "false"
     configure(log_level=log_level)
 
     from lfx.cli.flow_store import FilesystemFlowStore, NullFlowStore

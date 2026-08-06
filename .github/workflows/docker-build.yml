@@ -60,7 +60,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.13"
-  TEST_TAG: "earthmindai/earthmind:test"
+  TEST_TAG: "terraflowai/terraflow:test"
 
 jobs:
   get-version:
@@ -139,7 +139,7 @@ jobs:
         if: ${{ inputs.base_version == '' && (inputs.release_type == 'base' || inputs.release_type == 'nightly-base') }}
         id: get-version-base
         run: |
-          version=$(uv tree | grep 'earthmind-base' | awk '{print $3}' | sed 's/^v//' | head -n 1)
+          version=$(uv tree | grep 'terraflow-base' | awk '{print $3}' | sed 's/^v//' | head -n 1)
           if [ -z "$version" ]; then
             echo "Failed to extract version from uv tree output"
             exit 1
@@ -150,7 +150,7 @@ jobs:
         if: ${{ inputs.main_version == '' && (inputs.release_type == 'main' || inputs.release_type == 'main-ep' || inputs.release_type == 'nightly-main' || inputs.release_type == 'main-all' || inputs.release_type == 'nightly-main-all') }}
         id: get-version-main
         run: |
-          version=$(uv tree | grep -E '^earthmind(-nightly)?[[:space:]]' | awk '{print $2}' | sed 's/^v//')
+          version=$(uv tree | grep -E '^terraflow(-nightly)?[[:space:]]' | awk '{print $2}' | sed 's/^v//')
           echo version=$version
           echo version=$version >> $GITHUB_OUTPUT
   setup:
@@ -170,30 +170,30 @@ jobs:
           fi
 
           if [[ "${{ inputs.release_type }}" == "base" || "${{ inputs.release_type }}" == "nightly-base" ]]; then
-            # EARTHMIND-BASE RELEASE
-            echo "docker_tags=earthmindai/earthmind${nightly_suffix}:base-${{ needs.get-version.outputs.version }},earthmindai/earthmind${nightly_suffix}:base-latest" >> $GITHUB_OUTPUT
-            echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind${nightly_suffix}:base-${{ needs.get-version.outputs.version }},ghcr.io/earthmind-ai/earthmind${nightly_suffix}:base-latest" >> $GITHUB_OUTPUT
+            # TERRAFLOW-BASE RELEASE
+            echo "docker_tags=terraflowai/terraflow${nightly_suffix}:base-${{ needs.get-version.outputs.version }},terraflowai/terraflow${nightly_suffix}:base-latest" >> $GITHUB_OUTPUT
+            echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow${nightly_suffix}:base-${{ needs.get-version.outputs.version }},ghcr.io/terraflow-ai/terraflow${nightly_suffix}:base-latest" >> $GITHUB_OUTPUT
             echo "file=./docker/build_and_push_base.Dockerfile" >> $GITHUB_OUTPUT
           else
             if [[ "${{ inputs.pre_release }}" == "true" ]]; then
-              # EARTHMIND-MAIN PRE-RELEASE
-              echo "docker_tags=earthmindai/earthmind${nightly_suffix}:${{ needs.get-version.outputs.version }}" >> $GITHUB_OUTPUT
-              echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind${nightly_suffix}:${{ needs.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+              # TERRAFLOW-MAIN PRE-RELEASE
+              echo "docker_tags=terraflowai/terraflow${nightly_suffix}:${{ needs.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+              echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow${nightly_suffix}:${{ needs.get-version.outputs.version }}" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push.Dockerfile" >> $GITHUB_OUTPUT
             elif [[ "${{ inputs.release_type }}" == "main-ep" ]]; then
-              # EARTHMIND-MAIN (ENTRYPOINT) RELEASE
-              echo "docker_tags=earthmindai/earthmind-ep${nightly_suffix}:${{ needs.get-version.outputs.version }},earthmindai/earthmind-ep${nightly_suffix}:latest" >> $GITHUB_OUTPUT
-              echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-ep${nightly_suffix}:${{ needs.get-version.outputs.version }},ghcr.io/earthmind-ai/earthmind-ep${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              # TERRAFLOW-MAIN (ENTRYPOINT) RELEASE
+              echo "docker_tags=terraflowai/terraflow-ep${nightly_suffix}:${{ needs.get-version.outputs.version }},terraflowai/terraflow-ep${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-ep${nightly_suffix}:${{ needs.get-version.outputs.version }},ghcr.io/terraflow-ai/terraflow-ep${nightly_suffix}:latest" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push_ep.Dockerfile" >> $GITHUB_OUTPUT
             elif [[ "${{ inputs.release_type }}" == "main" || "${{ inputs.release_type }}" == "nightly-main" ]]; then
-              # EARTHMIND-MAIN RELEASE
-              echo "docker_tags=earthmindai/earthmind${nightly_suffix}:${{ needs.get-version.outputs.version }},earthmindai/earthmind${nightly_suffix}:latest" >> $GITHUB_OUTPUT
-              echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind${nightly_suffix}:${{ needs.get-version.outputs.version }},ghcr.io/earthmind-ai/earthmind${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              # TERRAFLOW-MAIN RELEASE
+              echo "docker_tags=terraflowai/terraflow${nightly_suffix}:${{ needs.get-version.outputs.version }},terraflowai/terraflow${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow${nightly_suffix}:${{ needs.get-version.outputs.version }},ghcr.io/terraflow-ai/terraflow${nightly_suffix}:latest" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push.Dockerfile" >> $GITHUB_OUTPUT
             elif [[ "${{ inputs.release_type }}" == "main-all" || "${{ inputs.release_type }}" == "nightly-main-all" ]]; then
-              # EARTHMIND-MAIN (ALL OPTIONAL DEPS) RELEASE
-              echo "docker_tags=earthmindai/earthmind-all${nightly_suffix}:${{ needs.get-version.outputs.version }},earthmindai/earthmind-all${nightly_suffix}:latest" >> $GITHUB_OUTPUT
-              echo "ghcr_tags=ghcr.io/earthmind-ai/earthmind-all${nightly_suffix}:${{ needs.get-version.outputs.version }},ghcr.io/earthmind-ai/earthmind-all${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              # TERRAFLOW-MAIN (ALL OPTIONAL DEPS) RELEASE
+              echo "docker_tags=terraflowai/terraflow-all${nightly_suffix}:${{ needs.get-version.outputs.version }},terraflowai/terraflow-all${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              echo "ghcr_tags=ghcr.io/terraflow-ai/terraflow-all${nightly_suffix}:${{ needs.get-version.outputs.version }},ghcr.io/terraflow-ai/terraflow-all${nightly_suffix}:latest" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push_with_extras.Dockerfile" >> $GITHUB_OUTPUT
             else
               echo "Invalid release type. Exiting the workflow."
@@ -201,7 +201,7 @@ jobs:
             fi
           fi
   build:
-    runs-on: [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+    runs-on: [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     needs: [get-version, setup]
     steps:
       - name: Check out the code at a specific ref
@@ -288,7 +288,7 @@ jobs:
 
   build_components:
     if: ${{ inputs.release_type == 'main' }}
-    runs-on: [self-hosted, linux, ARM64, earthmind-ai-arm64-40gb-ephemeral]
+    runs-on: [self-hosted, linux, ARM64, terraflow-ai-arm64-40gb-ephemeral]
     permissions:
       packages: write
     needs: [build, get-version]
@@ -299,20 +299,20 @@ jobs:
         include:
           - component: docker-backend
             dockerfile: ./docker/build_and_push_backend.Dockerfile
-            tags: earthmindai/earthmind-backend:${{ needs.get-version.outputs.version }},earthmindai/earthmind-backend:latest
-            earthmind_image: earthmindai/earthmind:${{ needs.get-version.outputs.version }}
+            tags: terraflowai/terraflow-backend:${{ needs.get-version.outputs.version }},terraflowai/terraflow-backend:latest
+            terraflow_image: terraflowai/terraflow:${{ needs.get-version.outputs.version }}
           - component: docker-frontend
             dockerfile: ./docker/frontend/build_and_push_frontend.Dockerfile
-            tags: earthmindai/earthmind-frontend:${{ needs.get-version.outputs.version }},earthmindai/earthmind-frontend:latest
-            earthmind_image: earthmindai/earthmind:${{ needs.get-version.outputs.version }}
+            tags: terraflowai/terraflow-frontend:${{ needs.get-version.outputs.version }},terraflowai/terraflow-frontend:latest
+            terraflow_image: terraflowai/terraflow:${{ needs.get-version.outputs.version }}
           - component: ghcr-backend
             dockerfile: ./docker/build_and_push_backend.Dockerfile
-            tags: ghcr.io/earthmind-ai/earthmind-backend:${{ needs.get-version.outputs.version }},ghcr.io/earthmind-ai/earthmind-backend:latest
-            earthmind_image: ghcr.io/earthmind-ai/earthmind:${{ needs.get-version.outputs.version }}
+            tags: ghcr.io/terraflow-ai/terraflow-backend:${{ needs.get-version.outputs.version }},ghcr.io/terraflow-ai/terraflow-backend:latest
+            terraflow_image: ghcr.io/terraflow-ai/terraflow:${{ needs.get-version.outputs.version }}
           - component: ghcr-frontend
             dockerfile: ./docker/frontend/build_and_push_frontend.Dockerfile
-            tags: ghcr.io/earthmind-ai/earthmind-frontend:${{ needs.get-version.outputs.version }},ghcr.io/earthmind-ai/earthmind-frontend:latest
-            earthmind_image: ghcr.io/earthmind-ai/earthmind:${{ needs.get-version.outputs.version }}
+            tags: ghcr.io/terraflow-ai/terraflow-frontend:${{ needs.get-version.outputs.version }},ghcr.io/terraflow-ai/terraflow-frontend:latest
+            terraflow_image: ghcr.io/terraflow-ai/terraflow:${{ needs.get-version.outputs.version }}
     steps:
       - name: Check out the code at a specific ref
         uses: actions/checkout@v6
@@ -368,7 +368,7 @@ jobs:
             context: .
             push: true
             build-args: |
-              EARTHMIND_IMAGE=${{ matrix.earthmind_image }}
+              TERRAFLOW_IMAGE=${{ matrix.terraflow_image }}
             file: ${{ matrix.dockerfile }}
             tags: ${{ matrix.tags }}
             # provenance: false will result in a single manifest for all platforms which makes the image pullable from arm64 machines via the emulation (e.g. Apple Silicon machines)
@@ -398,4 +398,4 @@ jobs:
 
       - name: Restart HuggingFace Spaces Build
         run: |
-          uv run ./scripts/factory_restart_space.py --space "EarthMind/EarthMind" --token ${{ secrets.HUGGINGFACE_API_TOKEN }}
+          uv run ./scripts/factory_restart_space.py --space "Terraflow/Terraflow" --token ${{ secrets.HUGGINGFACE_API_TOKEN }}

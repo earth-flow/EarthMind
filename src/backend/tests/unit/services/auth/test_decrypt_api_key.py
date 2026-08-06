@@ -4,16 +4,16 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
-from earthmind.services.auth.mcp_encryption import is_encrypted
-from earthmind.services.auth.service import AuthService
-from earthmind.services.auth.utils import decrypt_api_key, encrypt_api_key
+from terraflow.services.auth.mcp_encryption import is_encrypted
+from terraflow.services.auth.service import AuthService
+from terraflow.services.auth.utils import decrypt_api_key, encrypt_api_key
 from lfx.services.settings.auth import AuthSettings
 from pydantic import SecretStr
 
 
 @pytest.fixture
-def earthmind_auth_service(tmp_path):
-    """Use EarthMind AuthService for encrypt/decrypt so tests get real Fernet behavior."""
+def terraflow_auth_service(tmp_path):
+    """Use Terraflow AuthService for encrypt/decrypt so tests get real Fernet behavior."""
     settings = AuthSettings(CONFIG_DIR=str(tmp_path))
     settings.SECRET_KEY = SecretStr("unit-test-secret-for-encryption")
     settings_service = SimpleNamespace(
@@ -24,9 +24,9 @@ def earthmind_auth_service(tmp_path):
 
 
 @pytest.fixture(autouse=True)
-def use_earthmind_auth_for_encryption(earthmind_auth_service):
-    """Ensure utils use EarthMind AuthService (real encrypt/decrypt), not LFX stub."""
-    with patch("earthmind.services.auth.utils.get_auth_service", return_value=earthmind_auth_service):
+def use_terraflow_auth_for_encryption(terraflow_auth_service):
+    """Ensure utils use Terraflow AuthService (real encrypt/decrypt), not LFX stub."""
+    with patch("terraflow.services.auth.utils.get_auth_service", return_value=terraflow_auth_service):
         yield
 
 

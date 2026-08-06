@@ -5,7 +5,7 @@ from typing import Any
 from anyio import Path
 from fastapi import status
 from httpx import AsyncClient
-from earthmind.api.v1.schemas import CustomComponentRequest, UpdateCustomComponentRequest
+from terraflow.api.v1.schemas import CustomComponentRequest, UpdateCustomComponentRequest
 from lfx.components.models_and_agents.agent import AgentComponent
 from lfx.custom.utils import build_custom_component_template
 
@@ -104,7 +104,7 @@ async def test_custom_component_update_admin_only_allows_known_template_refresh(
     client: AsyncClient, logged_in_headers: dict, monkeypatch
 ):
     """Non-admin users can refresh known server templates in admin-only mode."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     admin_only_enabled = True
@@ -134,7 +134,7 @@ async def test_custom_component_update_admin_only_blocks_unknown_custom_code(
     client: AsyncClient, logged_in_headers: dict, monkeypatch
 ):
     """Non-admin users cannot edit truly custom code in admin-only mode."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     admin_only_enabled = True
@@ -171,7 +171,7 @@ async def test_custom_component_create_admin_only_allows_known_template_refresh(
     monkeypatch,
 ):
     """Non-admin users can create/refresh known server templates in admin-only mode."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     admin_only_enabled = True
@@ -193,7 +193,7 @@ async def test_custom_component_create_admin_only_blocks_unknown_custom_code(
     monkeypatch,
 ):
     """Non-admin users cannot create truly custom code in admin-only mode."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     admin_only_enabled = True
@@ -223,7 +223,7 @@ async def test_custom_component_create_admin_only_allows_superuser(
     logged_in_headers_super_user: dict,
     monkeypatch,
 ):
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     admin_only_enabled = True
@@ -257,7 +257,7 @@ async def test_custom_component_update_admin_only_allows_superuser(
     logged_in_headers_super_user: dict,
     monkeypatch,
 ):
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     admin_only_enabled = True
@@ -456,7 +456,7 @@ async def test_get_config_returns_500_on_settings_error(client: AsyncClient, mon
         raise RuntimeError(error_message)
 
     # Patch get_settings_service at the module level
-    monkeypatch.setattr("earthmind.api.v1.endpoints.get_settings_service", raise_settings_error)
+    monkeypatch.setattr("terraflow.api.v1.endpoints.get_settings_service", raise_settings_error)
 
     response = await client.get("api/v1/config")
     result = response.json()
@@ -486,7 +486,7 @@ async def test_get_config_authenticated_returns_full_config(client: AsyncClient,
 
 async def test_get_config_embedded_mode_cascades_hide_flags(client: AsyncClient, logged_in_headers: dict, monkeypatch):
     """Embedded mode should only force UI hide flags, not security lock flags."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     monkeypatch.setattr(settings_service.settings, "embedded_mode", True)
@@ -518,7 +518,7 @@ async def test_get_config_embedded_mode_false_keeps_individual_hide_flags(
     client: AsyncClient, logged_in_headers: dict, monkeypatch
 ):
     """When embedded mode is disabled, individual hide flags should retain explicit values."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     monkeypatch.setattr(settings_service.settings, "embedded_mode", False)
@@ -542,7 +542,7 @@ async def test_get_config_embedded_mode_false_keeps_individual_hide_flags(
 
 async def test_get_config_returns_mcp_and_admin_only_flags(client: AsyncClient, logged_in_headers: dict, monkeypatch):
     """Config response should expose lock/admin feature flags from settings."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     monkeypatch.setattr(settings_service.settings, "mcp_servers_locked", True)
@@ -574,7 +574,7 @@ async def test_get_config_returns_mcp_base_url(client: AsyncClient, logged_in_he
 
 
 async def test_get_config_mcp_base_url_defaults_to_empty(client: AsyncClient, logged_in_headers: dict):
-    """Test that mcp_base_url defaults to empty string when EARTHMIND_MCP_BASE_URL is not set."""
+    """Test that mcp_base_url defaults to empty string when TERRAFLOW_MCP_BASE_URL is not set."""
     response = await client.get("api/v1/config", headers=logged_in_headers)
     result = response.json()
     assert response.status_code == status.HTTP_200_OK
@@ -583,15 +583,15 @@ async def test_get_config_mcp_base_url_defaults_to_empty(client: AsyncClient, lo
 
 async def test_get_config_mcp_base_url_from_settings(client: AsyncClient, logged_in_headers: dict, monkeypatch):
     """Test that mcp_base_url reflects the value from settings."""
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
-    monkeypatch.setattr(settings_service.settings, "mcp_base_url", "https://earthmind.example.com")
+    monkeypatch.setattr(settings_service.settings, "mcp_base_url", "https://terraflow.example.com")
 
     response = await client.get("api/v1/config", headers=logged_in_headers)
     result = response.json()
     assert response.status_code == status.HTTP_200_OK
-    assert result["mcp_base_url"] == "https://earthmind.example.com"
+    assert result["mcp_base_url"] == "https://terraflow.example.com"
 
 
 async def test_deprecated_upload_rejects_unauthenticated(client: AsyncClient, flow):
@@ -636,7 +636,7 @@ async def test_deprecated_upload_enforces_max_file_size(
     this route by uploading arbitrarily large files, bypassing the limit the
     non-deprecated twin at /api/v1/files/upload/{flow_id} already enforces.
     """
-    from earthmind.services.deps import get_settings_service
+    from terraflow.services.deps import get_settings_service
 
     settings_service = get_settings_service()
     monkeypatch.setattr(settings_service.settings, "max_file_size_upload", 1)  # 1 MB

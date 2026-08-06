@@ -1,9 +1,9 @@
 ---
-title: Get started with the EarthMind API
+title: Get started with the Terraflow API
 slug: /api-reference-api-examples
 ---
 import CodeSnippet from '@site/src/components/CodeSnippet';
-import exampleApiReferenceApiExamplesFormEarthMindApiRequests from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/form-earthmind-api-requests.sh';
+import exampleApiReferenceApiExamplesFormTerraflowApiRequests from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/form-terraflow-api-requests.sh';
 import exampleApiReferenceApiExamplesSetEnvironmentVariables from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/set-environment-variables.sh';
 import exampleApiReferenceApiExamplesHealthCheck from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/health-check.sh';
 import resultApiReferenceApiExamplesResultHealthCheck from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/result-health-check.json';
@@ -12,8 +12,8 @@ import resultApiReferenceApiExamplesResultGetVersion from '!!raw-loader!@site/do
 import exampleApiReferenceApiExamplesGetConfiguration from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/get-configuration.sh';
 import resultApiReferenceApiExamplesResultGetConfiguration from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/result-get-configuration.json';
 import exampleApiReferenceApiExamplesGetAllComponents from '!!raw-loader!@site/docs/API-Reference/curl-examples/api-reference-api-examples/get-all-components.sh';
-import examplePythonApiReferenceApiExamplesFormEarthMindApiRequests from '!!raw-loader!@site/docs/API-Reference/python-examples/api-reference-api-examples/form-earthmind-api-requests.py';
-import exampleJavascriptApiReferenceApiExamplesFormEarthMindApiRequests from '!!raw-loader!@site/docs/API-Reference/javascript-examples/api-reference-api-examples/form-earthmind-api-requests.js';
+import examplePythonApiReferenceApiExamplesFormTerraflowApiRequests from '!!raw-loader!@site/docs/API-Reference/python-examples/api-reference-api-examples/form-terraflow-api-requests.py';
+import exampleJavascriptApiReferenceApiExamplesFormTerraflowApiRequests from '!!raw-loader!@site/docs/API-Reference/javascript-examples/api-reference-api-examples/form-terraflow-api-requests.js';
 import examplePythonApiReferenceApiExamplesHealthCheck from '!!raw-loader!@site/docs/API-Reference/python-examples/api-reference-api-examples/health-check.py';
 import exampleJavascriptApiReferenceApiExamplesHealthCheck from '!!raw-loader!@site/docs/API-Reference/javascript-examples/api-reference-api-examples/health-check.js';
 import examplePythonApiReferenceApiExamplesGetVersion from '!!raw-loader!@site/docs/API-Reference/python-examples/api-reference-api-examples/get-version.py';
@@ -28,61 +28,61 @@ import exampleJavascriptApiReferenceApiExamplesGetAllComponents from '!!raw-load
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-You can use the EarthMind API for programmatic interactions with EarthMind, such as the following:
+You can use the Terraflow API for programmatic interactions with Terraflow, such as the following:
 
 * Create and edit flows, including file management for flows.
 * Develop applications that use your flows.
 * Develop custom components.
-* Build EarthMind as a dependency of a larger application, codebase, or service.
-* Contribute to the overall EarthMind codebase.
+* Build Terraflow as a dependency of a larger application, codebase, or service.
+* Contribute to the overall Terraflow codebase.
 
-To view and test all available endpoints, you can access the EarthMind API's OpenAPI specification at your EarthMind deployment's `/docs` endpoint, such as `http://localhost:7860/docs`.
+To view and test all available endpoints, you can access the Terraflow API's OpenAPI specification at your Terraflow deployment's `/docs` endpoint, such as `http://localhost:7860/docs`.
 
 :::tip Try it
-For an example of the EarthMind API in a script, see the [EarthMind quickstart](/get-started-quickstart).
+For an example of the Terraflow API in a script, see the [Terraflow quickstart](/get-started-quickstart).
 
 The quickstart demonstrates how to get automatically generated code snippets for your flows, use a script to run a flow, and extract data from the Langfow API response.
 :::
 
-## Form EarthMind API requests
+## Form Terraflow API requests
 
-While individual options vary by endpoint, all EarthMind API requests share some commonalities, like a URL, method, parameters, and authentication.
+While individual options vary by endpoint, all Terraflow API requests share some commonalities, like a URL, method, parameters, and authentication.
 
-As an example of a EarthMind API request, the following curl command calls the `/v1/run` endpoint, and it passes a runtime override (`tweaks`) to the flow's **Chat Output** component:
+As an example of a Terraflow API request, the following curl command calls the `/v1/run` endpoint, and it passes a runtime override (`tweaks`) to the flow's **Chat Output** component:
 
 <Tabs>
 <TabItem value="Python" label="Python" default>
 
-<CodeSnippet source={examplePythonApiReferenceApiExamplesFormEarthMindApiRequests} language="python" />
+<CodeSnippet source={examplePythonApiReferenceApiExamplesFormTerraflowApiRequests} language="python" />
 
 </TabItem>
 <TabItem value="JavaScript" label="JavaScript">
 
-<CodeSnippet source={exampleJavascriptApiReferenceApiExamplesFormEarthMindApiRequests} language="javascript" />
+<CodeSnippet source={exampleJavascriptApiReferenceApiExamplesFormTerraflowApiRequests} language="javascript" />
 
 </TabItem>
 <TabItem value="curl" label="curl">
 
-<CodeSnippet source={exampleApiReferenceApiExamplesFormEarthMindApiRequests} language="bash" />
+<CodeSnippet source={exampleApiReferenceApiExamplesFormTerraflowApiRequests} language="bash" />
 
 </TabItem>
 </Tabs>
 
 ### Base URL
 
-By default, local deployments serve the EarthMind API at `http://localhost:7860/api`.
+By default, local deployments serve the Terraflow API at `http://localhost:7860/api`.
 
-Remotely hosted EarthMind deployments are available at the domain set by the hosting service, such as `http://IP_OR_DNS/api` or `http://IP_OR_DNS:EARTHMIND_PORT/api`.
+Remotely hosted Terraflow deployments are available at the domain set by the hosting service, such as `http://IP_OR_DNS/api` or `http://IP_OR_DNS:TERRAFLOW_PORT/api`.
 
-You can configure the EarthMind port number in the `EARTHMIND_PORT` [environment variable](/environment-variables).
+You can configure the Terraflow port number in the `TERRAFLOW_PORT` [environment variable](/environment-variables).
 
 * `https://UUID.ngrok.app/api`
 * `http://IP_OR_DNS/api`
-* `http://IP_OR_DNS:EARTHMIND_PORT/api`
+* `http://IP_OR_DNS:TERRAFLOW_PORT/api`
 
 ### Authentication
 
-In EarthMind versions 1.5 and later, most API endpoints require authentication with a EarthMind API key in either an `x-api-key` header or query parameter.
+In Terraflow versions 1.5 and later, most API endpoints require authentication with a Terraflow API key in either an `x-api-key` header or query parameter.
 For more information, see [API keys and authentication](/api-keys-and-authentication).
 
 As with any API, follow industry best practices for storing and referencing sensitive credentials.
@@ -90,7 +90,7 @@ For example, you can [set environment variables](#set-environment-variables) for
 
 ### Methods, paths, and parameters
 
-EarthMind API requests use various methods, paths, path parameters, query parameters, and body parameters.
+Terraflow API requests use various methods, paths, path parameters, query parameters, and body parameters.
 The specific requirements and options depend on the endpoint that you want to call.
 
 For example, to create a flow, you pass a JSON-formatted flow definition to `POST /v1/flows`.
@@ -98,7 +98,7 @@ Then, to run your flow, you call `POST /v1/run/$FLOW_ID` with optional run param
 
 ### API versions
 
-The EarthMind API serves `/v1` and `/v2` endpoints.
+The Terraflow API serves `/v1` and `/v2` endpoints.
 
 Some endpoints only exist under a single version and some exist under both the `/v1` and `/v2` versions.
 
@@ -114,17 +114,17 @@ For example:
 
 <CodeSnippet source={exampleApiReferenceApiExamplesSetEnvironmentVariables} language="bash" />
 
-Commonly used values in EarthMind API requests include your [EarthMind server URL](#base-url), [EarthMind API keys](#authentication), flow IDs, and [project IDs](/api-projects#read-projects).
+Commonly used values in Terraflow API requests include your [Terraflow server URL](#base-url), [Terraflow API keys](#authentication), flow IDs, and [project IDs](/api-projects#read-projects).
 
 You can retrieve flow IDs from the [**API access** pane](/concepts-publish#api-access), in a flow's URL, and with [`GET /flows`](/api-flows#read-flows).
 
-## Try some EarthMind API requests
+## Try some Terraflow API requests
 
-Once you have your EarthMind server URL, try calling these endpoints that return EarthMind metadata.
+Once you have your Terraflow server URL, try calling these endpoints that return Terraflow metadata.
 
 ### Health check
 
-Returns the health status of the EarthMind database and chat services:
+Returns the health status of the Terraflow database and chat services:
 
 <Tabs>
 <TabItem value="Python" label="Python" default>
@@ -151,12 +151,12 @@ Returns the health status of the EarthMind database and chat services:
 
 </details>
 
-EarthMind provides an additional `GET /health` endpoint.
-This endpoint is served by uvicorn before EarthMind is fully initialized, so it's not reliable for checking EarthMind service health.
+Terraflow provides an additional `GET /health` endpoint.
+This endpoint is served by uvicorn before Terraflow is fully initialized, so it's not reliable for checking Terraflow service health.
 
 ### Get version
 
-Returns the current EarthMind API version:
+Returns the current Terraflow API version:
 
 <Tabs>
 <TabItem value="Python" label="Python" default>
@@ -185,8 +185,8 @@ Returns the current EarthMind API version:
 
 ### Get configuration
 
-Returns configuration details for your EarthMind deployment.
-Requires a [EarthMind API key](/api-keys-and-authentication).
+Returns configuration details for your Terraflow deployment.
+Requires a [Terraflow API key](/api-keys-and-authentication).
 
 <Tabs>
 <TabItem value="Python" label="Python" default>
@@ -215,8 +215,8 @@ Requires a [EarthMind API key](/api-keys-and-authentication).
 
 ### Get all components
 
-Returns a dictionary of all EarthMind components.
-Requires a [EarthMind API key](/api-keys-and-authentication).
+Returns a dictionary of all Terraflow components.
+Requires a [Terraflow API key](/api-keys-and-authentication).
 
 <Tabs>
 <TabItem value="Python" label="Python" default>
@@ -238,9 +238,9 @@ Requires a [EarthMind API key](/api-keys-and-authentication).
 
 ## Available endpoints
 
-Because you can run EarthMind as either an IDE (frontend and backend) or a runtime (headless, backend-only), it serves endpoints that support frontend and backend operations.
-Many endpoints are for orchestration between the frontend and backend, reading and writing to the EarthMind database, or enabling frontend functionality, like the **Playground**.
-Unless you are contributing to the EarthMind codebase, you won't directly call most of the EarthMind endpoints.
+Because you can run Terraflow as either an IDE (frontend and backend) or a runtime (headless, backend-only), it serves endpoints that support frontend and backend operations.
+Many endpoints are for orchestration between the frontend and backend, reading and writing to the Terraflow database, or enabling frontend functionality, like the **Playground**.
+Unless you are contributing to the Terraflow codebase, you won't directly call most of the Terraflow endpoints.
 
 For application development, the most commonly used endpoints are the `/run` and `/webhook` [flow trigger endpoints](/api-flows-run).
 For some use cases, you might use some other endpoints, such as the `/files` endpoints to use files in flows.
@@ -250,7 +250,7 @@ To help you explore the available endpoints, the following lists are sorted by p
 <Tabs>
 <TabItem value="Application development" label="Application development" default>
 
-The following endpoints are useful for developing applications with EarthMind and administering EarthMind deployments with one or more users.
+The following endpoints are useful for developing applications with Terraflow and administering Terraflow deployments with one or more users.
 You will most often use the flow trigger endpoints.
 Other endpoints are helpful for specific use cases, such as administration and flow management in runtime deployments that don't have a visual editor.
 
@@ -263,7 +263,7 @@ Other endpoints are helpful for specific use cases, such as administration and f
   * POST `/v1/responses`: Execute flows using an OpenAI-compatible request format.
 
 * Deployment details:
-  * GET `/v1/version`: Return EarthMind version. See [Get version](/api-reference-api-examples#get-version).
+  * GET `/v1/version`: Return Terraflow version. See [Get version](/api-reference-api-examples#get-version).
   * GET `/v1/config`: Return deployment configuration. See [Get configuration](/api-reference-api-examples#get-configuration).
   * GET `/health_check`: Health check endpoint that validates database and chat service connectivity. Returns 500 status if any service is unavailable.
 
@@ -323,8 +323,8 @@ Other endpoints are helpful for specific use cases, such as administration and f
   * PATCH `/v1/users/{user_id}/reset-password`: Reset own password.
   * DELETE `/v1/users/{user_id}`: Delete a user (cannot delete yourself).
 
-* Custom components: You might use these endpoints when developing custom EarthMind components for your own use or to share with the EarthMind community:
-  * GET `/v1/all`: Return all available EarthMind component types. See [Get all components](/api-reference-api-examples#get-all-components).
+* Custom components: You might use these endpoints when developing custom Terraflow components for your own use or to share with the Terraflow community:
+  * GET `/v1/all`: Return all available Terraflow component types. See [Get all components](/api-reference-api-examples#get-all-components).
   * POST `/v1/custom_component`: Build a custom component from code and return its node.
   * POST `/v1/custom_component/update`: Update an existing custom component's build config and outputs.
   * POST `/v1/validate/code`: Validate a Python code snippet for a custom component.
@@ -333,11 +333,11 @@ Other endpoints are helpful for specific use cases, such as administration and f
 </TabItem>
 <TabItem value="Codebase contribution" label="Codebase development">
 
-The following endpoints are most often used when contributing to the EarthMind codebase, and you need to understand or call endpoints that support frontend-to-backend orchestration or other internal functionality.
+The following endpoints are most often used when contributing to the Terraflow codebase, and you need to understand or call endpoints that support frontend-to-backend orchestration or other internal functionality.
 
 * Base (metadata):
-  * GET `/v1/all`: Return all available EarthMind component types. See [Get all components](/api-reference-api-examples#get-all-components).
-  * GET `/v1/version`: Return EarthMind version. See [Get version](/api-reference-api-examples#get-version).
+  * GET `/v1/all`: Return all available Terraflow component types. See [Get all components](/api-reference-api-examples#get-all-components).
+  * GET `/v1/version`: Return Terraflow version. See [Get version](/api-reference-api-examples#get-version).
   * GET `/v1/config`: Return deployment configuration. See [Get configuration](/api-reference-api-examples#get-configuration).
   * GET `/v1/starter-projects/`: Return a list of templates.
 
@@ -376,9 +376,9 @@ The following endpoints are most often used when contributing to the EarthMind c
   * WS `/v1/voice/ws/flow_tts/{flow_id}/{session_id}`: Same as above with explicit session ID.
   * GET `/v1/voice/elevenlabs/voice_ids`: List available ElevenLabs voice IDs for the user.
 
-* MCP servers: The following endpoints are for managing EarthMind MCP servers and MCP server connections.
-They aren't typically called directly; instead, they are used to drive internal functionality in the EarthMind frontend and when running flows that call MCP servers.
-EarthMind MCP servers support both streamable HTTP and SSE transport.
+* MCP servers: The following endpoints are for managing Terraflow MCP servers and MCP server connections.
+They aren't typically called directly; instead, they are used to drive internal functionality in the Terraflow frontend and when running flows that call MCP servers.
+Terraflow MCP servers support both streamable HTTP and SSE transport.
   * HEAD `/v1/mcp/streamable`: Health check for streamable HTTP MCP.
   * GET `/v1/mcp/streamable`: Open streamable HTTP connection for MCP server.
   * POST `/v1/mcp/streamable`: Post messages to the MCP server via streamable HTTP.
@@ -398,8 +398,8 @@ EarthMind MCP servers support both streamable HTTP and SSE transport.
   * POST `/v1/mcp/project/{project_id}/install`: Install MCP client config for Cursor/Windsurf/Claude (local only).
   * GET `/v1/mcp/project/{project_id}/installed`: Check which clients have MCP config installed.
 
-* Custom components: You might use these endpoints when developing custom EarthMind components for your own use or to share with the EarthMind community:
-  * GET `/v1/all`: Return all available EarthMind component types. See [Get all components](/api-reference-api-examples#get-all-components).
+* Custom components: You might use these endpoints when developing custom Terraflow components for your own use or to share with the Terraflow community:
+  * GET `/v1/all`: Return all available Terraflow component types. See [Get all components](/api-reference-api-examples#get-all-components).
   * POST `/v1/custom_component`: Build a custom component from code and return its node.
   * POST `/v1/custom_component/update`: Update an existing custom component's build config and outputs.
   * POST `/v1/validate/code`: Validate a Python code snippet for a custom component.
@@ -432,7 +432,7 @@ The following endpoints are deprecated:
 
 ## Next steps
 
-* Use the EarthMind API to [run a flow](/api-flows-run).
-* Use the EarthMind API to [upload files](/api-files).
-* Use the EarthMind API to [get flow logs](/api-logs).
-* Explore all endpoints in the [EarthMind API specification](/api).
+* Use the Terraflow API to [run a flow](/api-flows-run).
+* Use the Terraflow API to [upload files](/api-files).
+* Use the Terraflow API to [get flow logs](/api-logs).
+* Explore all endpoints in the [Terraflow API specification](/api).

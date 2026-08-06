@@ -1,24 +1,24 @@
 services:
   # A Docker web service
   - type: web
-    name: earthmind
+    name: terraflow
     runtime: docker
     dockerfilePath: ./docker/render.Dockerfile
-    repo: https://github.com/earthmind-ai/earthmind
+    repo: https://github.com/terraflow-ai/terraflow
     branch: main
     plan: standard
     healthCheckPath: /health_check
     autoDeploy: false
     envVars:
-      - key: EARTHMIND_DATABASE_URL
-        value: sqlite:////app/data/.cache/earthmind/earthmind.db
-      - key: EARTHMIND_HOST
+      - key: TERRAFLOW_DATABASE_URL
+        value: sqlite:////app/data/.cache/terraflow/terraflow.db
+      - key: TERRAFLOW_HOST
         value: 0.0.0.0
-      - key: EARTHMIND_PORT
+      - key: TERRAFLOW_PORT
         # default render port https://docs.render.com/web-services#port-binding
         value: 10000
-      - key: EARTHMIND_LOG_LEVEL
+      - key: TERRAFLOW_LOG_LEVEL
         value: INFO
     disk:
-      name: earthmind-data
+      name: terraflow-data
       mountPath: /app/data

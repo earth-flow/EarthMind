@@ -21,7 +21,7 @@ class NotionListPages(LCToolComponent):
         '{"filter": {"property": "Status", "select": {"equals": "Done"}}, '
         '"sorts": [{"timestamp": "created_time", "direction": "descending"}]}'
     )
-    documentation: str = "https://docs.earthmind.org/bundles-notion"
+    documentation: str = "https://docs.terraflow.org/bundles-notion"
     icon = "NotionDirectoryLoader"
 
     inputs = [

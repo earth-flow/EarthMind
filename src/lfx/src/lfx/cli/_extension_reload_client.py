@@ -15,7 +15,7 @@ from typing import Any
 import httpx
 
 DEFAULT_TARGET = "http://10.171.205.153:7860"
-"""Fallback EarthMind server URL when neither ``--target`` nor ``EARTHMIND_HOST`` is set."""
+"""Fallback Terraflow server URL when neither ``--target`` nor ``TERRAFLOW_HOST`` is set."""
 
 _HTTP_OK = 200
 """Named constant for the only status code we treat as a success."""
@@ -42,10 +42,10 @@ class ReloadHttpResponse:
 
 
 def resolve_target(explicit: str | None) -> str:
-    """Pick the server URL to call.  Precedence: explicit > $EARTHMIND_HOST > default."""
+    """Pick the server URL to call.  Precedence: explicit > $TERRAFLOW_HOST > default."""
     if explicit:
         return explicit.rstrip("/")
-    env_target = os.environ.get("EARTHMIND_HOST")
+    env_target = os.environ.get("TERRAFLOW_HOST")
     if env_target:
         return env_target.rstrip("/")
     return DEFAULT_TARGET
@@ -55,7 +55,7 @@ def resolve_api_key(explicit: str | None) -> str | None:
     """Pick the API key to send.  Precedence: explicit > env > None."""
     if explicit:
         return explicit
-    return os.environ.get("EARTHMIND_API_KEY")
+    return os.environ.get("TERRAFLOW_API_KEY")
 
 
 def reload_via_http(
@@ -66,7 +66,7 @@ def reload_via_http(
     bundle_name: str,
     timeout: float = 30.0,
 ) -> ReloadHttpResponse:
-    """POST a reload request to the EarthMind extension dev server.
+    """POST a reload request to the Terraflow extension dev server.
 
     Returns a :class:`ReloadHttpResponse` that the caller renders.  Network
     failures raise no exceptions out of this helper -- they surface as a
@@ -96,11 +96,11 @@ def reload_via_http(
                 "errors": [
                     {
                         "code": "reload-transport-error",
-                        "message": f"Could not reach EarthMind server at {url}: {exc}",
+                        "message": f"Could not reach Terraflow server at {url}: {exc}",
                         "location": url,
                         "hint": (
                             "Start the dev server (e.g. `lfx run`) and pass --target / "
-                            "set EARTHMIND_HOST if it is not on http://10.171.205.153:7860."
+                            "set TERRAFLOW_HOST if it is not on http://10.171.205.153:7860."
                         ),
                     }
                 ],
@@ -120,7 +120,7 @@ def reload_via_http(
                     "code": "reload-transport-error",
                     "message": f"Server returned non-JSON body (HTTP {response.status_code}): {response.text[:200]}",
                     "location": url,
-                    "hint": "Confirm the URL points at a EarthMind server with the v1 API enabled.",
+                    "hint": "Confirm the URL points at a Terraflow server with the v1 API enabled.",
                 }
             ],
         }

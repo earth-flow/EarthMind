@@ -3,8 +3,8 @@ DEFAULT_UPLOAD_FILE="$SCRIPT_DIR/../../fixtures/sample-upload.txt"
 UPLOAD_FILE="${SAMPLE_UPLOAD_FILE:-$DEFAULT_UPLOAD_FILE}"
 
 curl -X POST \
-  "$EARTHMIND_URL/api/v1/files/upload/$FLOW_ID" \
+  "$TERRAFLOW_URL/api/v1/files/upload/$FLOW_ID" \
   -H "accept: application/json" \
   -H "Content-Type: multipart/form-data" \
-  -H "x-api-key: $EARTHMIND_API_KEY" \
+  -H "x-api-key: $TERRAFLOW_API_KEY" \
   -F "file=@${UPLOAD_FILE}"

@@ -6,8 +6,8 @@ from uuid import uuid4
 import anyio
 import pytest
 from fastapi import HTTPException
-from earthmind.api.v1.flows import _get_safe_flow_path
-from earthmind.services.storage.service import StorageService
+from terraflow.api.v1.flows import _get_safe_flow_path
+from terraflow.services.storage.service import StorageService
 
 
 @pytest.fixture

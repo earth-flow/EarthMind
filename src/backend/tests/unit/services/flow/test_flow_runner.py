@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 import pytest
-from earthmind.services.flow.flow_runner import EarthMindRunnerExperimental
+from terraflow.services.flow.flow_runner import TerraflowRunnerExperimental
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def sample_flow_dict():
 
 @pytest.fixture
 def flow_runner():
-    return EarthMindRunnerExperimental()
+    return TerraflowRunnerExperimental()
 
 
 @pytest.mark.asyncio

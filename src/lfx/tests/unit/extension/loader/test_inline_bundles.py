@@ -1,4 +1,4 @@
-"""Tests for ``discover_inline_bundles`` (EARTHMIND_COMPONENTS_PATH).
+"""Tests for ``discover_inline_bundles`` (TERRAFLOW_COMPONENTS_PATH).
 
 Covers the @extra-slot AC items:
     - each immediate subfolder of every path is one Bundle
@@ -176,7 +176,7 @@ def test_handles_none_paths() -> None:
 def test_non_existent_path_emits_inline_path_missing(tmp_path: Path) -> None:
     """A non-existent or non-dir path produces a typed warning, not silent skip.
 
-    A typo in EARTHMIND_COMPONENTS_PATH would otherwise yield zero
+    A typo in TERRAFLOW_COMPONENTS_PATH would otherwise yield zero
     components and zero diagnostics -- the AC item the second reviewer
     flagged as a tough debug experience.
     """
@@ -195,7 +195,7 @@ def test_non_existent_path_emits_inline_path_missing(tmp_path: Path) -> None:
 def test_unreadable_path_emits_inline_path_unreadable(tmp_path: Path, monkeypatch) -> None:
     """An OSError during iterdir surfaces ``inline-path-unreadable``, not a silent skip.
 
-    Permission-denied on a configured EARTHMIND_COMPONENTS_PATH entry is a
+    Permission-denied on a configured TERRAFLOW_COMPONENTS_PATH entry is a
     real misconfiguration -- the user explicitly pointed us here. The
     OSError message must be carried through so an operator can diagnose.
     """

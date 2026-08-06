@@ -28,7 +28,7 @@ class MessageToDataComponent(Component):
     def convert_message_to_data(self) -> Data:
         # Check for Message by checking if it has the expected attributes instead of isinstance
         if hasattr(self.message, "data") and hasattr(self.message, "text") and hasattr(self.message, "get_text"):
-            # Convert Message to Data - this works for both earthmind.Message and lfx.Message
+            # Convert Message to Data - this works for both terraflow.Message and lfx.Message
             return Data(data=self.message.data)
 
         msg = "Error converting Message to Data: Input must be a Message object"

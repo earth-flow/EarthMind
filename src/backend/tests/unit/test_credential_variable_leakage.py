@@ -1,4 +1,4 @@
-"""Regression tests for https://github.com/earthmind-ai/earthmind/pull/12908.
+"""Regression tests for https://github.com/terraflow-ai/terraflow/pull/12908.
 
 Original repro: a CREDENTIAL-typed global variable routed into a non-password
 input field (e.g. TextInputComponent.input_value, a MultilineInput) leaked the

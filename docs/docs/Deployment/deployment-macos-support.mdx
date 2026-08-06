@@ -6,13 +6,13 @@ slug: /deployment-macos-support
 
 # macOS Support Matrix
 
-EarthMind supports both Apple Silicon (ARM64) and Intel (x86_64) Macs, but with different feature availability due to hardware capabilities and upstream dependency support.
+Terraflow supports both Apple Silicon (ARM64) and Intel (x86_64) Macs, but with different feature availability due to hardware capabilities and upstream dependency support.
 
 ## Quick Reference
 
 | Feature Category | Apple Silicon (M1/M2/M3) | Intel (x86_64) |
 |-----------------|--------------------------|----------------|
-| **Core EarthMind** | ✅ Full support | ✅ Full support |
+| **Core Terraflow** | ✅ Full support | ✅ Full support |
 | **ML/AI Components** | ✅ Full support | ❌ Limited/Unavailable |
 | **GPU Acceleration** | ✅ Metal support | ❌ Not available |
 | **Native OCR** | ✅ Full support | ✅ Full support |
@@ -67,16 +67,16 @@ Intel Macs lack the specialized hardware that makes ML workloads performant:
 
 ### For Apple Silicon Users
 
-Install EarthMind normally with all features:
+Install Terraflow normally with all features:
 
 ```bash
-pip install earthmind
+pip install terraflow
 ```
 
 Or with specific ML extras:
 
 ```bash
-pip install earthmind[altk,langchain-huggingface,easyocr]
+pip install terraflow[altk,langchain-huggingface,easyocr]
 ```
 
 ### For Intel Mac Users
@@ -84,7 +84,7 @@ pip install earthmind[altk,langchain-huggingface,easyocr]
 Install the base package for core functionality:
 
 ```bash
-pip install earthmind
+pip install terraflow
 ```
 
 **Note:** Attempting to install ML-dependent extras on Intel Macs will be automatically skipped due to platform markers in the package configuration.
@@ -118,8 +118,8 @@ Instead of local models, use API-based services:
 ### 2. Remote Inference
 
 Run ML workloads on a remote server:
-- Deploy EarthMind on a cloud instance with GPU support
-- Use the EarthMind API to connect from your Intel Mac
+- Deploy Terraflow on a cloud instance with GPU support
+- Use the Terraflow API to connect from your Intel Mac
 - Keep the UI/development on your Mac, inference in the cloud
 
 ### 3. Docker with Rosetta 2
@@ -127,7 +127,7 @@ Run ML workloads on a remote server:
 For some workloads, you can use Docker with ARM64 images via Rosetta 2:
 
 ```bash
-docker run --platform linux/arm64 earthmindai/earthmind:latest
+docker run --platform linux/arm64 terraflowai/terraflow:latest
 ```
 
 **Note:** Performance will be slower than native, and not all features may work correctly.
@@ -142,7 +142,7 @@ Apple and the broader ecosystem are phasing out Intel Mac support:
 - **2024:** PyTorch dropped Intel Mac support
 - **2026-2027:** Expected end of macOS updates for Intel Macs
 
-EarthMind will continue to support core functionality on Intel Macs as long as Python and essential dependencies remain available, but ML features will remain Apple Silicon exclusive.
+Terraflow will continue to support core functionality on Intel Macs as long as Python and essential dependencies remain available, but ML features will remain Apple Silicon exclusive.
 
 ### Recommended Migration Path
 
@@ -158,7 +158,7 @@ If you rely on ML features, consider upgrading to Apple Silicon hardware:
 If you see errors about missing packages on Intel Mac:
 
 1. **Expected behavior** - ML packages are intentionally excluded
-2. **Solution** - Use core EarthMind features or API-based alternatives
+2. **Solution** - Use core Terraflow features or API-based alternatives
 3. **Verify architecture:**
    ```bash
    python -c "import platform; print(platform.machine())"
@@ -167,7 +167,7 @@ If you see errors about missing packages on Intel Mac:
 
 ### Performance Issues
 
-If EarthMind feels slow on Intel Mac:
+If Terraflow feels slow on Intel Mac:
 
 1. Ensure you're not trying to run ML workloads locally
 2. Use API-based providers for embeddings/completions
@@ -183,6 +183,6 @@ If EarthMind feels slow on Intel Mac:
 
 If you have questions about macOS support:
 
-- [GitHub Discussions](https://github.com/earthmind-ai/earthmind/discussions)
+- [GitHub Discussions](https://github.com/terraflow-ai/terraflow/discussions)
 - [Discord Community](https://discord.gg/EqksyE2EX9)
-- [Documentation](https://docs.earthmind.org)
+- [Documentation](https://docs.terraflow.org)

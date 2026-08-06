@@ -1,4 +1,4 @@
-"""EarthMind Extension System (foundation).
+"""Terraflow Extension System (foundation).
 
 Public surface for this milestone:
     - ``ExtensionManifest``, ``BundleRef``, ``LfxCompat`` -- Pydantic models for

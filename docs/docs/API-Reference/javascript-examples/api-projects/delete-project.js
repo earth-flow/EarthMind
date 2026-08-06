@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/projects/${process.env.PROJECT_ID ?? ""}`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/projects/${process.env.PROJECT_ID ?? ""}`;
 
 const options = {
   method: 'DELETE',
   headers: {
     "accept": `*/*`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
 };
 

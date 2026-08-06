@@ -3,9 +3,9 @@
 After the ``utils.py`` refactor on PR #13153, the runtime helpers live in
 three modules:
 
-* ``earthmind.services.authorization.audit``   — batched audit pipeline
-* ``earthmind.services.authorization.guards``  — ``ensure_*_permission`` family
-* ``earthmind.services.authorization.listing`` — ``filter_visible_resources``
+* ``terraflow.services.authorization.audit``   — batched audit pipeline
+* ``terraflow.services.authorization.guards``  — ``ensure_*_permission`` family
+* ``terraflow.services.authorization.listing`` — ``filter_visible_resources``
 
 Each module imports ``get_settings_service`` / ``get_authorization_service``
 at import time, so a test that wants to stub the live services must patch the
@@ -20,9 +20,9 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from earthmind.services.authorization import audit as authz_audit
-from earthmind.services.authorization import guards as authz_guards
-from earthmind.services.authorization import listing as authz_listing
+from terraflow.services.authorization import audit as authz_audit
+from terraflow.services.authorization import guards as authz_guards
+from terraflow.services.authorization import listing as authz_listing
 
 
 class _StubAuthorizationService:

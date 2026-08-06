@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from earthmind.services.authorization import audit as authz_audit
-from earthmind.services.authorization import guards as authz_guards
+from terraflow.services.authorization import audit as authz_audit
+from terraflow.services.authorization import guards as authz_guards
 
 
 def test_resolve_authz_domain_precedence():

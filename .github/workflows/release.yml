@@ -1,5 +1,5 @@
-name: EarthMind Release
-run-name: EarthMind Release by @${{ github.actor }}
+name: Terraflow Release
+run-name: Terraflow Release by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -9,12 +9,12 @@ on:
         required: true
         type: string
       release_package_base:
-        description: "Release EarthMind Base"
+        description: "Release Terraflow Base"
         required: true
         type: boolean
         default: false
       release_package_main:
-        description: "Release EarthMind"
+        description: "Release Terraflow"
         required: true
         type: boolean
         default: false
@@ -24,7 +24,7 @@ on:
         type: boolean
         default: false
       release_sdk:
-        description: "Release earthmind-sdk package (required when releasing LFX)"
+        description: "Release terraflow-sdk package (required when releasing LFX)"
         required: false
         type: boolean
         default: false
@@ -34,12 +34,12 @@ on:
         type: boolean
         default: false
       build_docker_base:
-        description: "Build Docker Image for EarthMind Base"
+        description: "Build Docker Image for Terraflow Base"
         required: true
         type: boolean
         default: false
       build_docker_main:
-        description: "Build Docker Image for EarthMind"
+        description: "Build Docker Image for Terraflow"
         required: true
         type: boolean
         default: false
@@ -158,20 +158,20 @@ jobs:
       - name: Validate that build-base is enabled if build-main is enabled
         run: |
           if [ "${{ inputs.release_package_main }}" = "true" ] && [ "${{ inputs.release_package_base }}" = "false" ]; then
-            echo "Error: Cannot release EarthMind Main without releasing EarthMind Base."
+            echo "Error: Cannot release Terraflow Main without releasing Terraflow Base."
             echo "Please enable 'release_package_base' or disable 'release_package_main'."
             exit 1
           fi
 
           if [ "${{ inputs.release_lfx }}" = "true" ] && [ "${{ inputs.release_sdk }}" = "false" ]; then
-            echo "Error: Cannot release LFX without releasing earthmind-sdk."
-            echo "LFX depends on earthmind-sdk. Please enable 'release_sdk' or disable 'release_lfx'."
+            echo "Error: Cannot release LFX without releasing terraflow-sdk."
+            echo "LFX depends on terraflow-sdk. Please enable 'release_sdk' or disable 'release_lfx'."
             exit 1
           fi
 
           if [ "${{ inputs.release_package_main }}" = "true" ] && [ "${{ inputs.release_bundles }}" = "false" ]; then
-            echo "Error: Cannot release EarthMind Main without releasing bundles."
-            echo "EarthMind Main pins exact bundle versions (lfx-arxiv, lfx-duckduckgo, ...). Please enable 'release_bundles' or disable 'release_package_main'."
+            echo "Error: Cannot release Terraflow Main without releasing bundles."
+            echo "Terraflow Main pins exact bundle versions (lfx-arxiv, lfx-duckduckgo, ...). Please enable 'release_bundles' or disable 'release_package_main'."
             exit 1
           fi
 
@@ -212,12 +212,12 @@ jobs:
           echo "Base version from pyproject.toml: $version"
 
           if [ ${{inputs.pre_release}} == "true" ]; then
-            last_released_version=$(curl -s "https://pypi.org/pypi/earthmind-base/json" | jq -r '.releases | keys | .[]' | grep -E '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
-            version="$(uv run ./scripts/ci/earthmind_pre_release_tag.py "$version" "$last_released_version")"
+            last_released_version=$(curl -s "https://pypi.org/pypi/terraflow-base/json" | jq -r '.releases | keys | .[]' | grep -E '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
+            version="$(uv run ./scripts/ci/terraflow_pre_release_tag.py "$version" "$last_released_version")"
             echo "Latest base pre-release version: $last_released_version"
             echo "Base pre-release version to be released: $version"
           else
-            last_released_version=$(curl -s "https://pypi.org/pypi/earthmind-base/json" | jq -r '.releases | keys | .[]' | grep -vE '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
+            last_released_version=$(curl -s "https://pypi.org/pypi/terraflow-base/json" | jq -r '.releases | keys | .[]' | grep -vE '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
             echo "Latest base release version: $last_released_version"
           fi
 
@@ -257,16 +257,16 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          version=$(uv tree | grep -E '^earthmind(-nightly)?[[:space:]]' | awk '{print $2}' | sed 's/^v//')
+          version=$(uv tree | grep -E '^terraflow(-nightly)?[[:space:]]' | awk '{print $2}' | sed 's/^v//')
           echo "Main version from pyproject.toml: $version"
 
           if [ ${{inputs.pre_release}} == "true" ]; then
-            last_released_version=$(curl -s "https://pypi.org/pypi/earthmind/json" | jq -r '.releases | keys | .[]' | grep -E '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
-            version="$(uv run ./scripts/ci/earthmind_pre_release_tag.py "$version" "$last_released_version")"
+            last_released_version=$(curl -s "https://pypi.org/pypi/terraflow/json" | jq -r '.releases | keys | .[]' | grep -E '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
+            version="$(uv run ./scripts/ci/terraflow_pre_release_tag.py "$version" "$last_released_version")"
             echo "Latest main pre-release version: $last_released_version"
             echo "Main pre-release version to be released: $version"
           else
-            last_released_version=$(curl -s "https://pypi.org/pypi/earthmind/json" | jq -r '.releases | keys | .[]' | grep -vE '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
+            last_released_version=$(curl -s "https://pypi.org/pypi/terraflow/json" | jq -r '.releases | keys | .[]' | grep -vE '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
             echo "Latest main release version: $last_released_version"
           fi
 
@@ -311,7 +311,7 @@ jobs:
 
           if [ ${{inputs.pre_release}} == "true" ]; then
             last_released_version=$(curl -s "https://pypi.org/pypi/lfx/json" | jq -r '.releases | keys | .[]' | grep -E '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
-            version="$(uv run ./scripts/ci/earthmind_pre_release_tag.py "$version" "$last_released_version")"
+            version="$(uv run ./scripts/ci/terraflow_pre_release_tag.py "$version" "$last_released_version")"
             echo "Latest LFX pre-release version: $last_released_version"
             echo "LFX pre-release version to be released: $version"
           else
@@ -351,7 +351,7 @@ jobs:
           prune-cache: false
 
       - name: Install SDK dependencies
-        run: uv sync --dev --package earthmind-sdk
+        run: uv sync --dev --package terraflow-sdk
 
       - name: Determine version
         id: version
@@ -363,19 +363,19 @@ jobs:
           ")
           echo "SDK version from pyproject.toml: $version"
 
-          # Check if earthmind-sdk exists on PyPI (may be first release)
-          pypi_response=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/earthmind-sdk/json")
+          # Check if terraflow-sdk exists on PyPI (may be first release)
+          pypi_response=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/terraflow-sdk/json")
           if [ "$pypi_response" = "404" ]; then
-            echo "earthmind-sdk has never been published to PyPI. This will be the first release."
+            echo "terraflow-sdk has never been published to PyPI. This will be the first release."
             last_released_version=""
           else
             if [ ${{inputs.pre_release}} == "true" ]; then
-              last_released_version=$(curl -s "https://pypi.org/pypi/earthmind-sdk/json" | jq -r '.releases | keys | .[]' | grep -E '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
-              version="$(uv run ./scripts/ci/earthmind_pre_release_tag.py "$version" "$last_released_version")"
+              last_released_version=$(curl -s "https://pypi.org/pypi/terraflow-sdk/json" | jq -r '.releases | keys | .[]' | grep -E '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
+              version="$(uv run ./scripts/ci/terraflow_pre_release_tag.py "$version" "$last_released_version")"
               echo "Latest SDK pre-release version: $last_released_version"
               echo "SDK pre-release version to be released: $version"
             else
-              last_released_version=$(curl -s "https://pypi.org/pypi/earthmind-sdk/json" | jq -r '.releases | keys | .[]' | grep -vE '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
+              last_released_version=$(curl -s "https://pypi.org/pypi/terraflow-sdk/json" | jq -r '.releases | keys | .[]' | grep -vE '(a|b|rc|dev|alpha|beta)' | sort -V | tail -n 1)
               echo "Latest SDK release version: $last_released_version"
             fi
           fi
@@ -403,7 +403,7 @@ jobs:
     secrets: inherit
 
   build-sdk:
-    name: Build earthmind-sdk
+    name: Build terraflow-sdk
     needs: [determine-sdk-version]
     if: ${{ needs.determine-sdk-version.outputs.skipped == 'false' }}
     runs-on: ubuntu-latest
@@ -460,7 +460,7 @@ jobs:
           # importlib.metadata returns the PEP 440 canonical form, so normalize
           # the expected version the same way the wheel filename check does.
           NORMALIZED_VERSION=$(echo "$EXPECTED_VERSION" | sed 's/\.rc/rc/g; s/\.a/a/g; s/\.b/b/g; s/\.dev/dev/g')
-          ./test-env/bin/python -c "from importlib.metadata import version; import earthmind_sdk; installed_version = version('earthmind-sdk'); print(f'earthmind-sdk {installed_version} imported successfully'); assert installed_version == '$NORMALIZED_VERSION', f'Installed version {installed_version} does not match expected version $NORMALIZED_VERSION'"
+          ./test-env/bin/python -c "from importlib.metadata import version; import terraflow_sdk; installed_version = version('terraflow-sdk'); print(f'terraflow-sdk {installed_version} imported successfully'); assert installed_version == '$NORMALIZED_VERSION', f'Installed version {installed_version} does not match expected version $NORMALIZED_VERSION'"
       - name: Upload Artifact
         uses: actions/upload-artifact@v6
         with:
@@ -509,31 +509,31 @@ jobs:
           # Verify the change
           echo "Updated pyproject.toml version:"
           grep "^version" pyproject.toml
-      - name: Update earthmind-sdk dependency for pre-release
+      - name: Update terraflow-sdk dependency for pre-release
         if: ${{ inputs.pre_release && needs.build-sdk.result == 'success' }}
         run: |
           SDK_VERSION="${{ needs.determine-sdk-version.outputs.version }}"
-          echo "Updating earthmind-sdk dependency to allow pre-release version: $SDK_VERSION"
+          echo "Updating terraflow-sdk dependency to allow pre-release version: $SDK_VERSION"
           cd src/lfx
 
-          # Extract current earthmind-sdk constraint from pyproject.toml
-          CURRENT_CONSTRAINT=$(grep -E '^\s*"earthmind-sdk' pyproject.toml | head -1)
+          # Extract current terraflow-sdk constraint from pyproject.toml
+          CURRENT_CONSTRAINT=$(grep -E '^\s*"terraflow-sdk' pyproject.toml | head -1)
           echo "Current constraint: $CURRENT_CONSTRAINT"
 
           # Create new constraint using the next major derived from SDK_VERSION
           SDK_BASE_VERSION=$(echo "$SDK_VERSION" | sed 's/[^0-9.].*$//')
           SDK_MAJOR=$(echo "$SDK_BASE_VERSION" | cut -d. -f1)
           NEXT_MAJOR=$((SDK_MAJOR + 1))
-          NEW_CONSTRAINT="\"earthmind-sdk>=$SDK_VERSION,<$NEXT_MAJOR.dev0\""
+          NEW_CONSTRAINT="\"terraflow-sdk>=$SDK_VERSION,<$NEXT_MAJOR.dev0\""
 
           echo "New constraint: $NEW_CONSTRAINT"
 
           # Replace the constraint
-          sed -i.bak "s|\"earthmind-sdk[^\"]*\"|$NEW_CONSTRAINT|" pyproject.toml
+          sed -i.bak "s|\"terraflow-sdk[^\"]*\"|$NEW_CONSTRAINT|" pyproject.toml
 
           # Verify the change
-          echo "Updated earthmind-sdk dependency:"
-          grep "earthmind-sdk" pyproject.toml
+          echo "Updated terraflow-sdk dependency:"
+          grep "terraflow-sdk" pyproject.toml
       - name: Build project for distribution
         run: |
           cd src/lfx
@@ -576,7 +576,7 @@ jobs:
           path: src/lfx/dist
 
   build-base:
-    name: Build EarthMind Base
+    name: Build Terraflow Base
     needs: [build-lfx, build-sdk, determine-base-version, determine-lfx-version]
     if: |
       always() &&
@@ -690,7 +690,7 @@ jobs:
           mkdir src/backend/base/dist
           mv dist/*.whl src/backend/base/dist
           uv pip install src/backend/base/dist/*.whl
-          uv run python -m earthmind run --host localhost --port 7860 --backend-only &
+          uv run python -m terraflow run --host localhost --port 7860 --backend-only &
           SERVER_PID=$!
           # Wait for the server to start
           timeout 120 bash -c 'until curl -f http://localhost:7860/api/v1/auto_login; do sleep 2; done' || (echo "Server did not start in time" && kill $SERVER_PID && exit 1)
@@ -714,7 +714,7 @@ jobs:
           path: src/backend/base/dist
 
   build-main:
-    name: Build EarthMind Main
+    name: Build Terraflow Main
     needs:
       [
         build-base,
@@ -786,14 +786,14 @@ jobs:
           # Verify the change
           echo "Updated pyproject.toml version:"
           grep "^version" pyproject.toml
-      - name: Update earthmind-base dependency for pre-release
+      - name: Update terraflow-base dependency for pre-release
         if: ${{ inputs.pre_release }}
         run: |
           BASE_VERSION="${{ needs.determine-base-version.outputs.version }}"
           echo "Base version for pre-release: $BASE_VERSION"
 
-          # Extract current earthmind-base constraint from pyproject.toml
-          CURRENT_CONSTRAINT=$(grep -E '^\s*"earthmind-base' pyproject.toml | head -1)
+          # Extract current terraflow-base constraint from pyproject.toml
+          CURRENT_CONSTRAINT=$(grep -E '^\s*"terraflow-base' pyproject.toml | head -1)
           echo "Current constraint: $CURRENT_CONSTRAINT"
 
           # Extract the major.minor version (e.g., "0.8" from "~=0.8.0")
@@ -801,16 +801,16 @@ jobs:
           NEXT_MAJOR=$((${MAJOR_MINOR%.*} + 1))
 
           # Create new constraint: >=BASE_VERSION,<NEXT_MAJOR.dev0 (preserve [complete] extra)
-          NEW_CONSTRAINT="\"earthmind-base[complete]>=$BASE_VERSION,<$NEXT_MAJOR.dev0\""
+          NEW_CONSTRAINT="\"terraflow-base[complete]>=$BASE_VERSION,<$NEXT_MAJOR.dev0\""
 
           echo "New constraint: $NEW_CONSTRAINT"
 
           # Replace the constraint
-          sed -i.bak "s|\"earthmind-base[^\"]*\"|$NEW_CONSTRAINT|" pyproject.toml
+          sed -i.bak "s|\"terraflow-base[^\"]*\"|$NEW_CONSTRAINT|" pyproject.toml
 
           # Verify the change
           echo "Updated dependency:"
-          grep "earthmind-base" pyproject.toml
+          grep "terraflow-base" pyproject.toml
       - name: Build project for pre-release distribution
         if: ${{ inputs.pre_release }}
         run: make build pre=true args="--no-sources --wheel"
@@ -837,7 +837,7 @@ jobs:
       - name: Test CLI
         run: |
           uv pip install dist/*.whl
-          uv run python -m earthmind run --host localhost --port 7860 --backend-only &
+          uv run python -m terraflow run --host localhost --port 7860 --backend-only &
           SERVER_PID=$!
           # Wait for the server to start
           timeout 120 bash -c 'until curl -f http://localhost:7860/health_check; do sleep 2; done' || (echo "Server did not start in time" && kill $SERVER_PID && exit 1)
@@ -861,7 +861,7 @@ jobs:
           path: dist
 
   build-bundles:
-    name: Build EarthMind Bundles
+    name: Build Terraflow Bundles
     needs: [build-lfx, determine-lfx-version]
     if: |
       always() &&
@@ -948,7 +948,7 @@ jobs:
       pre_release: ${{ inputs.pre_release }}
 
   publish-base:
-    name: Publish EarthMind Base to PyPI
+    name: Publish Terraflow Base to PyPI
     if: |
       always() &&
       !cancelled() &&
@@ -1033,7 +1033,7 @@ jobs:
           fi
 
   publish-main:
-    name: Publish EarthMind Main to PyPI
+    name: Publish Terraflow Main to PyPI
     if: |
       always() &&
       !cancelled() &&
@@ -1064,7 +1064,7 @@ jobs:
           uv publish dist/*.whl
 
   publish-sdk:
-    name: Publish earthmind-sdk to PyPI
+    name: Publish terraflow-sdk to PyPI
     needs: [build-sdk, test-cross-platform, ci]
     if: |
       always() &&
@@ -1127,7 +1127,7 @@ jobs:
           cd src/lfx && uv publish dist/*.whl
 
   call_docker_build_base:
-    name: Call Docker Build Workflow for EarthMind Base
+    name: Call Docker Build Workflow for Terraflow Base
     if: ${{ inputs.build_docker_base }}
     needs: [ci]
     uses: ./.github/workflows/docker-build-v2.yml
@@ -1139,7 +1139,7 @@ jobs:
     secrets: inherit
 
   call_docker_build_main:
-    name: Call Docker Build Workflow for EarthMind
+    name: Call Docker Build Workflow for Terraflow
     if: ${{ inputs.build_docker_main }}
     needs: [ci]
     uses: ./.github/workflows/docker-build-v2.yml
@@ -1151,7 +1151,7 @@ jobs:
     secrets: inherit
 
   call_docker_build_main_backend:
-    name: Call Docker Build Workflow for EarthMind Backend
+    name: Call Docker Build Workflow for Terraflow Backend
     if: ${{ inputs.build_docker_main && !inputs.dry_run }}
     needs: [call_docker_build_main]
     uses: ./.github/workflows/docker-build-v2.yml
@@ -1163,7 +1163,7 @@ jobs:
     secrets: inherit
 
   call_docker_build_main_frontend:
-    name: Call Docker Build Workflow for EarthMind Frontend
+    name: Call Docker Build Workflow for Terraflow Frontend
     if: ${{ inputs.build_docker_main && !inputs.dry_run }}
     needs: [call_docker_build_main]
     uses: ./.github/workflows/docker-build-v2.yml
@@ -1175,7 +1175,7 @@ jobs:
     secrets: inherit
 
   call_docker_build_main_ep:
-    name: Call Docker Build Workflow for EarthMind with Entrypoint
+    name: Call Docker Build Workflow for Terraflow with Entrypoint
     if: ${{ inputs.build_docker_main }}
     needs: [ci]
     uses: ./.github/workflows/docker-build-v2.yml
@@ -1187,7 +1187,7 @@ jobs:
     secrets: inherit
 
   call_docker_build_main_all:
-    name: Call Docker Build Workflow for earthmind-all
+    name: Call Docker Build Workflow for terraflow-all
     if: ${{ inputs.build_docker_main }}
     needs: [ci]
     uses: ./.github/workflows/docker-build-v2.yml

@@ -140,8 +140,8 @@ for file in "${SH_FILES[@]}"; do
   fi
 
   if [[ "$MODE" == "execute" ]]; then
-    if [[ -z "${EARTHMIND_API_KEY:-}" || ( -z "${EARTHMIND_URL:-}" && -z "${EARTHMIND_SERVER_URL:-}" ) ]]; then
-      echo "SKIP  $rel (set EARTHMIND_API_KEY and EARTHMIND_URL or EARTHMIND_SERVER_URL to execute)"
+    if [[ -z "${TERRAFLOW_API_KEY:-}" || ( -z "${TERRAFLOW_URL:-}" && -z "${TERRAFLOW_SERVER_URL:-}" ) ]]; then
+      echo "SKIP  $rel (set TERRAFLOW_API_KEY and TERRAFLOW_URL or TERRAFLOW_SERVER_URL to execute)"
       ((SKIP+=1))
       continue
     fi
@@ -153,9 +153,9 @@ for file in "${SH_FILES[@]}"; do
       continue
     fi
 
-    if ! bash "$file" >/tmp/earthmind-curl-example.out 2>/tmp/earthmind-curl-example.err; then
+    if ! bash "$file" >/tmp/terraflow-curl-example.out 2>/tmp/terraflow-curl-example.err; then
       echo "FAIL  $rel (execution)"
-      print_failure_logs "/tmp/earthmind-curl-example.out" "/tmp/earthmind-curl-example.err"
+      print_failure_logs "/tmp/terraflow-curl-example.out" "/tmp/terraflow-curl-example.err"
       ((FAIL+=1))
       continue
     fi

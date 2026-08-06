@@ -7,16 +7,16 @@ from httpx import AsyncClient
 
 
 async def _attach_deployment_to_flow(*, user_id: UUID, flow_id: UUID, project_id: UUID) -> None:
-    from earthmind.services.database.models.deployment.model import Deployment
-    from earthmind.services.database.models.deployment_provider_account.model import (
+    from terraflow.services.database.models.deployment.model import Deployment
+    from terraflow.services.database.models.deployment_provider_account.model import (
         DeploymentProviderAccount,
         DeploymentProviderKey,
     )
-    from earthmind.services.database.models.flow_version.model import FlowVersion
-    from earthmind.services.database.models.flow_version_deployment_attachment.model import (
+    from terraflow.services.database.models.flow_version.model import FlowVersion
+    from terraflow.services.database.models.flow_version_deployment_attachment.model import (
         FlowVersionDeploymentAttachment,
     )
-    from earthmind.services.deps import session_scope
+    from terraflow.services.deps import session_scope
     from lfx.services.adapters.deployment.schema import DeploymentType
 
     async with session_scope() as session:
@@ -353,9 +353,9 @@ async def test_read_flows_user_isolation(client: AsyncClient, logged_in_headers,
     """Test that read_flows returns only flows from the current user."""
     from uuid import uuid4
 
-    from earthmind.services.auth.utils import get_password_hash
-    from earthmind.services.database.models.user.model import User
-    from earthmind.services.deps import session_scope
+    from terraflow.services.auth.utils import get_password_hash
+    from terraflow.services.database.models.user.model import User
+    from terraflow.services.deps import session_scope
 
     # Create a second user
     other_user_id = uuid4()
@@ -799,9 +799,9 @@ async def test_upsert_flow_updates_existing_flow(client: AsyncClient, logged_in_
 
 async def test_upsert_flow_returns_404_for_other_users_flow(client: AsyncClient, logged_in_headers):
     """Test that PUT returns 404 when trying to upsert another user's flow (avoids leaking existence)."""
-    from earthmind.services.auth.utils import get_password_hash
-    from earthmind.services.database.models.user.model import User
-    from earthmind.services.deps import session_scope
+    from terraflow.services.auth.utils import get_password_hash
+    from terraflow.services.database.models.user.model import User
+    from terraflow.services.deps import session_scope
 
     # Create another user
     other_user_id = uuid.uuid4()

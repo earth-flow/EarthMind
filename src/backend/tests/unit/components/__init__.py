@@ -1,3 +1,3 @@
-"""Tests for EarthMind components."""
+"""Tests for Terraflow components."""
 
 # Made with Bob

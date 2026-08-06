@@ -5,7 +5,7 @@ Together the two suites exercise the porting recipe documented in
 ``src/bundles/PORTING.md`` end-to-end.
 
 Verifies the save/upgrade/load contract for flows referencing
-``ArXivComponent`` from the pre-extraction EarthMind:
+``ArXivComponent`` from the pre-extraction Terraflow:
 
     1. A saved flow uses the legacy bare class name ``ArXivComponent``.
     2. The migration table rewrites it to the canonical post-Phase-A
@@ -53,7 +53,7 @@ def _saved_flow_node(node_id: str, type_value: str) -> dict:
 
 
 def _saved_flow(*nodes: dict) -> dict:
-    """Wrap nodes in the canonical EarthMind flow envelope."""
+    """Wrap nodes in the canonical Terraflow flow envelope."""
     return {"data": {"nodes": list(nodes), "edges": []}}
 
 
@@ -108,11 +108,11 @@ def test_lfx_arxiv_distribution_is_importable() -> None:
     """The bundle's package is importable in the development workspace.
 
     Catches the case where the package layout drifts from what
-    ``earthmind.extensions`` references in the entry-point.
+    ``terraflow.extensions`` references in the entry-point.
 
     Skipped when the bundle is not installed in the test environment
-    (lfx's own venv does not list lfx-arxiv as a dep); the earthmind
-    workspace venv pulls it in transitively from earthmind's pyproject.
+    (lfx's own venv does not list lfx-arxiv as a dep); the terraflow
+    workspace venv pulls it in transitively from terraflow's pyproject.
     """
     try:
         from lfx_arxiv import ArXivComponent
@@ -142,7 +142,7 @@ def test_lfx_arxiv_ships_manifest() -> None:
 
     This is the contract :func:`load_installed_extensions` reads at
     server startup; if the wheel doesn't include the manifest, the bundle
-    never registers and ``pip install earthmind`` silently fails to pull
+    never registers and ``pip install terraflow`` silently fails to pull
     in the pilot bundle.
     """
     try:

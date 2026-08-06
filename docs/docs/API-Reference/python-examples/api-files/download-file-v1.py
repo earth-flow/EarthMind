@@ -4,9 +4,9 @@ from pathlib import Path
 
 import requests
 
-base = os.environ.get("EARTHMIND_URL", "")
+base = os.environ.get("TERRAFLOW_URL", "")
 flow_id = os.environ.get("FLOW_ID", "")
-api_key = os.environ.get("EARTHMIND_API_KEY", "")
+api_key = os.environ.get("TERRAFLOW_API_KEY", "")
 
 fixtures = Path(__file__).resolve().parents[2] / "fixtures"
 upload_path = Path(os.environ.get("SAMPLE_UPLOAD_FILE", str(fixtures / "sample-upload.txt")))

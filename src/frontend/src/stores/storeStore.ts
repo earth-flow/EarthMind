@@ -1,17 +1,17 @@
 import { create } from "zustand";
-import { ENABLE_EARTHMIND_STORE } from "@/customization/feature-flags";
+import { ENABLE_TERRAFLOW_STORE } from "@/customization/feature-flags";
 import { checkHasApiKey, checkHasStore } from "../controllers/API";
 import type { StoreStoreType } from "../types/zustand/store";
 
 export const useStoreStore = create<StoreStoreType>((set) => ({
-  hasStore: ENABLE_EARTHMIND_STORE,
+  hasStore: ENABLE_TERRAFLOW_STORE,
   validApiKey: false,
   hasApiKey: false,
   loadingApiKey: true,
   checkHasStore: () => {
     checkHasStore().then((res) => {
       set({
-        hasStore: ENABLE_EARTHMIND_STORE && (res?.enabled ?? false),
+        hasStore: ENABLE_TERRAFLOW_STORE && (res?.enabled ?? false),
       });
     });
   },

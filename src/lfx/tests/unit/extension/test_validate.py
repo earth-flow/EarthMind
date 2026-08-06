@@ -38,7 +38,7 @@ def _component_source(*, with_build: bool = True) -> str:
     """Minimal Component-shaped source.
 
     Self-contained so the subprocess used by --execute-imports does not need
-    earthmind installed.
+    terraflow installed.
     """
     body = "    def build(self):\n        return None\n" if with_build else "    pass\n"
     return f"class Component:\n    pass\n\nclass OpenAIThing(Component):\n    display_name = 'X'\n{body}"
@@ -299,13 +299,13 @@ def test_default_validate_does_not_execute_malicious_side_effect(tmp_path: Path)
 
 
 def test_execute_imports_runs_in_subprocess_and_isolates_state(tmp_path: Path) -> None:
-    """Subprocess runs the bundle but does not inherit earthmind server state.
+    """Subprocess runs the bundle but does not inherit terraflow server state.
 
     Two assertions:
 
     1. A canary written by the bundle's import-time code DOES appear (proving
        the subprocess actually ran the module).
-    2. The subprocess does NOT inherit EARTHMIND_* env vars from the parent.
+    2. The subprocess does NOT inherit TERRAFLOW_* env vars from the parent.
     """
     canary = tmp_path / "canary.txt"
     secret_canary = tmp_path / "leaked_state.txt"
@@ -313,8 +313,8 @@ def test_execute_imports_runs_in_subprocess_and_isolates_state(tmp_path: Path) -
         "import os\n"
         "from pathlib import Path\n"
         f"Path({str(canary)!r}).write_text('triggered', encoding='utf-8')\n"
-        f"# Should be empty since EARTHMIND_* is filtered out:\n"
-        f"_state = os.environ.get('EARTHMIND_DATABASE_URL', '')\n"
+        f"# Should be empty since TERRAFLOW_* is filtered out:\n"
+        f"_state = os.environ.get('TERRAFLOW_DATABASE_URL', '')\n"
         f"if _state:\n"
         f"    Path({str(secret_canary)!r}).write_text(_state, encoding='utf-8')\n"
     )
@@ -328,16 +328,16 @@ def test_execute_imports_runs_in_subprocess_and_isolates_state(tmp_path: Path) -
             "component.py": _component_source(),
         },
     )
-    os.environ["EARTHMIND_DATABASE_URL"] = "sqlite:///parent-state"
+    os.environ["TERRAFLOW_DATABASE_URL"] = "sqlite:///parent-state"
     try:
         report = validate_extension(tmp_path, execute_imports=True)
     finally:
-        os.environ.pop("EARTHMIND_DATABASE_URL", None)
+        os.environ.pop("TERRAFLOW_DATABASE_URL", None)
 
     # The subprocess actually ran the side-effect module:
     assert canary.exists(), f"--execute-imports must invoke the bundle's modules. Got errors: {_codes(report)}"
-    # ...but did not inherit earthmind server state:
-    assert not secret_canary.exists(), "--execute-imports leaked EARTHMIND_* env vars into the bundle subprocess"
+    # ...but did not inherit terraflow server state:
+    assert not secret_canary.exists(), "--execute-imports leaked TERRAFLOW_* env vars into the bundle subprocess"
 
 
 def test_execute_imports_reports_failure(tmp_path: Path) -> None:

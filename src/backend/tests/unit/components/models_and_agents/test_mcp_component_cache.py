@@ -507,9 +507,9 @@ class TestMCPComponentCache(ComponentTestBaseWithoutClient):
         component.use_cache = False
 
         with (
-            patch("earthmind.api.v2.mcp.get_server") as mock_get_server,
+            patch("terraflow.api.v2.mcp.get_server") as mock_get_server,
             patch("lfx.services.deps.session_scope"),
-            patch("earthmind.services.database.models.user.crud.get_user_by_id") as mock_get_user,
+            patch("terraflow.services.database.models.user.crud.get_user_by_id") as mock_get_user,
         ):
             # Simulate server error
             mock_get_server.side_effect = Exception("Server connection failed")

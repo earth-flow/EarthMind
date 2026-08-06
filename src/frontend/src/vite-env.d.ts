@@ -22,8 +22,8 @@ interface ImportMetaEnv {
   readonly BACKEND_URL: string;
   readonly ACCESS_TOKEN_EXPIRE_SECONDS: string;
   readonly CI: string;
-  readonly EARTHMIND_AUTO_LOGIN: string;
-  readonly EARTHMIND_MCP_COMPOSER_ENABLED: string;
+  readonly TERRAFLOW_AUTO_LOGIN: string;
+  readonly TERRAFLOW_MCP_COMPOSER_ENABLED: string;
 }
 
 interface ImportMeta {

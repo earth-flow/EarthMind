@@ -159,7 +159,7 @@ def make_installed_pyproject_extension(parent: Path, distribution_name: str) -> 
     """Create a fake installed Extension whose manifest lives in pyproject.toml.
 
     Mirrors :func:`make_installed_extension` but exercises the
-    ``[tool.earthmind.extension]`` discovery path. ``files`` points at a
+    ``[tool.terraflow.extension]`` discovery path. ``files`` points at a
     real ``pyproject.toml`` containing a v0-shaped section so the
     installed-distribution discovery treats it as an Extension.
     """
@@ -170,15 +170,15 @@ def make_installed_pyproject_extension(parent: Path, distribution_name: str) -> 
 [project]
 name = "{distribution_name}"
 
-[tool.earthmind.extension]
+[tool.terraflow.extension]
 id = "{distribution_name}"
 version = "1.0.0"
 name = "{distribution_name}"
 
-[tool.earthmind.extension.lfx]
+[tool.terraflow.extension.lfx]
 compat = ["1"]
 
-[[tool.earthmind.extension.bundles]]
+[[tool.terraflow.extension.bundles]]
 name = "{bundle_name}"
 path = "components"
 """
@@ -191,7 +191,7 @@ path = "components"
 
 
 def make_installed_pyproject_no_extension(parent: Path, distribution_name: str) -> FakeDist:
-    """Fake distribution shipping pyproject.toml WITHOUT [tool.earthmind.extension].
+    """Fake distribution shipping pyproject.toml WITHOUT [tool.terraflow.extension].
 
     Used to assert that a stray pyproject.toml from an unrelated package is
     not mistakenly treated as a manifest.
@@ -213,7 +213,7 @@ def make_installed_pyproject_malformed_extension(
     parent: Path,
     distribution_name: str,
 ) -> FakeDist:
-    """Fake distribution shipping pyproject with [tool.earthmind.extension] missing required fields.
+    """Fake distribution shipping pyproject with [tool.terraflow.extension] missing required fields.
 
     The section exists (so the loader must classify it as a manifest-shipping
     distribution) but the required ``id`` / ``version`` / ``bundles`` keys are
@@ -227,7 +227,7 @@ def make_installed_pyproject_malformed_extension(
 [project]
 name = "{distribution_name}"
 
-[tool.earthmind.extension]
+[tool.terraflow.extension]
 # Intentionally missing id/version/lfx/bundles -- pydantic must reject.
 description = "incomplete"
 """,

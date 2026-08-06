@@ -1,61 +1,61 @@
 ---
-title: EarthMind architecture on Kubernetes
+title: Terraflow architecture on Kubernetes
 slug: /deployment-architecture
 ---
 
-There are two broad types of EarthMind deployments:
+There are two broad types of Terraflow deployments:
 
-* **EarthMind IDE (development)**: Deploy both the EarthMind visual editor (frontend) and API (backend). Typically, this is used for development environments where developers use the visual editor to create and manage flows before packaging and serving them through a production runtime deployment.
+* **Terraflow IDE (development)**: Deploy both the Terraflow visual editor (frontend) and API (backend). Typically, this is used for development environments where developers use the visual editor to create and manage flows before packaging and serving them through a production runtime deployment.
 
-    The EarthMind repository's example [`docker-compose.yml`](https://github.com/earthmind-ai/earthmind/blob/main/docker_example/docker-compose.yml) file builds a EarthMind IDE image.
+    The Terraflow repository's example [`docker-compose.yml`](https://github.com/terraflow-ai/terraflow/blob/main/docker_example/docker-compose.yml) file builds a Terraflow IDE image.
 
-    For information about IDE deployments on Kubernetes, see [Deploy the EarthMind development environment on Kubernetes](/deployment-kubernetes-dev).
+    For information about IDE deployments on Kubernetes, see [Deploy the Terraflow development environment on Kubernetes](/deployment-kubernetes-dev).
 
 
-* **EarthMind runtime (production)**: Deploy the EarthMind runtime for production flows, which is headless (backend only) service focused on serving the EarthMind API. This is used for production environments where flows are executed programmatically without the need for the visual editor. The server exposes your flows as endpoints, and then runs only the processes necessary to serve each flow.
+* **Terraflow runtime (production)**: Deploy the Terraflow runtime for production flows, which is headless (backend only) service focused on serving the Terraflow API. This is used for production environments where flows are executed programmatically without the need for the visual editor. The server exposes your flows as endpoints, and then runs only the processes necessary to serve each flow.
 
     An external PostgreSQL database is strongly recommended with this deployment type to improve scalability and reliability as compared to the default SQLite database.
 
-    For information about runtime deployments on Kubernetes, see [Deploy the EarthMind production environment on Kubernetes](/deployment-kubernetes-prod).
+    For information about runtime deployments on Kubernetes, see [Deploy the Terraflow production environment on Kubernetes](/deployment-kubernetes-prod).
 
     :::tip
-    You can start EarthMind in headless mode with the `EARTHMIND_BACKEND_ONLY` [environment variable](/environment-variables).
+    You can start Terraflow in headless mode with the `TERRAFLOW_BACKEND_ONLY` [environment variable](/environment-variables).
     :::
 
-You can also [deploy the EarthMind IDE and runtime on Docker](/deployment-docker).
+You can also [deploy the Terraflow IDE and runtime on Docker](/deployment-docker).
 
-## Benefits of deploying EarthMind on Kubernetes
+## Benefits of deploying Terraflow on Kubernetes
 
 Deploying on Kubernetes offers the following advantages:
 
-* **Scalability**: Kubernetes allows you to scale the EarthMind service to meet the demands of your workload.
-* **Availability and resilience**: Kubernetes provides built-in resilience features, such as automatic failover and self-healing, to ensure that the EarthMind service is always available.
-* **Security**: Kubernetes provides security features, such as role-based access control and network isolation, to protect the EarthMind service and its data.
-* **Portability**: Kubernetes is a portable platform, which means that you can deploy the EarthMind service to any Kubernetes cluster, on-premises or in the cloud.
+* **Scalability**: Kubernetes allows you to scale the Terraflow service to meet the demands of your workload.
+* **Availability and resilience**: Kubernetes provides built-in resilience features, such as automatic failover and self-healing, to ensure that the Terraflow service is always available.
+* **Security**: Kubernetes provides security features, such as role-based access control and network isolation, to protect the Terraflow service and its data.
+* **Portability**: Kubernetes is a portable platform, which means that you can deploy the Terraflow service to any Kubernetes cluster, on-premises or in the cloud.
 
-    EarthMind can be deployed on cloud platforms like AWS EKS, Google GKE, or Azure AKS. For more information, see the [EarthMind Helm charts repository](https://github.com/earthmind-ai/earthmind-helm-charts).
+    Terraflow can be deployed on cloud platforms like AWS EKS, Google GKE, or Azure AKS. For more information, see the [Terraflow Helm charts repository](https://github.com/terraflow-ai/terraflow-helm-charts).
 
-## EarthMind deployment
+## Terraflow deployment
 
-A typical EarthMind deployment includes:
+A typical Terraflow deployment includes:
 
-* **EarthMind services**: The EarthMind API and, for IDE deployments, the visual editor.
-* **Kubernetes cluster**: The Kubernetes cluster provides a platform for deploying and managing EarthMind and its supporting services.
-* **Persistent storage**: Persistent storage is used to store the EarthMind service's data, such as models and training data.
-* **Ingress controller**: The ingress controller provides a single entry point for traffic to the EarthMind service.
-* **Load balancer**: Balances traffic across multiple EarthMind replicas.
-* **Vector database**: If you are using EarthMind for RAG, you can integrate with the vector database in Astra Serverless.
+* **Terraflow services**: The Terraflow API and, for IDE deployments, the visual editor.
+* **Kubernetes cluster**: The Kubernetes cluster provides a platform for deploying and managing Terraflow and its supporting services.
+* **Persistent storage**: Persistent storage is used to store the Terraflow service's data, such as models and training data.
+* **Ingress controller**: The ingress controller provides a single entry point for traffic to the Terraflow service.
+* **Load balancer**: Balances traffic across multiple Terraflow replicas.
+* **Vector database**: If you are using Terraflow for RAG, you can integrate with the vector database in Astra Serverless.
 
-![EarthMind reference architecture on Kubernetes](/img/earthmind-reference-architecture.png)
+![Terraflow reference architecture on Kubernetes](/img/terraflow-reference-architecture.png)
 
 ## Environment isolation
 
-It is recommended to deploy and run separate development and production environments for EarthMind:
+It is recommended to deploy and run separate development and production environments for Terraflow:
 
 * Deploy the IDE in your development environment where your developers prototype and test new flows.
 * Deploy the runtime in your production environment to serve flows as standalone services.
 
-![EarthMind environments](/img/earthmind-env.png)
+![Terraflow environments](/img/terraflow-env.png)
 
 This separation is designed to enhance security, support an organized software development pipeline, and optimize infrastructure resource allocation:
 
@@ -67,6 +67,6 @@ This separation is designed to enhance security, support an organized software d
 
 ## Next steps
 
-* [Best practices for EarthMind on Kubernetes](/deployment-prod-best-practices)
-* [Deploy the EarthMind development environment on Kubernetes](/deployment-kubernetes-dev)
-* [Deploy the EarthMind production environment on Kubernetes](/deployment-kubernetes-prod)
+* [Best practices for Terraflow on Kubernetes](/deployment-prod-best-practices)
+* [Deploy the Terraflow development environment on Kubernetes](/deployment-kubernetes-dev)
+* [Deploy the Terraflow production environment on Kubernetes](/deployment-kubernetes-prod)

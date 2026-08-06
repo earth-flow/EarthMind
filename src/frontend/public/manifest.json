@@ -1,7 +1,7 @@
 {
-  "name": "EarthMind",
-  "short_name": "EarthMind",
-  "description": "EarthMind is a low-code builder that makes it easier to build powerful AIs that can use any API, model, or database.",
+  "name": "Terraflow",
+  "short_name": "Terraflow",
+  "description": "Terraflow is a low-code builder that makes it easier to build powerful AIs that can use any API, model, or database.",
   "icons": [
     {
       "src": "icons/32x32.png",

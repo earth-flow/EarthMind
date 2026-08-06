@@ -1,5 +1,5 @@
 ---
-description: "Guidelines for developing and maintaining EarthMind documentation using Docusaurus, including content structure, style, and deployment processes."
+description: "Guidelines for developing and maintaining Terraflow documentation using Docusaurus, including content structure, style, and deployment processes."
 globs:
   - "docs/**/*.{md,mdx}"
   - "docs/**/*.{js,jsx,ts,tsx}"
@@ -13,7 +13,7 @@ alwaysApply: false
 # Documentation Development Guidelines
 
 ## Purpose
-Guidelines for developing and maintaining EarthMind documentation using Docusaurus, including content structure, style, and deployment processes.
+Guidelines for developing and maintaining Terraflow documentation using Docusaurus, including content structure, style, and deployment processes.
 
 ---
 
@@ -44,11 +44,11 @@ docs/
 ├── docs/                    # Main documentation content
 │   ├── agents/              # Agent and MCP guides
 │   ├── get-started/         # Getting started guides
-│   ├── tutorials/           # EarthMind tutorials
+│   ├── tutorials/           # Terraflow tutorials
 │   ├── components/          # Component documentation
 │   ├── flows/               # Guides to build, run, and test flows
-│   ├── deployment/          # Guides for deploying and hosting a EarthMind server
-│   ├── develop/             # Guides for developing apps with EarthMind
+│   ├── deployment/          # Guides for deploying and hosting a Terraflow server
+│   ├── develop/             # Guides for developing apps with Terraflow
 │   ├── support/             # Help and release notes
 │   ├── contributing/        # Contribution guidelines
 │   ├── api-reference/       # API documentation
@@ -178,7 +178,7 @@ npm run serve     # Serve built site locally
 
 ### API examples
 ```bash
-make api_examples_local          # Run API sample files against a local EarthMind server
+make api_examples_local          # Run API sample files against a local Terraflow server
 make api_examples_local_syntax   # Syntax-check API sample files without executing them
 ```
 
@@ -211,9 +211,9 @@ make api_examples_local_syntax   # Syntax-check API sample files without executi
 - **Lists:** Use parallel structure
 
 ### Terminology
-- **EarthMind:** Always capitalize
-- **Component:** Capitalize when referring to EarthMind components
-- **Flow:** Capitalize when referring to EarthMind flows
+- **Terraflow:** Always capitalize
+- **Component:** Capitalize when referring to Terraflow components
+- **Flow:** Capitalize when referring to Terraflow flows
 - **API:** Always uppercase
 - **JSON:** Always uppercase
 

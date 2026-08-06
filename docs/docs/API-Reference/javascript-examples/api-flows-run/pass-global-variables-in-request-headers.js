@@ -1,13 +1,13 @@
-const url = `${process.env.EARTHMIND_SERVER_URL ?? ""}/api/v1/run/${process.env.FLOW_ID ?? ""}`;
+const url = `${process.env.TERRAFLOW_SERVER_URL ?? ""}/api/v1/run/${process.env.FLOW_ID ?? ""}`;
 
 const options = {
   method: 'POST',
   headers: {
     "Content-Type": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
-    "X-EARTHMIND-GLOBAL-VAR-OPENAI_API_KEY": `sk-...`,
-    "X-EARTHMIND-GLOBAL-VAR-USER_ID": `user123`,
-    "X-EARTHMIND-GLOBAL-VAR-ENVIRONMENT": `production`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
+    "X-TERRAFLOW-GLOBAL-VAR-OPENAI_API_KEY": `sk-...`,
+    "X-TERRAFLOW-GLOBAL-VAR-USER_ID": `user123`,
+    "X-TERRAFLOW-GLOBAL-VAR-ENVIRONMENT": `production`,
   },
   body: JSON.stringify({
   "input_value": "Tell me about something interesting!",

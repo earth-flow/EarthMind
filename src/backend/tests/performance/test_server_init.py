@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from earthmind.services.deps import get_settings_service
+from terraflow.services.deps import get_settings_service
 
 
 @pytest.fixture(autouse=True)
@@ -9,23 +9,23 @@ def setup_database_url(tmp_path, monkeypatch):
     """Setup a temporary database URL for testing."""
     settings_service = get_settings_service()
     db_path = tmp_path / "test_performance.db"
-    original_value = os.getenv("EARTHMIND_DATABASE_URL")
-    monkeypatch.delenv("EARTHMIND_DATABASE_URL", raising=False)
+    original_value = os.getenv("TERRAFLOW_DATABASE_URL")
+    monkeypatch.delenv("TERRAFLOW_DATABASE_URL", raising=False)
     test_db_url = f"sqlite:///{db_path}"
-    monkeypatch.setenv("EARTHMIND_DATABASE_URL", test_db_url)
+    monkeypatch.setenv("TERRAFLOW_DATABASE_URL", test_db_url)
     settings_service.set("database_url", test_db_url)
     yield
     # Restore original value if it existed
     if original_value is not None:
-        monkeypatch.setenv("EARTHMIND_DATABASE_URL", original_value)
+        monkeypatch.setenv("TERRAFLOW_DATABASE_URL", original_value)
         settings_service.set("database_url", original_value)
     else:
-        monkeypatch.delenv("EARTHMIND_DATABASE_URL", raising=False)
+        monkeypatch.delenv("TERRAFLOW_DATABASE_URL", raising=False)
 
 
 async def test_initialize_services():
     """Benchmark the initialization of services."""
-    from earthmind.services.utils import initialize_services
+    from terraflow.services.utils import initialize_services
 
     await initialize_services(fix_migration=False)
     settings_service = get_settings_service()
@@ -34,7 +34,7 @@ async def test_initialize_services():
 
 def test_setup_llm_caching():
     """Benchmark LLM caching setup."""
-    from earthmind.interface.utils import setup_llm_caching
+    from terraflow.interface.utils import setup_llm_caching
 
     setup_llm_caching()
     settings_service = get_settings_service()
@@ -43,8 +43,8 @@ def test_setup_llm_caching():
 
 async def test_initialize_super_user():
     """Benchmark super user initialization."""
-    from earthmind.initial_setup.setup import initialize_auto_login_default_superuser
-    from earthmind.services.utils import initialize_services
+    from terraflow.initial_setup.setup import initialize_auto_login_default_superuser
+    from terraflow.services.utils import initialize_services
 
     await initialize_services(fix_migration=False)
     await initialize_auto_login_default_superuser()
@@ -64,8 +64,8 @@ async def test_get_and_cache_all_types_dict():
 
 async def test_create_starter_projects():
     """Benchmark creation of starter projects."""
-    from earthmind.initial_setup.setup import create_or_update_starter_projects
-    from earthmind.services.utils import initialize_services
+    from terraflow.initial_setup.setup import create_or_update_starter_projects
+    from terraflow.services.utils import initialize_services
     from lfx.interface.components import get_and_cache_all_types_dict
 
     await initialize_services(fix_migration=False)
@@ -77,7 +77,7 @@ async def test_create_starter_projects():
 
 async def test_load_flows():
     """Benchmark loading flows from directory."""
-    from earthmind.initial_setup.setup import load_flows_from_directory
+    from terraflow.initial_setup.setup import load_flows_from_directory
 
     await load_flows_from_directory()
     settings_service = get_settings_service()

@@ -1,11 +1,11 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/monitor/messages`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/monitor/messages`;
 
 const options = {
   method: 'DELETE',
   headers: {
     "accept": `*/*`,
     "Content-Type": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
   body: JSON.stringify([
   "MESSAGE_ID_1",

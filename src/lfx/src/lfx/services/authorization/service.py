@@ -1,4 +1,4 @@
-"""Default authorization service for LFX (allows all; EarthMind or plugins provide enforcement)."""
+"""Default authorization service for LFX (allows all; Terraflow or plugins provide enforcement)."""
 
 from __future__ import annotations
 

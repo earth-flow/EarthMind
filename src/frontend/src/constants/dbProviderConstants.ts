@@ -3,7 +3,7 @@ import type { GlobalVariable } from "@/types/global_variables";
 // The stored value (env-var key) intentionally keeps its legacy name so
 // existing user installations continue to read the same global variable
 // after the UI rename from "Knowledge Backends" to "DB Providers".
-export const ACTIVE_DB_PROVIDER_VARIABLE = "EARTHMIND_KNOWLEDGE_BACKEND";
+export const ACTIVE_DB_PROVIDER_VARIABLE = "TERRAFLOW_KNOWLEDGE_BACKEND";
 
 export const OPENSEARCH_VARIABLES = {
   URL: "OPENSEARCH_URL",
@@ -83,7 +83,7 @@ export const DB_PROVIDER_OPTIONS: DBProviderOption[] = [
     id: "chroma",
     label: "Chroma Local",
     description:
-      "Local vector storage bundled with EarthMind. No additional configuration required.",
+      "Local vector storage bundled with Terraflow. No additional configuration required.",
     icon: "Chroma",
     status: "available",
     defaultEnabled: true,
@@ -169,7 +169,7 @@ export const DB_PROVIDER_OPTIONS: DBProviderOption[] = [
         variableKey: OPENSEARCH_VARIABLES.INDEX_NAME,
         required: true,
         isSecret: false,
-        placeholder: "earthmind_knowledge",
+        placeholder: "terraflow_knowledge",
       },
       {
         // LangChain's OpenSearchVectorSearch stores KB embeddings under
@@ -236,7 +236,7 @@ export const DB_PROVIDER_OPTIONS: DBProviderOption[] = [
         variableKey: MILVUS_VARIABLES.COLLECTION_NAME,
         required: true,
         isSecret: false,
-        placeholder: "earthmind_knowledge",
+        placeholder: "terraflow_knowledge",
       },
     ],
   },

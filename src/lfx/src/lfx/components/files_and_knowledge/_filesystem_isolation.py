@@ -1,6 +1,6 @@
 """Isolation configuration for the FileSystem tool.
 
-Single env var: ``EARTHMIND_FS_TOOL_BASE_DIR`` controls where on disk the tool
+Single env var: ``TERRAFLOW_FS_TOOL_BASE_DIR`` controls where on disk the tool
 sandboxes everything. The pepper file used to hash user_ids in isolated mode
 lives at ``<base>/.fs_pepper`` — derived, never separately configured.
 
@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-BASE_DIR_ENV = "EARTHMIND_FS_TOOL_BASE_DIR"
+BASE_DIR_ENV = "TERRAFLOW_FS_TOOL_BASE_DIR"
 
 DEFAULT_BASE_DIR_NAME = "fs_sandbox"
 DEFAULT_PEPPER_FILENAME = ".fs_pepper"

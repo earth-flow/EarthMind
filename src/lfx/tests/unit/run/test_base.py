@@ -453,7 +453,7 @@ class TestRunFlowSessionIdPropagation:
     must replicate that loop after assigning ``graph.session_id`` so components
     that read ``self.session_id`` from their input field (Memory.retrieve_messages
     etc.) actually see the configured value. Mirrors what
-    ``earthmind/api/utils/flow_utils.build_graph_from_data`` does for the playground.
+    ``terraflow/api/utils/flow_utils.build_graph_from_data`` does for the playground.
     """
 
     @staticmethod
@@ -516,7 +516,7 @@ class TestRunFlowSessionIdPropagation:
     async def test_session_id_does_not_overwrite_hardcoded_vertex_value(self, tmp_path):
         """If the flow JSON pinned session_id on the Memory component, the CLI must not clobber it.
 
-        Matches EarthMind's playground behavior: ``build_graph_from_data`` only writes
+        Matches Terraflow's playground behavior: ``build_graph_from_data`` only writes
         when ``raw_params.get("session_id")`` is falsy.
         """
         script_path = tmp_path / "test.py"
@@ -654,12 +654,12 @@ class TestRunFlowUserId:
 class TestRunFlowFallbackToEnvVars:
     """run_flow must plumb fallback_to_env_vars into ``graph.async_start``.
 
-    Without this, a earthmind ``DatabaseVariableService`` registered alongside
+    Without this, a terraflow ``DatabaseVariableService`` registered alongside
     ``database_service`` would raise ``variable not found`` for any
     ``load_from_db=True`` field whose user_id has no Variable row (e.g., the
     ceremonial UUID lfx auto-generates). The flag tells
     ``loading.update_params_with_load_from_db_fields`` to fall back to
-    ``os.environ`` when the DB lookup misses — same behavior as the earthmind
+    ``os.environ`` when the DB lookup misses — same behavior as the terraflow
     API path in ``processing.process.run_graph_internal``.
     """
 
@@ -703,7 +703,7 @@ class TestRunFlowFallbackToEnvVars:
 
     @pytest.mark.asyncio
     async def test_respects_settings_when_disabled(self, tmp_path):
-        """When EARTHMIND_FALLBACK_TO_ENV_VAR=false, the flag plumbs through as False."""
+        """When TERRAFLOW_FALLBACK_TO_ENV_VAR=false, the flag plumbs through as False."""
         script_path = tmp_path / "test.py"
         script_path.write_text("graph = None")
         captured: dict = {}
@@ -1420,7 +1420,7 @@ class TestMaterializeFlowDict:
     """Direct tests for ``_materialize_flow_dict`` — the core outer-envelope unwrap.
 
     This helper backs ``--upgrade-flow`` input handling.
-    Exported EarthMind flows look like ``{"name": ..., "data": {<graph>}}``; the inner graph is
+    Exported Terraflow flows look like ``{"name": ..., "data": {<graph>}}``; the inner graph is
     ``{"nodes": [...], "edges": [...]}``. This helper must unwrap the envelope, pass a bare graph
     through unchanged, unwrap exactly one level, and fail loudly (RunError) on bad/missing input.
     """

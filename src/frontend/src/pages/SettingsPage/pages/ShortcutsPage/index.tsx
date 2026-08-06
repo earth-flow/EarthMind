@@ -58,7 +58,7 @@ export default function ShortcutsPage() {
       const fixedName = toCamelCase(name);
       updateUniqueShortcut(fixedName, shortcut);
     });
-    localStorage.removeItem("earthmind-shortcuts");
+    localStorage.removeItem("terraflow-shortcuts");
   }
 
   return (

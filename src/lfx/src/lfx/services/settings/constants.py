@@ -1,7 +1,7 @@
 from pydantic import SecretStr
 
-DEFAULT_SUPERUSER = "earthmind"
-DEFAULT_SUPERUSER_PASSWORD = SecretStr("earthmind")
+DEFAULT_SUPERUSER = "terraflow"
+DEFAULT_SUPERUSER_PASSWORD = SecretStr("terraflow")
 
 VARIABLES_TO_GET_FROM_ENVIRONMENT = [
     "COMPOSIO_API_KEY",

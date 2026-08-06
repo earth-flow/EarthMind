@@ -2,8 +2,8 @@ import os
 
 import requests
 
-base_url = os.environ.get("EARTHMIND_URL") or os.environ.get("EARTHMIND_SERVER_URL", "http://127.0.0.1:7860")
-api_key = os.environ.get("EARTHMIND_API_KEY", "")
+base_url = os.environ.get("TERRAFLOW_URL") or os.environ.get("TERRAFLOW_SERVER_URL", "http://127.0.0.1:7860")
+api_key = os.environ.get("TERRAFLOW_API_KEY", "")
 flow_id = os.environ.get("FLOW_ID", "")
 
 response = requests.get(

@@ -1,6 +1,6 @@
-# Releasing EarthMind
+# Releasing Terraflow
 
-EarthMind follows a **release-when-ready** cadence, with each cycle typically lasting 4–6 weeks depending on QA and stabilization needs.
+Terraflow follows a **release-when-ready** cadence, with each cycle typically lasting 4–6 weeks depending on QA and stabilization needs.
 
 ## Goals
 
@@ -14,7 +14,7 @@ EarthMind follows a **release-when-ready** cadence, with each cycle typically la
 
 ### 1. OSS QA
 
-Create an OSS release candidate (RC) branch containing `earthmind` and any associated PyPI packages (e.g. `lfx`).
+Create an OSS release candidate (RC) branch containing `terraflow` and any associated PyPI packages (e.g. `lfx`).
 During this period:
 
 * QA is performed manually.
@@ -39,7 +39,7 @@ This step also usually lasts about a week.
 After QA and bugfixing are complete for both OSS and Desktop:
 
 * Final releases are cut from their respective RC branches.
-* Release timing is coordinated with EarthMind's DevRel team.
+* Release timing is coordinated with Terraflow's DevRel team.
 * For at least 24 hours after release, Discord, GitHub, and other support channels should be monitored for critical bug reports.
 
 ### 4. Release Artifacts
@@ -47,17 +47,17 @@ After QA and bugfixing are complete for both OSS and Desktop:
 The release workflow automatically publishes the following artifacts:
 
 * **PyPI Packages:**
-  * `earthmind` - Main package with all integrations
-  * `earthmind-base` - Core framework without integrations
+  * `terraflow` - Main package with all integrations
+  * `terraflow-base` - Core framework without integrations
   * `lfx` - Lightweight executor CLI
-  * `earthmind-sdk` - SDK for programmatic access (when updated)
+  * `terraflow-sdk` - SDK for programmatic access (when updated)
 
 * **Docker Images:**
-  * `earthmindai/earthmind` - Full EarthMind image
-  * `earthmindai/earthmind-backend` - Backend-only image (published independently)
-  * `earthmindai/earthmind-frontend` - Frontend-only image (published independently)
-  * `earthmindai/earthmind-ep` - Enterprise edition image (published independently)
-  * `earthmindai/earthmind-base` - Base image without integrations
+  * `terraflowai/terraflow` - Full Terraflow image
+  * `terraflowai/terraflow-backend` - Backend-only image (published independently)
+  * `terraflowai/terraflow-frontend` - Frontend-only image (published independently)
+  * `terraflowai/terraflow-ep` - Enterprise edition image (published independently)
+  * `terraflowai/terraflow-base` - Base image without integrations
 
 **Note:** Backend, frontend, and enterprise images are published separately from the main image and will be built even if the main version already exists on Docker Hub.
 
@@ -134,11 +134,11 @@ git merge --ff-only release-X.Y.Z      # Fast-forward main to include RC changes
 
 ## LFX Compatibility
 
-EarthMind and LFX share a **major.minor version line**. The compatibility contract is:
+Terraflow and LFX share a **major.minor version line**. The compatibility contract is:
 
-> **LFX X.Y.N is guaranteed compatible with any Flow exported from EarthMind X.Y.M.**
+> **LFX X.Y.N is guaranteed compatible with any Flow exported from Terraflow X.Y.M.**
 
-Patch releases (`N` and `M`) are independent — a patch to LFX does not require a EarthMind patch release, and vice versa.
+Patch releases (`N` and `M`) are independent — a patch to LFX does not require a Terraflow patch release, and vice versa.
 
 ### Version management
 
@@ -146,28 +146,28 @@ Patch releases (`N` and `M`) are independent — a patch to LFX does not require
 
 | Artifact | Version set |
 |---|---|
-| `earthmind` | `X.Y.Z` |
-| `earthmind-base` | `0.Y.Z` |
+| `terraflow` | `X.Y.Z` |
+| `terraflow-base` | `0.Y.Z` |
 | `lfx` | `X.Y.Z` |
 | frontend | `X.Y.Z` |
 
 ### Cutting an LFX patch release
 
-Use `scripts/release-lfx.sh <version>`. The script warns if the LFX minor version does not match the current EarthMind minor version, which would violate the compatibility contract. A warning is not a hard block — patch-only LFX releases within the same minor are expected and fine.
+Use `scripts/release-lfx.sh <version>`. The script warns if the LFX minor version does not match the current Terraflow minor version, which would violate the compatibility contract. A warning is not a hard block — patch-only LFX releases within the same minor are expected and fine.
 
 ### Implications for users
 
-Users can pin `lfx~=X.Y.0` in their `requirements.txt` to receive all compatible LFX patch releases for a given EarthMind minor.
+Users can pin `lfx~=X.Y.0` in their `requirements.txt` to receive all compatible LFX patch releases for a given Terraflow minor.
 
 ### Migrating from lfx 0.5.x to 1.10.0
 
-LFX was realigned from its standalone `0.5.x` line onto EarthMind's `major.minor` line, so the version jumps from `0.5.0` to `1.10.0` in a single step. This is a version-numbering change, not 95 minors of feature churn. The jump affects downstream pins, and neither pip nor uv will flag it — so it must be called out in the release announcement, not just here:
+LFX was realigned from its standalone `0.5.x` line onto Terraflow's `major.minor` line, so the version jumps from `0.5.0` to `1.10.0` in a single step. This is a version-numbering change, not 95 minors of feature churn. The jump affects downstream pins, and neither pip nor uv will flag it — so it must be called out in the release announcement, not just here:
 
 - `lfx==0.5.x` or `lfx<1.0` pins will **not** upgrade (intentional — those deployments stay put).
 - `lfx>=0.5,<1` pins will **not** upgrade.
 - `lfx>=0.5` with no upper bound **will** pull `1.10.0` on the next install — a major jump with no warning.
 
-Going forward, pin `lfx~=X.Y.0` (e.g. `lfx~=1.10.0`) so you track compatible patches for a given EarthMind minor without silently crossing minor lines.
+Going forward, pin `lfx~=X.Y.0` (e.g. `lfx~=1.10.0`) so you track compatible patches for a given Terraflow minor without silently crossing minor lines.
 
 ## Roles
 

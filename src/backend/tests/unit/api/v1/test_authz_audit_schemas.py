@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
-from earthmind.api.v1.authz_audit import AuthzAuditLogRead, AuthzAuditPage
+from terraflow.api.v1.authz_audit import AuthzAuditLogRead, AuthzAuditPage
 from pydantic import ValidationError
 
 

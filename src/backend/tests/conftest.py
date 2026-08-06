@@ -18,15 +18,15 @@ from blockbuster import blockbuster_ctx
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
-from earthmind.initial_setup.constants import STARTER_FOLDER_NAME
-from earthmind.main import create_app
-from earthmind.services.database.models.api_key.model import ApiKey, UnmaskedApiKeyRead
-from earthmind.services.database.models.flow.model import Flow, FlowCreate, FlowRead
-from earthmind.services.database.models.folder.model import Folder
-from earthmind.services.database.models.transactions.model import TransactionTable
-from earthmind.services.database.models.user.model import User, UserCreate, UserRead
-from earthmind.services.database.models.vertex_builds.crud import delete_vertex_builds_by_flow_id_unchecked
-from earthmind.services.deps import get_auth_service, get_db_service, session_scope
+from terraflow.initial_setup.constants import STARTER_FOLDER_NAME
+from terraflow.main import create_app
+from terraflow.services.database.models.api_key.model import ApiKey, UnmaskedApiKeyRead
+from terraflow.services.database.models.flow.model import Flow, FlowCreate, FlowRead
+from terraflow.services.database.models.folder.model import Folder
+from terraflow.services.database.models.transactions.model import TransactionTable
+from terraflow.services.database.models.user.model import User, UserCreate, UserRead
+from terraflow.services.database.models.vertex_builds.crud import delete_vertex_builds_by_flow_id_unchecked
+from terraflow.services.deps import get_auth_service, get_db_service, session_scope
 from lfx.components.input_output import ChatInput
 from lfx.graph import Graph
 from lfx.log.logger import logger
@@ -45,9 +45,9 @@ load_dotenv()
 @pytest.fixture(scope="session", autouse=True)
 def disable_rate_limiting():
     """Disable rate limiting for all tests to prevent 429 errors during test execution."""
-    os.environ["EARTHMIND_RATE_LIMIT_ENABLED"] = "false"
+    os.environ["TERRAFLOW_RATE_LIMIT_ENABLED"] = "false"
     yield
-    os.environ.pop("EARTHMIND_RATE_LIMIT_ENABLED", None)
+    os.environ.pop("TERRAFLOW_RATE_LIMIT_ENABLED", None)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -60,9 +60,9 @@ def disable_models_dev_refresh():
     running when the request lands. The bundled static model lists are used
     instead, which is also deterministic.
     """
-    os.environ["EARTHMIND_MODELS_DEV_REFRESH"] = "false"
+    os.environ["TERRAFLOW_MODELS_DEV_REFRESH"] = "false"
     yield
-    os.environ.pop("EARTHMIND_MODELS_DEV_REFRESH", None)
+    os.environ.pop("TERRAFLOW_MODELS_DEV_REFRESH", None)
 
 
 # TODO: Revert this to True once bb.functions[func].can_block_in("http/client.py", "_safe_read") is fixed
@@ -92,7 +92,7 @@ def blockbuster(request):
             (
                 bb.functions["os.stat"]
                 # TODO: make set_class_code async
-                .can_block_in("earthmind/custom/custom_component/component.py", "set_class_code")
+                .can_block_in("terraflow/custom/custom_component/component.py", "set_class_code")
                 # TODO: follow discussion in https://github.com/encode/httpx/discussions/3456
                 .can_block_in("httpx/_client.py", "_init_transport")
                 .can_block_in("rich/traceback.py", "_render_stack")
@@ -207,7 +207,7 @@ async def delete_transactions_by_flow_id(db: AsyncSession, flow_id: UUID):
 
 
 async def _delete_transactions_and_vertex_builds(session, flows: list[Flow]):
-    from earthmind.services.database.models.jobs.model import Job
+    from terraflow.services.database.models.jobs.model import Job
 
     flow_ids = [flow.id for flow in flows]
     for flow_id in flow_ids:
@@ -292,12 +292,12 @@ def load_flows_dir():
 
 @pytest.fixture(name="distributed_env")
 def _setup_env(monkeypatch):
-    monkeypatch.setenv("EARTHMIND_CACHE_TYPE", "redis")
-    monkeypatch.setenv("EARTHMIND_REDIS_HOST", "result_backend")
-    monkeypatch.setenv("EARTHMIND_REDIS_PORT", "6379")
-    monkeypatch.setenv("EARTHMIND_REDIS_DB", "0")
-    monkeypatch.setenv("EARTHMIND_REDIS_EXPIRE", "3600")
-    monkeypatch.setenv("EARTHMIND_REDIS_PASSWORD", "")
+    monkeypatch.setenv("TERRAFLOW_CACHE_TYPE", "redis")
+    monkeypatch.setenv("TERRAFLOW_REDIS_HOST", "result_backend")
+    monkeypatch.setenv("TERRAFLOW_REDIS_PORT", "6379")
+    monkeypatch.setenv("TERRAFLOW_REDIS_DB", "0")
+    monkeypatch.setenv("TERRAFLOW_REDIS_EXPIRE", "3600")
+    monkeypatch.setenv("TERRAFLOW_REDIS_PASSWORD", "")
     monkeypatch.setenv("FLOWER_UNAUTHENTICATED_API", "True")
     monkeypatch.setenv("BROKER_URL", "redis://result_backend:6379/0")
     monkeypatch.setenv("RESULT_BACKEND", "redis://result_backend:6379/0")
@@ -311,16 +311,16 @@ def distributed_client_fixture(
     distributed_env,  # noqa: ARG001
 ):
     # Here we load the .env from ../deploy/.env
-    from earthmind.core import celery_app
+    from terraflow.core import celery_app
 
     db_dir = tempfile.mkdtemp()
     try:
         db_path = Path(db_dir) / "test.db"
-        monkeypatch.setenv("EARTHMIND_DATABASE_URL", f"sqlite:///{db_path}")
-        monkeypatch.setenv("EARTHMIND_AUTO_LOGIN", "false")
-        # monkeypatch earthmind.services.task.manager.USE_CELERY to True
+        monkeypatch.setenv("TERRAFLOW_DATABASE_URL", f"sqlite:///{db_path}")
+        monkeypatch.setenv("TERRAFLOW_AUTO_LOGIN", "false")
+        # monkeypatch terraflow.services.task.manager.USE_CELERY to True
         # monkeypatch.setattr(manager, "USE_CELERY", True)
-        monkeypatch.setattr(celery_app, "celery_app", celery_app.make_celery("earthmind", Config))
+        monkeypatch.setattr(celery_app, "celery_app", celery_app.make_celery("terraflow", Config))
 
         # def get_session_override():
         #     return session
@@ -428,7 +428,7 @@ def json_loop_test():
 
 @pytest.fixture(autouse=True)
 def deactivate_tracing(monkeypatch):
-    monkeypatch.setenv("EARTHMIND_DEACTIVATE_TRACING", "true")
+    monkeypatch.setenv("TERRAFLOW_DEACTIVATE_TRACING", "true")
     yield
     monkeypatch.undo()
 
@@ -438,14 +438,14 @@ def disable_telemetry_writer(monkeypatch):
     # Tests assert on freshly-written transactions / vertex_builds rows. The
     # batched writer is a production optimization; in tests we want the
     # synchronous legacy DB path so reads-after-writes are visible.
-    monkeypatch.setenv("EARTHMIND_TELEMETRY_WRITER_ENABLED", "false")
+    monkeypatch.setenv("TERRAFLOW_TELEMETRY_WRITER_ENABLED", "false")
     yield
     monkeypatch.undo()
 
 
 @pytest.fixture
 def use_noop_session(monkeypatch):
-    monkeypatch.setenv("EARTHMIND_USE_NOOP_DATABASE", "1")
+    monkeypatch.setenv("TERRAFLOW_USE_NOOP_DATABASE", "1")
     # Optionally patch the Settings object if needed
     # from lfx.services.settings.base import Settings
     # monkeypatch.setattr(Settings, "use_noop_database", True)
@@ -468,15 +468,15 @@ async def client_fixture(
         def init_app():
             db_dir = tempfile.mkdtemp()
             db_path = Path(db_dir) / "test.db"
-            monkeypatch.setenv("EARTHMIND_DATABASE_URL", f"sqlite:///{db_path}")
-            monkeypatch.setenv("EARTHMIND_AUTO_LOGIN", "false")
+            monkeypatch.setenv("TERRAFLOW_DATABASE_URL", f"sqlite:///{db_path}")
+            monkeypatch.setenv("TERRAFLOW_AUTO_LOGIN", "false")
             monkeypatch.setenv("DO_NOT_TRACK", "true")
             if "load_flows" in request.keywords:
                 shutil.copyfile(
                     pytest.BASIC_EXAMPLE_PATH, Path(load_flows_dir) / "c54f9130-f2fa-4a3e-b22a-3856d946351b.json"
                 )
-                monkeypatch.setenv("EARTHMIND_LOAD_FLOWS_PATH", load_flows_dir)
-                monkeypatch.setenv("EARTHMIND_AUTO_LOGIN", "true")
+                monkeypatch.setenv("TERRAFLOW_LOAD_FLOWS_PATH", load_flows_dir)
+                monkeypatch.setenv("TERRAFLOW_AUTO_LOGIN", "true")
             # Clear the services cache
             from lfx.services.manager import get_service_manager
 
@@ -504,7 +504,7 @@ async def client_fixture(
 
 @pytest.fixture
 def runner(tmp_path):
-    env = {"EARTHMIND_DATABASE_URL": f"sqlite:///{tmp_path}/test.db"}
+    env = {"TERRAFLOW_DATABASE_URL": f"sqlite:///{tmp_path}/test.db"}
     return CliRunner(env=env)
 
 

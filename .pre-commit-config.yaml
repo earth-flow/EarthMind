@@ -29,7 +29,7 @@ repos:
         exclude: ^docs/.*/API-Reference/python-examples/
       - id: validate-migrations
         name: Validate Alembic Migrations (Expand-Contract)
-        entry: python src/backend/base/earthmind/alembic/migration_validator.py
+        entry: python src/backend/base/terraflow/alembic/migration_validator.py
         language: python
         files: (alembic|migrations)/versions/.*\.py$
         additional_dependencies: [sqlalchemy, alembic]
@@ -58,19 +58,19 @@ repos:
         name: BUNDLE_API.md changelog gate
         entry: python scripts/migrate/check_bundle_api_changelog.py
         language: system
-        files: ^(BUNDLE_API\.md|src/lfx/src/lfx/extension/(manifest|schema|errors|discovery|registry|reload|bundle_registry|validate|__init__)\.py|src/lfx/src/lfx/extension/loader/(__init__|_orchestrator|_plugins|_types)\.py|src/lfx/src/lfx/extension/migration/schema\.py|src/backend/base/earthmind/api/v1/extensions\.py)$
+        files: ^(BUNDLE_API\.md|src/lfx/src/lfx/extension/(manifest|schema|errors|discovery|registry|reload|bundle_registry|validate|__init__)\.py|src/lfx/src/lfx/extension/loader/(__init__|_orchestrator|_plugins|_types)\.py|src/lfx/src/lfx/extension/migration/schema\.py|src/backend/base/terraflow/api/v1/extensions\.py)$
         pass_filenames: false
       - id: extension-router-trust
         name: Extension router trust - no install/uninstall under /api/v1/extensions
         entry: python scripts/migrate/check_router_trust.py
         language: system
-        files: ^src/backend/base/earthmind/api/.*\.py$
+        files: ^src/backend/base/terraflow/api/.*\.py$
         pass_filenames: false
       - id: component-env-writes
         name: Components must not write to os.environ (process-global; bleeds across requests)
         entry: python scripts/lint/check_component_env_writes.py
         language: system
-        files: ^(src/lfx/src/lfx/components/.*\.py|src/backend/base/earthmind/components/.*\.py|src/bundles/.*\.py)$
+        files: ^(src/lfx/src/lfx/components/.*\.py|src/backend/base/terraflow/components/.*\.py|src/bundles/.*\.py)$
         pass_filenames: false
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
@@ -99,7 +99,7 @@ repos:
         name: Validate Starter Project Templates
         entry: uv run python src/backend/tests/unit/template/test_starter_projects.py
         language: system
-        files: ^src/backend/base/earthmind/initial_setup/starter_projects/.*\.json$
+        files: ^src/backend/base/terraflow/initial_setup/starter_projects/.*\.json$
         pass_filenames: false
         args: [--security-check]
       - id: check-deprecated-imports

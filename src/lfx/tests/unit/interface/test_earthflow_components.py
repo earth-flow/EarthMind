@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import sys
 from typing import Any
 from unittest.mock import AsyncMock, patch
 
 from lfx.custom.utils import create_component_template
 from lfx.interface.earthflow_components import (
     EARTHFLOW_ASSISTANT_TOOLS_CATEGORY,
+    _terrabox_categories_seen,
     apply_earthflow_component_policy,
+    refresh_terrabox_components_cache,
 )
 from lfx.interface.earthflow_terrabox import (
     TerraboxToolSpec,
@@ -348,123 +349,122 @@ async def test_terrabox_reserved_frontend_field_names_are_aliased_without_changi
     assert captured["json"] == {"inputs": {"beta": 0.42}}
 
 
-def _write_fake_terrabox_package(tmp_path):
-    src = tmp_path / "src"
-    package = src / "terrabox"
-    core = package / "core"
-    toolkits = package / "toolkits"
-    core.mkdir(parents=True)
-    toolkits.mkdir(parents=True)
-    (package / "__init__.py").write_text("")
-    (core / "__init__.py").write_text("")
-    (toolkits / "__init__.py").write_text("")
-    (core / "registry.py").write_text(
-        """
-_TOOL_SPECS = []
+def _fake_tool(slug: str) -> dict[str, Any]:
+    return {
+        "slug": slug,
+        "name": slug,
+        "description": slug,
+        "parameters": {"type": "object", "properties": {}},
+        "requires_connection": False,
+    }
 
 
-class ToolSpec:
-    def __init__(
-        self,
-        *,
-        slug,
-        name,
-        description,
-        parameters,
-        requires_connection=False,
-        required_scopes=None,
-    ):
-        self.slug = slug
-        self.name = name
-        self.description = description
-        self.parameters = parameters
-        self.requires_connection = requires_connection
-        self.required_scopes = required_scopes
+def _fake_toolkit(slug: str, tool_slugs: list[str]) -> dict[str, Any]:
+    return {
+        "slug": slug,
+        "name": slug,
+        "description": "",
+        "status": "active",
+        "tools": [_fake_tool(tool_slug) for tool_slug in tool_slugs],
+    }
 
 
-class _Registry:
-    def clear(self):
-        _TOOL_SPECS.clear()
+def _fake_toolkits_response() -> list[dict[str, Any]]:
+    """Mimics the body of GET /v1/sdk/toolkits for a handful of toolkits."""
+    return [
+        _fake_toolkit("geo_basic", ["geo_basic.distance"]),
+        _fake_toolkit("geopatch", ["geopatch.train_init", "geopatch.generate_seg"]),
+        _fake_toolkit(
+            "geo_perception",
+            [
+                "geo_perception.vlm_analyze",
+                "geo_perception.sam2_segment",
+                "geo_perception.remoteclip_analysis",
+                "geo_perception.strip_rcnn_detect",
+                "geo_perception.remotesam",
+                "geo_perception.instructsam",
+                "geo_perception.draw_bboxes",
+                "geo_perception.add_text",
+                "geo_perception.ocr_extract",
+                "geo_perception.bbox_expand",
+                "geo_perception.bbox_to_centroid",
+                "geo_perception.centroid_distance_extremes",
+                "geo_perception.bbox_area",
+            ],
+        ),
+        # A toolkit no Terraflow code has ever heard of -- stands in for
+        # Terrabox shipping a brand-new toolkit after Terraflow was deployed.
+        _fake_toolkit("brand_new_toolkit", ["brand_new_toolkit.frobnicate"]),
+    ]
 
 
-registry = _Registry()
+class _FakeToolkitsResponse:
+    def __init__(self, payload: list[dict[str, Any]]) -> None:
+        self._payload = payload
 
-
-def list_tools():
-    return list(_TOOL_SPECS)
-"""
-    )
-    (package / "extensions.py").write_text(
-        """
-from terrabox.core.registry import _TOOL_SPECS
-
-
-class Registrar:
-    def toolkit(self, **kwargs):
+    def raise_for_status(self) -> None:
         return None
 
-    def tool(self, spec, handler):
-        _TOOL_SPECS.append(spec)
-"""
-    )
-
-    toolkit_slugs = {
-        "geobasic": ["geo_basic.distance"],
-        "geopatch": ["geopatch.train_init", "geopatch.generate_seg"],
-        "geo_perception": [
-            "geo_perception.vlm_analyze",
-            "geo_perception.sam2_segment",
-            "geo_perception.remoteclip_analysis",
-            "geo_perception.strip_rcnn_detect",
-            "geo_perception.remotesam",
-            "geo_perception.instructsam",
-            "geo_perception.draw_bboxes",
-            "geo_perception.add_text",
-            "geo_perception.ocr_extract",
-            "geo_perception.bbox_expand",
-            "geo_perception.bbox_to_centroid",
-            "geo_perception.centroid_distance_extremes",
-            "geo_perception.bbox_area",
-        ],
-    }
-    for module_name, slugs in toolkit_slugs.items():
-        registrations = "\n".join(
-            (
-                "    registrar.tool("
-                f"ToolSpec(slug={slug!r}, name={slug!r}, description={slug!r}, "
-                "parameters={'type': 'object', 'properties': {}}, requires_connection=False), "
-                "lambda arguments, context, account: {})"
-            )
-            for slug in slugs
-        )
-        (toolkits / f"{module_name}.py").write_text(
-            f"""
-from terrabox.core.registry import ToolSpec
+    def json(self) -> list[dict[str, Any]]:
+        return self._payload
 
 
-def setup(registrar):
-    registrar.toolkit(name={module_name!r}, description='', version='0')
-{registrations}
-"""
-        )
-    return src
+def _mock_terrabox_toolkits_endpoint(monkeypatch, payload: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    """Stubs requests.get for GET /v1/sdk/toolkits and returns the captured call kwargs."""
+    captured: dict[str, Any] = {}
+
+    def fake_get(url: str, *, headers: dict[str, str], timeout: int):
+        captured.update({"url": url, "headers": headers, "timeout": timeout})
+        return _FakeToolkitsResponse(payload if payload is not None else _fake_toolkits_response())
+
+    monkeypatch.setenv("TERRALINK_API_KEY", "test-key")
+    monkeypatch.setattr("requests.get", fake_get)
+    return captured
 
 
-def _drop_fake_terrabox_modules(monkeypatch):
-    for name in list(sys.modules):
-        if name == "terrabox" or name.startswith("terrabox."):
-            monkeypatch.delitem(sys.modules, name, raising=False)
+def test_load_terrabox_tool_specs_calls_sdk_toolkits_endpoint_with_api_key(monkeypatch):
+    captured = _mock_terrabox_toolkits_endpoint(monkeypatch)
+    monkeypatch.setenv("TERRALINK_BASE_URL", "http://terrabox.local")
+
+    load_terrabox_tool_specs()
+
+    assert captured["url"] == "http://terrabox.local/v1/sdk/toolkits"
+    assert captured["headers"] == {"X-API-Key": "test-key"}
 
 
-def test_default_terrabox_tool_filter_exposes_lightweight_remaining_tools(tmp_path, monkeypatch):
-    terrabox_src = _write_fake_terrabox_package(tmp_path)
-    _drop_fake_terrabox_modules(monkeypatch)
+def _fail_if_called(*_args, **_kwargs):
+    msg = "requests.get should not be called when TERRALINK_API_KEY is unset"
+    raise AssertionError(msg)
 
-    specs = load_terrabox_tool_specs(
-        terrabox_src=terrabox_src,
-        include_toolkits={"geo_basic", "geopatch", "geo_perception"},
-        exclude_toolkits=set(),
-    )
+
+def test_load_terrabox_tool_specs_returns_empty_without_api_key(monkeypatch):
+    monkeypatch.delenv("TERRALINK_API_KEY", raising=False)
+    monkeypatch.setattr("requests.get", _fail_if_called)
+
+    assert load_terrabox_tool_specs() == []
+
+
+def test_load_terrabox_tool_specs_includes_new_toolkits_automatically(monkeypatch):
+    """A toolkit absent from every allow/deny list must still come through.
+
+    This is the "automatic" behavior this refactor exists for: discovery is a
+    live API call, and the default policy is "everything Terrabox reports
+    minus DEFAULT_EXCLUDED_TERRABOX_TOOLKITS", not a hardcoded allowlist --
+    so a brand-new Terrabox toolkit doesn't need an Terraflow code change to
+    show up.
+    """
+    _mock_terrabox_toolkits_endpoint(monkeypatch)
+
+    specs = load_terrabox_tool_specs()
+    slugs = {spec.slug for spec in specs}
+
+    assert "brand_new_toolkit.frobnicate" in slugs
+
+
+def test_default_terrabox_tool_filter_exposes_lightweight_remaining_tools(monkeypatch):
+    _mock_terrabox_toolkits_endpoint(monkeypatch)
+
+    specs = load_terrabox_tool_specs(include_toolkits={"geo_basic", "geopatch", "geo_perception"})
     slugs = {spec.slug for spec in specs}
 
     assert "geo_basic.distance" in slugs
@@ -481,16 +481,49 @@ def test_default_terrabox_tool_filter_exposes_lightweight_remaining_tools(tmp_pa
     assert "geo_perception.instructsam" not in slugs
 
 
-def test_terrabox_tool_slug_allowlist_and_denylist_precisely_filter_tools(tmp_path, monkeypatch):
-    terrabox_src = _write_fake_terrabox_package(tmp_path)
-    _drop_fake_terrabox_modules(monkeypatch)
+def test_terrabox_tool_slug_allowlist_and_denylist_precisely_filter_tools(monkeypatch):
+    _mock_terrabox_toolkits_endpoint(monkeypatch)
     monkeypatch.setenv("EARTHFLOW_TERRABOX_TOOLS", "geo_basic.distance,geo_perception.bbox_area")
     monkeypatch.setenv("EARTHFLOW_TERRABOX_EXCLUDE_TOOLS", "geo_basic.distance")
 
-    specs = load_terrabox_tool_specs(
-        terrabox_src=terrabox_src,
-        include_toolkits={"geo_basic", "geopatch", "geo_perception"},
-        exclude_toolkits=set(),
-    )
+    specs = load_terrabox_tool_specs(include_toolkits={"geo_basic", "geopatch", "geo_perception"})
 
     assert [spec.slug for spec in specs] == ["geo_perception.bbox_area"]
+
+
+def test_refresh_terrabox_components_cache_is_a_noop_before_the_cache_is_built(monkeypatch):
+    from lfx.interface.components import component_cache
+
+    monkeypatch.setattr(component_cache, "all_types_dict", None)
+
+    assert refresh_terrabox_components_cache(terrabox_tools=[_distance_spec()]) == 0
+
+
+def test_refresh_terrabox_components_cache_merges_new_and_drops_stale_toolkit_categories(monkeypatch):
+    from lfx.interface.components import component_cache
+
+    # Seed a base cache containing an unrelated native category plus a stale
+    # Terrabox toolkit category from a previous refresh -- that category is
+    # tracked in _terrabox_categories_seen (mirroring what
+    # apply_earthflow_component_policy would have left behind at startup)
+    # but the "live" tool set passed to refresh below no longer reports it,
+    # simulating a toolkit that disappeared from Terrabox.
+    monkeypatch.setattr(
+        component_cache,
+        "all_types_dict",
+        {
+            "input_output": {"ChatInput": {"display_name": "Chat Input"}},
+            "earth_sci": {"TerraboxEarthSciCalculateAti": {"display_name": "Calculate ATI"}},
+        },
+    )
+    _terrabox_categories_seen.clear()
+    _terrabox_categories_seen.add("earth_sci")
+
+    count = refresh_terrabox_components_cache(terrabox_tools=[_distance_spec()])
+
+    assert count == 1
+    assert "TerraboxGeoBasicDistance" in component_cache.all_types_dict["geo_basic"]
+    # The stale toolkit category (no longer reported) is removed...
+    assert "earth_sci" not in component_cache.all_types_dict
+    # ...while an unrelated native category is left untouched.
+    assert "ChatInput" in component_cache.all_types_dict["input_output"]

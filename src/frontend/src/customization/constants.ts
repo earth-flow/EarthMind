@@ -1,4 +1,4 @@
-//EarthMind Desktop Base URL
+//Terraflow Desktop Base URL
 export const baseURL = import.meta.env.BACKEND_URL || "";
 
 export const customDefaultShortcuts = [

@@ -1,7 +1,7 @@
 """JSON Schema generation and export for the Extension manifest.
 
 The published schema lives at :data:`~lfx.extension.manifest.EXTENSION_SCHEMA_URL`
-(``schemas.earthmind.org/extension/v1.json``).  This module is the source of
+(``schemas.terraflow.org/extension/v1.json``).  This module is the source of
 truth for what gets uploaded there.
 
 Two consumers:
@@ -78,7 +78,7 @@ def build_schema() -> dict[str, Any]:
     )
     schema["$schema"] = JSON_SCHEMA_DIALECT
     schema["$id"] = EXTENSION_SCHEMA_URL
-    schema["title"] = "EarthMind Extension Manifest (v1)"
+    schema["title"] = "Terraflow Extension Manifest (v1)"
 
     deferred_names = _public_deferred_names()
     deferred_docs: dict[str, str] = {}
@@ -96,12 +96,12 @@ def build_schema() -> dict[str, Any]:
     schema["x-deferred-fields"] = deferred_docs
 
     schema["description"] = (
-        "Schema for the v0 EarthMind Extension manifest. "
+        "Schema for the v0 Terraflow Extension manifest. "
         "Reserved field names that are deferred to a future milestone "
         "are absent from this schema and are listed under ``x-deferred-fields``; "
         "manifests that set them are rejected via ``additionalProperties: false``. "
-        "See https://docs.earthmind.org/extensions-manifest for the field-by-field reference "
-        "and https://docs.earthmind.org/extensions-author-guide for the author's guide."
+        "See https://docs.terraflow.org/extensions-manifest for the field-by-field reference "
+        "and https://docs.terraflow.org/extensions-author-guide for the author's guide."
     )
     return schema
 

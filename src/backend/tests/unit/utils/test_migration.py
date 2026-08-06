@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 import sqlalchemy as sa
-from earthmind.utils.migration import column_exists, constraint_exists, foreign_key_exists, table_exists
+from terraflow.utils.migration import column_exists, constraint_exists, foreign_key_exists, table_exists
 
 
 class TestTableExists:

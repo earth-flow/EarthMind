@@ -7,7 +7,7 @@ const uploadPath = process.env.SAMPLE_UPLOAD_FILE || defaultUpload;
 const uploadBuf = fs.readFileSync(uploadPath);
 const uploadName = path.basename(uploadPath);
 
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v2/files`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v2/files`;
 
 const formData = new FormData();
 formData.append("file", new Blob([uploadBuf]), uploadName);
@@ -16,7 +16,7 @@ const options = {
   method: "POST",
   headers: {
     accept: "application/json",
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
   body: formData,
 };

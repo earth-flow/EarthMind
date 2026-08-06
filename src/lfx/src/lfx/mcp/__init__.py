@@ -1,7 +1,7 @@
-"""EarthMind MCP Client — REST API-based MCP server for operating EarthMind.
+"""Terraflow MCP Client — REST API-based MCP server for operating Terraflow.
 
-Standalone MCP server that connects to a running EarthMind instance via REST API.
-Requires no internal EarthMind services — just a URL and credentials.
+Standalone MCP server that connects to a running Terraflow instance via REST API.
+Requires no internal Terraflow services — just a URL and credentials.
 
 Usage:
     python -m lfx.mcp

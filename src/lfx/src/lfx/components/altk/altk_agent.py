@@ -76,7 +76,7 @@ class ALTKAgentComponent(ALTKBaseAgentComponent):
 
     display_name: str = "ALTK Agent"
     description: str = "Advanced agent with both pre-tool validation and post-tool processing capabilities."
-    documentation: str = "https://docs.earthmind.org/bundles-altk"
+    documentation: str = "https://docs.terraflow.org/bundles-altk"
     icon = "zap"
     beta = True
     name = "ALTK Agent"

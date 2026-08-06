@@ -1,6 +1,6 @@
-"""Unit tests for earthmind_sdk.testing and RunResponse helpers.
+"""Unit tests for terraflow_sdk.testing and RunResponse helpers.
 
-Uses respx to mock HTTP so no live EarthMind instance is needed.
+Uses respx to mock HTTP so no live Terraflow instance is needed.
 """
 # pragma: allowlist secret -- all credentials in this file are fake test data
 
@@ -9,17 +9,17 @@ from __future__ import annotations
 import httpx
 import respx
 from _pytest.config.argparsing import Parser
-from earthmind_sdk.client import AsyncEarthMindClient, EarthMindClient
-from earthmind_sdk.models import RunOutput, RunResponse
-from earthmind_sdk.testing import AsyncFlowRunner, FlowRunner, pytest_addoption
+from terraflow_sdk.client import AsyncTerraflowClient, TerraflowClient
+from terraflow_sdk.models import RunOutput, RunResponse
+from terraflow_sdk.testing import AsyncFlowRunner, FlowRunner, pytest_addoption
 
-_BASE = "http://earthmind.test"
+_BASE = "http://terraflow.test"
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
 
-# Minimal RunResponse payload matching the standard EarthMind chat shape
+# Minimal RunResponse payload matching the standard Terraflow chat shape
 _CHAT_RUN_RESPONSE = {
     "session_id": "sess-abc",
     "outputs": [
@@ -89,12 +89,12 @@ _MULTI_RUN_RESPONSE = {
 _EMPTY_RUN_RESPONSE = {"session_id": None, "outputs": []}
 
 
-def _sync_client() -> EarthMindClient:
-    return EarthMindClient(base_url=_BASE, api_key="test-key")  # pragma: allowlist secret
+def _sync_client() -> TerraflowClient:
+    return TerraflowClient(base_url=_BASE, api_key="test-key")  # pragma: allowlist secret
 
 
-def _async_client() -> AsyncEarthMindClient:
-    return AsyncEarthMindClient(base_url=_BASE, api_key="test-key")  # pragma: allowlist secret
+def _async_client() -> AsyncTerraflowClient:
+    return AsyncTerraflowClient(base_url=_BASE, api_key="test-key")  # pragma: allowlist secret
 
 
 # ---------------------------------------------------------------------------
@@ -289,23 +289,23 @@ def test_flow_runner_accepts_uuid():
 
 
 def test_flow_runner_and_async_runner_are_importable():
-    """FlowRunner and AsyncFlowRunner can be imported from earthmind_sdk.testing."""
-    from earthmind_sdk.testing import AsyncFlowRunner as ImportedAsync
-    from earthmind_sdk.testing import FlowRunner as ImportedSync
+    """FlowRunner and AsyncFlowRunner can be imported from terraflow_sdk.testing."""
+    from terraflow_sdk.testing import AsyncFlowRunner as ImportedAsync
+    from terraflow_sdk.testing import FlowRunner as ImportedSync
 
     assert ImportedSync is FlowRunner
     assert ImportedAsync is AsyncFlowRunner
 
 
 def test_pytest_addoption_registers_options(pytestconfig):
-    """The plugin registers all --earthmind-* options (verified via public getoption API)."""
+    """The plugin registers all --terraflow-* options (verified via public getoption API)."""
     # getoption() returns None for unset options; raises ValueError if the
     # option was never registered -- so a clean return proves registration.
     for name in (
-        "--earthmind-url",
-        "--earthmind-env",
-        "--earthmind-api-key",
-        "--earthmind-environments-file",
+        "--terraflow-url",
+        "--terraflow-env",
+        "--terraflow-api-key",
+        "--terraflow-environments-file",
     ):
         assert pytestconfig.getoption(name) is None, f"Option {name!r} missing or has unexpected default"
 

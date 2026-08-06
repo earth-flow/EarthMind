@@ -218,7 +218,7 @@ def test_manifest_carries_schema_pointer(tmp_path: Path) -> None:
     init_extension(_options(target))
     payload = (target / "extension.json").read_text(encoding="utf-8")
     assert '"$schema"' in payload
-    assert "schemas.earthmind.org/extension/v1.json" in payload
+    assert "schemas.terraflow.org/extension/v1.json" in payload
 
 
 def test_init_template_regexes_match_manifest_schema() -> None:
@@ -272,6 +272,6 @@ def test_scaffolded_pyproject_is_pip_installable(tmp_path: Path) -> None:
     assert data["build-system"]["build-backend"] == "setuptools.build_meta"
     assert data["project"]["name"] == "lfx-my-ext"
     assert data["project"]["version"] == "0.1.0"
-    # The [tool.earthmind.extension] section points back at the manifest so
+    # The [tool.terraflow.extension] section points back at the manifest so
     # the installed wheel is discoverable by lfx.extension.discovery.
-    assert data["tool"]["earthmind"]["extension"]["manifest"] == "extension.json"
+    assert data["tool"]["terraflow"]["extension"]["manifest"] == "extension.json"

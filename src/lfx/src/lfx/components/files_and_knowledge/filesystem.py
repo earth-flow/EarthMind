@@ -67,11 +67,11 @@ RESERVED_SEGMENTS: tuple[str, ...] = (".lfsig", ".components")
 def _default_config_dir() -> Path:
     """Pick a sensible config dir when no env var is set.
 
-    Operators set ``EARTHMIND_FS_TOOL_BASE_DIR`` / ``EARTHMIND_FS_TOOL_PEPPER_PATH``
+    Operators set ``TERRAFLOW_FS_TOOL_BASE_DIR`` / ``TERRAFLOW_FS_TOOL_PEPPER_PATH``
     explicitly in any real deployment; this fallback exists so the OSS desktop
     install just works without any setup.
     """
-    return Path.home() / ".earthmind" / "fs_tool"
+    return Path.home() / ".terraflow" / "fs_tool"
 
 
 MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
@@ -417,7 +417,7 @@ class FileSystemToolComponent(Component):
                 "Resolves under <BASE_DIR>/shared/<sub_path>/ when AUTO_LOGIN=True "
                 "(single-user / desktop) or under <BASE_DIR>/users/<your-namespace>/<sub_path>/ "
                 "when AUTO_LOGIN=False (multi-user, per-user isolation). "
-                "BASE_DIR is operator-controlled via EARTHMIND_FS_TOOL_BASE_DIR."
+                "BASE_DIR is operator-controlled via TERRAFLOW_FS_TOOL_BASE_DIR."
             ),
         ),
         BoolInput(
@@ -699,7 +699,7 @@ class FileSystemToolComponent(Component):
         treat all of those as "anonymous" — the isolation mode decides what to
         do with that information.
 
-        Why we filter ``"none"`` / ``"null"``: EarthMind's ``PlaceholderGraph``
+        Why we filter ``"none"`` / ``"null"``: Terraflow's ``PlaceholderGraph``
         stringifies a missing user as ``"None"`` rather than the Python
         ``None`` value, so a naive truthiness check would mistake "no user" for
         a real user named "None" and create a spurious shared namespace.
@@ -801,8 +801,8 @@ class FileSystemToolComponent(Component):
             msg = (
                 f"Cannot create shared workspace at {shared_root}: "
                 f"{exc.strerror or exc}. "
-                f"Check that EARTHMIND_FS_TOOL_BASE_DIR ({config.base_dir}) is writable "
-                f"by the EarthMind process user."
+                f"Check that TERRAFLOW_FS_TOOL_BASE_DIR ({config.base_dir}) is writable "
+                f"by the Terraflow process user."
             )
             raise PermissionError(msg) from exc
 
@@ -827,7 +827,7 @@ class FileSystemToolComponent(Component):
             msg = (
                 f"Cannot access pepper file at {config.pepper_path}: "
                 f"{exc.strerror or exc}. "
-                f"Check that EARTHMIND_FS_TOOL_PEPPER_PATH points to a writable location."
+                f"Check that TERRAFLOW_FS_TOOL_PEPPER_PATH points to a writable location."
             )
             raise PermissionError(msg) from exc
         namespace = compute_user_namespace(user_id, pepper=pepper)
@@ -838,8 +838,8 @@ class FileSystemToolComponent(Component):
             msg = (
                 f"Cannot create user namespace at {user_root}: "
                 f"{exc.strerror or exc}. "
-                f"Check that EARTHMIND_FS_TOOL_BASE_DIR ({config.base_dir}) is writable "
-                f"by the EarthMind process user."
+                f"Check that TERRAFLOW_FS_TOOL_BASE_DIR ({config.base_dir}) is writable "
+                f"by the Terraflow process user."
             )
             raise PermissionError(msg) from exc
 

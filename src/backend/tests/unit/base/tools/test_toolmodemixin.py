@@ -1,7 +1,7 @@
-from earthmind.custom import Component
+from terraflow.custom import Component
 
 # Import all input types
-from earthmind.io import (
+from terraflow.io import (
     BoolInput,
     DataFrameInput,
     DataInput,
@@ -26,8 +26,8 @@ from pydantic import BaseModel
 
 class AllInputsComponent(Component):
     display_name = "All Inputs Component"
-    description = "A component with all input types available in EarthMind."
-    documentation: str = "http://docs.earthmind.org/components/all_inputs"
+    description = "A component with all input types available in Terraflow."
+    documentation: str = "http://docs.terraflow.org/components/all_inputs"
     icon = "code"
     name = "AllInputsComponent"
 
@@ -163,7 +163,7 @@ def test_component_inputs_toolkit():
 def test_table_input_preserves_list_dict():
     """Test that TableInput with tool_mode=True preserves all dicts in a list.
 
-    Regression test for: https://github.com/earthmind-ai/earthmind/issues/12062
+    Regression test for: https://github.com/terraflow-ai/terraflow/issues/12062
     """
     component = AllInputsComponent()
 

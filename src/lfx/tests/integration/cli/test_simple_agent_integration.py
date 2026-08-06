@@ -54,7 +54,7 @@ def get_starter_projects_path() -> Path:
     test_file_path = Path(__file__).resolve()
     current = test_file_path.parent
     while current != current.parent:
-        starter_path = current / "src" / "backend" / "base" / "earthmind" / "initial_setup" / "starter_projects"
+        starter_path = current / "src" / "backend" / "base" / "terraflow" / "initial_setup" / "starter_projects"
         if starter_path.exists():
             return starter_path
         current = current.parent
@@ -121,7 +121,7 @@ class TestSimpleAgentFlowLoading:
         # These are the critical errors that indicate structural problems
         critical_errors = [
             "No module named 'lfx.components",
-            "No module named 'earthmind",
+            "No module named 'terraflow",
             "'NoneType' object has no attribute 'resolve_component_path'",
             "Error creating class. ModuleNotFoundError",
         ]
@@ -262,8 +262,8 @@ class TestSimpleAgentServe:
         assert "serve" in result.output.lower() or "Serve" in result.output
 
     def test_serve_requires_api_key(self, simple_agent_flow_path: Path, monkeypatch):
-        """Test serve requires EARTHMIND_API_KEY."""
-        monkeypatch.delenv("EARTHMIND_API_KEY", raising=False)
+        """Test serve requires TERRAFLOW_API_KEY."""
+        monkeypatch.delenv("TERRAFLOW_API_KEY", raising=False)
 
         result = runner.invoke(
             lfx_app,
@@ -271,7 +271,7 @@ class TestSimpleAgentServe:
         )
 
         # Should fail or warn about API key
-        assert result.exit_code != 0 or "EARTHMIND_API_KEY" in result.output
+        assert result.exit_code != 0 or "TERRAFLOW_API_KEY" in result.output
 
     def test_serve_loads_flow(self, simple_agent_flow_path: Path):
         """Test serve can load the flow without module errors.
@@ -321,7 +321,7 @@ class TestSimpleAgentServe:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            env={**os.environ, "EARTHMIND_API_KEY": "test-key-12345"},  # pragma: allowlist secret
+            env={**os.environ, "TERRAFLOW_API_KEY": "test-key-12345"},  # pragma: allowlist secret
         )
 
         server_ready = False

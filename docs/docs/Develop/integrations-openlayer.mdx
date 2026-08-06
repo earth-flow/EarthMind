@@ -8,16 +8,16 @@ import TabItem from '@theme/TabItem';
 
 [Openlayer](https://www.openlayer.com/) is a testing and evaluation platform for LLM applications. It provides comprehensive observability, testing, and monitoring capabilities to help you ship high-quality AI systems with confidence.
 
-You can configure EarthMind to collect tracing data about your flow executions and automatically send the data to Openlayer for analysis, monitoring, and evaluation.
+You can configure Terraflow to collect tracing data about your flow executions and automatically send the data to Openlayer for analysis, monitoring, and evaluation.
 
 ## Prerequisites
 
 - An [Openlayer account](https://www.openlayer.com/)
-- A [running EarthMind server](/get-started-installation) with a [flow](/concepts-flows) that you want to trace
+- A [running Terraflow server](/get-started-installation) with a [flow](/concepts-flows) that you want to trace
 - An Openlayer inference pipeline
 
 :::tip
-If you need a flow to test the Openlayer integration, see the [EarthMind quickstart](/get-started-quickstart).
+If you need a flow to test the Openlayer integration, see the [Terraflow quickstart](/get-started-quickstart).
 :::
 
 ## Set Openlayer credentials as environment variables
@@ -26,7 +26,7 @@ If you need a flow to test the Openlayer integration, see the [EarthMind quickst
 
 2. Create an inference pipeline in Openlayer and copy the pipeline ID.
 
-3. Set your Openlayer credentials as environment variables in the same environment where you run EarthMind.
+3. Set your Openlayer credentials as environment variables in the same environment where you run Terraflow.
 
     In the following examples, replace `YOUR_API_KEY` and `YOUR_PIPELINE_ID` with your actual Openlayer credentials.
 
@@ -53,17 +53,17 @@ If you need a flow to test the Openlayer integration, see the [EarthMind quickst
     </TabItem>
     </Tabs>
 
-## Start EarthMind and view traces in Openlayer
+## Start Terraflow and view traces in Openlayer
 
-1. Start EarthMind in the same environment where you set the Openlayer environment variables:
+1. Start Terraflow in the same environment where you set the Openlayer environment variables:
 
     ```bash
-    uv run earthmind run
+    uv run terraflow run
     ```
 
-2. Run a flow in EarthMind.
+2. Run a flow in Terraflow.
 
-    EarthMind automatically collects and sends tracing data about the flow execution to Openlayer, including:
+    Terraflow automatically collects and sends tracing data about the flow execution to Openlayer, including:
     - Component inputs and outputs
     - Execution timing and latency
     - LLM calls and nested operations
@@ -94,14 +94,14 @@ Alternatively, you can use a JSON mapping to configure multiple flows at once:
 <TabItem value="linux-macos" label="Linux or macOS" default>
 
 ```bash
-export OPENLAYER_EARTHMIND_MAPPING='{"Flow Name 1":"pipeline-id-1","Flow Name 2":"pipeline-id-2"}'
+export OPENLAYER_TERRAFLOW_MAPPING='{"Flow Name 1":"pipeline-id-1","Flow Name 2":"pipeline-id-2"}'
 ```
 
 </TabItem>
 <TabItem value="windows" label="Windows">
 
 ```cmd
-set OPENLAYER_EARTHMIND_MAPPING={"Flow Name 1":"pipeline-id-1","Flow Name 2":"pipeline-id-2"}
+set OPENLAYER_TERRAFLOW_MAPPING={"Flow Name 1":"pipeline-id-1","Flow Name 2":"pipeline-id-2"}
 ```
 
 </TabItem>
@@ -112,14 +112,14 @@ set OPENLAYER_EARTHMIND_MAPPING={"Flow Name 1":"pipeline-id-1","Flow Name 2":"pi
 Openlayer configuration is resolved in the following order (highest priority first):
 
 1. Flow-specific environment variable: `OPENLAYER_PIPELINE_<FLOW_NAME>`
-2. JSON mapping: `OPENLAYER_EARTHMIND_MAPPING`
+2. JSON mapping: `OPENLAYER_TERRAFLOW_MAPPING`
 3. Default environment variable: `OPENLAYER_INFERENCE_PIPELINE_ID`
 
 This allows you to set a default pipeline for all flows and override it for specific flows as needed.
 
 ## Disable Openlayer tracing
 
-To disable the Openlayer integration, remove the `OPENLAYER_API_KEY` environment variable, and then restart EarthMind.
+To disable the Openlayer integration, remove the `OPENLAYER_API_KEY` environment variable, and then restart Terraflow.
 
 ## Features
 

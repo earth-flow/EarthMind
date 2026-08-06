@@ -3,8 +3,8 @@
 ## Scope
 - Covers: SQLModel model definitions, schema boundaries in model properties, user-scoped schema design, index redundancy checks, dialect portability in models (SQLite + PostgreSQL), and cross-database compatibility in Alembic migrations.
 - Key directories:
-  - Models: `src/backend/base/earthmind/services/database/models/`
-  - Migrations: `src/backend/base/earthmind/alembic/versions/`
+  - Models: `src/backend/base/terraflow/services/database/models/`
+  - Migrations: `src/backend/base/terraflow/alembic/versions/`
 - Does NOT cover: session lifecycle, transaction boundaries, and query execution patterns (handled by `sqlalchemy-rule.md`).
 
 ## Rules
@@ -12,7 +12,7 @@
 ### Do not query other tables inside `@property`
 - Category: [maintainability, performance]
 - Severity: critical
-- Description: A model `@property` must not open sessions or query other tables. This hides dependencies across models, tightly couples schema objects to data access, and can cause N+1 query explosions when iterating collections. EarthMind uses SQLModel which combines SQLAlchemy table models with Pydantic validation; properties should only derive values from already-loaded fields.
+- Description: A model `@property` must not open sessions or query other tables. This hides dependencies across models, tightly couples schema objects to data access, and can cause N+1 query explosions when iterating collections. Terraflow uses SQLModel which combines SQLAlchemy table models with Pydantic validation; properties should only derive values from already-loaded fields.
 - Suggested fix:
   - Keep model properties pure and local to already-loaded fields.
   - Move cross-table data fetching to service methods or CRUD functions under the model's module (e.g., `models/flow/utils.py`).
@@ -55,7 +55,7 @@
 ### Use `user_id` for user-scoped data
 - Category: maintainability
 - Severity: suggestion
-- Description: EarthMind scopes user-owned data by `user_id` (not `tenant_id`). When an entity belongs to a specific user, include `user_id` in the model definition. This improves data isolation safety and keeps future multi-user or partitioning strategies practical. The `user_id` column should reference `user.id` via a foreign key where appropriate.
+- Description: Terraflow scopes user-owned data by `user_id` (not `tenant_id`). When an entity belongs to a specific user, include `user_id` in the model definition. This improves data isolation safety and keeps future multi-user or partitioning strategies practical. The `user_id` column should reference `user.id` via a foreign key where appropriate.
 - Suggested fix:
   - Add a `user_id` column and ensure related unique/index constraints include the user dimension when applicable.
   - Propagate `user_id` through service interfaces to keep access paths user-scoped.
@@ -111,7 +111,7 @@
 ### Avoid dialect-specific constructs directly in models; use portable types
 - Category: maintainability
 - Severity: critical
-- Description: EarthMind supports both SQLite (development) and PostgreSQL 15+ (production). Model/schema definitions should avoid PostgreSQL-only or SQLite-only constructs directly in business models. When database-specific behavior is required, encapsulate it behind a portable abstraction. SQLModel's `Field()` and `Column()` already provide most portability, but direct use of dialect-specific types (e.g., `postgresql.JSONB`, `postgresql.ARRAY`) breaks SQLite compatibility.
+- Description: Terraflow supports both SQLite (development) and PostgreSQL 15+ (production). Model/schema definitions should avoid PostgreSQL-only or SQLite-only constructs directly in business models. When database-specific behavior is required, encapsulate it behind a portable abstraction. SQLModel's `Field()` and `Column()` already provide most portability, but direct use of dialect-specific types (e.g., `postgresql.JSONB`, `postgresql.ARRAY`) breaks SQLite compatibility.
 - Suggested fix:
   - Use SQLModel's `JSON` column type (which maps to the appropriate dialect type) instead of `postgresql.JSONB`.
   - Use `sa.Text` or `sa.String` instead of dialect-specific text types.
@@ -139,7 +139,7 @@
 ### Guard migration incompatibilities with dialect checks
 - Category: maintainability
 - Severity: critical
-- Description: Alembic migration scripts under `src/backend/base/earthmind/alembic/versions/` must account for SQLite/PostgreSQL incompatibilities explicitly. SQLite has limited ALTER TABLE support (no DROP COLUMN before 3.35, no ADD CONSTRAINT). For dialect-sensitive DDL or defaults, branch on the active dialect or use `op.batch_alter_table()` for SQLite compatibility.
+- Description: Alembic migration scripts under `src/backend/base/terraflow/alembic/versions/` must account for SQLite/PostgreSQL incompatibilities explicitly. SQLite has limited ALTER TABLE support (no DROP COLUMN before 3.35, no ADD CONSTRAINT). For dialect-sensitive DDL or defaults, branch on the active dialect or use `op.batch_alter_table()` for SQLite compatibility.
 - Suggested fix:
   - In migration upgrades/downgrades, bind connection and branch by dialect for incompatible SQL fragments.
   - Use `op.batch_alter_table()` for column modifications on SQLite.
@@ -176,12 +176,12 @@
 ### SQLModel-specific patterns
 - Category: best practices
 - Severity: suggestion
-- Description: EarthMind uses SQLModel which merges SQLAlchemy ORM and Pydantic validation into a single class hierarchy. Follow these conventions for model definitions:
+- Description: Terraflow uses SQLModel which merges SQLAlchemy ORM and Pydantic validation into a single class hierarchy. Follow these conventions for model definitions:
   - Use `SQLModel` as the base class with `table=True` for database-backed models.
   - Use `SQLModel` without `table=True` for schema/validation-only models (e.g., `FlowCreate`, `FlowRead`, `FlowUpdate`).
   - Use `Field()` for column definitions; use `sa_column=Column(...)` only when `Field()` alone cannot express the constraint.
   - Use `Relationship()` for ORM relationships; put related model type hints behind `TYPE_CHECKING` to avoid circular imports.
-- Suggested fix: Follow the existing patterns in `src/backend/base/earthmind/services/database/models/flow/model.py` for reference on how to define base models, table models, and CRUD schema models.
+- Suggested fix: Follow the existing patterns in `src/backend/base/terraflow/services/database/models/flow/model.py` for reference on how to define base models, table models, and CRUD schema models.
 - Example:
   - Bad:
     ```python
@@ -210,7 +210,7 @@
 ### Follow the Base → Table → Create → Read → Update schema pattern
 - Category: best practices
 - Severity: suggestion
-- Description: EarthMind uses a layered SQLModel schema pattern. `{Entity}Base(SQLModel)` defines shared fields, validators (`@field_validator`), and serializers (`@field_serializer`). `{Entity}(Base, table=True)` adds primary key and relationships. Separate `Create`, `Read`, and `Update` schemas control API boundaries. Use `model_dump(exclude_unset=True, exclude_none=True)` for partial updates. Use `FlowRead.model_validate(db_flow, from_attributes=True)` to convert ORM→schema while session is active.
+- Description: Terraflow uses a layered SQLModel schema pattern. `{Entity}Base(SQLModel)` defines shared fields, validators (`@field_validator`), and serializers (`@field_serializer`). `{Entity}(Base, table=True)` adds primary key and relationships. Separate `Create`, `Read`, and `Update` schemas control API boundaries. Use `model_dump(exclude_unset=True, exclude_none=True)` for partial updates. Use `FlowRead.model_validate(db_flow, from_attributes=True)` to convert ORM→schema while session is active.
 - Suggested fix:
   - Define Base → Table → Create → Read → Update for every entity.
   - Put `@field_validator` and `@field_serializer` on the Base so they apply everywhere.

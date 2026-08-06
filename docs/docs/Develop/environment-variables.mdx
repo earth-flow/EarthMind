@@ -7,20 +7,20 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Link from '@docusaurus/Link';
 
-In general, environment variables, like `EARTHMIND_PORT` or `EARTHMIND_LOG_LEVEL`, configure how EarthMind runs.
-These are broad settings that apply to your entire EarthMind deployment.
+In general, environment variables, like `TERRAFLOW_PORT` or `TERRAFLOW_LOG_LEVEL`, configure how Terraflow runs.
+These are broad settings that apply to your entire Terraflow deployment.
 
-In contrast, global variables are user-defined values stored in EarthMind's database for use in flows, such as `OPENAI_API_KEY`.
-EarthMind can also source global variables from environment variables.
-For more information, see [EarthMind global variables](/configuration-global-variables).
+In contrast, global variables are user-defined values stored in Terraflow's database for use in flows, such as `OPENAI_API_KEY`.
+Terraflow can also source global variables from environment variables.
+For more information, see [Terraflow global variables](/configuration-global-variables).
 
-## Configure environment variables for EarthMind OSS
+## Configure environment variables for Terraflow OSS
 
-EarthMind recognizes [supported environment variables](#supported-variables) from the following sources:
+Terraflow recognizes [supported environment variables](#supported-variables) from the following sources:
 
 - Environment variables set in your terminal.
-- Environment variables imported from a `.env` file when starting EarthMind.
-- Environment variables set with the [EarthMind CLI](./configuration-cli), including the `--env-file` option and direct options, such as `--port`.
+- Environment variables imported from a `.env` file when starting Terraflow.
+- Environment variables set with the [Terraflow CLI](./configuration-cli), including the `--env-file` option and direct options, such as `--port`.
 
 You can choose to use one or more of these sources.
 
@@ -28,15 +28,15 @@ You can choose to use one or more of these sources.
 
 If the same environment variable is set in multiple places, the following hierarchy applies:
 
-1. EarthMind CLI options override all other sources.
+1. Terraflow CLI options override all other sources.
 2. The `.env` file overrides system environment variables.
 3. System environment variables are used only if not set elsewhere.
-When running a EarthMind Docker image, the `-e` flag can be used to set additional system environment variables.
+When running a Terraflow Docker image, the `-e` flag can be used to set additional system environment variables.
 
 For example:
 
-* If you set `EARTHMIND_PORT=8080` in your system environment and `EARTHMIND_PORT=7860` in `.env`, EarthMind uses `7860` from `.env`.
-* If you use the EarthMind CLI to run `earthmind run --env-file .env --port 9000`, and you set `EARTHMIND_PORT=7860` in `.env`, then EarthMind uses `9000` from the CLI option.
+* If you set `TERRAFLOW_PORT=8080` in your system environment and `TERRAFLOW_PORT=7860` in `.env`, Terraflow uses `7860` from `.env`.
+* If you use the Terraflow CLI to run `terraflow run --env-file .env --port 9000`, and you set `TERRAFLOW_PORT=7860` in `.env`, then Terraflow uses `9000` from the CLI option.
 
 ### Set environment variables in your terminal {#configure-variables-terminal}
 
@@ -63,72 +63,72 @@ set VARIABLE_NAME='VALUE'
 docker run -it --rm \
     -p 7860:7860 \
     -e VARIABLE_NAME='VALUE' \
-    earthmindai/earthmind:latest
+    terraflowai/terraflow:latest
 ```
 
 </TabItem>
 </Tabs>
 
-When you start EarthMind, it looks for environment variables that you've set in your terminal.
+When you start Terraflow, it looks for environment variables that you've set in your terminal.
 If it detects a supported environment variable, then it automatically adopts the specified value, subject to [precedence rules](#precedence).
 
 ### Import environment variables from a .env file {#configure-variables-env-file}
 
-1. If EarthMind is running, quit EarthMind.
+1. If Terraflow is running, quit Terraflow.
 
 2. Create a `.env` file, and then open it in your preferred editor.
 
-3. Define [EarthMind environment variables](#supported-variables) in the `.env` file.
+3. Define [Terraflow environment variables](#supported-variables) in the `.env` file.
 
     <details>
     <summary>Example: .env</summary>
 
     ```text
     DO_NOT_TRACK=True
-    EARTHMIND_AUTO_LOGIN=False
-    EARTHMIND_AUTO_SAVING=True
-    EARTHMIND_AUTO_SAVING_INTERVAL=1000
-    EARTHMIND_BACKEND_ONLY=False
-    EARTHMIND_BUNDLE_URLS=["https://github.com/user/repo/commit/hash"]
-    EARTHMIND_CACHE_TYPE=async
-    EARTHMIND_COMPONENTS_PATH=/path/to/components/
-    EARTHMIND_COMPONENTS_INDEX_PATH=/path/to/component_index.json
-    EARTHMIND_CONFIG_DIR=/path/to/config/
-    EARTHMIND_DATABASE_URL=postgresql://user:password@localhost:5432/earthmind
-    EARTHMIND_DEV=False
-    EARTHMIND_FALLBACK_TO_ENV_VAR=False
-    EARTHMIND_HEALTH_CHECK_MAX_RETRIES=5
-    EARTHMIND_HOST=localhost
-    EARTHMIND_LANGCHAIN_CACHE=InMemoryCache
-    EARTHMIND_MAX_FILE_SIZE_UPLOAD=10000
-    EARTHMIND_MAX_ITEMS_LENGTH=100
-    EARTHMIND_MAX_TEXT_LENGTH=1000
-    EARTHMIND_LOG_LEVEL=error
-    EARTHMIND_OPEN_BROWSER=False
-    EARTHMIND_PORT=7860
-    EARTHMIND_REMOVE_API_KEYS=False
-    EARTHMIND_SAVE_DB_IN_CONFIG_DIR=True
-    EARTHMIND_SECRET_KEY=somesecretkey
-    EARTHMIND_STORE_ENVIRONMENT_VARIABLES=True
-    EARTHMIND_SUPERUSER=adminuser
-    EARTHMIND_SUPERUSER_PASSWORD=adminpass
-    EARTHMIND_WORKER_TIMEOUT=300
-    EARTHMIND_WORKERS=3
+    TERRAFLOW_AUTO_LOGIN=False
+    TERRAFLOW_AUTO_SAVING=True
+    TERRAFLOW_AUTO_SAVING_INTERVAL=1000
+    TERRAFLOW_BACKEND_ONLY=False
+    TERRAFLOW_BUNDLE_URLS=["https://github.com/user/repo/commit/hash"]
+    TERRAFLOW_CACHE_TYPE=async
+    TERRAFLOW_COMPONENTS_PATH=/path/to/components/
+    TERRAFLOW_COMPONENTS_INDEX_PATH=/path/to/component_index.json
+    TERRAFLOW_CONFIG_DIR=/path/to/config/
+    TERRAFLOW_DATABASE_URL=postgresql://user:password@localhost:5432/terraflow
+    TERRAFLOW_DEV=False
+    TERRAFLOW_FALLBACK_TO_ENV_VAR=False
+    TERRAFLOW_HEALTH_CHECK_MAX_RETRIES=5
+    TERRAFLOW_HOST=localhost
+    TERRAFLOW_LANGCHAIN_CACHE=InMemoryCache
+    TERRAFLOW_MAX_FILE_SIZE_UPLOAD=10000
+    TERRAFLOW_MAX_ITEMS_LENGTH=100
+    TERRAFLOW_MAX_TEXT_LENGTH=1000
+    TERRAFLOW_LOG_LEVEL=error
+    TERRAFLOW_OPEN_BROWSER=False
+    TERRAFLOW_PORT=7860
+    TERRAFLOW_REMOVE_API_KEYS=False
+    TERRAFLOW_SAVE_DB_IN_CONFIG_DIR=True
+    TERRAFLOW_SECRET_KEY=somesecretkey
+    TERRAFLOW_STORE_ENVIRONMENT_VARIABLES=True
+    TERRAFLOW_SUPERUSER=adminuser
+    TERRAFLOW_SUPERUSER_PASSWORD=adminpass
+    TERRAFLOW_WORKER_TIMEOUT=300
+    TERRAFLOW_WORKERS=3
     ```
 
-    For additional examples, see [`.env.example`](https://github.com/earthmind-ai/earthmind/blob/main/.env.example) in the EarthMind repository.
+    For additional examples, see [`.env.example`](https://github.com/terraflow-ai/terraflow/blob/main/.env.example) in the Terraflow repository.
 
     </details>
 
 4. Save and close `.env`.
 
-5. Start EarthMind with your `.env` file:
+5. Start Terraflow with your `.env` file:
 
     <Tabs>
     <TabItem value="local" label="Local" default>
 
     ```bash
-    uv run earthmind run --env-file .env
+    uv run terraflow run --env-file .env
     ```
 
     </TabItem>
@@ -138,7 +138,7 @@ If it detects a supported environment variable, then it automatically adopts the
     docker run -it --rm \
         -p 7860:7860 \
         --env-file .env \
-        earthmindai/earthmind:latest
+        terraflowai/terraflow:latest
     ```
 
     </TabItem>
@@ -146,53 +146,53 @@ If it detects a supported environment variable, then it automatically adopts the
 
     If your `.env` file isn't in the same directory, provide the path to your `.env` file.
 
-On startup, EarthMind imports the environment variables from your `.env` file, as well as any others that you set in your terminal, and then adopts their specified values.
+On startup, Terraflow imports the environment variables from your `.env` file, as well as any others that you set in your terminal, and then adopts their specified values.
 
 ### Configure environment variables for development
 
-The following examples show how to configure EarthMind using environment variables in different development scenarios.
+The following examples show how to configure Terraflow using environment variables in different development scenarios.
 
 <Tabs>
 <TabItem value="env" label=".env file" default>
 
 The `.env` file is a text file that contains key-value pairs of environment variables.
 
-Create or edit a `.env` file in the root directory of your application or EarthMind environment, and then add your configuration variables to the file:
+Create or edit a `.env` file in the root directory of your application or Terraflow environment, and then add your configuration variables to the file:
 
 <details>
 <summary>Example: .env</summary>
 
 ```text title=".env"
 DO_NOT_TRACK=True
-EARTHMIND_AUTO_LOGIN=False
-EARTHMIND_AUTO_SAVING=True
-EARTHMIND_AUTO_SAVING_INTERVAL=1000
-EARTHMIND_BACKEND_ONLY=False
-EARTHMIND_BUNDLE_URLS=["https://github.com/user/repo/commit/hash"]
-EARTHMIND_CACHE_TYPE=async
-EARTHMIND_COMPONENTS_PATH=/path/to/components/
-EARTHMIND_COMPONENTS_INDEX_PATH=/path/to/component_index.json
-EARTHMIND_CONFIG_DIR=/path/to/config/
-EARTHMIND_DATABASE_URL=postgresql://user:password@localhost:5432/earthmind
-EARTHMIND_DEV=False
-EARTHMIND_FALLBACK_TO_ENV_VAR=False
-EARTHMIND_HEALTH_CHECK_MAX_RETRIES=5
-EARTHMIND_HOST=localhost
-EARTHMIND_LANGCHAIN_CACHE=InMemoryCache
-EARTHMIND_MAX_FILE_SIZE_UPLOAD=10000
-EARTHMIND_MAX_ITEMS_LENGTH=100
-EARTHMIND_MAX_TEXT_LENGTH=1000
-EARTHMIND_LOG_LEVEL=error
-EARTHMIND_OPEN_BROWSER=False
-EARTHMIND_PORT=7860
-EARTHMIND_REMOVE_API_KEYS=False
-EARTHMIND_SAVE_DB_IN_CONFIG_DIR=True
-EARTHMIND_SECRET_KEY=somesecretkey
-EARTHMIND_STORE_ENVIRONMENT_VARIABLES=True
-EARTHMIND_SUPERUSER=adminuser
-EARTHMIND_SUPERUSER_PASSWORD=adminpass
-EARTHMIND_WORKER_TIMEOUT=300
-EARTHMIND_WORKERS=3
+TERRAFLOW_AUTO_LOGIN=False
+TERRAFLOW_AUTO_SAVING=True
+TERRAFLOW_AUTO_SAVING_INTERVAL=1000
+TERRAFLOW_BACKEND_ONLY=False
+TERRAFLOW_BUNDLE_URLS=["https://github.com/user/repo/commit/hash"]
+TERRAFLOW_CACHE_TYPE=async
+TERRAFLOW_COMPONENTS_PATH=/path/to/components/
+TERRAFLOW_COMPONENTS_INDEX_PATH=/path/to/component_index.json
+TERRAFLOW_CONFIG_DIR=/path/to/config/
+TERRAFLOW_DATABASE_URL=postgresql://user:password@localhost:5432/terraflow
+TERRAFLOW_DEV=False
+TERRAFLOW_FALLBACK_TO_ENV_VAR=False
+TERRAFLOW_HEALTH_CHECK_MAX_RETRIES=5
+TERRAFLOW_HOST=localhost
+TERRAFLOW_LANGCHAIN_CACHE=InMemoryCache
+TERRAFLOW_MAX_FILE_SIZE_UPLOAD=10000
+TERRAFLOW_MAX_ITEMS_LENGTH=100
+TERRAFLOW_MAX_TEXT_LENGTH=1000
+TERRAFLOW_LOG_LEVEL=error
+TERRAFLOW_OPEN_BROWSER=False
+TERRAFLOW_PORT=7860
+TERRAFLOW_REMOVE_API_KEYS=False
+TERRAFLOW_SAVE_DB_IN_CONFIG_DIR=True
+TERRAFLOW_SECRET_KEY=somesecretkey
+TERRAFLOW_STORE_ENVIRONMENT_VARIABLES=True
+TERRAFLOW_SUPERUSER=adminuser
+TERRAFLOW_SUPERUSER_PASSWORD=adminpass
+TERRAFLOW_WORKER_TIMEOUT=300
+TERRAFLOW_WORKERS=3
 ```
 
 </details>
@@ -210,37 +210,37 @@ To add environment variables, create or edit a service configuration file and ad
 ```ini title="override.conf"
 [Service]
 Environment="DO_NOT_TRACK=true"
-Environment="EARTHMIND_AUTO_LOGIN=false"
-Environment="EARTHMIND_AUTO_SAVING=true"
-Environment="EARTHMIND_AUTO_SAVING_INTERVAL=1000"
-Environment="EARTHMIND_BACKEND_ONLY=false"
-Environment="EARTHMIND_BUNDLE_URLS=[\"https://github.com/user/repo/commit/hash\"]"
-Environment="EARTHMIND_CACHE_TYPE=async"
-Environment="EARTHMIND_COMPONENTS_PATH=/path/to/components/"
-Environment="EARTHMIND_COMPONENTS_INDEX_PATH=/path/to/component_index.json"
-Environment="EARTHMIND_CONFIG_DIR=/path/to/config"
-Environment="EARTHMIND_DATABASE_URL=postgresql://user:password@localhost:5432/earthmind"
-Environment="EARTHMIND_DEV=false"
-Environment="EARTHMIND_FALLBACK_TO_ENV_VAR=false"
-Environment="EARTHMIND_HEALTH_CHECK_MAX_RETRIES=5"
-Environment="EARTHMIND_HOST=localhost"
-Environment="EARTHMIND_LANGCHAIN_CACHE=InMemoryCache"
-Environment="EARTHMIND_MAX_FILE_SIZE_UPLOAD=10000"
-Environment="EARTHMIND_MAX_ITEMS_LENGTH=100"
-Environment="EARTHMIND_MAX_TEXT_LENGTH=1000"
-Environment="EARTHMIND_LOG_ENV=container_json"
-Environment="EARTHMIND_LOG_FILE=logs/earthmind.log"
-Environment="EARTHMIND_LOG_LEVEL=error"
-Environment="EARTHMIND_OPEN_BROWSER=false"
-Environment="EARTHMIND_PORT=7860"
-Environment="EARTHMIND_REMOVE_API_KEYS=false"
-Environment="EARTHMIND_SAVE_DB_IN_CONFIG_DIR=true"
-Environment="EARTHMIND_SECRET_KEY=somesecretkey"
-Environment="EARTHMIND_STORE_ENVIRONMENT_VARIABLES=true"
-Environment="EARTHMIND_SUPERUSER=adminuser"
-Environment="EARTHMIND_SUPERUSER_PASSWORD=adminpass"
-Environment="EARTHMIND_WORKER_TIMEOUT=300"
-Environment="EARTHMIND_WORKERS=3"
+Environment="TERRAFLOW_AUTO_LOGIN=false"
+Environment="TERRAFLOW_AUTO_SAVING=true"
+Environment="TERRAFLOW_AUTO_SAVING_INTERVAL=1000"
+Environment="TERRAFLOW_BACKEND_ONLY=false"
+Environment="TERRAFLOW_BUNDLE_URLS=[\"https://github.com/user/repo/commit/hash\"]"
+Environment="TERRAFLOW_CACHE_TYPE=async"
+Environment="TERRAFLOW_COMPONENTS_PATH=/path/to/components/"
+Environment="TERRAFLOW_COMPONENTS_INDEX_PATH=/path/to/component_index.json"
+Environment="TERRAFLOW_CONFIG_DIR=/path/to/config"
+Environment="TERRAFLOW_DATABASE_URL=postgresql://user:password@localhost:5432/terraflow"
+Environment="TERRAFLOW_DEV=false"
+Environment="TERRAFLOW_FALLBACK_TO_ENV_VAR=false"
+Environment="TERRAFLOW_HEALTH_CHECK_MAX_RETRIES=5"
+Environment="TERRAFLOW_HOST=localhost"
+Environment="TERRAFLOW_LANGCHAIN_CACHE=InMemoryCache"
+Environment="TERRAFLOW_MAX_FILE_SIZE_UPLOAD=10000"
+Environment="TERRAFLOW_MAX_ITEMS_LENGTH=100"
+Environment="TERRAFLOW_MAX_TEXT_LENGTH=1000"
+Environment="TERRAFLOW_LOG_ENV=container_json"
+Environment="TERRAFLOW_LOG_FILE=logs/terraflow.log"
+Environment="TERRAFLOW_LOG_LEVEL=error"
+Environment="TERRAFLOW_OPEN_BROWSER=false"
+Environment="TERRAFLOW_PORT=7860"
+Environment="TERRAFLOW_REMOVE_API_KEYS=false"
+Environment="TERRAFLOW_SAVE_DB_IN_CONFIG_DIR=true"
+Environment="TERRAFLOW_SECRET_KEY=somesecretkey"
+Environment="TERRAFLOW_STORE_ENVIRONMENT_VARIABLES=true"
+Environment="TERRAFLOW_SUPERUSER=adminuser"
+Environment="TERRAFLOW_SUPERUSER_PASSWORD=adminpass"
+Environment="TERRAFLOW_WORKER_TIMEOUT=300"
+Environment="TERRAFLOW_WORKERS=3"
 ```
 
 </details>
@@ -263,44 +263,44 @@ Create or edit the `.vscode/tasks.json` file in your project root.
     "options": {
         "env": {
             "DO_NOT_TRACK": "true",
-            "EARTHMIND_AUTO_LOGIN": "false",
-            "EARTHMIND_AUTO_SAVING": "true",
-            "EARTHMIND_AUTO_SAVING_INTERVAL": "1000",
-            "EARTHMIND_BACKEND_ONLY": "false",
-            "EARTHMIND_BUNDLE_URLS": "[\"https://github.com/user/repo/commit/hash\"]",
-            "EARTHMIND_CACHE_TYPE": "async",
-            "EARTHMIND_COMPONENTS_PATH": "D:/path/to/components/",
-            "EARTHMIND_COMPONENTS_INDEX_PATH": "D:/path/to/component_index.json",
-            "EARTHMIND_CONFIG_DIR": "D:/path/to/config/",
-            "EARTHMIND_DATABASE_URL": "postgresql://postgres:password@localhost:5432/earthmind",
-            "EARTHMIND_DEV": "false",
-            "EARTHMIND_FALLBACK_TO_ENV_VAR": "false",
-            "EARTHMIND_HEALTH_CHECK_MAX_RETRIES": "5",
-            "EARTHMIND_HOST": "localhost",
-            "EARTHMIND_LANGCHAIN_CACHE": "InMemoryCache",
-            "EARTHMIND_MAX_FILE_SIZE_UPLOAD": "10000",
-            "EARTHMIND_MAX_ITEMS_LENGTH": "100",
-            "EARTHMIND_MAX_TEXT_LENGTH": "1000",
-            "EARTHMIND_LOG_ENV": "container_csv",
-            "EARTHMIND_LOG_FILE": "earthmind.log",
-            "EARTHMIND_LOG_LEVEL": "error",
-            "EARTHMIND_OPEN_BROWSER": "false",
-            "EARTHMIND_PORT": "7860",
-            "EARTHMIND_REMOVE_API_KEYS": "true",
-            "EARTHMIND_SAVE_DB_IN_CONFIG_DIR": "false",
-            "EARTHMIND_SECRET_KEY": "somesecretkey",
-            "EARTHMIND_STORE_ENVIRONMENT_VARIABLES": "true",
-            "EARTHMIND_SUPERUSER": "adminuser",
-            "EARTHMIND_SUPERUSER_PASSWORD": "adminpass",
-            "EARTHMIND_WORKER_TIMEOUT": "300",
-            "EARTHMIND_WORKERS": "3"
+            "TERRAFLOW_AUTO_LOGIN": "false",
+            "TERRAFLOW_AUTO_SAVING": "true",
+            "TERRAFLOW_AUTO_SAVING_INTERVAL": "1000",
+            "TERRAFLOW_BACKEND_ONLY": "false",
+            "TERRAFLOW_BUNDLE_URLS": "[\"https://github.com/user/repo/commit/hash\"]",
+            "TERRAFLOW_CACHE_TYPE": "async",
+            "TERRAFLOW_COMPONENTS_PATH": "D:/path/to/components/",
+            "TERRAFLOW_COMPONENTS_INDEX_PATH": "D:/path/to/component_index.json",
+            "TERRAFLOW_CONFIG_DIR": "D:/path/to/config/",
+            "TERRAFLOW_DATABASE_URL": "postgresql://postgres:password@localhost:5432/terraflow",
+            "TERRAFLOW_DEV": "false",
+            "TERRAFLOW_FALLBACK_TO_ENV_VAR": "false",
+            "TERRAFLOW_HEALTH_CHECK_MAX_RETRIES": "5",
+            "TERRAFLOW_HOST": "localhost",
+            "TERRAFLOW_LANGCHAIN_CACHE": "InMemoryCache",
+            "TERRAFLOW_MAX_FILE_SIZE_UPLOAD": "10000",
+            "TERRAFLOW_MAX_ITEMS_LENGTH": "100",
+            "TERRAFLOW_MAX_TEXT_LENGTH": "1000",
+            "TERRAFLOW_LOG_ENV": "container_csv",
+            "TERRAFLOW_LOG_FILE": "terraflow.log",
+            "TERRAFLOW_LOG_LEVEL": "error",
+            "TERRAFLOW_OPEN_BROWSER": "false",
+            "TERRAFLOW_PORT": "7860",
+            "TERRAFLOW_REMOVE_API_KEYS": "true",
+            "TERRAFLOW_SAVE_DB_IN_CONFIG_DIR": "false",
+            "TERRAFLOW_SECRET_KEY": "somesecretkey",
+            "TERRAFLOW_STORE_ENVIRONMENT_VARIABLES": "true",
+            "TERRAFLOW_SUPERUSER": "adminuser",
+            "TERRAFLOW_SUPERUSER_PASSWORD": "adminpass",
+            "TERRAFLOW_WORKER_TIMEOUT": "300",
+            "TERRAFLOW_WORKERS": "3"
         }
     },
     "tasks": [
         {
-            "label": "earthmind backend",
+            "label": "terraflow backend",
             "type": "shell",
-            "command": ". ./earthmindnightly/Scripts/activate && earthmind run",
+            "command": ". ./terraflownightly/Scripts/activate && terraflow run",
             "isBackground": true,
             "problemMatcher": []
         }
@@ -310,57 +310,57 @@ Create or edit the `.vscode/tasks.json` file in your project root.
 
 </details>
 
-To run EarthMind using the above VSCode `tasks.json` file, in the VSCode command palette, select **Tasks: Run Task** > **earthmind backend**.
+To run Terraflow using the above VSCode `tasks.json` file, in the VSCode command palette, select **Tasks: Run Task** > **terraflow backend**.
 
 </TabItem>
 </Tabs>
 
-## Set environment variables for EarthMind Desktop
+## Set environment variables for Terraflow Desktop
 
-Environment variables set in your terminal aren't automatically available to GUI-based applications like EarthMind Desktop when you launch them from the Windows or macOS GUI.
+Environment variables set in your terminal aren't automatically available to GUI-based applications like Terraflow Desktop when you launch them from the Windows or macOS GUI.
 
-To modify environment variables for EarthMind Desktop, set environment variables in a Desktop `.env` file, and then restart the app.
+To modify environment variables for Terraflow Desktop, set environment variables in a Desktop `.env` file, and then restart the app.
 
 <Tabs>
 <TabItem value="macos" label="macOS" default>
 
 To modify the macOS `.env` file, do the following:
 
-1. Create or edit `~/.earthmind/data/.env`.
-2. Add your EarthMind environment variables, for example:
+1. Create or edit `~/.terraflow/data/.env`.
+2. Add your Terraflow environment variables, for example:
 
     ```text
-    EARTHMIND_LOG_LEVEL=info
-    EARTHMIND_DOCLING=true
+    TERRAFLOW_LOG_LEVEL=info
+    TERRAFLOW_DOCLING=true
     ```
 
 3. Save the file.
-4. Restart EarthMind Desktop.
+4. Restart Terraflow Desktop.
 
 </TabItem>
 <TabItem value="windows" label="Windows .env file">
 
 To modify the Windows `.env` file, do the following:
 
-1. Create or edit `%APPDATA%\com.EarthMindDesktop\data\.env`.
-2. Add your EarthMind environment variables, for example:
+1. Create or edit `%APPDATA%\com.TerraflowDesktop\data\.env`.
+2. Add your Terraflow environment variables, for example:
 
     ```text
-    EARTHMIND_LOG_LEVEL=info
-    EARTHMIND_DOCLING=true
+    TERRAFLOW_LOG_LEVEL=info
+    TERRAFLOW_DOCLING=true
     ```
 
 3. Save the file.
-4. Restart EarthMind Desktop.
+4. Restart Terraflow Desktop.
 
 </TabItem>
 <TabItem value="windows-user-vars" label="Windows user environment variables">
 
-Windows supports two sources for EarthMind Desktop environment variables: a EarthMind application `.env` file, and Windows user environment variables.
+Windows supports two sources for Terraflow Desktop environment variables: a Terraflow application `.env` file, and Windows user environment variables.
 
-The `.env` file at `%APPDATA%\com.EarthMindDesktop\data\.env` is the recommended approach, but
-Windows user variables are useful for single-sourcing API keys between EarthMind and other Windows applications.
-If the same variable is defined in both the EarthMind application `.env` file and as a Windows user environment variable, the `.env` file takes precedence.
+The `.env` file at `%APPDATA%\com.TerraflowDesktop\data\.env` is the recommended approach, but
+Windows user variables are useful for single-sourcing API keys between Terraflow and other Windows applications.
+If the same variable is defined in both the Terraflow application `.env` file and as a Windows user environment variable, the `.env` file takes precedence.
 
 To modify the Windows user environment variables, do the following:
 
@@ -368,14 +368,14 @@ To modify the Windows user environment variables, do the following:
 2. Click the **Advanced** tab, and then click **Environment Variables**.
 3. In **User variables**, click **New**.
 4. Enter the variable name, such as `OPENAI_API_KEY`, and its value.
-5. Click **OK**, and then **restart EarthMind Desktop**.
+5. Click **OK**, and then **restart Terraflow Desktop**.
 
 </TabItem>
 </Tabs>
 
 ## Supported environment variables {#supported-variables}
 
-The following sections provide information about specific EarthMind environment variables.
+The following sections provide information about specific Terraflow environment variables.
 
 ### Authentication and security
 
@@ -383,7 +383,7 @@ See [API keys and authentication](/api-keys-and-authentication).
 
 ### Global variables
 
-For information about the relationship between EarthMind global variables and environment variables, as well as environment variables that control handling of global variables, see [Global variables](/configuration-global-variables).
+For information about the relationship between Terraflow global variables and environment variables, as well as environment variables that control handling of global variables, see [Global variables](/configuration-global-variables).
 
 ### Logs {#logging}
 
@@ -391,37 +391,37 @@ See [Configure log options](/logging#log-storage).
 
 ### MCP servers {#mcp}
 
-See [Use EarthMind as an MCP server](/mcp-server).
+See [Use Terraflow as an MCP server](/mcp-server).
 
 ### Multi-worker deployments
 
-For multi-worker tuning—including the Redis job queue and Gunicorn worker settings—see [Deploy EarthMind with multiple workers](./deployment-multi-worker).
+For multi-worker tuning—including the Redis job queue and Gunicorn worker settings—see [Deploy Terraflow with multiple workers](./deployment-multi-worker).
 
 ### Monitoring and metrics
 
-For environment variables for specific monitoring service providers, see the EarthMind monitoring integration guides, such as [Langfuse](/integrations-langfuse) and [Best practices for EarthMind on Kubernetes](/deployment-prod-best-practices).
+For environment variables for specific monitoring service providers, see the Terraflow monitoring integration guides, such as [Langfuse](/integrations-langfuse) and [Best practices for Terraflow on Kubernetes](/deployment-prod-best-practices).
 
 ### Server
 
-The following environment variables set base EarthMind server configuration, such as where the server is hosted, required files for SSL encryption, and the deployment type (frontend and backend, backend-only, development mode).
+The following environment variables set base Terraflow server configuration, such as where the server is hosted, required files for SSL encryption, and the deployment type (frontend and backend, backend-only, development mode).
 
 | Variable | Format | Default | Description |
 |----------|--------|---------|-------------|
-| `EARTHMIND_HOST` | String | `localhost` | The host on which the EarthMind server will run. |
-| `EARTHMIND_PORT` | Integer | `7860` | The port on which the EarthMind server runs. The server automatically selects a free port if the specified port is in use. |
-| `EARTHMIND_BACKEND_ONLY` | Boolean | `False` | Run only the EarthMind backend service (no frontend). |
-| `EARTHMIND_DEV` | Boolean | `False` | Whether to run EarthMind in development mode (may contain bugs). |
-| `EARTHMIND_OPEN_BROWSER` | Boolean | `False` | Open the system web browser on startup. |
-| `EARTHMIND_HEALTH_CHECK_MAX_RETRIES` | Integer | `5` | Set the maximum number of retries for EarthMind's server status health checks. |
-| `EARTHMIND_WORKERS` | Integer | `1` | Number of worker processes. See [Deploy EarthMind with multiple workers](./deployment-multi-worker#recommended-gunicorn-settings). |
-| `EARTHMIND_WORKER_TIMEOUT` | Integer | `300` | Worker timeout in seconds. See [Deploy EarthMind with multiple workers](./deployment-multi-worker#recommended-gunicorn-settings). |
-| `EARTHMIND_GUNICORN_PRELOAD` | Boolean | `False` | Enables Gunicorn `preload_app`. Non-Windows only. See [Deploy EarthMind with multiple workers](./deployment-multi-worker#recommended-gunicorn-settings). |
-| `EARTHMIND_JOB_QUEUE_TYPE` | String | `asyncio` | Job queue backend. Use `redis` for multi-worker deployments. See [Deploy EarthMind with multiple workers](./deployment-multi-worker#configuration-reference). |
-| `EARTHMIND_SSL_CERT_FILE` | String | Not set | Path to the SSL certificate file for enabling HTTPS on the EarthMind web server. This is separate from [database SSL connections](/configuration-custom-database#connect-earthmind-to-a-local-postgresql-database). |
-| `EARTHMIND_SSL_KEY_FILE` | String | Not set | Path to the SSL key file for enabling HTTPS on the EarthMind web server. This is separate from [database SSL connections](/configuration-custom-database#connect-earthmind-to-a-local-postgresql-database). |
-| `EARTHMIND_DEACTIVATE_TRACING` | Boolean | `False` | Deactivate tracing functionality. |
-| `EARTHMIND_CELERY_ENABLED` | Boolean | `False` | Enable Celery for distributed task processing. |
-| `EARTHMIND_ALEMBIC_LOG_TO_STDOUT` | Boolean | `False` | Whether to log Alembic database migration output to stdout instead of a log file. If `true`, Alembic logs to `stdout` and the default log file is ignored. |
+| `TERRAFLOW_HOST` | String | `localhost` | The host on which the Terraflow server will run. |
+| `TERRAFLOW_PORT` | Integer | `7860` | The port on which the Terraflow server runs. The server automatically selects a free port if the specified port is in use. |
+| `TERRAFLOW_BACKEND_ONLY` | Boolean | `False` | Run only the Terraflow backend service (no frontend). |
+| `TERRAFLOW_DEV` | Boolean | `False` | Whether to run Terraflow in development mode (may contain bugs). |
+| `TERRAFLOW_OPEN_BROWSER` | Boolean | `False` | Open the system web browser on startup. |
+| `TERRAFLOW_HEALTH_CHECK_MAX_RETRIES` | Integer | `5` | Set the maximum number of retries for Terraflow's server status health checks. |
+| `TERRAFLOW_WORKERS` | Integer | `1` | Number of worker processes. See [Deploy Terraflow with multiple workers](./deployment-multi-worker#recommended-gunicorn-settings). |
+| `TERRAFLOW_WORKER_TIMEOUT` | Integer | `300` | Worker timeout in seconds. See [Deploy Terraflow with multiple workers](./deployment-multi-worker#recommended-gunicorn-settings). |
+| `TERRAFLOW_GUNICORN_PRELOAD` | Boolean | `False` | Enables Gunicorn `preload_app`. Non-Windows only. See [Deploy Terraflow with multiple workers](./deployment-multi-worker#recommended-gunicorn-settings). |
+| `TERRAFLOW_JOB_QUEUE_TYPE` | String | `asyncio` | Job queue backend. Use `redis` for multi-worker deployments. See [Deploy Terraflow with multiple workers](./deployment-multi-worker#configuration-reference). |
+| `TERRAFLOW_SSL_CERT_FILE` | String | Not set | Path to the SSL certificate file for enabling HTTPS on the Terraflow web server. This is separate from [database SSL connections](/configuration-custom-database#connect-terraflow-to-a-local-postgresql-database). |
+| `TERRAFLOW_SSL_KEY_FILE` | String | Not set | Path to the SSL key file for enabling HTTPS on the Terraflow web server. This is separate from [database SSL connections](/configuration-custom-database#connect-terraflow-to-a-local-postgresql-database). |
+| `TERRAFLOW_DEACTIVATE_TRACING` | Boolean | `False` | Deactivate tracing functionality. |
+| `TERRAFLOW_CELERY_ENABLED` | Boolean | `False` | Enable Celery for distributed task processing. |
+| `TERRAFLOW_ALEMBIC_LOG_TO_STDOUT` | Boolean | `False` | Whether to log Alembic database migration output to stdout instead of a log file. If `true`, Alembic logs to `stdout` and the default log file is ignored. |
 
 ### Storage
 
@@ -437,39 +437,39 @@ See [Telemetry](/contributing-telemetry).
 
 | Variable | Format | Default | Description |
 |----------|--------|---------|-------------|
-| `EARTHMIND_AUTO_SAVING` | Boolean | `True` | Whether to automatically save the current flow draft. Auto-save only updates the live draft, and doesn't create [saved flow versions](/concepts-flows#save-and-restore-flow-versions). |
-| `EARTHMIND_AUTO_SAVING_INTERVAL` | Integer | `1000` | Set the auto-save interval in milliseconds if `EARTHMIND_AUTO_SAVING=True`. |
-| `EARTHMIND_BUNDLE_URLS` | List[String] | `[]` | A list of URLs from which to load custom bundles. Supports GitHub URLs. If `EARTHMIND_AUTO_LOGIN=True`, flows from these bundles are loaded into the database. |
-| `EARTHMIND_COMPONENTS_PATH` | String | Not set | Path to a directory containing custom components. Typically used if you have local custom components or you are building a Docker image with custom components. |
-| `EARTHMIND_COMPONENTS_INDEX_PATH` | String | Not set | File path or URL (`http://` or `https://`) to a prebuilt component index JSON file used to populate built-in components in the visual editor. When not set, EarthMind uses the included index. Useful for supplying a curated component index, for example in airgapped deployments. For more information, see [Block custom components](../Deployment/deployment-block-custom-components.mdx). |
-| `EARTHMIND_ALLOW_CUSTOM_COMPONENTS` | Boolean | `True` | If `false`, disables custom components and in-editor editing of component code. This feature is in beta. For more information, see [Block custom components](../Deployment/deployment-block-custom-components.mdx). |
-| `EARTHMIND_ALLOW_COMPONENTS_PATHS_OVERRIDE` | Boolean | `True` | When `false` alongside `EARTHMIND_ALLOW_CUSTOM_COMPONENTS=false`, components contributed by `EARTHMIND_COMPONENTS_PATH` and `EARTHMIND_COMPONENTS_INDEX_PATH` no longer bypass the block. Has no effect when `EARTHMIND_ALLOW_CUSTOM_COMPONENTS=true`. For more information, see [Block custom components](../Deployment/deployment-block-custom-components.mdx). |
-| `EARTHMIND_LOAD_FLOWS_PATH` | String | Not set | Path to a directory containing flow JSON files to be loaded on startup. Typically used when creating a Docker image with prepackaged flows. Requires `EARTHMIND_AUTO_LOGIN=True`. |
-| `EARTHMIND_LOAD_FLOWS_OVERWRITE_ON_NAME_MATCH` | Boolean | `False` | When a flow file in `EARTHMIND_LOAD_FLOWS_PATH` shares a name with an existing DB row but has a different `id`, controls whether to overwrite the existing row. `False` (default) skips with a warning so UI edits are preserved on restart when file UUIDs regenerate. Set to `True` to opt into prepackaged-flows-are-source-of-truth semantics, typically for CI/CD pipelines. |
-| `EARTHMIND_CREATE_STARTER_PROJECTS` | Boolean | `True` | Whether to create templates during initialization. If `false`, EarthMind doesn't create templates, and `EARTHMIND_UPDATE_STARTER_PROJECTS` is treated as `false`. |
-| `EARTHMIND_UPDATE_STARTER_PROJECTS` | Boolean | `True` | Whether to update templates with the latest component versions when initializing after an upgrade. |
-| `EARTHMIND_LAZY_LOAD_COMPONENTS` | Boolean | `False` | If `true`, EarthMind only partially loads components at startup and fully loads them on demand. This significantly reduces startup time but can cause a slight delay when a component is first used. |
-| `EARTHMIND_EVENT_DELIVERY` | String | `streaming` | How to deliver build events to the frontend: `polling`, `streaming` or `direct`. |
-| `EARTHMIND_FRONTEND_PATH` | String | `./frontend` | Path to the frontend directory containing build files. For development purposes only when you need to serve specific frontend code. |
-| `EARTHMIND_FS_TOOL_BASE_DIR` | String | `~/.earthmind/fs_tool/fs_sandbox` | Base directory for the [**File System** component](../Components/file-system.mdx) sandbox. All agent file operations are confined to this directory. |
-| `EARTHMIND_MAX_ITEMS_LENGTH` | Integer | `100` | Maximum number of items to store and display in the visual editor. Lists longer than this will be truncated when displayed in the visual editor. Doesn't affect outputs or data passed between components. |
-| `EARTHMIND_MAX_TEXT_LENGTH` | Integer | `1000` | Maximum number of characters to store and display in the visual editor. Responses longer than this will be truncated when displayed in the visual editor. Doesn't truncate outputs or responses passed between components. |
-| `EARTHMIND_MAX_TRANSACTIONS_TO_KEEP` | Integer | `3000` | Maximum number of flow transaction events to keep in the database. |
-| `EARTHMIND_MAX_VERTEX_BUILDS_TO_KEEP` | Integer | `3000` | Maximum number of vertex builds to keep in the database. Relates to [Playground](/concepts-playground) functionality. |
-| `EARTHMIND_MAX_VERTEX_BUILDS_PER_VERTEX` | Integer | `2` | Maximum number of builds to keep per vertex. Older builds are deleted. Relates to [Playground](/concepts-playground) functionality. |
-| `EARTHMIND_PUBLIC_FLOW_CLEANUP_INTERVAL` | Integer | `3600` | The interval in seconds at which data for [shared Playground](/concepts-playground#share-a-flows-playground) flows are cleaned up. Default: 3600 seconds (1 hour). Minimum: 600 seconds (10 minutes). |
-| `EARTHMIND_PUBLIC_FLOW_EXPIRATION` | Integer | `86400` | The time in seconds after which a [shared Playground](/concepts-playground#share-a-flows-playground) flow is considered expired and eligible for cleanup. Default: 86400 seconds (24 hours). Minimum: 600 seconds (10 minutes). |
+| `TERRAFLOW_AUTO_SAVING` | Boolean | `True` | Whether to automatically save the current flow draft. Auto-save only updates the live draft, and doesn't create [saved flow versions](/concepts-flows#save-and-restore-flow-versions). |
+| `TERRAFLOW_AUTO_SAVING_INTERVAL` | Integer | `1000` | Set the auto-save interval in milliseconds if `TERRAFLOW_AUTO_SAVING=True`. |
+| `TERRAFLOW_BUNDLE_URLS` | List[String] | `[]` | A list of URLs from which to load custom bundles. Supports GitHub URLs. If `TERRAFLOW_AUTO_LOGIN=True`, flows from these bundles are loaded into the database. |
+| `TERRAFLOW_COMPONENTS_PATH` | String | Not set | Path to a directory containing custom components. Typically used if you have local custom components or you are building a Docker image with custom components. |
+| `TERRAFLOW_COMPONENTS_INDEX_PATH` | String | Not set | File path or URL (`http://` or `https://`) to a prebuilt component index JSON file used to populate built-in components in the visual editor. When not set, Terraflow uses the included index. Useful for supplying a curated component index, for example in airgapped deployments. For more information, see [Block custom components](../Deployment/deployment-block-custom-components.mdx). |
+| `TERRAFLOW_ALLOW_CUSTOM_COMPONENTS` | Boolean | `True` | If `false`, disables custom components and in-editor editing of component code. This feature is in beta. For more information, see [Block custom components](../Deployment/deployment-block-custom-components.mdx). |
+| `TERRAFLOW_ALLOW_COMPONENTS_PATHS_OVERRIDE` | Boolean | `True` | When `false` alongside `TERRAFLOW_ALLOW_CUSTOM_COMPONENTS=false`, components contributed by `TERRAFLOW_COMPONENTS_PATH` and `TERRAFLOW_COMPONENTS_INDEX_PATH` no longer bypass the block. Has no effect when `TERRAFLOW_ALLOW_CUSTOM_COMPONENTS=true`. For more information, see [Block custom components](../Deployment/deployment-block-custom-components.mdx). |
+| `TERRAFLOW_LOAD_FLOWS_PATH` | String | Not set | Path to a directory containing flow JSON files to be loaded on startup. Typically used when creating a Docker image with prepackaged flows. Requires `TERRAFLOW_AUTO_LOGIN=True`. |
+| `TERRAFLOW_LOAD_FLOWS_OVERWRITE_ON_NAME_MATCH` | Boolean | `False` | When a flow file in `TERRAFLOW_LOAD_FLOWS_PATH` shares a name with an existing DB row but has a different `id`, controls whether to overwrite the existing row. `False` (default) skips with a warning so UI edits are preserved on restart when file UUIDs regenerate. Set to `True` to opt into prepackaged-flows-are-source-of-truth semantics, typically for CI/CD pipelines. |
+| `TERRAFLOW_CREATE_STARTER_PROJECTS` | Boolean | `True` | Whether to create templates during initialization. If `false`, Terraflow doesn't create templates, and `TERRAFLOW_UPDATE_STARTER_PROJECTS` is treated as `false`. |
+| `TERRAFLOW_UPDATE_STARTER_PROJECTS` | Boolean | `True` | Whether to update templates with the latest component versions when initializing after an upgrade. |
+| `TERRAFLOW_LAZY_LOAD_COMPONENTS` | Boolean | `False` | If `true`, Terraflow only partially loads components at startup and fully loads them on demand. This significantly reduces startup time but can cause a slight delay when a component is first used. |
+| `TERRAFLOW_EVENT_DELIVERY` | String | `streaming` | How to deliver build events to the frontend: `polling`, `streaming` or `direct`. |
+| `TERRAFLOW_FRONTEND_PATH` | String | `./frontend` | Path to the frontend directory containing build files. For development purposes only when you need to serve specific frontend code. |
+| `TERRAFLOW_FS_TOOL_BASE_DIR` | String | `~/.terraflow/fs_tool/fs_sandbox` | Base directory for the [**File System** component](../Components/file-system.mdx) sandbox. All agent file operations are confined to this directory. |
+| `TERRAFLOW_MAX_ITEMS_LENGTH` | Integer | `100` | Maximum number of items to store and display in the visual editor. Lists longer than this will be truncated when displayed in the visual editor. Doesn't affect outputs or data passed between components. |
+| `TERRAFLOW_MAX_TEXT_LENGTH` | Integer | `1000` | Maximum number of characters to store and display in the visual editor. Responses longer than this will be truncated when displayed in the visual editor. Doesn't truncate outputs or responses passed between components. |
+| `TERRAFLOW_MAX_TRANSACTIONS_TO_KEEP` | Integer | `3000` | Maximum number of flow transaction events to keep in the database. |
+| `TERRAFLOW_MAX_VERTEX_BUILDS_TO_KEEP` | Integer | `3000` | Maximum number of vertex builds to keep in the database. Relates to [Playground](/concepts-playground) functionality. |
+| `TERRAFLOW_MAX_VERTEX_BUILDS_PER_VERTEX` | Integer | `2` | Maximum number of builds to keep per vertex. Older builds are deleted. Relates to [Playground](/concepts-playground) functionality. |
+| `TERRAFLOW_PUBLIC_FLOW_CLEANUP_INTERVAL` | Integer | `3600` | The interval in seconds at which data for [shared Playground](/concepts-playground#share-a-flows-playground) flows are cleaned up. Default: 3600 seconds (1 hour). Minimum: 600 seconds (10 minutes). |
+| `TERRAFLOW_PUBLIC_FLOW_EXPIRATION` | Integer | `86400` | The time in seconds after which a [shared Playground](/concepts-playground#share-a-flows-playground) flow is considered expired and eligible for cleanup. Default: 86400 seconds (24 hours). Minimum: 600 seconds (10 minutes). |
 
 ### Hide UI elements with embedded mode {#embedded-mode}
 
-When you embed the EarthMind visual editor in another application, such as an iframe within a host portal, you can hide UI elements that are usually visible in the visual editor.
+When you embed the Terraflow visual editor in another application, such as an iframe within a host portal, you can hide UI elements that are usually visible in the visual editor.
 
 The embedded mode environment variables control which UI elements appear in the visual editor.
-Embedded mode controls UI visibility only, and does not block API endpoints or deploy EarthMind.
+Embedded mode controls UI visibility only, and does not block API endpoints or deploy Terraflow.
 
 Embedded mode is distinct from the [embedded chat widget](/concepts-publish#embedded-chat-widget), which embeds a single flow's chat UI in a website.
 
-When `EARTHMIND_EMBEDDED_MODE=true`, EarthMind hides the following buttons in the UI:
+When `TERRAFLOW_EMBEDDED_MODE=true`, Terraflow hides the following buttons in the UI:
 
 * **Logout**
 * **New project**
@@ -480,9 +480,9 @@ You can hide individual elements without enabling the umbrella flag.
 
 | Variable | Format | Default | Description |
 |----------|--------|---------|-------------|
-| `EARTHMIND_EMBEDDED_MODE` | Boolean | `False` | Umbrella flag for embedded or iframe deployments. When `true`, hides standalone UI elements: logout, new project, new flow, and starter projects. Individual hide flags can also be set without enabling this flag. |
-| `EARTHMIND_HIDE_LOGOUT_BUTTON` | Boolean | `False` | If `true`, hides the logout button in the account menu. Automatically enabled when `EARTHMIND_EMBEDDED_MODE=true`. |
-| `EARTHMIND_HIDE_NEW_PROJECT_BUTTON` | Boolean | `False` | If `true`, hides the new project/folder button in the sidebar. Automatically enabled when `EARTHMIND_EMBEDDED_MODE=true`. |
-| `EARTHMIND_HIDE_NEW_FLOW_BUTTON` | Boolean | `False` | If `true`, hides the new flow button in the header. Automatically enabled when `EARTHMIND_EMBEDDED_MODE=true`. |
-| `EARTHMIND_HIDE_STARTER_PROJECTS` | Boolean | `False` | If `true`, hides the starter projects tab in the templates modal. Does not affect database seeding of starter projects. Automatically enabled when `EARTHMIND_EMBEDDED_MODE=true`. |
-| `EARTHMIND_HIDE_GETTING_STARTED_PROGRESS` | Boolean | `False` | If `true`, hides the getting-started onboarding progress UI. Not automatically enabled when `EARTHMIND_EMBEDDED_MODE=true`. |
+| `TERRAFLOW_EMBEDDED_MODE` | Boolean | `False` | Umbrella flag for embedded or iframe deployments. When `true`, hides standalone UI elements: logout, new project, new flow, and starter projects. Individual hide flags can also be set without enabling this flag. |
+| `TERRAFLOW_HIDE_LOGOUT_BUTTON` | Boolean | `False` | If `true`, hides the logout button in the account menu. Automatically enabled when `TERRAFLOW_EMBEDDED_MODE=true`. |
+| `TERRAFLOW_HIDE_NEW_PROJECT_BUTTON` | Boolean | `False` | If `true`, hides the new project/folder button in the sidebar. Automatically enabled when `TERRAFLOW_EMBEDDED_MODE=true`. |
+| `TERRAFLOW_HIDE_NEW_FLOW_BUTTON` | Boolean | `False` | If `true`, hides the new flow button in the header. Automatically enabled when `TERRAFLOW_EMBEDDED_MODE=true`. |
+| `TERRAFLOW_HIDE_STARTER_PROJECTS` | Boolean | `False` | If `true`, hides the starter projects tab in the templates modal. Does not affect database seeding of starter projects. Automatically enabled when `TERRAFLOW_EMBEDDED_MODE=true`. |
+| `TERRAFLOW_HIDE_GETTING_STARTED_PROGRESS` | Boolean | `False` | If `true`, hides the getting-started onboarding progress UI. Not automatically enabled when `TERRAFLOW_EMBEDDED_MODE=true`. |

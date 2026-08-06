@@ -4,8 +4,8 @@ These tests show:
 1. What FAILS with the OLD (buggy) code
 2. What PASSES with the NEW (fixed) code
 
-Issue: https://github.com/earthmind-ai/earthmind/issues/10231
-PR: https://github.com/earthmind-ai/earthmind/pull/10232
+Issue: https://github.com/terraflow-ai/terraflow/issues/10231
+PR: https://github.com/terraflow-ai/terraflow/pull/10232
 
 Run these tests to verify:
 - The bug exists (tests that show errors)
@@ -27,7 +27,7 @@ class TestBuggyCode:
     def test_buggy_code_crashes_with_nullpool(self):
         """This test PROVES the bug exists.
 
-        When users set EARTHMIND_DB_CONNECTION_SETTINGS={"poolclass": "NullPool"},
+        When users set TERRAFLOW_DB_CONNECTION_SETTINGS={"poolclass": "NullPool"},
         the OLD code would crash with:
         TypeError: Pool.__init__() missing 1 required positional argument: 'creator'
         """

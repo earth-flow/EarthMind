@@ -4,28 +4,28 @@ from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import pytest
-from earthmind.api.v1.mappers.deployments.contracts import ProviderSnapshotBinding
-from earthmind.services.database.models.deployment.crud import create_deployment
-from earthmind.services.database.models.deployment.model import Deployment
-from earthmind.services.database.models.deployment_provider_account.crud import create_provider_account
-from earthmind.services.database.models.deployment_provider_account.model import DeploymentProviderAccount
-from earthmind.services.database.models.deployment_provider_account.schemas import DeploymentProviderKey
-from earthmind.services.database.models.flow.model import Flow
-from earthmind.services.database.models.flow_version.model import FlowVersion
-from earthmind.services.database.models.flow_version_deployment_attachment.crud import (
+from terraflow.api.v1.mappers.deployments.contracts import ProviderSnapshotBinding
+from terraflow.services.database.models.deployment.crud import create_deployment
+from terraflow.services.database.models.deployment.model import Deployment
+from terraflow.services.database.models.deployment_provider_account.crud import create_provider_account
+from terraflow.services.database.models.deployment_provider_account.model import DeploymentProviderAccount
+from terraflow.services.database.models.deployment_provider_account.schemas import DeploymentProviderKey
+from terraflow.services.database.models.flow.model import Flow
+from terraflow.services.database.models.flow_version.model import FlowVersion
+from terraflow.services.database.models.flow_version_deployment_attachment.crud import (
     create_deployment_attachment,
     delete_deployment_attachments_by_keys,
     delete_unbound_attachments,
     list_attachments_by_deployment_ids,
     update_deployment_attachment_provider_snapshot_id,
 )
-from earthmind.services.database.models.flow_version_deployment_attachment.model import FlowVersionDeploymentAttachment
-from earthmind.services.database.models.flow_version_deployment_attachment.schema import (
+from terraflow.services.database.models.flow_version_deployment_attachment.model import FlowVersionDeploymentAttachment
+from terraflow.services.database.models.flow_version_deployment_attachment.schema import (
     DeploymentAttachmentKeyBatch,
 )
-from earthmind.services.database.models.folder.model import Folder
-from earthmind.services.database.models.user.model import User
-from earthmind.services.deps import session_scope
+from terraflow.services.database.models.folder.model import Folder
+from terraflow.services.database.models.user.model import User
+from terraflow.services.deps import session_scope
 from lfx.services.adapters.deployment.schema import DeploymentType
 
 if TYPE_CHECKING:

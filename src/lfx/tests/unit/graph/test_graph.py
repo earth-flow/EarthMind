@@ -503,7 +503,7 @@ def test_add_nodes_and_edges_recomputes_grouped_loop_cycles_after_processing(mon
     assert graph.cycle_vertices == {loop_id, converter_id}
 
 
-# TODO: Move to EarthMind tests
+# TODO: Move to Terraflow tests
 @pytest.mark.skip(reason="Temporarily disabled")
 async def test_serialize_graph():
     pass

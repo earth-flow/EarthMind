@@ -1,4 +1,4 @@
-"""Run module for executing EarthMind graphs."""
+"""Run module for executing Terraflow graphs."""
 
 from lfx.run.base import RunError, run_flow
 

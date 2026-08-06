@@ -1,4 +1,4 @@
-"""Unit tests for earthmind.preload module.
+"""Unit tests for terraflow.preload module.
 
 These tests verify the failure-fallback contract and state management
 of the Gunicorn master preload functionality.
@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from earthmind.preload import (
+from terraflow.preload import (
     _STATE,
     PreloadStep,
     _run_master_preload,
@@ -128,41 +128,41 @@ def _preload_env(
     logger_mock = AsyncMock()
 
     with ExitStack() as stack:
-        stack.enter_context(patch("earthmind.preload.logger", logger_mock))
+        stack.enter_context(patch("terraflow.preload.logger", logger_mock))
         stack.enter_context(
-            patch("earthmind.services.utils.initialize_services", new_callable=AsyncMock),
+            patch("terraflow.services.utils.initialize_services", new_callable=AsyncMock),
         )
         stack.enter_context(
-            patch("earthmind.services.deps.get_settings_service", return_value=settings_service),
+            patch("terraflow.services.deps.get_settings_service", return_value=settings_service),
         )
         stack.enter_context(
-            patch("earthmind.services.deps.get_telemetry_service", return_value=MagicMock()),
+            patch("terraflow.services.deps.get_telemetry_service", return_value=MagicMock()),
         )
-        stack.enter_context(patch("earthmind.services.deps.get_db_service", return_value=db_service))
-        stack.enter_context(patch("earthmind.services.deps.get_service", return_value=cache_service))
+        stack.enter_context(patch("terraflow.services.deps.get_db_service", return_value=db_service))
+        stack.enter_context(patch("terraflow.services.deps.get_service", return_value=cache_service))
         stack.enter_context(
-            patch("earthmind.services.deps.session_scope", return_value=_async_cm(AsyncMock())),
+            patch("terraflow.services.deps.session_scope", return_value=_async_cm(AsyncMock())),
         )
-        stack.enter_context(patch("earthmind.initial_setup.setup.copy_profile_pictures", copy_pics))
+        stack.enter_context(patch("terraflow.initial_setup.setup.copy_profile_pictures", copy_pics))
         stack.enter_context(
-            patch("earthmind.initial_setup.setup.create_or_update_starter_projects", create_starter),
+            patch("terraflow.initial_setup.setup.create_or_update_starter_projects", create_starter),
         )
         stack.enter_context(
-            patch("earthmind.initial_setup.setup.load_flows_from_directory", load_flows),
+            patch("terraflow.initial_setup.setup.load_flows_from_directory", load_flows),
         )
-        stack.enter_context(patch("earthmind.main.load_bundles_with_error_handling", load_bundles))
+        stack.enter_context(patch("terraflow.main.load_bundles_with_error_handling", load_bundles))
         stack.enter_context(
             patch("lfx.interface.components.get_and_cache_all_types_dict", get_and_cache),
         )
         stack.enter_context(
             patch(
-                "earthmind.api.utils.mcp.agentic_mcp.initialize_agentic_global_variables",
+                "terraflow.api.utils.mcp.agentic_mcp.initialize_agentic_global_variables",
                 init_agentic,
             ),
         )
         stack.enter_context(
             patch(
-                "earthmind.api.utils.mcp.agentic_mcp.auto_configure_agentic_mcp_server",
+                "terraflow.api.utils.mcp.agentic_mcp.auto_configure_agentic_mcp_server",
                 auto_config,
             ),
         )
@@ -324,7 +324,7 @@ def test_reset_cleanup_calls_temp_directories():
 # ---------------------------------------------------------------------------
 
 
-@patch("earthmind.preload.asyncio.run")
+@patch("terraflow.preload.asyncio.run")
 def test_preload_master_idempotent(mock_asyncio_run):
     """preload_master() should be a no-op when already preloaded."""
     _STATE.preloaded = True
@@ -334,7 +334,7 @@ def test_preload_master_idempotent(mock_asyncio_run):
     mock_asyncio_run.assert_not_called()
 
 
-@patch("earthmind.preload.asyncio.run")
+@patch("terraflow.preload.asyncio.run")
 def test_preload_master_sets_state_on_success(mock_asyncio_run):
     mock_asyncio_run.return_value = None
 
@@ -345,8 +345,8 @@ def test_preload_master_sets_state_on_success(mock_asyncio_run):
     mock_asyncio_run.assert_called_once()
 
 
-@patch("earthmind.preload.logger")
-@patch("earthmind.preload.asyncio.run")
+@patch("terraflow.preload.logger")
+@patch("terraflow.preload.asyncio.run")
 def test_preload_master_no_flag_on_failure(mock_asyncio_run, mock_logger):
     """preload_master() must NOT set preloaded flag when preload fails."""
     mock_asyncio_run.side_effect = _fail_and_close(RuntimeError("Preload failed"))
@@ -357,8 +357,8 @@ def test_preload_master_no_flag_on_failure(mock_asyncio_run, mock_logger):
     mock_logger.exception.assert_called_once()
 
 
-@patch("earthmind.preload.logger")
-@patch("earthmind.preload.asyncio.run")
+@patch("terraflow.preload.logger")
+@patch("terraflow.preload.asyncio.run")
 @pytest.mark.usefixtures("reset_preload_state")
 def test_preload_master_resets_state_on_failure(mock_asyncio_run, _mock_logger):  # noqa: PT019
     """preload_master() resets _STATE on failure to keep is_master() and is_preloaded() consistent.
@@ -382,8 +382,8 @@ def test_preload_master_resets_state_on_failure(mock_asyncio_run, _mock_logger):
     assert is_preloaded() is False
 
 
-@patch("earthmind.preload.gc")
-@patch("earthmind.preload.asyncio.run")
+@patch("terraflow.preload.gc")
+@patch("terraflow.preload.asyncio.run")
 def test_preload_master_calls_gc_freeze(mock_asyncio_run, mock_gc):
     mock_asyncio_run.return_value = None
 
@@ -393,9 +393,9 @@ def test_preload_master_calls_gc_freeze(mock_asyncio_run, mock_gc):
     mock_gc.freeze.assert_called_once()
 
 
-@patch("earthmind.preload.gc")
-@patch("earthmind.preload.logger")
-@patch("earthmind.preload.asyncio.run")
+@patch("terraflow.preload.gc")
+@patch("terraflow.preload.logger")
+@patch("terraflow.preload.asyncio.run")
 def test_preload_master_resets_state_when_gc_freeze_fails(mock_asyncio_run, mock_logger, mock_gc):
     """If gc.freeze() fails after async preload, state is reset and the exception propagates."""
     mock_asyncio_run.return_value = None
@@ -467,7 +467,7 @@ async def test_run_master_preload_sets_completion_flags_on_success():
 @pytest.mark.asyncio
 async def test_run_master_preload_closes_external_cache_service():
     """An ExternalAsyncBaseCacheService must have teardown() awaited before fork."""
-    from earthmind.services.cache.base import ExternalAsyncBaseCacheService
+    from terraflow.services.cache.base import ExternalAsyncBaseCacheService
 
     class _FakeCache(ExternalAsyncBaseCacheService):
         """Minimal concrete subclass so isinstance() succeeds without mocking.

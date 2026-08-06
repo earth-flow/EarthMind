@@ -24,7 +24,7 @@ SLOT_OFFICIAL: Literal["official"] = "official"
 """Slot for installed Extensions (pip install / manifest-shipping distribution)."""
 
 SLOT_EXTRA: Literal["extra"] = "extra"
-"""Slot for loose EARTHMIND_COMPONENTS_PATH directories (ad-hoc local dev)."""
+"""Slot for loose TERRAFLOW_COMPONENTS_PATH directories (ad-hoc local dev)."""
 
 SLOT_VALUES: tuple[str, ...] = (SLOT_OFFICIAL, SLOT_EXTRA)
 """All slot names accepted by ``load_extension``.  Public so test suites can
@@ -49,7 +49,7 @@ class LoadedComponent:
     Slot / distribution invariant
     -----------------------------
     ``@extra`` components MUST NOT carry a ``distribution``: they're loose
-    folders from ``EARTHMIND_COMPONENTS_PATH``, never pip-installed. The
+    folders from ``TERRAFLOW_COMPONENTS_PATH``, never pip-installed. The
     reverse (``@official`` with ``distribution=None``) is permitted because
     ``load_extension`` is used for dev-mode loads against a working tree
     *before* the package gets installed (the ``extension dev`` flow);
@@ -69,7 +69,7 @@ class LoadedComponent:
     file_path: Path
     distribution: str | None = None
     """Canonical PEP-503 distribution name when loaded from an installed
-    package; ``None`` for inline EARTHMIND_COMPONENTS_PATH bundles AND for
+    package; ``None`` for inline TERRAFLOW_COMPONENTS_PATH bundles AND for
     @official dev-mode loads against a not-yet-installed working tree."""
     source_hash: str = ""
     """SHA-256 hex digest of ``file_path`` bytes at load time.  Empty string

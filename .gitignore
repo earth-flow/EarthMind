@@ -19,7 +19,7 @@ qdrant_storage
 .ruff_cache
 opendsstar_cache
 
-# Local runtime data accidentally committed in the past (default lives in ~/.earthmind)
+# Local runtime data accidentally committed in the past (default lives in ~/.terraflow)
 data/knowledge_bases/
 data/*/_mcp_servers_*.json
 
@@ -255,7 +255,7 @@ dmypy.json
 
 # Poetry
 .testenv/*
-earthmind.db
+terraflow.db
 
 
 .githooks/prepare-commit-msg
@@ -265,8 +265,8 @@ earthmind.db
 .docusaurus/
 
 /tmp/*
-src/backend/earthmind/frontend/
-src/backend/base/earthmind/frontend/
+src/backend/terraflow/frontend/
+src/backend/base/terraflow/frontend/
 .docker
 scratchpad*
 chroma*/*
@@ -296,7 +296,7 @@ data/user
 sso-config.yaml
 AGENTS.md
 CLAUDE.local.md
-earthmind.log.*
+terraflow.log.*
 tmp_toolguard/
 
 #whitesource

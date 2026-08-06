@@ -5,8 +5,8 @@ import traceback
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from earthmind.services.telemetry.schema import ExceptionPayload
-from earthmind.services.telemetry.service import TelemetryService
+from terraflow.services.telemetry.schema import ExceptionPayload
+from terraflow.services.telemetry.service import TelemetryService
 
 
 class TestExceptionTelemetry:
@@ -81,7 +81,7 @@ class TestExceptionTelemetry:
         telemetry_service.do_not_track = False
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "linux",
         }
@@ -117,7 +117,7 @@ class TestExceptionTelemetry:
         assert params["exceptionContext"] == "handler"
         assert params["stackTraceHash"] == "abc123"
         assert params["clientType"] == "oss"
-        assert params["earthmind_version"] == "1.0.0"
+        assert params["terraflow_version"] == "1.0.0"
         assert params["platform"] == "python_package"
         assert params["os"] == "linux"
         assert "timestamp" in params
@@ -131,7 +131,7 @@ class TestExceptionTelemetry:
         telemetry_service.do_not_track = True
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "linux",
         }
@@ -186,7 +186,7 @@ class TestExceptionTelemetry:
         telemetry_service.do_not_track = False
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "linux",
         }
@@ -221,7 +221,7 @@ class TestExceptionTelemetry:
         telemetry_service.do_not_track = False
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "linux",
         }
@@ -258,7 +258,7 @@ class TestExceptionTelemetry:
         telemetry_service.do_not_track = False
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "linux",
         }
@@ -295,7 +295,7 @@ class TestExceptionTelemetry:
         telemetry_service.do_not_track = False
         telemetry_service.client_type = "oss"
         telemetry_service.common_telemetry_fields = {
-            "earthmind_version": "1.0.0",
+            "terraflow_version": "1.0.0",
             "platform": "python_package",
             "os": "linux",
         }

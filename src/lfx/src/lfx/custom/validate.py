@@ -12,12 +12,12 @@ from pydantic import ValidationError
 from lfx.field_typing.constants import CUSTOM_COMPONENT_SUPPORTED_TYPES, DEFAULT_IMPORT_STRING
 from lfx.log.logger import logger
 
-_EARTHMIND_IS_INSTALLED = False
+_TERRAFLOW_IS_INSTALLED = False
 
 with contextlib.suppress(ImportError):
-    import earthmind  # noqa: F401
+    import terraflow  # noqa: F401
 
-    _EARTHMIND_IS_INSTALLED = True
+    _TERRAFLOW_IS_INSTALLED = True
 
 
 def add_type_ignores() -> None:
@@ -57,13 +57,13 @@ def validate_code(code):
                 except ModuleNotFoundError as e:
                     errors["imports"]["errors"].append(str(e))
 
-    # Evaluate the function definition with earthmind context
+    # Evaluate the function definition with terraflow context
     for node in tree.body:
         if isinstance(node, ast.FunctionDef):
             code_obj = compile(ast.Module(body=[node], type_ignores=[]), "<string>", "exec")
             try:
-                # Create execution context with common earthmind imports
-                exec_globals = _create_earthmind_execution_context()
+                # Create execution context with common terraflow imports
+                exec_globals = _create_terraflow_execution_context()
                 exec(code_obj, exec_globals)
             except Exception as e:  # noqa: BLE001
                 logger.debug("Error executing function code", exc_info=True)
@@ -73,11 +73,11 @@ def validate_code(code):
     return errors
 
 
-def _create_earthmind_execution_context():
-    """Create execution context with common earthmind imports."""
+def _create_terraflow_execution_context():
+    """Create execution context with common terraflow imports."""
     context = {}
 
-    # Import common earthmind types that are used in templates
+    # Import common terraflow types that are used in templates
     try:
         from lfx.schema.dataframe import DataFrame
 
@@ -261,10 +261,10 @@ def create_class(code, class_name):
     if not hasattr(ast, "TypeIgnore"):
         ast.TypeIgnore = create_type_ignore_class()
 
-    code = code.replace("from earthmind import CustomComponent", "from earthmind.custom import CustomComponent")
+    code = code.replace("from terraflow import CustomComponent", "from terraflow.custom import CustomComponent")
     code = code.replace(
-        "from earthmind.interface.custom.custom_component import CustomComponent",
-        "from earthmind.custom import CustomComponent",
+        "from terraflow.interface.custom.custom_component import CustomComponent",
+        "from terraflow.custom import CustomComponent",
     )
 
     code = DEFAULT_IMPORT_STRING + "\n" + code
@@ -365,7 +365,7 @@ class _MissingModulePlaceholder:
 def _get_module_fallbacks(module_name: str) -> list[str]:
     """Return a list of module names to try, including compatibility fallbacks.
 
-    Handles earthmind -> lfx and langchain -> langchain_classic remapping at the
+    Handles terraflow -> lfx and langchain -> langchain_classic remapping at the
     module level (for entirely removed modules). Attribute-level fallback for
     removed attributes in still-existing modules is handled by _resolve_attribute.
 
@@ -373,8 +373,8 @@ def _get_module_fallbacks(module_name: str) -> list[str]:
     are never replaced.
     """
     names = [module_name]
-    if module_name.startswith("earthmind."):
-        names.append(module_name.replace("earthmind.", "lfx.", 1))
+    if module_name.startswith("terraflow."):
+        names.append(module_name.replace("terraflow.", "lfx.", 1))
     if module_name.startswith("langchain."):
         names.append(module_name.replace("langchain.", "langchain_classic.", 1))
     return names
@@ -546,10 +546,10 @@ def get_default_imports(code_string):
         "Dict": dict,
         "Union": Union,
     }
-    earthmind_imports = list(CUSTOM_COMPONENT_SUPPORTED_TYPES.keys())
-    necessary_imports = find_names_in_code(code_string, earthmind_imports)
-    earthmind_module = importlib.import_module("lfx.field_typing")
-    default_imports.update({name: getattr(earthmind_module, name) for name in necessary_imports})
+    terraflow_imports = list(CUSTOM_COMPONENT_SUPPORTED_TYPES.keys())
+    necessary_imports = find_names_in_code(code_string, terraflow_imports)
+    terraflow_module = importlib.import_module("lfx.field_typing")
+    default_imports.update({name: getattr(terraflow_module, name) for name in necessary_imports})
 
     return default_imports
 

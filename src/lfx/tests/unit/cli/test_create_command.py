@@ -1,6 +1,6 @@
 """Unit tests for ``lfx create`` and the ``--example`` seeding in ``lfx init``.
 
-All tests run entirely in-process; no running EarthMind instance required.
+All tests run entirely in-process; no running Terraflow instance required.
 """
 
 from __future__ import annotations

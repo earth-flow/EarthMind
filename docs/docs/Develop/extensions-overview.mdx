@@ -1,24 +1,24 @@
 ---
-title: EarthMind Extensions overview
+title: Terraflow Extensions overview
 slug: /extensions-overview
 ---
 
 import Icon from "@site/src/components/icon";
 
-EarthMind ships component bundles that are maintained and released separately from the core EarthMind server as Extensions.
-Instead of every integration being built into `earthmind`, each bundle is its own pip-installable package, such as `lfx-duckduckgo` or `lfx-arxiv`.
+Terraflow ships component bundles that are maintained and released separately from the core Terraflow server as Extensions.
+Instead of every integration being built into `terraflow`, each bundle is its own pip-installable package, such as `lfx-duckduckgo` or `lfx-arxiv`.
 
-When you run `uv pip install earthmind`, you install:
+When you run `uv pip install terraflow`, you install:
 
-* All EarthMind core components
-* All bundles that ship as dependencies of the `earthmind` metapackage
+* All Terraflow core components
+* All bundles that ship as dependencies of the `terraflow` metapackage
 
-Some bundles that were previously included in `earthmind` are moved into standalone packages.
-The `earthmind` metapackage adds them as regular pip dependencies, so `pip install earthmind` continues to include them.
+Some bundles that were previously included in `terraflow` are moved into standalone packages.
+The `terraflow` metapackage adds them as regular pip dependencies, so `pip install terraflow` continues to include them.
 
 ## Current Extension bundles
 
-The following Extension bundles are included with `uv pip install earthmind`:
+The following Extension bundles are included with `uv pip install terraflow`:
 
 | Package | Bundle | Components |
 |---------|--------|------------|
@@ -29,7 +29,7 @@ The following Extension bundles are included with `uv pip install earthmind`:
 
 The internal identifier for each component changes.
 For example, a DuckDuckGo component previously referenced as a `DuckDuckGoSearchComponent` class is now `ext:duckduckgo:DuckDuckGoSearchComponent@official`.
-EarthMind rewrites these references automatically when you open a saved flow, so in most cases the migration is invisible.
+Terraflow rewrites these references automatically when you open a saved flow, so in most cases the migration is invisible.
 
 ## If a component is missing after an upgrade
 
@@ -50,14 +50,14 @@ Use the bundle name from the hint, such as `duckduckgo` in this example, to find
 
 ## Install a bundle extension
 
-If a bundle you need is not included in your EarthMind environment, install it with pip:
+If a bundle you need is not included in your Terraflow environment, install it with pip:
 
 ```bash
 uv pip install lfx-duckduckgo
-uv run earthmind run
+uv run terraflow run
 ```
 
-EarthMind discovers the package at server startup and loads the components into the palette automatically.
+Terraflow discovers the package at server startup and loads the components into the palette automatically.
 No additional configuration is required.
 
 To see what extensions are currently loaded, run:
@@ -68,6 +68,6 @@ lfx extension list
 
 ## Build your own extension
 
-If you have custom components that you want to distribute and version independently of your EarthMind install, you can package them as an extension.
+If you have custom components that you want to distribute and version independently of your Terraflow install, you can package them as an extension.
 
-For more information, see [Build your first EarthMind Extension](./extensions-quickstart.mdx).
+For more information, see [Build your first Terraflow Extension](./extensions-quickstart.mdx).

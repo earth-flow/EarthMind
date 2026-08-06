@@ -565,7 +565,7 @@ graph TD
     OW["Flow Owner\n(creates and shares flows)"]
   end
 
-  LF["EarthMind\nAI flow builder with\nshareable playground"]
+  LF["Terraflow\nAI flow builder with\nshareable playground"]
   LLM["LLM Provider\n(OpenAI, Anthropic, etc.)"]
 
   AU -->|"Sessions persisted to DB\n/shared endpoints"| LF

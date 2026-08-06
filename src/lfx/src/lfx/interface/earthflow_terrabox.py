@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import contextlib
 import keyword
 import logging
 import re
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -42,27 +40,17 @@ _KNOWN_FILE_EXTENSIONS = frozenset(
 )
 _MAX_FILE_CANDIDATES = 10
 _MAX_SCAN_DEPTH = 6
-DEFAULT_TERRABOX_TOOLKITS: frozenset[str] = frozenset(
-    {
-        "geo_basic",
-        "geo_raster",
-        "earth_sci",
-        "disaster_response",
-        "stac_basic",
-        "osm_gis",
-        "geoanalysis",
-        "geo_statistics",
-        "raster_viewer",
-        "geopatch",
-        "geo_perception",
-    }
-)
 DEFAULT_EXCLUDED_TERRABOX_TOOLKITS: frozenset[str] = frozenset(
     {
         "bash",
         "example",
         "github",
         "ipython",
+        # Requires its own external Bing Search API connection/credentials
+        # that the service account calling Terrabox doesn't have configured;
+        # excluded by default for the same reason as bash/github, not because
+        # it's unsupported.
+        "bing_search",
     }
 )
 DEFAULT_LIGHTWEIGHT_GEO_PERCEPTION_TOOLS: frozenset[str] = frozenset(
@@ -86,24 +74,6 @@ DEFAULT_EXCLUDED_TERRABOX_TOOLS: frozenset[str] = frozenset(
         "geo_perception.instructsam",
     }
 )
-_TERRABOX_TOOLKIT_MODULES: dict[str, str] = {
-    "bash": "bash",
-    "bing_search": "bing_search",
-    "disaster_response": "disaster_response",
-    "earth_sci": "earth_sci",
-    "example": "example",
-    "geo_basic": "geobasic",
-    "geo_perception": "geo_perception",
-    "geo_raster": "georaster",
-    "geo_statistics": "geo_statistics",
-    "geoanalysis": "geoanalysis",
-    "geopatch": "geopatch",
-    "github": "github",
-    "ipython": "ipython_code",
-    "osm_gis": "osm_gis",
-    "raster_viewer": "raster_viewer",
-    "stac_basic": "stac_basic",
-}
 _FRONTEND_NODE_RESERVED_FIELDS: frozenset[str] = frozenset(
     {
         "base_classes",
@@ -147,16 +117,15 @@ class TerraboxToolSpec:
     required_scopes: list[str] | None = None
 
 
-def _as_tool_spec(raw: Any) -> TerraboxToolSpec:
-    if isinstance(raw, TerraboxToolSpec):
-        return raw
+def _as_tool_spec(raw: dict[str, Any]) -> TerraboxToolSpec:
+    """Parse one ``ToolSpecOut`` JSON object (from ``GET /v1/sdk/toolkits``) into a TerraboxToolSpec."""
     return TerraboxToolSpec(
-        slug=raw.slug,
-        name=raw.name,
-        description=raw.description,
-        parameters=raw.parameters or {"type": "object", "properties": {}},
-        requires_connection=getattr(raw, "requires_connection", False),
-        required_scopes=getattr(raw, "required_scopes", None),
+        slug=raw["slug"],
+        name=raw["name"],
+        description=raw.get("description") or "",
+        parameters=raw.get("parameters") or {"type": "object", "properties": {}},
+        requires_connection=bool(raw.get("requires_connection", False)),
+        required_scopes=raw.get("required_scopes"),
     )
 
 
@@ -193,7 +162,7 @@ def _walk_file_like_values(obj: Any, matches: list[tuple[str, str]], *, depth: i
 
 
 async def _upload_bridged_file(file_name: str, content: bytes, user_id: str) -> Any:
-    """Upload raw bytes into EarthMind's user-scoped file storage.
+    """Upload raw bytes into Terraflow's user-scoped file storage.
 
     Reuses the exact upload path ``SaveToFileComponent._upload_file()`` already
     calls (see ``lfx.components.files_and_knowledge.save_file``), so bridged
@@ -204,8 +173,8 @@ async def _upload_bridged_file(file_name: str, content: bytes, user_id: str) -> 
 
     from fastapi import UploadFile
 
-    from earthmind.api.v2.files import upload_user_file
-    from earthmind.services.database.models.user.crud import get_user_by_id
+    from terraflow.api.v2.files import upload_user_file
+    from terraflow.services.database.models.user.crud import get_user_by_id
     from lfx.services.deps import get_settings_service, get_storage_service, session_scope
 
     async with session_scope() as db:
@@ -228,12 +197,12 @@ async def bridge_generated_files(
     user_id: str,
     timeout: int = 60,
 ) -> list[dict[str, Any]]:
-    """Fetch file-like Terrabox tool outputs and re-upload them into EarthMind's
+    """Fetch file-like Terrabox tool outputs and re-upload them into Terraflow's
     own (user-scoped) file storage so the frontend can fetch them.
 
     Terrabox tool outputs only ever carry an absolute path on Terrabox's own
     host (see ``terrabox.core.services.tool_service.ToolService.execute_tool``);
-    nothing else in this codebase copies that file into EarthMind's storage, so
+    nothing else in this codebase copies that file into Terraflow's storage, so
     without this step no frontend widget can ever load it. Best-effort: any
     failure here is logged and swallowed, never raised, since a broken preview
     must not break the underlying tool call.
@@ -684,28 +653,40 @@ def _default_include_tool(slug: str) -> bool:
 
 def load_terrabox_tool_specs(
     *,
-    terrabox_src: Path | None = None,
+    base_url: str | None = None,
+    api_key: str | None = None,
+    timeout: int = 15,
     include_toolkits: set[str] | None = None,
     exclude_toolkits: set[str] | None = None,
     include_tools: set[str] | None = None,
     exclude_tools: set[str] | None = None,
 ) -> list[TerraboxToolSpec]:
-    """Load Terrabox tool specs and convert them into Langflow component templates.
+    """Discover Terrabox's currently available tools over its live SDK API.
 
-    Terrabox is a regular pinned dependency (see ``terrabox`` in pyproject.toml),
-    so in normal operation this just imports it like any other package. The
-    ``terrabox_src``/``EARTHFLOW_TERRABOX_SRC`` override below exists only for
-    tests and for local development against an editable Terrabox checkout that
-    isn't installed in this environment.
+    Terrabox already exposes this exact catalog to its own terralink frontend
+    (``GET /v1/gui/toolkits``, JWT-authenticated); this calls the equivalent
+    API-key-authenticated ``GET /v1/sdk/toolkits`` endpoint, reusing the same
+    ``TERRALINK_BASE_URL``/``TERRALINK_API_KEY`` credentials the generated
+    components already call Terrabox with for execution. Because this fetches
+    live rather than importing Terrabox's Python package, a toolkit or tool
+    Terrabox adds is visible here immediately -- no Terraflow dependency bump
+    or code change needed, just a call to
+    :func:`lfx.interface.earthflow_components.refresh_terrabox_components_cache`
+    (or a process restart) to push it into the running server's component
+    cache. ``include_toolkits``/``exclude_toolkits`` default to "everything
+    Terrabox currently reports, minus ``DEFAULT_EXCLUDED_TERRABOX_TOOLKITS``"
+    rather than a fixed allowlist, so new toolkits opt in automatically.
     """
     import os
 
-    env_src = os.getenv("EARTHFLOW_TERRABOX_SRC")
-    src = terrabox_src or (Path(env_src) if env_src else None)
+    resolved_base_url = (base_url or os.getenv("TERRALINK_BASE_URL") or DEFAULT_TERRABOX_BASE_URL).rstrip("/")
+    resolved_api_key = api_key or os.getenv("TERRALINK_API_KEY", "")
+
+    # Unlike toolkit exclusion, toolkit inclusion has no default allowlist --
+    # a value here (env or param) narrows to exactly these toolkits; leaving
+    # it unset includes every toolkit Terrabox reports except `exclude`.
     include = (
-        include_toolkits
-        if include_toolkits is not None
-        else _parse_csv_env(os.getenv("EARTHFLOW_TERRABOX_TOOLKITS")) or set(DEFAULT_TERRABOX_TOOLKITS)
+        include_toolkits if include_toolkits is not None else _parse_csv_env(os.getenv("EARTHFLOW_TERRABOX_TOOLKITS"))
     )
     exclude = (
         exclude_toolkits
@@ -722,49 +703,40 @@ def load_terrabox_tool_specs(
     if env_exclude_tools:
         tool_denylist.update(env_exclude_tools)
 
-    src_str: str | None = None
-    inserted = False
-    if src is not None:
-        if not src.exists():
-            logger.warning("Terrabox source directory not found: %s", src)
-            return []
-        src_str = str(src)
-        if src_str not in sys.path:
-            sys.path.insert(0, src_str)
-            inserted = True
+    if not resolved_api_key:
+        logger.warning(
+            "TERRALINK_API_KEY is not set; skipping Terrabox tool discovery against %s.",
+            resolved_base_url,
+        )
+        return []
 
     try:
-        from importlib import import_module
+        response = requests.get(
+            f"{resolved_base_url}/v1/sdk/toolkits",
+            headers={"X-API-Key": resolved_api_key},
+            timeout=timeout,
+        )
+        response.raise_for_status()
+        toolkits = response.json()
+    except Exception:  # noqa: BLE001
+        logger.exception("Failed to fetch Terrabox toolkits from %s", resolved_base_url)
+        return []
 
-        try:
-            from terrabox.core.registry import list_tools, registry
-            from terrabox.extensions import Registrar
-        except ImportError:
-            logger.exception(
-                "Terrabox is not importable. Install it (see the `terrabox` dependency "
-                "in pyproject.toml) or set EARTHFLOW_TERRABOX_SRC/terrabox_src to an "
-                "editable checkout for local development."
-            )
-            return []
+    if not isinstance(toolkits, list):
+        logger.warning("Unexpected Terrabox toolkits response shape from %s", resolved_base_url)
+        return []
 
-        registry.clear()
-        registrar = Registrar()
-        for toolkit in sorted(include - exclude):
-            module_name = _TERRABOX_TOOLKIT_MODULES.get(toolkit, toolkit)
-            try:
-                module = import_module(f"terrabox.toolkits.{module_name}")
-            except ImportError:
-                logger.warning("Failed to load Terrabox toolkit %s", toolkit, exc_info=True)
+    specs: list[TerraboxToolSpec] = []
+    for toolkit in toolkits:
+        if not isinstance(toolkit, dict):
+            continue
+        toolkit_slug = toolkit.get("slug")
+        if not toolkit_slug or toolkit_slug in exclude or (include is not None and toolkit_slug not in include):
+            continue
+        for raw_spec in toolkit.get("tools") or []:
+            if not isinstance(raw_spec, dict) or not raw_spec.get("slug"):
                 continue
-            setup = getattr(module, "setup", None)
-            if callable(setup):
-                setup(registrar)
-        specs = []
-        for raw_spec in list_tools():
-            slug = raw_spec.slug
-            toolkit = slug.split(".", 1)[0]
-            if toolkit in exclude or toolkit not in include:
-                continue
+            slug = raw_spec["slug"]
             if slug in tool_denylist:
                 continue
             if tool_allowlist is not None:
@@ -772,12 +744,8 @@ def load_terrabox_tool_specs(
                     continue
             elif not _default_include_tool(slug):
                 continue
-            specs.append(_as_tool_spec(raw_spec))
-        return sorted(specs, key=lambda item: item.slug)
-    except Exception:  # noqa: BLE001
-        logger.exception("Failed to load Terrabox tool specs from %s", src)
-        return []
-    finally:
-        if inserted:
-            with contextlib.suppress(ValueError):
-                sys.path.remove(src_str)
+            try:
+                specs.append(_as_tool_spec(raw_spec))
+            except KeyError:
+                logger.warning("Skipping malformed Terrabox tool spec: %r", raw_spec)
+    return sorted(specs, key=lambda item: item.slug)

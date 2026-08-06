@@ -1,4 +1,4 @@
-"""Import utilities for EarthMind components."""
+"""Import utilities for Terraflow components."""
 
 from __future__ import annotations
 

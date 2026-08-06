@@ -1,6 +1,6 @@
 """Unit tests for lfx status -- status_command and helpers.
 
-All tests run entirely in-process; no real EarthMind instance or SDK required.
+All tests run entirely in-process; no real Terraflow instance or SDK required.
 The SDK is replaced via patch so only the status logic (file collection, hash
 comparison, table rendering, exit-code rules) is exercised.
 """
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 # Shared constants
 # ---------------------------------------------------------------------------
 
-_BASE_URL = "http://earthmind.test"
+_BASE_URL = "http://terraflow.test"
 _API_KEY = "test-key"  # pragma: allowlist secret
 _FLOW_ID = UUID("aaaaaaaa-0000-0000-0000-000000000001")
 _FLOW_ID_2 = UUID("aaaaaaaa-0000-0000-0000-000000000002")
@@ -43,12 +43,12 @@ _FLOW_DICT_2: dict = {
 
 
 # ---------------------------------------------------------------------------
-# Fake exception class — avoids importing earthmind_sdk in isolation mode
+# Fake exception class — avoids importing terraflow_sdk in isolation mode
 # ---------------------------------------------------------------------------
 
 
-class _FakeEarthMindNotFoundError(Exception):
-    """Stand-in for earthmind_sdk.exceptions.EarthMindNotFoundError in unit tests."""
+class _FakeTerraflowNotFoundError(Exception):
+    """Stand-in for terraflow_sdk.exceptions.TerraflowNotFoundError in unit tests."""
 
 
 # ---------------------------------------------------------------------------
@@ -73,7 +73,7 @@ def _fake_env_config(url: str = _BASE_URL, api_key: str = _API_KEY, name: str = 
 
 
 def _fake_remote_flow(flow_id: UUID = _FLOW_ID, flow_dict: dict | None = None) -> MagicMock:
-    """Return a MagicMock that looks like a earthmind_sdk Flow model."""
+    """Return a MagicMock that looks like a terraflow_sdk Flow model."""
     remote = MagicMock()
     remote.id = flow_id
     remote.name = (flow_dict or _FLOW_DICT).get("name", "Remote Flow")
@@ -116,7 +116,7 @@ def _make_sdk_triple(
     if client_mock is None:
         client_mock = _make_client_mock()
     client_cls = MagicMock(return_value=client_mock)
-    return _identity_normalize, _json_flow_to_json, client_cls, _FakeEarthMindNotFoundError
+    return _identity_normalize, _json_flow_to_json, client_cls, _FakeTerraflowNotFoundError
 
 
 class _CloseAwareClient:
@@ -552,7 +552,7 @@ class TestStatusCommandSynced:
         p = _write_flow(tmp_path, "flow.json")
         remote = _fake_remote_flow(flow_dict=_FLOW_DICT)
         client = _CloseAwareClient(remote)
-        triple = _identity_normalize, _json_flow_to_json, MagicMock(return_value=client), _FakeEarthMindNotFoundError
+        triple = _identity_normalize, _json_flow_to_json, MagicMock(return_value=client), _FakeTerraflowNotFoundError
 
         _run_status([str(p)], sdk_triple=triple)
 
@@ -606,9 +606,9 @@ class TestStatusCommandAhead:
 
 class TestStatusCommandNew:
     def test_not_found_on_remote_gives_new_status(self, tmp_path):
-        """Remote raises EarthMindNotFoundError → status 'new' → exits 1."""
+        """Remote raises TerraflowNotFoundError → status 'new' → exits 1."""
         p = _write_flow(tmp_path, "flow.json")
-        client = _make_client_mock(get_flow_side_effect=_FakeEarthMindNotFoundError("not found"))
+        client = _make_client_mock(get_flow_side_effect=_FakeTerraflowNotFoundError("not found"))
         triple = _make_sdk_triple(client)
 
         with pytest.raises(typer.Exit) as exc_info:
@@ -619,7 +619,7 @@ class TestStatusCommandNew:
         """When flow is new (not found), no model_dump call is made."""
         p = _write_flow(tmp_path, "flow.json")
         remote = _fake_remote_flow(flow_dict=_FLOW_DICT)
-        client = _make_client_mock(get_flow_side_effect=_FakeEarthMindNotFoundError("not found"))
+        client = _make_client_mock(get_flow_side_effect=_FakeTerraflowNotFoundError("not found"))
         triple = _make_sdk_triple(client)
 
         with pytest.raises(typer.Exit):

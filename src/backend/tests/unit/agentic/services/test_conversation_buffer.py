@@ -15,7 +15,7 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-from earthmind.agentic.services.conversation_buffer import (
+from terraflow.agentic.services.conversation_buffer import (
     MAX_SESSIONS,
     MAX_TURNS_PER_SESSION,
     ConversationBuffer,

@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
-from earthmind.exceptions.api import APIException, ExceptionBody
-from earthmind.services.database.models.flow.model import Flow
+from terraflow.exceptions.api import APIException, ExceptionBody
+from terraflow.services.database.models.flow.model import Flow
 
 
 def test_api_exception():
@@ -17,12 +17,12 @@ def test_api_exception():
 
     with (
         patch(
-            "earthmind.services.database.models.flow.utils.get_outdated_components",
+            "terraflow.services.database.models.flow.utils.get_outdated_components",
             return_value=mock_outdated_components,
         ),
-        patch("earthmind.api.utils.get_suggestion_message", return_value=mock_suggestion_message),
+        patch("terraflow.api.utils.get_suggestion_message", return_value=mock_suggestion_message),
         patch(
-            "earthmind.services.database.models.flow.utils.get_components_versions",
+            "terraflow.services.database.models.flow.utils.get_components_versions",
             return_value=mock_component_versions,
         ),
     ):

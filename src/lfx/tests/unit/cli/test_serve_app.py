@@ -939,19 +939,19 @@ class TestSecurityFunctions:
 
     def test_verify_api_key_with_query_param(self):
         """Test API key verification with query parameter."""
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key-123"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key-123"}):  # pragma: allowlist secret
             result = verify_api_key("test-key-123", None)
             assert result == "test-key-123"
 
     def test_verify_api_key_with_header_param(self):
         """Test API key verification with header parameter."""
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key-123"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key-123"}):  # pragma: allowlist secret
             result = verify_api_key(None, "test-key-123")
             assert result == "test-key-123"
 
     def test_verify_api_key_query_param_takes_precedence(self):
         """Query param is checked first; when both are provided the query param value is used."""
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key-123"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key-123"}):  # pragma: allowlist secret
             result = verify_api_key("test-key-123", "wrong-key")
             assert result == "test-key-123"
 
@@ -964,7 +964,7 @@ class TestSecurityFunctions:
 
     def test_verify_api_key_invalid(self):
         """Test error when API key is invalid."""
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "correct-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "correct-key"}):  # pragma: allowlist secret
             with pytest.raises(HTTPException) as exc_info:
                 verify_api_key("wrong-key", None)
             assert exc_info.value.status_code == 401
@@ -976,7 +976,7 @@ class TestSecurityFunctions:
             with pytest.raises(HTTPException) as exc_info:
                 verify_api_key("any-key", None)
             assert exc_info.value.status_code == 500
-            assert "EARTHMIND_API_KEY environment variable is not set" in exc_info.value.detail
+            assert "TERRAFLOW_API_KEY environment variable is not set" in exc_info.value.detail
 
 
 class TestCreateServeApp:
@@ -1047,11 +1047,11 @@ class TestCreateServeAppFactory:
 
         from lfx.cli.serve_app import create_serve_app
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}, clear=False):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}, clear=False):  # pragma: allowlist secret
             # Remove startup paths env if present
             env = {k: v for k, v in os.environ.items() if not k.startswith("LFX_SERVE_")}
             with patch.dict(os.environ, env, clear=True):
-                os.environ["EARTHMIND_API_KEY"] = "test-key"  # pragma: allowlist secret
+                os.environ["TERRAFLOW_API_KEY"] = "test-key"  # pragma: allowlist secret
                 app = create_serve_app()
 
         routes = [r.path for r in app.routes]
@@ -1071,7 +1071,7 @@ class TestCreateServeAppFactory:
         from lfx.cli.serve_app import _SERVE_STARTUP_PATHS_ENV, create_serve_app
 
         env_override = {
-            "EARTHMIND_API_KEY": "test-key",  # pragma: allowlist secret
+            "TERRAFLOW_API_KEY": "test-key",  # pragma: allowlist secret
             _SERVE_STARTUP_PATHS_ENV: json.dumps([]),
         }
 
@@ -1110,7 +1110,7 @@ class TestCreateServeAppFactory:
         mock_graph.context = {}
 
         env_override = {
-            "EARTHMIND_API_KEY": "test-key",  # pragma: allowlist secret
+            "TERRAFLOW_API_KEY": "test-key",  # pragma: allowlist secret
             _SERVE_FLOW_DIR_ENV: str(tmp_path),
             # Startup paths IS set but must be IGNORED since flow_dir is present
             _SERVE_STARTUP_PATHS_ENV: json.dumps(["/some/startup/flow.json"]),
@@ -1145,7 +1145,7 @@ class TestCreateServeAppFactory:
         mock_graph.context = {}
 
         env_override = {
-            "EARTHMIND_API_KEY": "test-key",  # pragma: allowlist secret
+            "TERRAFLOW_API_KEY": "test-key",  # pragma: allowlist secret
             # No LFX_SERVE_FLOW_DIR — no flow_dir
             _SERVE_STARTUP_PATHS_ENV: json.dumps([str(flow_path)]),
         }
@@ -1174,7 +1174,7 @@ class TestCreateServeAppFactory:
         bad_file.write_text(json.dumps({"nodes": [], "edges": []}))
 
         env_override = {
-            "EARTHMIND_API_KEY": "test-key",  # pragma: allowlist secret
+            "TERRAFLOW_API_KEY": "test-key",  # pragma: allowlist secret
             _SERVE_STARTUP_PATHS_ENV: json.dumps([str(bad_file)]),
             # No LFX_SERVE_FLOW_DIR — triggers the ThreadPoolExecutor path
         }
@@ -1255,7 +1255,7 @@ class TestServeAppEndpoints:
         monkeypatch.setattr(get_settings_service().settings, "allow_custom_components", True)
 
         # Set up test API key
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             return TestClient(app)
 
     @pytest.fixture
@@ -1295,7 +1295,7 @@ class TestServeAppEndpoints:
 
         monkeypatch.setattr(get_settings_service().settings, "allow_custom_components", True)
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             return TestClient(app)
 
     def test_health_endpoint(self, app_client):
@@ -1312,7 +1312,7 @@ class TestServeAppEndpoints:
         headers = {"x-api-key": "test-api-key"}
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.common.extract_structured_result") as mock_extract,
         ):
             mock_extract.return_value = {
@@ -1335,7 +1335,7 @@ class TestServeAppEndpoints:
         """Test flow execution without authentication."""
         request_data = {"input_value": "Test input"}
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             response = app_client.post("/flows/00000000-0000-0000-0000-000000000001/run", json=request_data)
 
         assert response.status_code == 401
@@ -1346,7 +1346,7 @@ class TestServeAppEndpoints:
         request_data = {"input_value": "Test input"}
         headers = {"x-api-key": "wrong-key"}
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             response = app_client.post(
                 "/flows/00000000-0000-0000-0000-000000000001/run", json=request_data, headers=headers
             )
@@ -1374,7 +1374,7 @@ class TestServeAppEndpoints:
         headers = {"x-api-key": "test-api-key"}
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch(
                 "lfx.services.deps.get_settings_service",
                 return_value=_make_settings_service(allow_custom_components=False),
@@ -1410,7 +1410,7 @@ class TestServeAppEndpoints:
         request_data = {"input_value": "Test input"}
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.common.extract_structured_result") as mock_extract,
         ):
             mock_extract.return_value = {
@@ -1437,7 +1437,7 @@ class TestServeAppEndpoints:
             raise RuntimeError(msg)
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_error),
         ):
             response = app_client.post(
@@ -1461,7 +1461,7 @@ class TestServeAppEndpoints:
             return [], ""  # Empty results and logs
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_empty),
         ):
             response = app_client.post(
@@ -1486,7 +1486,7 @@ class TestServeAppEndpoints:
         headers = {"x-api-key": "test-api-key"}
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_capture),
         ):
             app_client.post("/flows/00000000-0000-0000-0000-000000000001/run", json=request_data, headers=headers)
@@ -1505,7 +1505,7 @@ class TestServeAppEndpoints:
         headers = {"x-api-key": "test-api-key"}
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_capture),
             # Drain the streaming response so the background task completes before we assert.
             app_client.stream(
@@ -1520,7 +1520,7 @@ class TestServeAppEndpoints:
 
     def test_list_flows_endpoint(self, multi_flow_client):
         """Test listing flows in multi-flow mode."""
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             response = multi_flow_client.get("/flows", headers={"x-api-key": "test-api-key"})
 
         assert response.status_code == 200
@@ -1533,7 +1533,7 @@ class TestServeAppEndpoints:
         """Test getting flow info in multi-flow mode."""
         headers = {"x-api-key": "test-api-key"}
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             response = multi_flow_client.get("/flows/00000000-0000-0000-0000-000000000001/info", headers=headers)
 
         assert response.status_code == 200
@@ -1548,7 +1548,7 @@ class TestServeAppEndpoints:
         headers = {"x-api-key": "test-api-key"}
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.common.extract_structured_result") as mock_extract,
         ):
             mock_extract.return_value = {
@@ -1570,7 +1570,7 @@ class TestServeAppEndpoints:
         """Test with invalid request body."""
         headers = {"x-api-key": "test-api-key"}
 
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}):  # pragma: allowlist secret
             response = app_client.post("/flows/00000000-0000-0000-0000-000000000001/run", json={}, headers=headers)
 
         assert response.status_code == 422  # Validation error
@@ -1598,7 +1598,7 @@ class TestServeAppEndpoints:
 
         headers = {"x-api-key": "test-api-key"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_capture),
             TestClient(app) as client,
         ):
@@ -1633,7 +1633,7 @@ class TestServeAppEndpoints:
 
         headers = {"x-api-key": "test-api-key"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_noop),
             TestClient(app) as client,
         ):
@@ -1676,7 +1676,7 @@ class TestServeAppEndpoints:
 
         headers = {"x-api-key": "test-api-key"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_capture),
             TestClient(app) as client,
         ):
@@ -1711,7 +1711,7 @@ class TestServeAppEndpoints:
 
         headers = {"x-api-key": "test-api-key"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_capture),
             TestClient(app) as client,
             client.stream(
@@ -1750,7 +1750,7 @@ class TestServeAppEndpoints:
 
         headers = {"x-api-key": "test-api-key"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_capture),
             TestClient(app) as client,
             client.stream(
@@ -1792,7 +1792,7 @@ class TestServeAppEndpoints:
 
         headers = {"x-api-key": "test-api-key"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_capture),
             TestClient(app) as client,
             client.stream(
@@ -1828,7 +1828,7 @@ class TestServeAppEndpoints:
 
         headers = {"x-api-key": "test-api-key"}
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.serve_app.execute_graph_with_capture", mock_execute_noop),
             TestClient(app) as client,
             client.stream(
@@ -1876,7 +1876,7 @@ class TestServeAppEndpoints:
         headers = {"x-api-key": "test-api-key"}
 
         with (
-            patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-api-key"}),  # pragma: allowlist secret
+            patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-api-key"}),  # pragma: allowlist secret
             patch("lfx.cli.common.extract_structured_result") as mock_extract,
         ):
             mock_extract.return_value = {
@@ -1904,7 +1904,7 @@ class TestUploadEndpoint:
 
         registry = FlowRegistry()
         app = create_multi_serve_app(registry=registry)
-        with patch.dict(os.environ, {"EARTHMIND_API_KEY": "test-key"}):  # pragma: allowlist secret
+        with patch.dict(os.environ, {"TERRAFLOW_API_KEY": "test-key"}):  # pragma: allowlist secret
             yield TestClient(app)
 
     @pytest.fixture
@@ -1916,7 +1916,7 @@ class TestUploadEndpoint:
 
     @pytest.fixture
     def full_export(self):
-        """Full EarthMind export JSON as exported from the UI (name/data/... at top level).
+        """Full Terraflow export JSON as exported from the UI (name/data/... at top level).
 
         This is what a user sends when they run:
             curl -X POST .../flows/upload/ -d @myflow.json
@@ -1931,7 +1931,7 @@ class TestUploadEndpoint:
             return json.load(f)
 
     def test_upload_full_export_as_body(self, app_with_empty_registry, full_export):
-        """Uploading a EarthMind export JSON directly as the body must succeed.
+        """Uploading a Terraflow export JSON directly as the body must succeed.
 
         Regression test: load_flow_from_json must be called with the full model dict
         (which has a top-level "data" key), not body.data alone (which is just the

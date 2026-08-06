@@ -20,7 +20,7 @@ class BaseTracingService(Service, ABC):
     """Abstract base class for tracing services.
 
     Defines the minimal interface that all tracing service implementations
-    must provide, whether minimal (LFX) or full-featured (EarthMind).
+    must provide, whether minimal (LFX) or full-featured (Terraflow).
     """
 
     @abstractmethod
@@ -44,14 +44,14 @@ class BaseTracingService(Service, ABC):
         Args:
             run_id: Unique identifier for the run
             run_name: Name of the run
-            user_id: Authenticated EarthMind user identifier (optional)
+            user_id: Authenticated Terraflow user identifier (optional)
             session_id: Session identifier (optional)
             project_name: Project name (optional)
             flow_id: Flow identifier (optional)
             tracing_user_id: Optional caller-supplied label forwarded to tracing
                 providers. Does not change ``trace.userId`` (which stays as the
                 auth ``user_id``); each provider decides how to surface it (e.g.
-                LangFuseTracer stamps it under ``earthmind.tracing_user_id`` in
+                LangFuseTracer stamps it under ``terraflow.tracing_user_id`` in
                 trace metadata).
         """
 

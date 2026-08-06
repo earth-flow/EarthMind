@@ -61,7 +61,7 @@ def _write_extension_json(root: Path, manifest: dict[str, object]) -> Path:
 
 
 def _write_pyproject_extension(root: Path, manifest: dict[str, object]) -> Path:
-    """Drop a pyproject.toml that declares ``[tool.earthmind.extension]``.
+    """Drop a pyproject.toml that declares ``[tool.terraflow.extension]``.
 
     Used to confirm the loader accepts both manifest forms; one of the
     three "installed" distributions in :func:`fake_installed_distributions`
@@ -77,15 +77,15 @@ def _write_pyproject_extension(root: Path, manifest: dict[str, object]) -> Path:
     root.mkdir(parents=True, exist_ok=True)
     bundle_name = manifest["bundles"][0]["name"]  # type: ignore[index]
     (root / bundle_name).mkdir(exist_ok=True)
-    body = "[tool.earthmind.extension]\n"
+    body = "[tool.terraflow.extension]\n"
     body += f'id = "{manifest["id"]}"\n'
     body += f'version = "{manifest["version"]}"\n'
     body += f'name = "{manifest["name"]}"\n'
     body += "\n"
-    body += "[tool.earthmind.extension.lfx]\n"
+    body += "[tool.terraflow.extension.lfx]\n"
     body += 'compat = ["1"]\n'
     body += "\n"
-    body += "[[tool.earthmind.extension.bundles]]\n"
+    body += "[[tool.terraflow.extension.bundles]]\n"
     body += f'name = "{bundle_name}"\n'
     body += f'path = "{bundle_name}"\n'
     (root / "pyproject.toml").write_text(body, encoding="utf-8")
@@ -286,7 +286,7 @@ class _EditableDistribution(importlib_metadata.Distribution):
     Mirrors what ``uv pip install -e`` / ``pip install -e`` produce: the
     distribution's ``files`` list contains only ``dist-info/`` entries
     (the actual source tree is reached via a ``.pth`` file rather than
-    listed in RECORD), and the ``earthmind.extensions`` entry-point is
+    listed in RECORD), and the ``terraflow.extensions`` entry-point is
     what the manifest discovery has to lean on.
     """
 
@@ -326,7 +326,7 @@ class _EditableDistribution(importlib_metadata.Distribution):
             importlib_metadata.EntryPoint(
                 name=self._name,
                 value=self._module_name,
-                group="earthmind.extensions",
+                group="terraflow.extensions",
             )
         ]
 
@@ -350,7 +350,7 @@ def test_discover_installed_falls_back_to_entry_point_for_editable_install(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Editable installs are discovered via the ``earthmind.extensions`` entry-point.
+    """Editable installs are discovered via the ``terraflow.extensions`` entry-point.
 
     Reproduces the editable-install bug: ``dist.files`` only carries
     ``dist-info/`` entries, so the file-walk path finds no manifest.  The
@@ -467,7 +467,7 @@ def test_discover_seed_finds_three_subdirectories(seed_dir_with_three_bundles: P
 
 
 def test_discover_seed_supports_pathsep_multiple_roots(tmp_path: Path) -> None:
-    """``$EARTHMIND_SEED_DIR`` accepts multiple roots joined by ``os.pathsep``."""
+    """``$TERRAFLOW_SEED_DIR`` accepts multiple roots joined by ``os.pathsep``."""
     root_a = tmp_path / "a"
     root_b = tmp_path / "b"
     root_a.mkdir()
@@ -553,9 +553,9 @@ def test_discover_seed_uses_default_when_env_unset(monkeypatch: pytest.MonkeyPat
     assert {ext.extension_id for ext in extensions} == {"lfx-openai"}
 
 
-def test_default_seed_dir_constant_is_opt_earthmind_bundles() -> None:
+def test_default_seed_dir_constant_is_opt_terraflow_bundles() -> None:
     """Pinning the documented default so docs and code agree."""
-    assert Path("/opt/earthmind/bundles") == DEFAULT_SEED_DIR
+    assert Path("/opt/terraflow/bundles") == DEFAULT_SEED_DIR
 
 
 # ---------------------------------------------------------------------------

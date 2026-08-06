@@ -33,7 +33,7 @@ test(
 
     await page
       .getByTestId("popover-anchor-input-input_value")
-      .fill("what is earthmind?");
+      .fill("what is terraflow?");
 
     await page.getByTestId("button_run_duckduckgo search").click();
 
@@ -61,7 +61,7 @@ test(
           .getByPlaceholder(TEXTS.placeholderEmpty)
           .inputValue();
         expect(searchResults.length).toBeGreaterThan(10);
-        expect(searchResults.toLowerCase()).toContain("earthmind");
+        expect(searchResults.toLowerCase()).toContain("terraflow");
       } else {
         const value = await page
           .getByPlaceholder(TEXTS.placeholderEmpty)

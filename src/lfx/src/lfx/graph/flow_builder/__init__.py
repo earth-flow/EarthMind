@@ -1,4 +1,4 @@
-"""Pure flow-building utilities for constructing EarthMind flows programmatically.
+"""Pure flow-building utilities for constructing Terraflow flows programmatically.
 
 All functions operate on plain dicts — no I/O, no network, no global state.
 """

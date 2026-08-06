@@ -19,7 +19,7 @@ from lfx.schema.table import EditMode
 class AstraDBCQLToolComponent(AstraDBBaseComponent, LCToolComponent):
     display_name: str = "Astra DB CQL"
     description: str = "Create a tool to get transactional data from DataStax Astra DB CQL Table"
-    documentation: str = "https://docs.earthmind.org/bundles-datastax"
+    documentation: str = "https://docs.terraflow.org/bundles-datastax"
     icon: str = "AstraDB"
 
     inputs = [

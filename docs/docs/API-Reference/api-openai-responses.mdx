@@ -40,7 +40,7 @@ import exampleJavascriptApiOpenaiResponsesTokenUsageTracking from '!!raw-loader!
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-EarthMind includes an endpoint that is compatible with the [OpenAI Responses API](https://platform.openai.com/docs/api-reference/responses).
+Terraflow includes an endpoint that is compatible with the [OpenAI Responses API](https://platform.openai.com/docs/api-reference/responses).
 It is available at `POST /api/v1/responses`.
 
 This endpoint allows you to use existing OpenAI client libraries with minimal code changes.
@@ -49,7 +49,7 @@ You can find Flow IDs in the code snippets on the [**API access** pane](/concept
 
 ## Prerequisites
 
-To be compatible with EarthMind's OpenAI Responses API endpoint, your flow and request must adhere to the following requirements:
+To be compatible with Terraflow's OpenAI Responses API endpoint, your flow and request must adhere to the following requirements:
 
 - **Chat Input**: Your flow must contain a **Chat Input** component.
 Flows without this component return an error when passed to this endpoint.
@@ -62,11 +62,11 @@ For more information, see [API keys and authentication](/api-keys-and-authentica
 ### Additional configuration for OpenAI client libraries
 
 This endpoint is compatible with OpenAI's API, but requires special configuration when using OpenAI client libraries.
-EarthMind uses `x-api-key` headers for authentication, while OpenAI uses `Authorization: Bearer` headers.
-When sending requests to EarthMind with OpenAI client libraries, you must configure custom headers and include an `api_key` configuration.
+Terraflow uses `x-api-key` headers for authentication, while OpenAI uses `Authorization: Bearer` headers.
+When sending requests to Terraflow with OpenAI client libraries, you must configure custom headers and include an `api_key` configuration.
 The `api_key` parameter can have any value, such as `"dummy-api-key"` in the client examples, as the actual authentication is handled through the `default_headers` configuration.
 
-In the following examples, replace the values for `EARTHMIND_SERVER_URL`, `EARTHMIND_API_KEY`, and `FLOW_ID` with values from your deployment.
+In the following examples, replace the values for `TERRAFLOW_SERVER_URL`, `TERRAFLOW_API_KEY`, and `FLOW_ID` with values from your deployment.
 <Tabs groupId="client">
 <TabItem value="Python" label="OpenAI Python Client" default>
 
@@ -124,9 +124,9 @@ If you need these in a different format or want a downloadable calendar, let me 
 
 | Header | Required | Description | Example |
 |--------|----------|-------------|---------|
-| `x-api-key` | Yes | Your EarthMind API key for authentication | `"sk-..."` |
+| `x-api-key` | Yes | Your Terraflow API key for authentication | `"sk-..."` |
 | `Content-Type` | Yes | Specifies the JSON format | `"application/json"` |
-| `X-EARTHMIND-GLOBAL-VAR-*` | No | Global variables for the flow | `"X-EARTHMIND-GLOBAL-VAR-API_KEY: sk-..."` For more, see [Pass global variables to your flows in headers](#global-var). |
+| `X-TERRAFLOW-GLOBAL-VAR-*` | No | Global variables for the flow | `"X-TERRAFLOW-GLOBAL-VAR-API_KEY: sk-..."` For more, see [Pass global variables to your flows in headers](#global-var). |
 
 ### Request body
 
@@ -182,7 +182,7 @@ If you need these in a different format or want a downloadable calendar, let me 
 
 ### Response body
 
-The response contains fields that EarthMind sets dynamically and fields that use OpenAI-compatible defaults.
+The response contains fields that Terraflow sets dynamically and fields that use OpenAI-compatible defaults.
 
 The OpenAI-compatible default values shown above are currently fixed and cannot be modified via the request.
 They are included to maintain API compatibility and provide a consistent response format.
@@ -190,7 +190,7 @@ They are included to maintain API compatibility and provide a consistent respons
 For your requests, you will only be setting the dynamic fields.
 The default values are documented here for completeness and to show the full response structure.
 
-Fields set dynamically by EarthMind:
+Fields set dynamically by Terraflow:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -454,9 +454,9 @@ For example:
 
 </details>
 
-Variables passed with `X-EARTHMIND-GLOBAL-VAR-{VARIABLE_NAME}` are always available to your flow, regardless of whether they exist in the database.
+Variables passed with `X-TERRAFLOW-GLOBAL-VAR-{VARIABLE_NAME}` are always available to your flow, regardless of whether they exist in the database.
 
-If your flow components reference variables that aren't provided in headers or your EarthMind database, the flow fails by default.
+If your flow components reference variables that aren't provided in headers or your Terraflow database, the flow fails by default.
 
 To avoid this, you can set the `FALLBACK_TO_ENV_VARS` environment variable is `true`, which allows the flow to use values from the `.env` file if they aren't otherwise specified.
 

@@ -12,7 +12,7 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from uuid import uuid4
 
-from earthmind.agentic.services import assistant_service
+from terraflow.agentic.services import assistant_service
 
 
 class _FakeFlow:
@@ -97,7 +97,7 @@ class TestFlowSummaryHardCap:
     """
 
     async def test_should_truncate_when_summary_exceeds_max_chars(self, monkeypatch):
-        from earthmind.agentic.services.flow_types import MAX_CANVAS_SUMMARY_CHARS
+        from terraflow.agentic.services.flow_types import MAX_CANVAS_SUMMARY_CHARS
 
         owner = uuid4()
         flow = _FakeFlow(user_id=owner, data={"nodes": [], "edges": []})
@@ -114,7 +114,7 @@ class TestFlowSummaryHardCap:
         assert result.endswith("[truncated]"), "expected truncation marker so the agent knows data was clipped"
 
     async def test_should_pass_through_when_summary_is_within_cap(self, monkeypatch):
-        from earthmind.agentic.services.flow_types import MAX_CANVAS_SUMMARY_CHARS
+        from terraflow.agentic.services.flow_types import MAX_CANVAS_SUMMARY_CHARS
 
         owner = uuid4()
         flow = _FakeFlow(user_id=owner, data={"nodes": [], "edges": []})

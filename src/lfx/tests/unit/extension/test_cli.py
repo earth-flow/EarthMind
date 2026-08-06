@@ -123,7 +123,7 @@ def isolated_dev_registry(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Pa
     """
     state_dir = tmp_path / "_dev_state"
     state_dir.mkdir()
-    monkeypatch.setenv("EARTHMIND_DEV_EXTENSIONS_DIR", str(state_dir))
+    monkeypatch.setenv("TERRAFLOW_DEV_EXTENSIONS_DIR", str(state_dir))
     return state_dir
 
 
@@ -257,39 +257,39 @@ def test_dev_refuses_non_directory(
 
 
 # ---------------------------------------------------------------------------
-# dev launch env: contract for the env vars handed to ``earthmind run``
+# dev launch env: contract for the env vars handed to ``terraflow run``
 # ---------------------------------------------------------------------------
 
 
 def test_dev_launch_env_enables_reload_and_eager_loading() -> None:
-    """The launched earthmind inherits flags that make 'edit -> Reload' work.
+    """The launched terraflow inherits flags that make 'edit -> Reload' work.
 
-    Without ``EARTHMIND_ENABLE_EXTENSION_RELOAD=true`` the backend reload
+    Without ``TERRAFLOW_ENABLE_EXTENSION_RELOAD=true`` the backend reload
     handler returns 404 (the runtime guard reads
     ``settings.enable_extension_reload``) AND the ``/config`` payload
     reports the flag as off, which keeps the packaged frontend from
-    showing the Reload button.  Without ``EARTHMIND_LAZY_LOAD_COMPONENTS=false``
+    showing the Reload button.  Without ``TERRAFLOW_LAZY_LOAD_COMPONENTS=false``
     dev components miss the palette's 5-second budget.
     """
     from lfx.cli._extension_commands import _build_dev_launch_env
 
     env = _build_dev_launch_env({})
 
-    assert env["EARTHMIND_LAZY_LOAD_COMPONENTS"] == "false"
-    assert env["EARTHMIND_ENABLE_EXTENSION_RELOAD"] == "true"
+    assert env["TERRAFLOW_LAZY_LOAD_COMPONENTS"] == "false"
+    assert env["TERRAFLOW_ENABLE_EXTENSION_RELOAD"] == "true"
 
 
 def test_dev_launch_env_overrides_author_lazy_loading() -> None:
-    """``EARTHMIND_LAZY_LOAD_COMPONENTS=true`` in the author shell must not win.
+    """``TERRAFLOW_LAZY_LOAD_COMPONENTS=true`` in the author shell must not win.
 
     The dev workflow always wants eager loading; an author whose shell
-    exports lazy loading for normal earthmind use should not silently
+    exports lazy loading for normal terraflow use should not silently
     lose dev components from the palette.
     """
     from lfx.cli._extension_commands import _build_dev_launch_env
 
-    env = _build_dev_launch_env({"EARTHMIND_LAZY_LOAD_COMPONENTS": "true"})
-    assert env["EARTHMIND_LAZY_LOAD_COMPONENTS"] == "false"
+    env = _build_dev_launch_env({"TERRAFLOW_LAZY_LOAD_COMPONENTS": "true"})
+    assert env["TERRAFLOW_LAZY_LOAD_COMPONENTS"] == "false"
 
 
 def test_dev_launch_env_respects_author_reload_off_path() -> None:
@@ -300,8 +300,8 @@ def test_dev_launch_env_respects_author_reload_off_path() -> None:
     """
     from lfx.cli._extension_commands import _build_dev_launch_env
 
-    env = _build_dev_launch_env({"EARTHMIND_ENABLE_EXTENSION_RELOAD": "false"})
-    assert env["EARTHMIND_ENABLE_EXTENSION_RELOAD"] == "false"
+    env = _build_dev_launch_env({"TERRAFLOW_ENABLE_EXTENSION_RELOAD": "false"})
+    assert env["TERRAFLOW_ENABLE_EXTENSION_RELOAD"] == "false"
 
 
 # ---------------------------------------------------------------------------

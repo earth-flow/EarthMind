@@ -1,6 +1,6 @@
 import pytest
-from earthmind.services.database.models.user import User
-from earthmind.services.deps import get_auth_service, session_scope
+from terraflow.services.database.models.user import User
+from terraflow.services.deps import get_auth_service, session_scope
 from sqlalchemy.exc import IntegrityError
 
 

@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { addFlowToTestOnEmptyEarthMind } from "./add-flow-to-test-on-empty-earthmind";
+import { addFlowToTestOnEmptyTerraflow } from "./add-flow-to-test-on-empty-terraflow";
 import {
   openTemplatesModal,
   waitForNewProjectButton,
@@ -24,7 +24,7 @@ export const awaitBootstrapTest = async (
     .getByTestId("new_project_btn_empty_page")
     .count();
   if (countEmptyButton > 0) {
-    await addFlowToTestOnEmptyEarthMind(page);
+    await addFlowToTestOnEmptyTerraflow(page);
   }
 
   await waitForNewProjectButton(page);

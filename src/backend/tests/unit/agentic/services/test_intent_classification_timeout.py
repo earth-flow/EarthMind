@@ -11,8 +11,8 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-from earthmind.agentic.services.helpers import intent_classification
-from earthmind.agentic.services.helpers.intent_classification import classify_intent
+from terraflow.agentic.services.helpers import intent_classification
+from terraflow.agentic.services.helpers.intent_classification import classify_intent
 
 
 class TestClassifyIntentTimeout:

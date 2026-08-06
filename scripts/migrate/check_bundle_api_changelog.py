@@ -58,7 +58,7 @@ IN_SCOPE_PATHS: tuple[str, ...] = (
     "src/lfx/src/lfx/extension/reload.py",
     "src/lfx/src/lfx/extension/bundle_registry.py",
     # HTTP surface (reload endpoint)
-    "src/backend/base/earthmind/api/v1/extensions.py",
+    "src/backend/base/terraflow/api/v1/extensions.py",
     # Migration table schema
     "src/lfx/src/lfx/extension/migration/schema.py",
     # The package facade (re-exports define the surface)

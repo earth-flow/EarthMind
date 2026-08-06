@@ -20,9 +20,9 @@ class MCPStdio(Component):
     tool_names = [str]
     display_name = "MCP Tools (stdio) [DEPRECATED]"
     description = (
-        "Connects to an MCP server over stdio and exposes it's tools as earthmind tools to be used by an Agent."
+        "Connects to an MCP server over stdio and exposes it's tools as terraflow tools to be used by an Agent."
     )
-    documentation: str = "https://docs.earthmind.org/components-custom-components"
+    documentation: str = "https://docs.terraflow.org/components-custom-components"
     icon = "code"
     name = "MCPStdio"
     legacy = True

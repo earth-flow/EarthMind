@@ -17,24 +17,24 @@ from lfx.cli._extension_reload_client import (
 
 
 def test_resolve_target_prefers_explicit(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EARTHMIND_HOST", "http://from-env")
+    monkeypatch.setenv("TERRAFLOW_HOST", "http://from-env")
     assert resolve_target("http://explicit/") == "http://explicit"
 
 
-def test_resolve_target_uses_earthmind_host(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EARTHMIND_HOST", "http://from-env/")
-    monkeypatch.delenv("EARTHMIND_SERVER_URL", raising=False)
+def test_resolve_target_uses_terraflow_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TERRAFLOW_HOST", "http://from-env/")
+    monkeypatch.delenv("TERRAFLOW_SERVER_URL", raising=False)
     assert resolve_target(None) == "http://from-env"
 
 
 def test_resolve_target_falls_back_to_default(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("EARTHMIND_HOST", raising=False)
-    monkeypatch.delenv("EARTHMIND_SERVER_URL", raising=False)
+    monkeypatch.delenv("TERRAFLOW_HOST", raising=False)
+    monkeypatch.delenv("TERRAFLOW_SERVER_URL", raising=False)
     assert resolve_target(None) == DEFAULT_TARGET
 
 
 def test_resolve_api_key_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EARTHMIND_API_KEY", "envkey")
+    monkeypatch.setenv("TERRAFLOW_API_KEY", "envkey")
     assert resolve_api_key(None) == "envkey"
     assert resolve_api_key("explicit") == "explicit"
 
@@ -94,8 +94,8 @@ def patched_httpx(monkeypatch: pytest.MonkeyPatch) -> dict[str, _StubClient | No
 
 
 def test_reload_via_http_success(patched_httpx: dict, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("EARTHMIND_HOST", raising=False)
-    monkeypatch.delenv("EARTHMIND_API_KEY", raising=False)
+    monkeypatch.delenv("TERRAFLOW_HOST", raising=False)
+    monkeypatch.delenv("TERRAFLOW_API_KEY", raising=False)
     response_body = {"ok": True, "bundle": "pilot", "components_added": ["X"], "components_removed": []}
     patched_httpx["install"](_StubResponse(200, response_body))  # type: ignore[operator]
 
@@ -116,7 +116,7 @@ def test_reload_via_http_success(patched_httpx: dict, monkeypatch: pytest.Monkey
 
 
 def test_reload_via_http_propagates_typed_error(patched_httpx: dict, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("EARTHMIND_HOST", raising=False)
+    monkeypatch.delenv("TERRAFLOW_HOST", raising=False)
     body = {"ok": False, "errors": [{"code": "module-import-failed", "message": "boom", "hint": "fix"}]}
     patched_httpx["install"](_StubResponse(200, body))  # type: ignore[operator]
 

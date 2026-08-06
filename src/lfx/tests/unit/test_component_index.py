@@ -11,7 +11,7 @@ from lfx.interface.components import (
     _parse_dev_mode,
     _read_component_index,
     _save_generated_index,
-    import_earthmind_components,
+    import_terraflow_components,
 )
 
 
@@ -327,8 +327,8 @@ class TestSaveGeneratedIndex:
 
 
 @pytest.mark.asyncio
-class TestImportEarthMindComponents:
-    """Tests for import_earthmind_components() async function."""
+class TestImportTerraflowComponents:
+    """Tests for import_terraflow_components() async function."""
 
     async def test_import_with_dev_mode(self, monkeypatch):
         """Test import in dev mode (dynamic loading)."""
@@ -345,7 +345,7 @@ class TestImportEarthMindComponents:
                     (None, "lfx.components.category1", False),
                 ]
 
-                result = await import_earthmind_components()
+                result = await import_terraflow_components()
 
         assert "components" in result
         assert "category1" in result["components"]
@@ -369,7 +369,7 @@ class TestImportEarthMindComponents:
         ):
             mock_read.return_value = index
 
-            result = await import_earthmind_components()
+            result = await import_terraflow_components()
 
         assert "components" in result
         assert "category1" in result["components"]
@@ -392,7 +392,7 @@ class TestImportEarthMindComponents:
             mock_process.return_value = ("category1", {"comp1": {"template": {}}})
             mock_walk.return_value = [(None, "lfx.components.category1", False)]
 
-            result = await import_earthmind_components()
+            result = await import_terraflow_components()
 
         assert "components" in result
         assert cache_file.exists()
@@ -420,7 +420,7 @@ class TestImportEarthMindComponents:
         ):
             mock_read.return_value = index
 
-            result = await import_earthmind_components(mock_settings)
+            result = await import_terraflow_components(mock_settings)
 
         assert "components" in result
         # Verify custom path was used
@@ -438,7 +438,7 @@ class TestImportEarthMindComponents:
             mock_process.side_effect = ImportError("Failed to import")
             mock_walk.return_value = [(None, "lfx.components.broken", False)]
 
-            result = await import_earthmind_components()
+            result = await import_terraflow_components()
 
         # Should return empty dict, not raise
         assert "components" in result

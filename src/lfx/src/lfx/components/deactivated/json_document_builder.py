@@ -23,7 +23,7 @@ class JSONDocumentBuilder(CustomComponent):
     display_name: str = "JSON Document Builder"
     description: str = "Build a Document containing a JSON object using a key and another Document page content."
     name = "JSONDocumentBuilder"
-    documentation: str = "https://docs.earthmind.org/legacy-core-components"
+    documentation: str = "https://docs.terraflow.org/legacy-core-components"
     legacy = True
 
     inputs = [

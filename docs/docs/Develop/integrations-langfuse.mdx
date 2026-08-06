@@ -6,19 +6,19 @@ slug: /integrations-langfuse
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-[Langfuse](https://langfuse.com) is an open-source platform for LLM observability. It provides tracing and monitoring capabilities for AI applications, helping developers debug, analyze, and optimize their AI systems. Langfuse integrates with various tools and frameworks, including workflow builders and runtimes like EarthMind.
+[Langfuse](https://langfuse.com) is an open-source platform for LLM observability. It provides tracing and monitoring capabilities for AI applications, helping developers debug, analyze, and optimize their AI systems. Langfuse integrates with various tools and frameworks, including workflow builders and runtimes like Terraflow.
 
-This guide explains how to configure EarthMind to collect [tracing](https://langfuse.com/docs/tracing) data about your flow executions and automatically send the data to Langfuse.
+This guide explains how to configure Terraflow to collect [tracing](https://langfuse.com/docs/tracing) data about your flow executions and automatically send the data to Langfuse.
 
 <iframe width="760" height="415" src="https://www.youtube.com/embed/SA9gGbzwNGU?si=eDKvdtvhb3fJCSbl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Prerequisites
 
 - An account in a [Langfuse Cloud](https://cloud.langfuse.com) or [Langfuse self-hosted](https://langfuse.com/self-hosting) instance
-- A [running EarthMind server](/get-started-installation) with a [flow](/concepts-flows) that you want to trace
+- A [running Terraflow server](/get-started-installation) with a [flow](/concepts-flows) that you want to trace
 
 :::tip
-If you need a flow to test the Langfuse integration, see the [EarthMind quickstart](/get-started-quickstart).
+If you need a flow to test the Langfuse integration, see the [Terraflow quickstart](/get-started-quickstart).
 :::
 
 ## Set Langfuse credentials as environment variables {#langfuse-credentials}
@@ -32,7 +32,7 @@ If you need a flow to test the Langfuse integration, see the [EarthMind quicksta
     - Base URL
 
     :::tip
-    EarthMind previously used `LANGFUSE_HOST` as the variable for the Langfuse base URL.
+    Terraflow previously used `LANGFUSE_HOST` as the variable for the Langfuse base URL.
     This is still supported for backward compatibility, but `LANGFUSE_BASE_URL` is now the preferred environment variable and will be used if both values are set.
     :::
 
@@ -47,15 +47,15 @@ If you need a flow to test the Langfuse integration, see the [EarthMind quicksta
     LANGFUSE_BASE_URL=https://us.cloud.langfuse.com
     ```
 
-4. Start EarthMind with the configuration in the `.env` file:
+4. Start Terraflow with the configuration in the `.env` file:
 
     ```bash
-    uv run earthmind run --env-file .env
+    uv run terraflow run --env-file .env
     ```
 
 5. Run a flow.
 
-    EarthMind automatically collects and sends tracing data about the flow execution to Langfuse.
+    Terraflow automatically collects and sends tracing data about the flow execution to Langfuse.
 
 6. View the collected data in your [Langfuse dashboard](https://langfuse.com/docs/analytics/overview).
 
@@ -63,9 +63,9 @@ If you need a flow to test the Langfuse integration, see the [EarthMind quicksta
 
 ## Disable Langfuse tracing
 
-To disable the Langfuse integration, remove the [Langfuse environment variables](#langfuse-credentials), and then restart EarthMind.
+To disable the Langfuse integration, remove the [Langfuse environment variables](#langfuse-credentials), and then restart Terraflow.
 
-## Run Langfuse and EarthMind with Docker Compose
+## Run Langfuse and Terraflow with Docker Compose
 
 As an alternative to the previous setup, particularly for self-hosted Langfuse, you can run both services with Docker Compose.
 
@@ -78,51 +78,51 @@ As an alternative to the previous setup, particularly for self-hosted Langfuse, 
     - Base URL
 
     :::tip
-    EarthMind previously used `LANGFUSE_HOST` as the variable for the Langfuse base URL.
+    Terraflow previously used `LANGFUSE_HOST` as the variable for the Langfuse base URL.
     `LANGFUSE_HOST` is still supported for backward compatibility, but `LANGFUSE_BASE_URL` is the preferred environment variable.
-    If both values are set, then `EARTHMIND_BASE_URL` is used.
+    If both values are set, then `TERRAFLOW_BASE_URL` is used.
     :::
 
-3. Add your EarthMind credentials to your EarthMind `docker-compose.yml` file in the `environment` section.
+3. Add your Terraflow credentials to your Terraflow `docker-compose.yml` file in the `environment` section.
 
-    The following example is based on the [example `docker-compose.yml`](https://github.com/earthmind-ai/earthmind/blob/main/docker_example/docker-compose.yml).
+    The following example is based on the [example `docker-compose.yml`](https://github.com/terraflow-ai/terraflow/blob/main/docker_example/docker-compose.yml).
 
     ```yml
     services:
-      earthmind:
-        image: earthmindai/earthmind:latest # or another version tag on https://hub.docker.com/r/earthmindai/earthmind
+      terraflow:
+        image: terraflowai/terraflow:latest # or another version tag on https://hub.docker.com/r/terraflowai/terraflow
         pull_policy: always               # set to 'always' when using 'latest' image
         ports:
           - "7860:7860"
         depends_on:
           - postgres
         environment:
-          - EARTHMIND_DATABASE_URL=postgresql://earthmind:earthmind@postgres:5432/earthmind
+          - TERRAFLOW_DATABASE_URL=postgresql://terraflow:terraflow@postgres:5432/terraflow
           # This variable defines where the logs, file storage, monitor data and secret keys are stored.
-          - EARTHMIND_CONFIG_DIR=app/earthmind
+          - TERRAFLOW_CONFIG_DIR=app/terraflow
           - LANGFUSE_SECRET_KEY=sk-...
           - LANGFUSE_PUBLIC_KEY=pk-...
           - LANGFUSE_BASE_URL=https://us.cloud.langfuse.com
         volumes:
-          - earthmind-data:/app/earthmind
+          - terraflow-data:/app/terraflow
 
       postgres:
         # Pinned to a specific Debian base (trixie) so the postgres:16 tag does
         # not silently roll its OS, which triggers a glibc collation mismatch
-        # warning on existing volumes. See https://github.com/earthmind-ai/earthmind/issues/9608
+        # warning on existing volumes. See https://github.com/terraflow-ai/terraflow/issues/9608
         image: postgres:16-trixie
         environment:
-          POSTGRES_USER: earthmind
-          POSTGRES_PASSWORD: earthmind
-          POSTGRES_DB: earthmind
+          POSTGRES_USER: terraflow
+          POSTGRES_PASSWORD: terraflow
+          POSTGRES_DB: terraflow
         ports:
           - "5432:5432"
         volumes:
-          - earthmind-postgres:/var/lib/postgresql/data
+          - terraflow-postgres:/var/lib/postgresql/data
 
     volumes:
-      earthmind-postgres:
-      earthmind-data:
+      terraflow-postgres:
+      terraflow-data:
     ```
 
 4. Start the Docker container:
@@ -131,10 +131,10 @@ As an alternative to the previous setup, particularly for self-hosted Langfuse, 
     docker-compose up
     ```
 
-5. To confirm Langfuse is connected to your EarthMind container, run the following command:
+5. To confirm Langfuse is connected to your Terraflow container, run the following command:
 
     ```sh
-    docker compose exec earthmind python -c "import requests, os; addr = os.environ.get('LANGFUSE_BASE_URL'); print(addr); res = requests.get(addr, timeout=5); print(res.status_code)"
+    docker compose exec terraflow python -c "import requests, os; addr = os.environ.get('LANGFUSE_BASE_URL'); print(addr); res = requests.get(addr, timeout=5); print(res.status_code)"
     ```
 
     If there is an error, make sure you have set the `LANGFUSE_BASE_URL` environment variable in your `docker-compose.yml` file.

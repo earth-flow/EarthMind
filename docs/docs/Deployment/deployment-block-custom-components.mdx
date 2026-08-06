@@ -3,61 +3,61 @@ title: Block custom components
 slug: /deployment-block-custom-components
 ---
 
-Custom components and the component code editor allow EarthMind users to create and execute Python code in the EarthMind runtime.
-While this freedom is a feature of EarthMind, in some deployments you might want to block the creation of custom EarthMind components to prevent arbitrary code execution.
+Custom components and the component code editor allow Terraflow users to create and execute Python code in the Terraflow runtime.
+While this freedom is a feature of Terraflow, in some deployments you might want to block the creation of custom Terraflow components to prevent arbitrary code execution.
 
-To block custom component creation on a EarthMind server, set the following [environment variable](/environment-variables):
+To block custom component creation on a Terraflow server, set the following [environment variable](/environment-variables):
 
 ```bash
-EARTHMIND_ALLOW_CUSTOM_COMPONENTS=false
+TERRAFLOW_ALLOW_CUSTOM_COMPONENTS=false
 ```
 
-When set to `false`, EarthMind blocks creating custom components and changing code in the visual editor.
+When set to `false`, Terraflow blocks creating custom components and changing code in the visual editor.
 
-When unset or `true`, EarthMind allows custom code.
-Existing EarthMind installations will keep the default `true` behavior until you opt in to this restriction.
+When unset or `true`, Terraflow allows custom code.
+Existing Terraflow installations will keep the default `true` behavior until you opt in to this restriction.
 
 This environment variable is a beta feature, and should not be your only safeguard in production environments.
 
-In the event that EarthMind could execute untrusted or LLM-generated code, run EarthMind in an isolated and containerized execution environment.
+In the event that Terraflow could execute untrusted or LLM-generated code, run Terraflow in an isolated and containerized execution environment.
 
 ### Restrict custom component creation to superusers{#restrict-custom-components-to-superusers}
 
 To restrict custom component creation to superusers while keeping built-in components functional for users, set the following [environment variable](/environment-variables):
 
 ```bash
-EARTHMIND_CUSTOM_COMPONENT_ADMIN_ONLY=true
+TERRAFLOW_CUSTOM_COMPONENT_ADMIN_ONLY=true
 ```
 
 When set to `true`, non-superusers can still view and use custom components in flows, but they cannot create new custom components or edit custom component code.
 
 ## Configure a custom component allow-list
 
-`EARTHMIND_ALLOW_CUSTOM_COMPONENTS` works together with optional paths that define which component templates the server loads, and which code hashes are trusted.
+`TERRAFLOW_ALLOW_CUSTOM_COMPONENTS` works together with optional paths that define which component templates the server loads, and which code hashes are trusted.
 
-Directories listed in the `EARTHMIND_COMPONENTS_PATH` environment variable are loaded as custom components and merged into the server’s template set.
-When `EARTHMIND_ALLOW_CUSTOM_COMPONENTS` is set to `false`, the components in the `EARTHMIND_COMPONENTS_PATH` directory **remain allowed**.
+Directories listed in the `TERRAFLOW_COMPONENTS_PATH` environment variable are loaded as custom components and merged into the server’s template set.
+When `TERRAFLOW_ALLOW_CUSTOM_COMPONENTS` is set to `false`, the components in the `TERRAFLOW_COMPONENTS_PATH` directory **remain allowed**.
 
-To allow some components while blocking others, include the allowed custom components directory in `EARTHMIND_COMPONENTS_PATH` and set `EARTHMIND_ALLOW_CUSTOM_COMPONENTS` to `false`.
+To allow some components while blocking others, include the allowed custom components directory in `TERRAFLOW_COMPONENTS_PATH` and set `TERRAFLOW_ALLOW_CUSTOM_COMPONENTS` to `false`.
 
-`EARTHMIND_COMPONENTS_INDEX_PATH` points to a prebuilt component index JSON file at a local path or `http://` / `https://` URL.
+`TERRAFLOW_COMPONENTS_INDEX_PATH` points to a prebuilt component index JSON file at a local path or `http://` / `https://` URL.
 This environment variable replaces the default index bundled with the `lfx` package.
 It does **not** import Python modules from a directory on disk.
-To allow-list custom components, use the `EARTHMIND_COMPONENTS_PATH` environment variable.
+To allow-list custom components, use the `TERRAFLOW_COMPONENTS_PATH` environment variable.
 
-If both environment variables are set, EarthMind builds one combined set of components from the custom index _and_ from `EARTHMIND_COMPONENTS_PATH`. If the same component category name exists in both, `EARTHMIND_COMPONENTS_PATH` replaces that whole category from the custom index.
+If both environment variables are set, Terraflow builds one combined set of components from the custom index _and_ from `TERRAFLOW_COMPONENTS_PATH`. If the same component category name exists in both, `TERRAFLOW_COMPONENTS_PATH` replaces that whole category from the custom index.
 
 ### Disable the allow-list bypass
 
 The allow-list behavior above assumes the admin controls which env vars are set at startup. In deployments where that assumption doesn't hold, set:
 
 ```bash
-EARTHMIND_ALLOW_COMPONENTS_PATHS_OVERRIDE=false
+TERRAFLOW_ALLOW_COMPONENTS_PATHS_OVERRIDE=false
 ```
 
-When this is `false` **and** `EARTHMIND_ALLOW_CUSTOM_COMPONENTS=false`, components contributed by `EARTHMIND_COMPONENTS_PATH` and `EARTHMIND_COMPONENTS_INDEX_PATH` are ignored and no longer bypass the block.
+When this is `false` **and** `TERRAFLOW_ALLOW_CUSTOM_COMPONENTS=false`, components contributed by `TERRAFLOW_COMPONENTS_PATH` and `TERRAFLOW_COMPONENTS_INDEX_PATH` are ignored and no longer bypass the block.
 
-Default is `true`, which preserves existing behavior. The setting has no effect while `EARTHMIND_ALLOW_CUSTOM_COMPONENTS=true`, since nothing is being bypassed.
+Default is `true`, which preserves existing behavior. The setting has no effect while `TERRAFLOW_ALLOW_CUSTOM_COMPONENTS=true`, since nothing is being bypassed.
 
 For more information, see:
 

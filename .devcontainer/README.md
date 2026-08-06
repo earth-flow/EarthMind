@@ -1,14 +1,14 @@
-# EarthMind Demo Codespace Readme
+# Terraflow Demo Codespace Readme
 
-These instructions will walk you through the process of running a EarthMind demo via GitHub Codespaces.
+These instructions will walk you through the process of running a Terraflow demo via GitHub Codespaces.
 
-If you want a faster and easier demo experience with EarthMind, download and install [EarthMind Desktop](https://docs.earthmind.org/get-started-installation#install-and-run-earthmind-desktop) for the least complicated setup experience.
+If you want a faster and easier demo experience with Terraflow, download and install [Terraflow Desktop](https://docs.terraflow.org/get-started-installation#install-and-run-terraflow-desktop) for the least complicated setup experience.
 
 ## Create a Codespace in GitHub
 
 To setup the demo in Codespace:
 
-1. Navigate to the EarthMind repo
+1. Navigate to the Terraflow repo
 2. On the "Code <>" button, select the "Codespaces" tab
 3. Click the green "Create codespace on..." button (or "+" icon if you want more options) to create a new Codespace
 
@@ -17,12 +17,12 @@ To setup the demo in Codespace:
 After the codespace is opened, there will be two phases to the process. It will take ≈5-10 minutes to complete.
 
 * **Phase 1**: Building Container; you can click on the "Building Codespace" link to watch the logs
-* **Phase 2**: Building EarthMind; the terminal will now show `Running postCreateCommand...`, similar to:
+* **Phase 2**: Building Terraflow; the terminal will now show `Running postCreateCommand...`, similar to:
 
 ```
 ✔ Finishing up...
 ⠸ Running postCreateCommand...
-  › sudo chown -R earthmind .venv .mypy_cache src/frontend/node_modules src/frontend/build src/backend/base/earthmind/frontend && make install_frontend && mak…
+  › sudo chown -R terraflow .venv .mypy_cache src/frontend/node_modules src/frontend/build src/backend/base/terraflow/frontend && make install_frontend && mak…
 ```
 
 Once completed, this terminal window will close.
@@ -39,21 +39,21 @@ Installation is now complete.
 
 ## Start up the Service
 
-Open a new Terminal, and type `uv run earthmind run`.
+Open a new Terminal, and type `uv run terraflow run`.
 
 The service will start, and you will may notice a dialog in the lower right indicating there is a port available to connect to. However, the service will not be ready until you see the welcome banner:
 
 ```
 ╭───────────────────────────────────────────────────────────────────────╮
-│ Welcome to EarthMind                                                   │
+│ Welcome to Terraflow                                                   │
 │                                                                       │
-│ 🌟 GitHub: Star for updates → https://github.com/earthmind-ai/earthmind  │
+│ 🌟 GitHub: Star for updates → https://github.com/terraflow-ai/terraflow  │
 │ 💬 Discord: Join for support → https://discord.com/invite/EqksyE2EX9   │
 │                                                                       │
-│ We collect anonymous usage data to improve EarthMind.                  │
+│ We collect anonymous usage data to improve Terraflow.                  │
 │ To opt out, set: DO_NOT_TRACK=true in your environment.               │
 │                                                                       │
-│ 🟢 Open EarthMind → http://localhost:7860                               │
+│ 🟢 Open Terraflow → http://localhost:7860                               │
 ╰───────────────────────────────────────────────────────────────────────╯
 ```
 

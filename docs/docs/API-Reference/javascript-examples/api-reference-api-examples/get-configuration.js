@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_SERVER_URL ?? ""}/api/v1/config`;
+const url = `${process.env.TERRAFLOW_SERVER_URL ?? ""}/api/v1/config`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
 };
 

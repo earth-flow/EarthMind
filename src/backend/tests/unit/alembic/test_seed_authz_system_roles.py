@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import importlib
 
-_MIGRATION = importlib.import_module("earthmind.alembic.versions.7c8d9e0f1a2b_authz_foundations")
+_MIGRATION = importlib.import_module("terraflow.alembic.versions.7c8d9e0f1a2b_authz_foundations")
 
 
 def test_three_system_roles_are_seeded():

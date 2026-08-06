@@ -81,7 +81,7 @@ def generate_coveragerc(bundle_names: set[str], legacy_files: set[str], output_p
 # Do not edit manually - changes will be overwritten
 
 [run]
-source = src/backend/base/earthmind
+source = src/backend/base/terraflow
 omit =
     # Test files
     */tests/*
@@ -142,7 +142,7 @@ def main():
 
     # Paths
     frontend_path = project_root / "src" / "frontend"
-    backend_components_path = project_root / "src" / "backend" / "base" / "earthmind" / "components"
+    backend_components_path = project_root / "src" / "backend" / "base" / "terraflow" / "components"
     output_path = project_root / "src" / "backend" / ".coveragerc"
 
     print(f"Project root: {project_root}")
@@ -161,7 +161,7 @@ def main():
     generate_coveragerc(bundle_names, legacy_files, output_path)
 
     print("\nDone! You can now run backend tests with coverage using:")
-    print("cd src/backend && python -m pytest --cov=src/backend/base/earthmind --cov-config=.coveragerc")
+    print("cd src/backend && python -m pytest --cov=src/backend/base/terraflow --cov-config=.coveragerc")
 
 
 if __name__ == "__main__":

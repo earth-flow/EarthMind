@@ -21,7 +21,7 @@ from lfx.base.tools.constants import TOOL_OUTPUT_DISPLAY_NAME, TOOL_OUTPUT_NAME
 from lfx.custom.custom_component.component_with_cache import ComponentWithCache
 from lfx.inputs.inputs import InputTypes  # noqa: TC001
 from lfx.io import BoolInput, DictInput, DropdownInput, FloatInput, McpInput, MessageTextInput, Output
-from lfx.io.schema import schema_to_earthmind_inputs
+from lfx.io.schema import schema_to_terraflow_inputs
 from lfx.log.logger import logger
 from lfx.schema.dataframe import DataFrame
 from lfx.schema.message import Message
@@ -60,7 +60,7 @@ class MCPToolsComponent(ComponentWithCache):
     """MCP Tools component.
 
     Behaviour notes:
-    - Stale agent tools vs server were caused by EarthMind caching the Toolset output
+    - Stale agent tools vs server were caused by Terraflow caching the Toolset output
       (``Output.cache=True`` plus the persisted ``output.value`` in saved flow JSON), not
       only by the user-facing "Use Cached Server" (``use_cache``) toggle. ``_build_tool_output``
       declares the Toolset output with ``cache=False`` and ``map_outputs`` overrides the
@@ -186,7 +186,7 @@ class MCPToolsComponent(ComponentWithCache):
 
     def _build_tool_output(self) -> Output:
         # Do not cache Toolset output. This is separate from the MCP "Use Cached Server" (use_cache)
-        # toggle: EarthMind's Output.cache defaults to True and was memoizing the first to_toolkit()
+        # toggle: Terraflow's Output.cache defaults to True and was memoizing the first to_toolkit()
         # result, so per-request tweaks/headers never refreshed bound tools even when use_cache=False.
         return Output(
             name=TOOL_OUTPUT_NAME,
@@ -224,7 +224,7 @@ class MCPToolsComponent(ComponentWithCache):
 
     display_name = "MCP Tools"
     description = "Connect to an MCP server to use its tools."
-    documentation: str = "https://docs.earthmind.org/mcp-tools"
+    documentation: str = "https://docs.terraflow.org/mcp-tools"
     icon = "Mcp"
     name = "MCPTools"
 
@@ -316,7 +316,7 @@ class MCPToolsComponent(ComponentWithCache):
                 msg = f"Empty input schema for tool '{tool_obj.name}'"
                 raise ValueError(msg)
 
-            schema_inputs = schema_to_earthmind_inputs(input_schema)
+            schema_inputs = schema_to_terraflow_inputs(input_schema)
             if not schema_inputs:
                 msg = f"No input parameters defined for tool '{tool_obj.name}'"
                 await logger.awarning(msg)
@@ -391,34 +391,34 @@ class MCPToolsComponent(ComponentWithCache):
             try:
                 # Try to fetch from database first to ensure we have the latest config.
                 # This ensures database updates (like editing a server) take effect.
-                # When running in LFX standalone mode the full EarthMind package and
+                # When running in LFX standalone mode the full Terraflow package and
                 # database may not be available — in that case we skip the DB lookup
                 # and fall back to the config embedded in the flow (server_config_from_value).
                 server_config_from_db = None
                 try:
-                    from earthmind.api.v2.mcp import get_server
-                    from earthmind.services.database.models.user.crud import get_user_by_id
+                    from terraflow.api.v2.mcp import get_server
+                    from terraflow.services.database.models.user.crud import get_user_by_id
 
                     from lfx.services.deps import get_settings_service
                 except ModuleNotFoundError as e:
                     # Deliberately `except ModuleNotFoundError` (not `except ImportError`): a
                     # plain ImportError here means `get_server` / `get_user_by_id` was removed
-                    # from an installed EarthMind — a real API break that should NOT be
+                    # from an installed Terraflow — a real API break that should NOT be
                     # swallowed as "standalone mode". ModuleNotFoundError alone covers the
-                    # "EarthMind absent" case.
+                    # "Terraflow absent" case.
                     #
                     # Even within ModuleNotFoundError, only treat this as LFX standalone mode
-                    # when one of the target EarthMind modules is itself missing. Transitive
+                    # when one of the target Terraflow modules is itself missing. Transitive
                     # ModuleNotFoundError (e.g. a dependency like sqlmodel failing to import
-                    # inside earthmind.*) indicates a real bug in the full EarthMind stack and
+                    # inside terraflow.*) indicates a real bug in the full Terraflow stack and
                     # must surface — otherwise we would silently use a stale flow-embedded
                     # config when DB config should have taken precedence.
                     missing_module = e.name or ""
-                    is_earthmind_standalone = missing_module == "earthmind" or missing_module.startswith("earthmind.")
-                    if not is_earthmind_standalone:
+                    is_terraflow_standalone = missing_module == "terraflow" or missing_module.startswith("terraflow.")
+                    if not is_terraflow_standalone:
                         raise
                     await logger.ainfo(
-                        "EarthMind package not available; using MCP server config from flow value (LFX standalone mode)."
+                        "Terraflow package not available; using MCP server config from flow value (LFX standalone mode)."
                     )
                 else:
                     async with session_scope() as db:
@@ -562,7 +562,7 @@ class MCPToolsComponent(ComponentWithCache):
             except (TimeoutError, asyncio.TimeoutError) as e:
                 msg = (
                     f"Timeout updating tool list: {e!s}. "
-                    "Raise ``EARTHMIND_MCP_SERVER_TIMEOUT`` for the deployment if the MCP "
+                    "Raise ``TERRAFLOW_MCP_SERVER_TIMEOUT`` for the deployment if the MCP "
                     "server legitimately needs more time to respond."
                 )
                 await logger.aexception(msg)
@@ -884,8 +884,8 @@ class MCPToolsComponent(ComponentWithCache):
             if not tool or not hasattr(tool, "name"):
                 continue
             try:
-                earthmind_inputs = schema_to_earthmind_inputs(tool.args_schema)
-                inputs[tool.name] = earthmind_inputs
+                terraflow_inputs = schema_to_terraflow_inputs(tool.args_schema)
+                inputs[tool.name] = terraflow_inputs
             except (AttributeError, ValueError, TypeError, KeyError) as e:
                 msg = f"Error getting inputs for tool {getattr(tool, 'name', 'unknown')}: {e!s}"
                 logger.exception(msg)
@@ -969,7 +969,7 @@ class MCPToolsComponent(ComponentWithCache):
         try:
             self.tools, _ = await self.update_tool_list()
             if self.tool != "":
-                # Set session context for persistent MCP sessions using EarthMind session ID
+                # Set session context for persistent MCP sessions using Terraflow session ID
                 session_context = self._get_session_context()
                 if session_context:
                     self.stdio_client.set_session_context(session_context)
@@ -1010,7 +1010,7 @@ class MCPToolsComponent(ComponentWithCache):
         return item_dict
 
     def _get_session_context(self) -> str | None:
-        """Get the EarthMind session ID for MCP session caching."""
+        """Get the Terraflow session ID for MCP session caching."""
         # Try to get session ID from the component's execution context
         if hasattr(self, "graph") and hasattr(self.graph, "session_id"):
             session_id = self.graph.session_id

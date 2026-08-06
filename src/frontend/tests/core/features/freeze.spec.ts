@@ -1,5 +1,5 @@
 import { expect, test } from "../../fixtures";
-import { addFlowToTestOnEmptyEarthMind } from "../../utils/add-flow-to-test-on-empty-earthmind";
+import { addFlowToTestOnEmptyTerraflow } from "../../utils/add-flow-to-test-on-empty-terraflow";
 import { addLegacyComponents } from "../../utils/add-legacy-components";
 import { awaitBootstrapTest } from "../../utils/await-bootstrap-test";
 
@@ -12,12 +12,12 @@ test(
   async ({ page }) => {
     await awaitBootstrapTest(page);
 
-    const firstRunEarthMind = await page
+    const firstRunTerraflow = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunEarthMind > 0) {
-      await addFlowToTestOnEmptyEarthMind(page);
+    if (firstRunTerraflow > 0) {
+      await addFlowToTestOnEmptyTerraflow(page);
     }
 
     await page.getByTestId("blank-flow").click();

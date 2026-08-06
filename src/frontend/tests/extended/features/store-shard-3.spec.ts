@@ -30,7 +30,7 @@ test(
       timeout: 200000,
     });
 
-    await newPageStore.getByTestId("sidebar-nav-EarthMind Store").click();
+    await newPageStore.getByTestId("sidebar-nav-Terraflow Store").click();
 
     await newPageStore
       .getByPlaceholder(TEXTS.placeholderApiKey)
@@ -95,7 +95,7 @@ test(
       timeout: 200000,
     });
 
-    await newPageStore.getByTestId("sidebar-nav-EarthMind Store").click();
+    await newPageStore.getByTestId("sidebar-nav-Terraflow Store").click();
 
     await newPageStore
       .getByPlaceholder(TEXTS.placeholderApiKey)

@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
-from earthmind.schema.data import Data
+from terraflow.schema.data import Data
 from lfx.components.vlmrun import VLMRunTranscription
 from tests.base import ComponentTestBaseWithoutClient
 

@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 
 
 class CustomComponent(BaseComponent):
-    """Represents a custom component in EarthMind.
+    """Represents a custom component in Terraflow.
 
     Attributes:
         name (Optional[str]): This attribute helps the frontend apply styles to known components.

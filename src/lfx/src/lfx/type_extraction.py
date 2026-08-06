@@ -1,4 +1,4 @@
-"""Type extraction utilities copied from earthmind for lfx package."""
+"""Type extraction utilities copied from terraflow for lfx package."""
 
 import re
 from collections.abc import Sequence as SequenceABC

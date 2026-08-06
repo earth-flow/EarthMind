@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/users/10c1c6a2-ab8a-4748-8700-0e4832fd5ce8`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/users/10c1c6a2-ab8a-4748-8700-0e4832fd5ce8`;
 
 const options = {
   method: 'DELETE',
   headers: {
     "accept": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
 };
 

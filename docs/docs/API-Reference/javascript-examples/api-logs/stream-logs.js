@@ -1,10 +1,10 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/logs-stream`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/logs-stream`;
 
 const options = {
   method: 'GET',
   headers: {
     "accept": `text/event-stream`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
 };
 

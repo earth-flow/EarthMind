@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
-from earthmind.schema.data import Data
-from earthmind.schema.dataframe import DataFrame
-from earthmind.schema.message import Message
+from terraflow.schema.data import Data
+from terraflow.schema.dataframe import DataFrame
+from terraflow.schema.message import Message
 from lfx.base.knowledge_bases import get_knowledge_bases
 from lfx.components.files_and_knowledge import KnowledgeIngestionComponent
 

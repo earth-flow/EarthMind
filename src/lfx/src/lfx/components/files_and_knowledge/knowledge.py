@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING, Any
 import pandas as pd
 from cryptography.fernet import InvalidToken
 from langchain_chroma import Chroma
-from earthmind.services.auth.utils import decrypt_api_key, encrypt_api_key
+from terraflow.services.auth.utils import decrypt_api_key, encrypt_api_key
 
 from lfx.base.knowledge_bases.backends import BackendType, BaseVectorStoreBackend, create_backend
 from lfx.base.knowledge_bases.ingestion_sources.base import (
@@ -39,7 +39,7 @@ from lfx.base.knowledge_bases.ingestion_sources.base import (
 from lfx.base.knowledge_bases.ingestion_sources.flow_component import FlowComponentSource
 from lfx.base.knowledge_bases.knowledge_base_utils import get_knowledge_bases
 from lfx.base.models.unified_models import get_embedding_model_options, get_embeddings
-from earthmind.services.memory_base.embedding_helpers import infer_embedding_provider
+from terraflow.services.memory_base.embedding_helpers import infer_embedding_provider
 from lfx.base.vectorstores.chroma_security import chroma_langchain_collection_kwargs
 from lfx.components.files_and_knowledge._kb_paths import (
     get_knowledge_bases_root_path as _get_knowledge_bases_root_path,
@@ -100,7 +100,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 # Mode constants. Plain-text labels (no emoji) for consistency with the rest of
-# EarthMind's TabInput palette — see ``MemoryComponent`` for the same convention.
+# Terraflow's TabInput palette — see ``MemoryComponent`` for the same convention.
 MODE_INGEST = "Ingest"
 MODE_RETRIEVE = "Retrieve"
 
@@ -137,7 +137,7 @@ _DEFAULT_CHROMA_CLOUD_CONFIG = {
 
 
 class KnowledgeComponent(Component):
-    """One component for both writing into and reading from a EarthMind knowledge base.
+    """One component for both writing into and reading from a Terraflow knowledge base.
 
     A ``TabInput`` switches between ingestion and retrieval. The
     ``update_build_config`` / ``update_outputs`` hooks hide the inputs
@@ -146,7 +146,7 @@ class KnowledgeComponent(Component):
     """
 
     display_name = "Knowledge"
-    description = "Ingest into or retrieve from a EarthMind knowledge base."
+    description = "Ingest into or retrieve from a Terraflow knowledge base."
     icon = "database"
     name = "Knowledge"
 
@@ -185,7 +185,7 @@ class KnowledgeComponent(Component):
                 "data": {
                     "node": {
                         "name": "create_knowledge_base",
-                        "description": "Create new knowledge in EarthMind.",
+                        "description": "Create new knowledge in Terraflow.",
                         "display_name": "Create new Knowledge Base",
                         "field_order": [
                             "01_new_kb_name",
@@ -204,7 +204,7 @@ class KnowledgeComponent(Component):
                                 display_name="Choose Embedding Model",
                                 info=(
                                     "Select the embedding model to use for this knowledge base. "
-                                    "EarthMind uses the configured credentials for that model provider."
+                                    "Terraflow uses the configured credentials for that model provider."
                                 ),
                                 required=True,
                                 model_type="embedding",
@@ -502,8 +502,8 @@ class KnowledgeComponent(Component):
         # component verbatim; relied on by both the canvas refresh button and the
         # dialog-submit path).
         if field_name == "knowledge_base":
-            # Lazy import keeps lfx importable without earthmind installed.
-            from earthmind.services.database.models.user.crud import get_user_by_id
+            # Lazy import keeps lfx importable without terraflow installed.
+            from terraflow.services.database.models.user.crud import get_user_by_id
 
             async with session_scope() as db:
                 if not self.user_id:
@@ -700,7 +700,7 @@ class KnowledgeComponent(Component):
     def _update_metadata_metrics(self, kb_path: Path, chroma: Chroma) -> None:
         """Update embedding_metadata.json with accurate chunk/word/character counts."""
         import chromadb.errors
-        from earthmind.api.utils.kb_helpers import KBAnalysisHelper, KBStorageHelper
+        from terraflow.api.utils.kb_helpers import KBAnalysisHelper, KBStorageHelper
 
         metadata_path = kb_path / "embedding_metadata.json"
         if not metadata_path.exists():
@@ -907,9 +907,9 @@ class KnowledgeComponent(Component):
         backend_type: str,
         backend_config: dict[str, Any],
     ) -> None:
-        """Persist the component-created KB in the DB when EarthMind is available."""
+        """Persist the component-created KB in the DB when Terraflow is available."""
         try:
-            from earthmind.api.utils import knowledge_base_service
+            from terraflow.api.utils import knowledge_base_service
         except ImportError:
             return
 
@@ -1108,9 +1108,9 @@ class KnowledgeComponent(Component):
         if cached_path is not None:
             return cached_path
 
-        # Lazy import to keep ``lfx`` importable standalone — earthmind's
+        # Lazy import to keep ``lfx`` importable standalone — terraflow's
         # user/DB models are not always available at module load time.
-        from earthmind.services.database.models.user.crud import get_user_by_id
+        from terraflow.services.database.models.user.crud import get_user_by_id
 
         async with session_scope() as db:
             if not self.user_id:
@@ -1349,9 +1349,9 @@ class KnowledgeComponent(Component):
             return None, None, None, None
 
         try:
-            from earthmind.api.utils import ingestion_run_service, knowledge_base_service
-            from earthmind.services.database.models.jobs.model import JobStatus, JobType
-            from earthmind.services.deps import get_job_service
+            from terraflow.api.utils import ingestion_run_service, knowledge_base_service
+            from terraflow.services.database.models.jobs.model import JobStatus, JobType
+            from terraflow.services.deps import get_job_service
         except ImportError as exc:
             self.log(f"Run-history wiring unavailable; ingestion will not be recorded ({exc}).")
             return None, None, None, None
@@ -1423,9 +1423,9 @@ class KnowledgeComponent(Component):
     ) -> None:
         """Persist the final summary and transition the parent Job."""
         try:
-            from earthmind.api.utils import ingestion_run_service
-            from earthmind.services.database.models.jobs.model import JobStatus
-            from earthmind.services.deps import get_job_service
+            from terraflow.api.utils import ingestion_run_service
+            from terraflow.services.database.models.jobs.model import JobStatus
+            from terraflow.services.deps import get_job_service
         except ImportError as exc:
             self.log(f"Run-history wiring unavailable; ingestion-run finalize skipped ({exc}).")
             return
@@ -1457,8 +1457,8 @@ class KnowledgeComponent(Component):
     ) -> None:
         """Mirror Path A's KB-row status transitions."""
         try:
-            from earthmind.api.utils import knowledge_base_service
-            from earthmind.services.database.models.knowledge_base.model import KnowledgeBaseStatus
+            from terraflow.api.utils import knowledge_base_service
+            from terraflow.services.database.models.knowledge_base.model import KnowledgeBaseStatus
         except ImportError:
             return
         try:
@@ -1473,7 +1473,7 @@ class KnowledgeComponent(Component):
     async def _record_kb_stats(self, kb_record_id: uuid.UUID, kb_path: Path) -> None:
         """Push freshly-refreshed metrics from embedding_metadata.json onto the DB row."""
         try:
-            from earthmind.api.utils import knowledge_base_service
+            from terraflow.api.utils import knowledge_base_service
         except ImportError:
             self.log("knowledge_base_service unavailable; KB stats will not sync to DB row.")
             return
@@ -1537,7 +1537,7 @@ class KnowledgeComponent(Component):
     async def _resolve_backend(self, *, kb_user: str) -> tuple[str, dict[str, Any]]:  # noqa: ARG002
         """Return ``(backend_type, backend_config)`` for this KB."""
         try:
-            from earthmind.api.utils import knowledge_base_service
+            from terraflow.api.utils import knowledge_base_service
 
             user_uuid = self._user_uuid
             if user_uuid is None:
@@ -1620,11 +1620,11 @@ class KnowledgeComponent(Component):
             return await self.build_kb_info()
         raise_error_if_astra_cloud_disable_component(astra_error_msg)
 
-        # Lazy import: earthmind's user/DB models aren't part of lfx's
+        # Lazy import: terraflow's user/DB models aren't part of lfx's
         # standalone install, so ``lfx run <starter>.json`` can't resolve
         # this symbol at module import time. Deferring to use keeps the
         # component importable in both environments.
-        from earthmind.services.database.models.user.crud import get_user_by_id
+        from terraflow.services.database.models.user.crud import get_user_by_id
 
         async with session_scope() as db:
             if not self.user_id:

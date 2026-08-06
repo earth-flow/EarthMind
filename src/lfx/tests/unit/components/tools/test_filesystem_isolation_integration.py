@@ -34,7 +34,7 @@ def _make_component(
     read_only: bool = False,
 ) -> FileSystemToolComponent:
     """Build a component with the AUTO_LOGIN flag pinned for the test."""
-    monkeypatch.setenv("EARTHMIND_FS_TOOL_BASE_DIR", str(base_dir))
+    monkeypatch.setenv("TERRAFLOW_FS_TOOL_BASE_DIR", str(base_dir))
 
     component = FileSystemToolComponent(root_path=sub_path, read_only=read_only)
     # Per-instance override avoids pulling in the global settings service.

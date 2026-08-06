@@ -15,7 +15,7 @@ class NvidiaSystemAssistComponent(ComponentWithCache):
         "The user may query GPU specifications, state, and ask the NV-API to perform "
         "several GPU-editing acations. The prompt must be human-readable language."
     )
-    documentation = "https://docs.earthmind.org/bundles-nvidia"
+    documentation = "https://docs.terraflow.org/bundles-nvidia"
     icon = "NVIDIA"
     rise_initialized = False
 

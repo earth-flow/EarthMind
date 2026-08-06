@@ -3,13 +3,13 @@ from copy import deepcopy
 from uuid import uuid4
 
 import pytest
-from earthmind.initial_setup.setup import (
+from terraflow.initial_setup.setup import (
     get_or_create_default_folder,
     session_scope,
     update_projects_components_with_latest_component_versions,
 )
-from earthmind.services.database.models.folder.constants import DEFAULT_FOLDER_NAME
-from earthmind.services.database.models.folder.model import Folder, FolderRead
+from terraflow.services.database.models.folder.constants import DEFAULT_FOLDER_NAME
+from terraflow.services.database.models.folder.model import Folder, FolderRead
 from sqlmodel import select
 
 

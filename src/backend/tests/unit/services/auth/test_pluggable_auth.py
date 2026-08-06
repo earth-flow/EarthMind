@@ -4,9 +4,9 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from earthmind.services.auth import utils as auth_utils
-from earthmind.services.base import Service
-from earthmind.services.schema import ServiceType
+from terraflow.services.auth import utils as auth_utils
+from terraflow.services.base import Service
+from terraflow.services.schema import ServiceType
 from lfx.services.manager import get_service_manager
 from sqlmodel.ext.asyncio.session import AsyncSession
 

@@ -76,7 +76,7 @@ class ExtensionEventsService(Service):
     def __init__(self, cache_dir: str | Path | None = None) -> None:
         super().__init__()
         if cache_dir is None:
-            cache_dir = Path(tempfile.gettempdir()) / "earthmind_extension_events"
+            cache_dir = Path(tempfile.gettempdir()) / "terraflow_extension_events"
         cache_dir = Path(cache_dir)
         cache_dir.mkdir(parents=True, exist_ok=True)
         self._db_path = cache_dir / "extension_events.sqlite"

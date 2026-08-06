@@ -59,8 +59,8 @@ jobs:
             --tb=short \
             -v
         env:
-          EARTHMIND_SUPERUSER: admin
-          EARTHMIND_SUPERUSER_PASSWORD: 123456
+          TERRAFLOW_SUPERUSER: admin
+          TERRAFLOW_SUPERUSER_PASSWORD: 123456
 
   lfx-smoke-tests:
     # created a separate label for this since it's a different test suite for LFX components
@@ -103,8 +103,8 @@ jobs:
             --maxfail=5 \
             -v
         env:
-          EARTHMIND_SUPERUSER: admin
-          EARTHMIND_SUPERUSER_PASSWORD: 123456
+          TERRAFLOW_SUPERUSER: admin
+          TERRAFLOW_SUPERUSER_PASSWORD: 123456
 
   frontend-smoke-tests:
     if: contains(github.event.pull_request.labels.*.name, 'smoke-test') || github.event_name == 'release' || github.event_name == 'workflow_dispatch'
@@ -166,7 +166,7 @@ jobs:
             Critical functionality validated:
 
             - ${backendEmoji} **Backend**: 11 essential test files (database, auth, API endpoints, flows, components)
-            - ${lfxEmoji} **LFX**: Graph tests (earthmind execution) - runs in isolation
+            - ${lfxEmoji} **LFX**: Graph tests (terraflow execution) - runs in isolation
             - ${frontendEmoji} **Frontend**: Unit tests only (components, utilities)
             
             **Coverage**: Core functionality without external dependencies

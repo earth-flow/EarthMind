@@ -1,12 +1,12 @@
 ---
-title: Deploy the EarthMind development environment on Kubernetes
+title: Deploy the Terraflow development environment on Kubernetes
 slug: /deployment-kubernetes-dev
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-The [EarthMind integrated development environment (IDE) Helm chart](https://github.com/earthmind-ai/earthmind-helm-charts/tree/main/charts/earthmind-ide) is designed to provide a complete environment for developers to create, test, and debug their flows. It includes both the EarthMind API and visual editor.
+The [Terraflow integrated development environment (IDE) Helm chart](https://github.com/terraflow-ai/terraflow-helm-charts/tree/main/charts/terraflow-ide) is designed to provide a complete environment for developers to create, test, and debug their flows. It includes both the Terraflow API and visual editor.
 
 ## Prerequisites
 
@@ -30,64 +30,64 @@ This example uses [Minikube](https://minikube.sigs.k8s.io/docs/start/), but you 
 	kubectl config use-context minikube
 	```
 
-## Install the EarthMind IDE Helm chart
+## Install the Terraflow IDE Helm chart
 
 1. Add the repository to Helm, and then update it:
 
 	```shell
-	helm repo add earthmind https://earthmind-ai.github.io/earthmind-helm-charts
+	helm repo add terraflow https://terraflow-ai.github.io/terraflow-helm-charts
 	helm repo update
 	```
 
-2. Install EarthMind with the default options in the `earthmind` namespace:
+2. Install Terraflow with the default options in the `terraflow` namespace:
 
 	```shell
-	helm install earthmind-ide earthmind/earthmind-ide -n earthmind --create-namespace
+	helm install terraflow-ide terraflow/terraflow-ide -n terraflow --create-namespace
 	```
 
 3. Check the status of the pods:
 
 	```shell
-	kubectl get pods -n earthmind
+	kubectl get pods -n terraflow
 	```
 
-## Access the EarthMind IDE
+## Access the Terraflow IDE
 
-Enable local port forwarding to access EarthMind from your local machine:
+Enable local port forwarding to access Terraflow from your local machine:
 
-1. Make the EarthMind API accessible from your local machine at port 7860:
+1. Make the Terraflow API accessible from your local machine at port 7860:
 
     ```shell
-    kubectl port-forward -n earthmind svc/earthmind-service-backend 7860:7860
+    kubectl port-forward -n terraflow svc/terraflow-service-backend 7860:7860
     ```
 
 2. Make the visual editor accessible from your local machine at port 8080:
 
     ```shell
-    kubectl port-forward -n earthmind svc/earthmind-service 8080:8080
+    kubectl port-forward -n terraflow svc/terraflow-service 8080:8080
     ```
 
 Now you can do the following:
 
-- Access the EarthMind API at `http://localhost:7860`.
+- Access the Terraflow API at `http://localhost:7860`.
 - Access the visual editor at `http://localhost:8080`.
 
-## Modify your EarthMind IDE deployment
+## Modify your Terraflow IDE deployment
 
-You can modify the EarthMind IDE Helm chart's [`values.yaml`](https://github.com/earthmind-ai/earthmind-helm-charts/blob/main/charts/earthmind-ide/values.yaml) file to customize your deployment.
+You can modify the Terraflow IDE Helm chart's [`values.yaml`](https://github.com/terraflow-ai/terraflow-helm-charts/blob/main/charts/terraflow-ide/values.yaml) file to customize your deployment.
 The following sections describe some common modifications.
 
 If you need to set secrets, Kubernetes secrets are recommended.
 
-### Deploy a different EarthMind version
+### Deploy a different Terraflow version
 
-The EarthMind IDE Helm chart deploys the latest EarthMind version by default.
+The Terraflow IDE Helm chart deploys the latest Terraflow version by default.
 
-To specify a different EarthMind version, set the `earthmind.backend.image.tag` and `earthmind.frontend.image.tag` values to your preferred version.
+To specify a different Terraflow version, set the `terraflow.backend.image.tag` and `terraflow.frontend.image.tag` values to your preferred version.
 For example:
 
 ```yaml
-earthmind:
+terraflow:
   backend:
     image:
       tag: "1.0.0a59"
@@ -96,9 +96,9 @@ earthmind:
       tag: "1.0.0a59"
 ```
 
-### Use external storage for the EarthMind database
+### Use external storage for the Terraflow database
 
-The EarthMind IDE Helm chart uses the default EarthMind database configuration, specifically a SQLite database stored in a local persistent disk.
+The Terraflow IDE Helm chart uses the default Terraflow database configuration, specifically a SQLite database stored in a local persistent disk.
 
 If you want to use an [external PostgreSQL database](/configuration-custom-database), use `postgresql` chart or `externalDatabase` to configure the database connection in `values.yaml`.
 
@@ -111,39 +111,39 @@ Use the built-in PostgreSQL chart:
 postgresql:
   enabled: true
   auth:
-    username: "earthmind"
-    password: "earthmind-postgres"
-    database: "earthmind-db"
+    username: "terraflow"
+    password: "terraflow-postgres"
+    database: "terraflow-db"
 ```
 
 </TabItem>
 <TabItem value="externaldatabase" label="externalDatabase">
 
-If you don't want to use the built-in PostgreSQL chart, set `postgresql.enabled` to `false`, and then configure the database connection in `earthmind.backend.externalDatabase`:
+If you don't want to use the built-in PostgreSQL chart, set `postgresql.enabled` to `false`, and then configure the database connection in `terraflow.backend.externalDatabase`:
 
 ```yaml
 postgresql:
   enabled: false
 
-earthmind:
+terraflow:
   backend:
     externalDatabase:
       enabled: true
       driver:
         value: "postgresql"
       host:
-        value: "postgresql-svc.earthmind.svc.cluster.local"
+        value: "postgresql-svc.terraflow.svc.cluster.local"
       port:
         value: "5432"
       user:
-        value: "earthmind"
+        value: "terraflow"
       password:
         valueFrom:
           secretKeyRef:
             key: "password"
             name: "your-secret-name"
       database:
-        value: "earthmind-db"
+        value: "terraflow-db"
     sqlite:
       enabled: false
 ```
@@ -153,12 +153,12 @@ earthmind:
 
 ### Configure scaling
 
-To configure scaling for the EarthMind IDE Helm chart deployment, you must set `replicaCount` (horizontal scaling) and `resources` (vertical scaling) for both the `earthmind.backend` and `earthmind.frontend`.
+To configure scaling for the Terraflow IDE Helm chart deployment, you must set `replicaCount` (horizontal scaling) and `resources` (vertical scaling) for both the `terraflow.backend` and `terraflow.frontend`.
 
 If your flows rely on a shared state, such as [built-in chat memory](/memory), you must also set up a shared database when scaling horizontally.
 
 ```yaml
-earthmind:
+terraflow:
   backend:
     replicaCount: 1
     resources:
@@ -183,6 +183,6 @@ earthmind:
 
 ## See also
 
-* [Best practices for EarthMind on Kubernetes](/deployment-prod-best-practices)
-* [Deploy the EarthMind production environment on Kubernetes](/deployment-kubernetes-prod)
-* [EarthMind Helm Charts repository](https://github.com/earthmind-ai/earthmind-helm-charts)
+* [Best practices for Terraflow on Kubernetes](/deployment-prod-best-practices)
+* [Deploy the Terraflow production environment on Kubernetes](/deployment-kubernetes-prod)
+* [Terraflow Helm Charts repository](https://github.com/terraflow-ai/terraflow-helm-charts)

@@ -1,5 +1,5 @@
 import pytest
-from earthmind.custom.custom_component.custom_component import CustomComponent
+from terraflow.custom.custom_component.custom_component import CustomComponent
 from lfx.field_typing.constants import Data
 
 

@@ -63,7 +63,7 @@ export const EmptyPageCommunity = ({
               <div className="z-50 dark:hidden">
                 <img
                   src={logoLightPng}
-                  alt={t("common.earthMindLogoLight")}
+                  alt={t("common.terraFlowLogoLight")}
                   data-testid="empty_page_logo_light"
                   className="relative top-8 h-40 pointer-events-none select-none"
                 />
@@ -71,7 +71,7 @@ export const EmptyPageCommunity = ({
               <div className="z-50 hidden dark:block">
                 <img
                   src={logoDarkPng}
-                  alt={t("common.earthMindLogoDark")}
+                  alt={t("common.terraFlowLogoDark")}
                   data-testid="empty_page_logo_dark"
                   className="relative top-8 h-40 pointer-events-none select-none"
                 />
@@ -124,7 +124,7 @@ export const EmptyPageCommunity = ({
                 </div>
               </Button>
 
-              {/* EarthMind: external Discord link temporarily disabled (remove `false &&` to re-enable) */}
+              {/* Terraflow: external Discord link temporarily disabled (remove `false &&` to re-enable) */}
               {false && (
               <Button
                 unstyled

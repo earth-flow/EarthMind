@@ -1,6 +1,6 @@
 """LFX Step Ramp Load Test for Finding Performance Cliffs.
 
-This file tests the LFX API (complex serve), not the EarthMind API.
+This file tests the LFX API (complex serve), not the Terraflow API.
 
 Steps every 30 seconds: 5 -> 10 -> 15 -> 20 -> 25 -> 30 -> 35 users.
 Each step holds for exactly 30 seconds to measure steady-state performance.
@@ -102,7 +102,7 @@ def on_test_stop(environment, **_kwargs):
     _env_bags.pop(environment, None)
 
 
-class BaseEarthMindUser(FastHttpUser):
+class BaseTerraflowUser(FastHttpUser):
     abstract = True
     REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT", "10"))
 
@@ -153,7 +153,7 @@ class BaseEarthMindUser(FastHttpUser):
             return response.failure(f"HTTP {response.status_code}")
 
 
-class StepTestUser(BaseEarthMindUser):
+class StepTestUser(BaseTerraflowUser):
     """User class for step ramp testing - sends medium complexity requests."""
 
     wait_time = between(1, 2)

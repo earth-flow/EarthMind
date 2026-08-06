@@ -12,7 +12,7 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, StringConstr
 from lfx.schema.validators import null_check_validator, uuid_validator
 
 # Bounds on body-transported global variables. Keys are intentionally liberal
-# (the EarthMind UI accepts lowercase, digits, underscore, hyphen, and spaces);
+# (the Terraflow UI accepts lowercase, digits, underscore, hyphen, and spaces);
 # we only constrain length so a single field can't push the request past a
 # reasonable size. Values are capped at 64 KB, which comfortably exceeds the
 # longest tokens/secrets stored as global variables in practice.
@@ -74,7 +74,7 @@ class WorkflowExecutionRequest(BaseModel):
             "Keys may use any printable string up to "
             f"{GLOBAL_KEY_MAX_LEN} chars; values are capped at "
             f"{GLOBAL_VALUE_MAX_LEN} chars. Body globals always win over the "
-            "legacy ``X-EARTHMIND-GLOBAL-VAR-*`` headers."
+            "legacy ``X-TERRAFLOW-GLOBAL-VAR-*`` headers."
         ),
     )
 

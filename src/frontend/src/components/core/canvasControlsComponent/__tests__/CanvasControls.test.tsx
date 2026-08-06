@@ -82,9 +82,9 @@ jest.mock("../HelpDropdown", () => ({
   default: () => <div data-testid="help-dropdown" />,
 }));
 
-jest.mock("@/assets/earthmind_assistant.svg", () => "mock-assistant-icon.svg");
+jest.mock("@/assets/terraflow_assistant.svg", () => "mock-assistant-icon.svg");
 jest.mock(
-  "@/assets/earthmind_assistant_idle.svg",
+  "@/assets/terraflow_assistant_idle.svg",
   () => "mock-assistant-idle-icon.svg",
 );
 
@@ -129,7 +129,7 @@ describe("CanvasControls", () => {
     render(<CanvasControls selectedNode={null} />);
 
     expect(screen.getByText("New")).toBeInTheDocument();
-    expect(screen.getByAltText("EarthMind Assistant")).toBeInTheDocument();
+    expect(screen.getByAltText("Terraflow Assistant")).toBeInTheDocument();
   });
 
   it("should_render_sticky_note_button", () => {

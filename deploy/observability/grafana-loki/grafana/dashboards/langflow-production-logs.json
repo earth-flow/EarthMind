@@ -1,8 +1,8 @@
 {
-  "uid": "earthmind-prod-logs",
-  "title": "EarthMind Logs",
-  "description": "Structured logs from EarthMind and lfx: tracebacks, PII redaction, service labels, stdlib intercept, trace correlation.",
-  "tags": ["earthmind", "lfx", "structured-logs"],
+  "uid": "terraflow-prod-logs",
+  "title": "Terraflow Logs",
+  "description": "Structured logs from Terraflow and lfx: tracebacks, PII redaction, service labels, stdlib intercept, trace correlation.",
+  "tags": ["terraflow", "lfx", "structured-logs"],
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
@@ -17,7 +17,7 @@
         "name": "environment",
         "type": "query",
         "datasource": "Loki",
-        "query": "label_values({job=\"earthmind\"}, environment)",
+        "query": "label_values({job=\"terraflow\"}, environment)",
         "current": {"text": "All", "value": "$__all"},
         "includeAll": true,
         "multi": true,
@@ -27,7 +27,7 @@
         "name": "service",
         "type": "query",
         "datasource": "Loki",
-        "query": "label_values({job=\"earthmind\"}, service)",
+        "query": "label_values({job=\"terraflow\"}, service)",
         "current": {"text": "All", "value": "$__all"},
         "includeAll": true,
         "multi": true,
@@ -43,7 +43,7 @@
       "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
       "datasource": "Loki",
       "targets": [
-        {"expr": "sum(count_over_time({job=\"earthmind\", service=~\"$service\", environment=~\"$environment\"}[$__range]))", "refId": "A"}
+        {"expr": "sum(count_over_time({job=\"terraflow\", service=~\"$service\", environment=~\"$environment\"}[$__range]))", "refId": "A"}
       ],
       "options": {"reduceOptions": {"calcs": ["lastNotNull"]}}
     },
@@ -55,7 +55,7 @@
       "datasource": "Loki",
       "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}},
       "targets": [
-        {"expr": "sum(count_over_time({job=\"earthmind\", level=~\"error|critical\", service=~\"$service\", environment=~\"$environment\"}[$__range]))", "refId": "A"}
+        {"expr": "sum(count_over_time({job=\"terraflow\", level=~\"error|critical\", service=~\"$service\", environment=~\"$environment\"}[$__range]))", "refId": "A"}
       ]
     },
     {
@@ -65,7 +65,7 @@
       "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
       "datasource": "Loki",
       "targets": [
-        {"expr": "count(count by (logger)({job=\"earthmind\", service=~\"$service\", environment=~\"$environment\"}))", "refId": "A"}
+        {"expr": "count(count by (logger)({job=\"terraflow\", service=~\"$service\", environment=~\"$environment\"}))", "refId": "A"}
       ]
     },
     {
@@ -77,7 +77,7 @@
       "datasource": "Loki",
       "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}},
       "targets": [
-        {"expr": "sum(count_over_time({job=\"earthmind\"} |~ \"sk-do-not-leak|hunter2|Bearer xyz\"[$__range]))", "refId": "A"}
+        {"expr": "sum(count_over_time({job=\"terraflow\"} |~ \"sk-do-not-leak|hunter2|Bearer xyz\"[$__range]))", "refId": "A"}
       ]
     },
     {
@@ -87,7 +87,7 @@
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
       "datasource": "Loki",
       "targets": [
-        {"expr": "sum by (level) (rate({job=\"earthmind\", service=~\"$service\", environment=~\"$environment\"}[1m]))", "refId": "A", "legendFormat": "{{level}}"}
+        {"expr": "sum by (level) (rate({job=\"terraflow\", service=~\"$service\", environment=~\"$environment\"}[1m]))", "refId": "A", "legendFormat": "{{level}}"}
       ],
       "options": {"legend": {"displayMode": "table", "placement": "right", "calcs": ["sum"]}}
     },
@@ -98,7 +98,7 @@
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
       "datasource": "Loki",
       "targets": [
-        {"expr": "topk(10, sum by (logger) (rate({job=\"earthmind\", service=~\"$service\", environment=~\"$environment\"}[1m])))", "refId": "A", "legendFormat": "{{logger}}"}
+        {"expr": "topk(10, sum by (logger) (rate({job=\"terraflow\", service=~\"$service\", environment=~\"$environment\"}[1m])))", "refId": "A", "legendFormat": "{{logger}}"}
       ],
       "options": {"legend": {"displayMode": "table", "placement": "right", "calcs": ["sum"]}}
     },
@@ -110,7 +110,7 @@
       "gridPos": {"h": 12, "w": 24, "x": 0, "y": 12},
       "datasource": "Loki",
       "targets": [
-        {"expr": "{job=\"earthmind\", level=~\"error|critical\", service=~\"$service\", environment=~\"$environment\"} |= \"exception\" | json", "refId": "A"}
+        {"expr": "{job=\"terraflow\", level=~\"error|critical\", service=~\"$service\", environment=~\"$environment\"} |= \"exception\" | json", "refId": "A"}
       ],
       "options": {"showLabels": true, "showTime": true, "wrapLogMessage": true, "prettifyLogMessage": true, "dedupStrategy": "none"}
     },
@@ -122,7 +122,7 @@
       "gridPos": {"h": 10, "w": 12, "x": 0, "y": 24},
       "datasource": "Loki",
       "targets": [
-        {"expr": "{job=\"earthmind\", service=~\"$service\"} |~ \"\\\\*\\\\*\\\\*\"", "refId": "A"}
+        {"expr": "{job=\"terraflow\", service=~\"$service\"} |~ \"\\\\*\\\\*\\\\*\"", "refId": "A"}
       ],
       "options": {"showLabels": false, "showTime": true, "wrapLogMessage": true, "prettifyLogMessage": true}
     },
@@ -130,11 +130,11 @@
       "id": 9,
       "type": "logs",
       "title": "Stdlib intercept: third-party loggers routed into JSON",
-      "description": "uvicorn, sqlalchemy, httpx, langchain, asyncio used to emit unstructured text. With EARTHMIND_LOG_ENV=container they come through the same JSON stream with logger=<name>.",
+      "description": "uvicorn, sqlalchemy, httpx, langchain, asyncio used to emit unstructured text. With TERRAFLOW_LOG_ENV=container they come through the same JSON stream with logger=<name>.",
       "gridPos": {"h": 10, "w": 12, "x": 12, "y": 24},
       "datasource": "Loki",
       "targets": [
-        {"expr": "{job=\"earthmind\", logger=~\"uvicorn.*|sqlalchemy.*|httpx.*|langchain.*|third_party.*\", service=~\"$service\"}", "refId": "A"}
+        {"expr": "{job=\"terraflow\", logger=~\"uvicorn.*|sqlalchemy.*|httpx.*|langchain.*|third_party.*\", service=~\"$service\"}", "refId": "A"}
       ],
       "options": {"showLabels": true, "showTime": true, "wrapLogMessage": true, "prettifyLogMessage": true}
     },
@@ -145,7 +145,7 @@
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 34},
       "datasource": "Loki",
       "targets": [
-        {"expr": "topk(10, sum by (logger) (count_over_time({job=\"earthmind\", level=~\"error|critical\"}[$__range])))", "refId": "A", "instant": true, "format": "table"}
+        {"expr": "topk(10, sum by (logger) (count_over_time({job=\"terraflow\", level=~\"error|critical\"}[$__range])))", "refId": "A", "instant": true, "format": "table"}
       ]
     },
     {
@@ -156,7 +156,7 @@
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 34},
       "datasource": "Loki",
       "targets": [
-        {"expr": "sum by (service, environment, version) (count_over_time({job=\"earthmind\"}[$__range]))", "refId": "A", "instant": true, "format": "table"}
+        {"expr": "sum by (service, environment, version) (count_over_time({job=\"terraflow\"}[$__range]))", "refId": "A", "instant": true, "format": "table"}
       ]
     }
   ]

@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-from earthmind.agentic.services.flow_preparation import (
+from terraflow.agentic.services.flow_preparation import (
     LFX_COMPONENTS_PATH_SENTINEL,
     available_model_providers,
     inject_assistant_fs_root,
@@ -19,7 +19,7 @@ from earthmind.agentic.services.flow_preparation import (
 
 import lfx
 
-MODULE = "earthmind.agentic.services.flow_preparation"
+MODULE = "terraflow.agentic.services.flow_preparation"
 
 OPENAI_CONFIG = {
     "model_class": "ChatOpenAI",
@@ -393,7 +393,7 @@ def _make_directory_flow(path_value: str) -> dict:
 class TestInjectLfxComponentsPath:
     """Tests for inject_lfx_components_path.
 
-    Regression guard for the EarthMind Desktop bug where the EarthMindAssistant
+    Regression guard for the Terraflow Desktop bug where the TerraflowAssistant
     flow embedded a relative path './src/lfx/src/lfx/components/' which only
     resolved correctly when the sidecar CWD was the monorepo root. On Desktop
     the CWD is the data dir, so the Directory component raised
@@ -442,7 +442,7 @@ class TestInjectLfxComponentsPath:
         Desktop (and any non-monorepo CWD) can execute the assistant flow.
         """
         flow_data = _make_directory_flow(LFX_COMPONENTS_PATH_SENTINEL)
-        flow_file = tmp_path / "EarthMindAssistant.json"
+        flow_file = tmp_path / "TerraflowAssistant.json"
         flow_file.write_text(json.dumps(flow_data))
 
         result_json = load_and_prepare_flow(flow_file, None, None, None)
@@ -472,7 +472,7 @@ def _make_filesystem_flow(root_path_value: str) -> dict:
 class TestInjectAssistantFsRoot:
     """Tests for inject_assistant_fs_root.
 
-    The shipped EarthMindAssistant flow leaves FileSystemTool.root_path empty
+    The shipped TerraflowAssistant flow leaves FileSystemTool.root_path empty
     on purpose — it must be resolved at runtime to an OS-appropriate sandbox
     so the flow runs portably on macOS, Linux, Windows and Docker.
     """
@@ -536,7 +536,7 @@ class TestInjectAssistantFsRoot:
     def test_should_inject_root_path_when_loading_assistant_flow(self, tmp_path):
         """End-to-end: load_and_prepare_flow must inject the resolved root_path."""
         flow_data = _make_filesystem_flow("")
-        flow_file = tmp_path / "EarthMindAssistant.json"
+        flow_file = tmp_path / "TerraflowAssistant.json"
         flow_file.write_text(json.dumps(flow_data))
 
         with patch(f"{MODULE}.resolve_assistant_fs_root", return_value=tmp_path / "ws"):

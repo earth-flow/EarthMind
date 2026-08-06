@@ -7,7 +7,7 @@ get_component_by_name, and get_components_count functions.
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from earthmind.agentic.utils.component_search import (
+from terraflow.agentic.utils.component_search import (
     get_all_component_types,
     get_component_by_name,
     get_components_by_type,
@@ -15,7 +15,7 @@ from earthmind.agentic.utils.component_search import (
     list_all_components,
 )
 
-MODULE = "earthmind.agentic.utils.component_search"
+MODULE = "terraflow.agentic.utils.component_search"
 
 MOCK_TYPES_DICT = {
     "llms": {

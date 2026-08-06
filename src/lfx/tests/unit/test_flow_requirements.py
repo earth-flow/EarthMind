@@ -28,7 +28,7 @@ def _find_starter_projects_dir() -> Path:
     """Walk up from this test file to find the monorepo root and locate starter projects."""
     current = Path(__file__).resolve()
     for parent in current.parents:
-        candidate = parent / "src" / "backend" / "base" / "earthmind" / "initial_setup" / "starter_projects"
+        candidate = parent / "src" / "backend" / "base" / "terraflow" / "initial_setup" / "starter_projects"
         if candidate.is_dir():
             return candidate
     return Path("STARTER_PROJECTS_NOT_FOUND")
@@ -415,20 +415,20 @@ from bs4 import BeautifulSoup
         assert "lxml" in packages
         assert "tabulate" in packages
 
-    def test_earthmind_imports_filtered(self):
-        """Components with earthmind imports should NOT list earthmind as a dep.
+    def test_terraflow_imports_filtered(self):
+        """Components with terraflow imports should NOT list terraflow as a dep.
 
-        lfx provides the earthmind interfaces at runtime, so earthmind/earthmind_base
+        lfx provides the terraflow interfaces at runtime, so terraflow/terraflow_base
         should be filtered out just like lfx itself.
         """
         code = """
-from earthmind.custom import Component
-from earthmind.io import MessageTextInput
+from terraflow.custom import Component
+from terraflow.io import MessageTextInput
 """
         node = _make_node("LegacyComponent", code)
         packages, _ = _extract_component_requirements(node)
-        assert "earthmind" not in packages
-        assert "earthmind-base" not in packages
+        assert "terraflow" not in packages
+        assert "terraflow-base" not in packages
 
 
 # ===================================================================

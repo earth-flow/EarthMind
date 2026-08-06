@@ -5,15 +5,15 @@ import pytest
 from httpx import AsyncClient
 
 # Assuming you have these imports available
-from earthmind.api.v1 import monitor as monitor_api
-from earthmind.memory import aadd_messagetables
-from earthmind.schema.validators import str_to_timestamp, timestamp_to_str
-from earthmind.services.auth.utils import get_auth_service
-from earthmind.services.database.models.flow.model import Flow
-from earthmind.services.database.models.message import MessageCreate, MessageRead, MessageUpdate
-from earthmind.services.database.models.message.model import MessageTable
-from earthmind.services.database.models.user.model import User, UserRead
-from earthmind.services.deps import session_scope
+from terraflow.api.v1 import monitor as monitor_api
+from terraflow.memory import aadd_messagetables
+from terraflow.schema.validators import str_to_timestamp, timestamp_to_str
+from terraflow.services.auth.utils import get_auth_service
+from terraflow.services.database.models.flow.model import Flow
+from terraflow.services.database.models.message import MessageCreate, MessageRead, MessageUpdate
+from terraflow.services.database.models.message.model import MessageTable
+from terraflow.services.database.models.user.model import User, UserRead
+from terraflow.services.deps import session_scope
 
 
 @pytest.fixture

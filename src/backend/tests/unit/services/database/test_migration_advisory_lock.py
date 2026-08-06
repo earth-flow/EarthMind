@@ -18,14 +18,14 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
-from earthmind.services.database.service import (
+from terraflow.services.database.service import (
     _MIGRATION_ADVISORY_LOCK_ID,
     _postgres_migration_lock,
 )
 
 _PG_URL = "postgresql+psycopg://host/db"
-_SQLITE_URL = "sqlite+aiosqlite:///./earthmind.db"
-_SERVICE = "earthmind.services.database.service"
+_SQLITE_URL = "sqlite+aiosqlite:///./terraflow.db"
+_SERVICE = "terraflow.services.database.service"
 _CREATE_ENGINE_PATH = f"{_SERVICE}.sa.create_engine"
 
 _BOOM_MESSAGE = "migration exploded"
@@ -168,7 +168,7 @@ def test_create_db_and_tables_with_lock_holds_advisory_lock_for_postgres():
     covered ``run_migrations``. This verifies the new path holds the lock
     around the DDL.
     """
-    from earthmind.services.database.service import DatabaseService
+    from terraflow.services.database.service import DatabaseService
 
     lock_engine_mock, lock_conn_mock = _engine_with_conn(scalar_returns=True)
     ddl_engine_mock = MagicMock()
@@ -201,7 +201,7 @@ def test_create_db_and_tables_with_lock_holds_advisory_lock_for_postgres():
 @pytest.mark.asyncio
 async def test_create_db_and_tables_uses_lock_on_postgres():
     """``create_db_and_tables`` dispatches to the locked sync path on Postgres."""
-    from earthmind.services.database.service import DatabaseService
+    from terraflow.services.database.service import DatabaseService
 
     service = DatabaseService.__new__(DatabaseService)
     service.database_url = _PG_URL
@@ -215,7 +215,7 @@ async def test_create_db_and_tables_uses_lock_on_postgres():
 @pytest.mark.asyncio
 async def test_create_db_and_tables_skips_lock_on_sqlite():
     """SQLite preserves the original async path; the lock helper is never invoked."""
-    from earthmind.services.database.service import DatabaseService
+    from terraflow.services.database.service import DatabaseService
 
     service = DatabaseService.__new__(DatabaseService)
     service.database_url = _SQLITE_URL

@@ -3,9 +3,9 @@ name: Database Migration Validation
 on:
   pull_request:
     paths:
-      - 'src/backend/base/earthmind/alembic/**'
-      - 'src/backend/base/earthmind/services/database/models/**'
-      - 'src/backend/base/earthmind/services/database/service.py'
+      - 'src/backend/base/terraflow/alembic/**'
+      - 'src/backend/base/terraflow/services/database/models/**'
+      - 'src/backend/base/terraflow/services/database/service.py'
       - 'src/backend/tests/unit/alembic/**'
       - '.github/workflows/migration-validation.yml'
 
@@ -18,13 +18,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: earthmind
-          POSTGRES_PASSWORD: earthmind
-          POSTGRES_DB: earthmind
+          POSTGRES_USER: terraflow
+          POSTGRES_PASSWORD: terraflow
+          POSTGRES_DB: terraflow
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U earthmind"
+          --health-cmd="pg_isready -U terraflow"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -50,7 +50,7 @@ jobs:
       - name: Check model/migration consistency
         env:
           MIGRATION_VALIDATION_CI: "true"
-          EARTHMIND_TEST_DATABASE_URI: "postgresql://earthmind:earthmind@localhost:5432/earthmind"
+          TERRAFLOW_TEST_DATABASE_URI: "postgresql://terraflow:terraflow@localhost:5432/terraflow"
         run: |
           uv run pytest src/backend/tests/unit/alembic/test_migration_execution.py -x -v
 
@@ -73,7 +73,7 @@ jobs:
         id: changed-files
         run: |
           set -euo pipefail
-          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep -E 'src/backend/base/earthmind/alembic/versions/.*\.py$' | grep -v 'test_migrations/' || echo "")
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep -E 'src/backend/base/terraflow/alembic/versions/.*\.py$' | grep -v 'test_migrations/' || echo "")
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "No migration files changed"
@@ -89,14 +89,14 @@ jobs:
         env:
           MIGRATION_FILES: ${{ steps.changed-files.outputs.files }}
         run: |
-          python src/backend/base/earthmind/alembic/migration_validator.py $MIGRATION_FILES
+          python src/backend/base/terraflow/alembic/migration_validator.py $MIGRATION_FILES
 
       - name: Generate validation report
         if: always() && steps.changed-files.outputs.files != ''
         env:
           MIGRATION_FILES: ${{ steps.changed-files.outputs.files }}
         run: |
-          python src/backend/base/earthmind/alembic/migration_validator.py \
+          python src/backend/base/terraflow/alembic/migration_validator.py \
             --json $MIGRATION_FILES > validation-report.json 2> validation-stderr.txt || true
           if [ ! -s validation-report.json ]; then
             echo "::error::Validator produced no output. Stderr:"
@@ -153,7 +153,7 @@ jobs:
                 }
 
                 message += `### Resources\n`;
-                message += `- Review the [DB Migration Guide](./src/backend/base/earthmind/alembic/DB-MIGRATION-GUIDE.MD)\n`;
+                message += `- Review the [DB Migration Guide](./src/backend/base/terraflow/alembic/DB-MIGRATION-GUIDE.MD)\n`;
                 message += `- Use \`python scripts/generate_migration.py --help\` to generate compliant migrations\n\n`;
 
                 message += `### Common Issues & Solutions\n`;

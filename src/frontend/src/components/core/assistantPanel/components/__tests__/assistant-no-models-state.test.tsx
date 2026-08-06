@@ -11,7 +11,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AssistantNoModelsState } from "../assistant-no-models-state";
 
-jest.mock("@/assets/earthmind_assistant.svg", () => "earthmind-icon.svg");
+jest.mock("@/assets/terraflow_assistant.svg", () => "terraflow-icon.svg");
 
 jest.mock("@/components/common/genericIconComponent", () => {
   return function MockIcon({ name }: { name: string }) {

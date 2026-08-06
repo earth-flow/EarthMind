@@ -1,8 +1,8 @@
-"""Unit tests for timestamp validator functions in both earthmind and lfx schemas."""
+"""Unit tests for timestamp validator functions in both terraflow and lfx schemas."""
 
 from datetime import datetime, timezone
 
-import earthmind.schema.validators as lf_validators
+import terraflow.schema.validators as lf_validators
 import lfx.schema.validators as lfx_validators
 import pytest
 
@@ -20,7 +20,7 @@ def _utc(year, month, day, hour, minute, second, microsecond=0):
 # ---------------------------------------------------------------------------
 
 VALIDATOR_MODULES = [
-    pytest.param(lf_validators, id="earthmind"),
+    pytest.param(lf_validators, id="terraflow"),
     pytest.param(lfx_validators, id="lfx"),
 ]
 
@@ -133,8 +133,8 @@ class TestMessageOrdering:
 class TestEncoderCompatibility:
     """encode_datetime output must be parseable by both validator chains."""
 
-    def test_encode_datetime_parseable_by_earthmind_str_to_timestamp(self):
-        from earthmind.schema.encoders import encode_datetime
+    def test_encode_datetime_parseable_by_terraflow_str_to_timestamp(self):
+        from terraflow.schema.encoders import encode_datetime
 
         dt = _utc(2024, 8, 20, 14, 0, 0, 654321)
         encoded = encode_datetime(dt)
@@ -142,7 +142,7 @@ class TestEncoderCompatibility:
         assert recovered == dt
 
     def test_encode_datetime_parseable_by_lfx_str_to_timestamp(self):
-        from earthmind.schema.encoders import encode_datetime
+        from terraflow.schema.encoders import encode_datetime
 
         dt = _utc(2024, 8, 20, 14, 0, 0, 654321)
         encoded = encode_datetime(dt)
@@ -150,7 +150,7 @@ class TestEncoderCompatibility:
         assert recovered == dt
 
     def test_encode_datetime_includes_microseconds(self):
-        from earthmind.schema.encoders import encode_datetime
+        from terraflow.schema.encoders import encode_datetime
 
         dt = _utc(2024, 1, 1, 0, 0, 0, 123456)
         result = encode_datetime(dt)

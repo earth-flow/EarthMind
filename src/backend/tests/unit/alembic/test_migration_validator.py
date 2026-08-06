@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from earthmind.alembic.migration_validator import MigrationValidator
+from terraflow.alembic.migration_validator import MigrationValidator
 
 
 @pytest.fixture

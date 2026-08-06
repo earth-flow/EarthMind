@@ -17,12 +17,12 @@ function buildMcpJson(serverUrl: string): string {
   return JSON.stringify(
     {
       mcpServers: {
-        earthmind: {
+        terraflow: {
           command: "uvx",
           args: ["--from", "lfx", "lfx-mcp"],
           env: {
-            EARTHMIND_SERVER_URL: serverUrl,
-            EARTHMIND_API_KEY: "YOUR_API_KEY", // pragma: allowlist secret
+            TERRAFLOW_SERVER_URL: serverUrl,
+            TERRAFLOW_API_KEY: "YOUR_API_KEY", // pragma: allowlist secret
           },
         },
       },
@@ -61,9 +61,9 @@ function getAgentInstructions(
 }
 
 function getClaudeCodeCommand(serverUrl: string): string {
-  return `claude mcp add earthmind -- uvx --from lfx lfx-mcp \\
-  -e EARTHMIND_SERVER_URL=${serverUrl} \\
-  -e EARTHMIND_API_KEY=YOUR_API_KEY`;
+  return `claude mcp add terraflow -- uvx --from lfx lfx-mcp \\
+  -e TERRAFLOW_SERVER_URL=${serverUrl} \\
+  -e TERRAFLOW_API_KEY=YOUR_API_KEY`;
 }
 
 export default function McpClientPage() {

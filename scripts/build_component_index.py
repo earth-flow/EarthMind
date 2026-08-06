@@ -76,11 +76,11 @@ def _import_components() -> tuple[dict, int]:
     """
     import asyncio
 
-    from lfx.interface.components import import_earthmind_components
+    from lfx.interface.components import import_terraflow_components
 
     try:
         # Run the async function
-        components_result = asyncio.run(import_earthmind_components())
+        components_result = asyncio.run(import_terraflow_components())
         modules_dict = components_result.get("components", {})
         components_count = sum(len(v) for v in modules_dict.values())
         print(f"Discovered {components_count} components across {len(modules_dict)} categories")

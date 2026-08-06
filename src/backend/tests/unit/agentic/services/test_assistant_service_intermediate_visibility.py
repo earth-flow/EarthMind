@@ -8,12 +8,12 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from earthmind.agentic.services.assistant_service import (
+from terraflow.agentic.services.assistant_service import (
     execute_flow_with_validation_streaming,
 )
-from earthmind.agentic.services.flow_types import IntentResult
+from terraflow.agentic.services.flow_types import IntentResult
 
-MODULE = "earthmind.agentic.services.assistant_service"
+MODULE = "terraflow.agentic.services.assistant_service"
 
 
 def _make_intent(intent="generate_component", translation="test"):
@@ -56,7 +56,7 @@ class TestValidatingStepIncludesCode:
 
     @pytest.mark.asyncio
     async def test_should_include_component_code_in_validating_event(self):
-        component_code = "from earthmind.custom import Component\n\nclass MyComp(Component):\n    inputs = []\n"
+        component_code = "from terraflow.custom import Component\n\nclass MyComp(Component):\n    inputs = []\n"
         mock_validation = MagicMock()
         mock_validation.is_valid = True
         mock_validation.class_name = "MyComp"
@@ -502,7 +502,7 @@ class TestQADoesNotIncludeCode:
         ):
             gen = execute_flow_with_validation_streaming(
                 flow_filename="TestFlow",
-                input_value="what is earthmind?",
+                input_value="what is terraflow?",
                 global_variables={},
             )
             raw_events = await _collect_raw_events(gen)

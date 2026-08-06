@@ -111,9 +111,9 @@ async def run(
     ),
     upgrade_flow: str | None = None,
 ) -> None:
-    """Execute a EarthMind graph script or JSON flow and return the result.
+    """Execute a Terraflow graph script or JSON flow and return the result.
 
-    This command analyzes and executes either a Python script containing a EarthMind graph,
+    This command analyzes and executes either a Python script containing a Terraflow graph,
     a JSON flow file, inline JSON, or JSON from stdin, returning the result in the specified format.
     By default, output is minimal for use in containers and serverless environments.
 

@@ -6,11 +6,11 @@ from uuid import uuid4
 import pytest
 from fastapi import status
 from httpx import AsyncClient
-from earthmind.services.database.models.transactions.crud import (
+from terraflow.services.database.models.transactions.crud import (
     transform_transaction_table,
     transform_transaction_table_for_logs,
 )
-from earthmind.services.database.models.transactions.model import (
+from terraflow.services.database.models.transactions.model import (
     TransactionBase,
     TransactionLogsResponse,
     TransactionReadResponse,

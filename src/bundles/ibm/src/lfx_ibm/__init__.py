@@ -1,7 +1,7 @@
 """lfx-ibm: IBM bundle (Db2 Vector Store + watsonx.ai LLM and embeddings).
 
 This package is the distribution unit ``lfx-ibm``.  At runtime
-EarthMind's loader discovers ``extension.json`` shipped alongside this
+Terraflow's loader discovers ``extension.json`` shipped alongside this
 ``__init__.py`` and registers the three IBM components under the
 namespaced IDs:
 

@@ -20,12 +20,12 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from earthmind.agentic.services.assistant_service import (
+from terraflow.agentic.services.assistant_service import (
     execute_flow_with_validation_streaming,
 )
-from earthmind.agentic.services.flow_types import IntentResult
+from terraflow.agentic.services.flow_types import IntentResult
 
-MODULE = "earthmind.agentic.services.assistant_service"
+MODULE = "terraflow.agentic.services.assistant_service"
 
 
 def _make_intent(intent: str) -> IntentResult:
@@ -115,8 +115,8 @@ async def test_should_not_guard_question_intent_text_only():
 
     def streaming_factory(**_kw):
         async def gen():
-            yield "token", "EarthMind is a visual framework."
-            yield "end", {"result": "EarthMind is a visual framework."}
+            yield "token", "Terraflow is a visual framework."
+            yield "end", {"result": "Terraflow is a visual framework."}
 
         return gen()
 
@@ -129,7 +129,7 @@ async def test_should_not_guard_question_intent_text_only():
         events = await _collect(
             execute_flow_with_validation_streaming(
                 flow_filename="TestFlow",
-                input_value="what is earthmind?",
+                input_value="what is terraflow?",
                 global_variables={},
                 max_retries=2,
             )

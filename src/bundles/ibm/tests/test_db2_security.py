@@ -45,7 +45,7 @@ def test_validate_port_rejects_out_of_range_value():
 
 def test_validate_identifier_accepts_table_name():
     """Safe SQL identifiers should pass validation."""
-    assert validate_identifier("EARTHMIND_VECTORS", "table name") == "EARTHMIND_VECTORS"
+    assert validate_identifier("TERRAFLOW_VECTORS", "table name") == "TERRAFLOW_VECTORS"
 
 
 def test_validate_identifier_rejects_invalid_identifier():

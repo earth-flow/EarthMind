@@ -1,10 +1,10 @@
-# Domain-Specific Component Testing for EarthMind
+# Domain-Specific Component Testing for Terraflow
 
-Patterns for testing EarthMind-specific components that have unique architectural concerns.
+Patterns for testing Terraflow-specific components that have unique architectural concerns.
 
 ## Flow/Graph Components
 
-EarthMind's flow editor is built on `@xyflow/react` (React Flow). These components require specific mocking strategies.
+Terraflow's flow editor is built on `@xyflow/react` (React Flow). These components require specific mocking strategies.
 
 ### GenericNode
 
@@ -581,13 +581,13 @@ describe("getPythonApiCode", () => {
 });
 ```
 
-## Testing Tips for EarthMind Components
+## Testing Tips for Terraflow Components
 
 1. **Node template data**: Create reusable mock node data objects. The template structure is deeply nested and used across many components.
 
 2. **Store interdependencies**: Many components read from multiple stores (flowStore, typesStore, alertStore). Mock or initialize all relevant stores.
 
-3. **data-testid conventions**: EarthMind uses `data-testid` extensively. Common patterns:
+3. **data-testid conventions**: Terraflow uses `data-testid` extensively. Common patterns:
    - `popover-anchor-input-{name}` for input fields
    - `handle-{type}-{position}` for flow handles
    - `sidebar-nav-{action}` for sidebar buttons

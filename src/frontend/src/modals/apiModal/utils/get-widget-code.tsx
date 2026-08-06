@@ -14,16 +14,16 @@ export default function getWidgetCode({
 }: GetCodeType): string {
   const source = copy
     ? `<script
-  src="https://cdn.jsdelivr.net/gh/earthmind-ai/earthmind-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js">
+  src="https://cdn.jsdelivr.net/gh/terraflow-ai/terraflow-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js">
 </script>`
     : `<script
-  src="https://cdn.jsdelivr.net/gh/earthmind-ai/earthmind-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js">
+  src="https://cdn.jsdelivr.net/gh/terraflow-ai/terraflow-embedded-chat@v1.0.8/dist/build/static/js/bundle.min.js">
 </script>`;
 
   const { protocol, host } = customGetHostProtocol();
 
   return `${source}
-  <earthmind-chat
+  <terraflow-chat
     window_title="${flowName}"
     flow_id="${flowId}"
     host_url="${protocol}//${host}"${
@@ -32,5 +32,5 @@ export default function getWidgetCode({
     api_key="..."`
         : ""
     }>
-</earthmind-chat>`;
+</terraflow-chat>`;
 }

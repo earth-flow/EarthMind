@@ -11,11 +11,11 @@ from alembic import command
 from alembic.autogenerate import compare_metadata
 from alembic.config import Config
 from alembic.migration import MigrationContext
-from earthmind.services.database.service import SQLModel
+from terraflow.services.database.service import SQLModel
 from sqlalchemy import create_engine, inspect, text
 
 _WORKSPACE_ROOT = Path(__file__).resolve().parents[5]
-_SCRIPT_LOCATION = _WORKSPACE_ROOT / "src/backend/base/earthmind/alembic"
+_SCRIPT_LOCATION = _WORKSPACE_ROOT / "src/backend/base/terraflow/alembic"
 
 
 def _make_alembic_cfg(db_url: str) -> Config:
@@ -50,7 +50,7 @@ def _normalize_pg_url(url: str) -> str:
 
 def _pg_url() -> str | None:
     """Return a PostgreSQL URL from the environment, or None."""
-    url = os.environ.get("EARTHMIND_TEST_DATABASE_URI")
+    url = os.environ.get("TERRAFLOW_TEST_DATABASE_URI")
     if url is not None:
         return _normalize_pg_url(url)
     return None
@@ -104,7 +104,7 @@ def db_url(request):
     else:
         base_url = _pg_url()
         if base_url is None:
-            pytest.skip("EARTHMIND_TEST_DATABASE_URI not set")
+            pytest.skip("TERRAFLOW_TEST_DATABASE_URI not set")
         # Use a unique DB name per test to allow parallel execution
         import hashlib
 
@@ -160,7 +160,7 @@ def _get_main_branch_head() -> str | None:
                     pattern,
                     "origin/main",
                     "--",
-                    "src/backend/base/earthmind/alembic/versions/",
+                    "src/backend/base/terraflow/alembic/versions/",
                 ],
                 capture_output=True,
                 text=True,

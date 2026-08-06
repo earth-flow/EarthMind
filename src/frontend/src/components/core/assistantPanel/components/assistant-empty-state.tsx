@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import earthmindAssistantIcon from "@/assets/earthmind_assistant.svg";
+import terraflowAssistantIcon from "@/assets/terraflow_assistant.svg";
 import ForwardedIconComponent from "@/components/common/genericIconComponent";
 import { Button } from "@/components/ui/button";
 import { ASSISTANT_SUGGESTIONS } from "../assistant-panel.constants";
@@ -16,7 +16,7 @@ export function AssistantEmptyState({
     <div className="flex flex-1 flex-col items-center justify-center px-8">
       <div className="mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl">
         <img
-          src={earthmindAssistantIcon}
+          src={terraflowAssistantIcon}
           alt={t("assistant.title")}
           className="h-full w-full object-cover"
         />

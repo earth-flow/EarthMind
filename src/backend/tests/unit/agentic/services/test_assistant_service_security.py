@@ -11,17 +11,17 @@ import json
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from earthmind.agentic.helpers.input_sanitization import REFUSAL_MESSAGE
-from earthmind.agentic.services.assistant_service import (
+from terraflow.agentic.helpers.input_sanitization import REFUSAL_MESSAGE
+from terraflow.agentic.services.assistant_service import (
     execute_flow_with_validation,
     execute_flow_with_validation_streaming,
 )
-from earthmind.agentic.services.flow_types import (
+from terraflow.agentic.services.flow_types import (
     OFF_TOPIC_REFUSAL_MESSAGE,
     IntentResult,
 )
 
-MODULE = "earthmind.agentic.services.assistant_service"
+MODULE = "terraflow.agentic.services.assistant_service"
 
 
 def _make_intent(intent="question", translation="test"):
@@ -164,7 +164,7 @@ class TestOffTopicIntegration:
         ):
             gen = execute_flow_with_validation_streaming(
                 flow_filename="TestFlow",
-                input_value="What is EarthMind?",
+                input_value="What is Terraflow?",
                 global_variables={},
             )
             events = await _collect_events(gen)

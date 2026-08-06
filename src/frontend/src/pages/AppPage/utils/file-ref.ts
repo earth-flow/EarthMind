@@ -4,7 +4,7 @@ import { getFetchCredentials } from "@/customization/utils/get-fetch-credentials
 import type { ResolvedFileRef } from "@/types/appPage/widget";
 
 /**
- * EarthMind has three independent file storage systems, discovered while
+ * Terraflow has three independent file storage systems, discovered while
  * building this widget layer:
  *  - "v1" flow-scoped files (Message.files / Image), served at
  *    `files/download|images/{flow_id}/{file_name}` — used by native

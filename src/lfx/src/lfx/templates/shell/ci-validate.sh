@@ -2,7 +2,7 @@
 # ci-validate.sh
 #
 # PURPOSE
-#   Validate all EarthMind flow JSON files using `lfx validate`.
+#   Validate all Terraflow flow JSON files using `lfx validate`.
 #   No secrets or network access required — pure static analysis.
 #
 # USAGE

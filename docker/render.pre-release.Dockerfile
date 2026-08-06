@@ -1,1 +1,1 @@
-FROM earthmindai/earthmind:1.0-alpha
+FROM terraflowai/terraflow:1.0-alpha

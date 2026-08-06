@@ -1,6 +1,6 @@
 """Unit tests for lfx login -- login_command and helpers.
 
-All tests run entirely in-process; no real EarthMind instance or SDK required.
+All tests run entirely in-process; no real Terraflow instance or SDK required.
 The SDK module is replaced wholesale with MagicMock so only the login logic
 (key masking, connection probing, success/failure output) is under test.
 """
@@ -17,7 +17,7 @@ import typer
 # Shared constants
 # ---------------------------------------------------------------------------
 
-_BASE_URL = "http://earthmind.test"
+_BASE_URL = "http://terraflow.test"
 _API_KEY = "abcdefghijklmnop"  # pragma: allowlist secret  (16 chars — longer than 8)
 _SHORT_KEY = "short"  # pragma: allowlist secret  (5 chars — at or under the 8-char mask threshold)
 _EXACT_KEY = "exactly8"  # pragma: allowlist secret  (exactly 8 chars)
@@ -28,16 +28,16 @@ _EXACT_KEY = "exactly8"  # pragma: allowlist secret  (exactly 8 chars)
 # ---------------------------------------------------------------------------
 
 
-class _FakeEarthMindAuthError(Exception):
-    """Stand-in for earthmind_sdk.EarthMindAuthError in unit tests."""
+class _FakeTerraflowAuthError(Exception):
+    """Stand-in for terraflow_sdk.TerraflowAuthError in unit tests."""
 
 
-class _FakeEarthMindConnectionError(Exception):
-    """Stand-in for earthmind_sdk.EarthMindConnectionError in unit tests."""
+class _FakeTerraflowConnectionError(Exception):
+    """Stand-in for terraflow_sdk.TerraflowConnectionError in unit tests."""
 
 
-class _FakeEarthMindHTTPError(Exception):
-    """Stand-in for earthmind_sdk.EarthMindHTTPError in unit tests."""
+class _FakeTerraflowHTTPError(Exception):
+    """Stand-in for terraflow_sdk.TerraflowHTTPError in unit tests."""
 
     def __init__(self, status_code: int, detail: str) -> None:
         self.status_code = status_code
@@ -65,14 +65,14 @@ def _make_client_mock(flows: list | None = None) -> MagicMock:
 
 
 def _make_sdk_mock(client_mock: MagicMock | None = None) -> MagicMock:
-    """Return a mock earthmind_sdk module wired up for login tests."""
+    """Return a mock terraflow_sdk module wired up for login tests."""
     if client_mock is None:
         client_mock = _make_client_mock()
     sdk = MagicMock()
     sdk.Client.return_value = client_mock
-    sdk.EarthMindAuthError = _FakeEarthMindAuthError
-    sdk.EarthMindConnectionError = _FakeEarthMindConnectionError
-    sdk.EarthMindHTTPError = _FakeEarthMindHTTPError
+    sdk.TerraflowAuthError = _FakeTerraflowAuthError
+    sdk.TerraflowConnectionError = _FakeTerraflowConnectionError
+    sdk.TerraflowHTTPError = _FakeTerraflowHTTPError
     return sdk
 
 
@@ -191,7 +191,7 @@ class TestProbeConnection:
         from lfx.cli.login import _probe_connection
 
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindAuthError("unauthorized")
+        client.list_flows.side_effect = _FakeTerraflowAuthError("unauthorized")
         sdk = _make_sdk_mock(client_mock=client)
         ok, msg, count = _probe_connection(client, sdk)
         assert ok is False
@@ -202,7 +202,7 @@ class TestProbeConnection:
         from lfx.cli.login import _probe_connection
 
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindConnectionError("refused")
+        client.list_flows.side_effect = _FakeTerraflowConnectionError("refused")
         sdk = _make_sdk_mock(client_mock=client)
         ok, msg, count = _probe_connection(client, sdk)
         assert ok is False
@@ -213,7 +213,7 @@ class TestProbeConnection:
         from lfx.cli.login import _probe_connection
 
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindHTTPError(503, "service unavailable")
+        client.list_flows.side_effect = _FakeTerraflowHTTPError(503, "service unavailable")
         sdk = _make_sdk_mock(client_mock=client)
         ok, msg, count = _probe_connection(client, sdk)
         assert ok is False
@@ -247,7 +247,7 @@ class TestProbeConnection:
 
         original_msg = "Connection refused at port 7860"
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindConnectionError(original_msg)
+        client.list_flows.side_effect = _FakeTerraflowConnectionError(original_msg)
         sdk = _make_sdk_mock(client_mock=client)
         _, msg, _ = _probe_connection(client, sdk)
         assert original_msg in msg
@@ -305,7 +305,7 @@ class TestLoginCommandSuccess:
 class TestLoginCommandAuthFailure:
     def test_auth_error_raises_exit_1(self):
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindAuthError("unauthorized")
+        client.list_flows.side_effect = _FakeTerraflowAuthError("unauthorized")
         sdk = _make_sdk_mock(client_mock=client)
         env_cfg = _make_env_cfg()
         with pytest.raises(typer.Exit) as exc_info:
@@ -315,7 +315,7 @@ class TestLoginCommandAuthFailure:
     def test_auth_failure_with_api_key_includes_masked_key(self):
         """When auth fails and a key is configured, masked key is shown on stderr."""
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindAuthError("forbidden")
+        client.list_flows.side_effect = _FakeTerraflowAuthError("forbidden")
         sdk = _make_sdk_mock(client_mock=client)
         env_cfg = _make_env_cfg(api_key=_API_KEY)
         with pytest.raises(typer.Exit):
@@ -330,7 +330,7 @@ class TestLoginCommandAuthFailure:
 class TestLoginCommandConnectionFailure:
     def test_connection_error_raises_exit_1(self):
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindConnectionError("timeout")
+        client.list_flows.side_effect = _FakeTerraflowConnectionError("timeout")
         sdk = _make_sdk_mock(client_mock=client)
         env_cfg = _make_env_cfg()
         with pytest.raises(typer.Exit) as exc_info:
@@ -346,7 +346,7 @@ class TestLoginCommandConnectionFailure:
 class TestLoginCommandHTTPError:
     def test_http_error_raises_exit_1(self):
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindHTTPError(500, "internal server error")
+        client.list_flows.side_effect = _FakeTerraflowHTTPError(500, "internal server error")
         sdk = _make_sdk_mock(client_mock=client)
         env_cfg = _make_env_cfg()
         with pytest.raises(typer.Exit) as exc_info:
@@ -355,7 +355,7 @@ class TestLoginCommandHTTPError:
 
     def test_http_404_raises_exit_1(self):
         client = _make_client_mock()
-        client.list_flows.side_effect = _FakeEarthMindHTTPError(404, "not found")
+        client.list_flows.side_effect = _FakeTerraflowHTTPError(404, "not found")
         sdk = _make_sdk_mock(client_mock=client)
         env_cfg = _make_env_cfg()
         with pytest.raises(typer.Exit) as exc_info:
@@ -462,7 +462,7 @@ class TestLoginCommandSdkNotInstalled:
         with (
             patch(
                 "lfx.cli.login.load_sdk",
-                side_effect=typer.BadParameter("earthmind-sdk is required for lfx login"),
+                side_effect=typer.BadParameter("terraflow-sdk is required for lfx login"),
             ),
             pytest.raises(typer.BadParameter),
         ):
@@ -479,7 +479,7 @@ class TestLoginCommandSdkNotInstalled:
         with (
             patch(
                 "lfx.cli.login.load_sdk",
-                side_effect=typer.BadParameter("earthmind-sdk is required"),
+                side_effect=typer.BadParameter("terraflow-sdk is required"),
             ),
             pytest.raises(typer.BadParameter) as exc_info,
         ):
@@ -489,7 +489,7 @@ class TestLoginCommandSdkNotInstalled:
                 target=None,
                 api_key=None,
             )
-        assert "earthmind-sdk" in str(exc_info.value)
+        assert "terraflow-sdk" in str(exc_info.value)
 
 
 # ---------------------------------------------------------------------------

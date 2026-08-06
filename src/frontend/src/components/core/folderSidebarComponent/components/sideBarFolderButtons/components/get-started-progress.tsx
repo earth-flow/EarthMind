@@ -173,7 +173,7 @@ export const GetStartedProgress: FC<{
           </div>
         </Button>
 
-        {/* EarthMind: external Discord onboarding link temporarily disabled (remove `false &&` to re-enable) */}
+        {/* Terraflow: external Discord onboarding link temporarily disabled (remove `false &&` to re-enable) */}
         {false && (
         <Button
           data-testid="discord_joined_btn_get_started"

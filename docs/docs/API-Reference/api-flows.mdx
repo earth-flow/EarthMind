@@ -45,7 +45,7 @@ import exampleJavascriptApiFlowsImportFlows from '!!raw-loader!@site/docs/API-Re
 
 Use the `/flows` endpoint to create, read, update, and delete flows.
 
-If you want to use the EarthMind API to run a flow, see [Flow trigger endpoints](/api-flows-run).
+If you want to use the Terraflow API to run a flow, see [Flow trigger endpoints](/api-flows-run).
 
 ## Create flow
 
@@ -257,7 +257,7 @@ Deletes a specific flow by its ID.
 
 Exports specified flows to a ZIP file.
 
-This endpoint downloads a ZIP file containing [EarthMind JSON files](/concepts-flows-import#earthmind-json-file-contents) for each flow ID listed in the request body.
+This endpoint downloads a ZIP file containing [Terraflow JSON files](/concepts-flows-import#terraflow-json-file-contents) for each flow ID listed in the request body.
 
 <Tabs>
 <TabItem value="Python" label="Python" default>
@@ -286,7 +286,7 @@ This endpoint downloads a ZIP file containing [EarthMind JSON files](/concepts-f
 
 ## Import flows
 
-Imports flows by uploading a [EarthMind-compatible JSON file](/concepts-flows-import#earthmind-json-file-contents).
+Imports flows by uploading a [Terraflow-compatible JSON file](/concepts-flows-import#terraflow-json-file-contents).
 
 To specify a target project for the flow, include the query parameter `folder_id`.
 The target `folder_id` must already exist before uploading a flow. Call the [/api/v1/projects/](/api-projects#read-projects) endpoint for a list of available folders and projects.

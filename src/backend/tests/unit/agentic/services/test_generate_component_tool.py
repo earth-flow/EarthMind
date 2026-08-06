@@ -2,7 +2,7 @@
 
 Lets ONE agent loop create a custom component mid-task (the Claude Code
 pattern: one agent, many tools). Lives in lfx.mcp.flow_builder_tools but
-exercised here because it lazily imports earthmind.agentic.services.
+exercised here because it lazily imports terraflow.agentic.services.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock, patch
 
 from lfx.mcp.flow_builder_tools import GenerateComponent
 
-EFV = "earthmind.agentic.services.assistant_service.execute_flow_with_validation"
+EFV = "terraflow.agentic.services.assistant_service.execute_flow_with_validation"
 
 
 def _run(tool: GenerateComponent):
@@ -62,8 +62,8 @@ class TestGenerateComponentTool:
         assert "error" in data.data
 
     def test_passes_request_provider_model_and_user_from_context(self):
-        from earthmind.agentic.services.agent_run_context import reset_agent_run_model, set_agent_run_model
-        from earthmind.agentic.services.user_components_context import (
+        from terraflow.agentic.services.agent_run_context import reset_agent_run_model, set_agent_run_model
+        from terraflow.agentic.services.user_components_context import (
             reset_current_user_id,
             set_current_user_id,
         )

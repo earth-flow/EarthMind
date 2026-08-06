@@ -9,7 +9,7 @@ Usage:
     uv run python src/backend/tests/stress/stress_telemetry_writes.py \
         --concurrency 200 --seconds 30
 
-    DB_URL=$EARTHMIND_DATABASE_URL \
+    DB_URL=$TERRAFLOW_DATABASE_URL \
     uv run python src/backend/tests/stress/stress_telemetry_writes.py \
         --concurrency 500 --seconds 30
 
@@ -28,19 +28,19 @@ import traceback
 from collections import Counter
 from uuid import uuid4
 
-# Configure env BEFORE importing earthmind so settings pick up the DB URL.
+# Configure env BEFORE importing terraflow so settings pick up the DB URL.
 DB_URL = os.environ.get("DB_URL", "sqlite:///./stress.db")
-os.environ.setdefault("EARTHMIND_DATABASE_URL", DB_URL)
-os.environ.setdefault("EARTHMIND_TRANSACTIONS_STORAGE_ENABLED", "true")
-os.environ.setdefault("EARTHMIND_VERTEX_BUILDS_STORAGE_ENABLED", "true")
+os.environ.setdefault("TERRAFLOW_DATABASE_URL", DB_URL)
+os.environ.setdefault("TERRAFLOW_TRANSACTIONS_STORAGE_ENABLED", "true")
+os.environ.setdefault("TERRAFLOW_VERTEX_BUILDS_STORAGE_ENABLED", "true")
 # Auto-login keeps service init from blocking on user setup paths.
-os.environ.setdefault("EARTHMIND_AUTO_LOGIN", "true")
+os.environ.setdefault("TERRAFLOW_AUTO_LOGIN", "true")
 
 
 async def setup() -> tuple[object, object]:
-    from earthmind.services.deps import get_db_service, get_settings_service
-    from earthmind.services.manager import get_service_manager
-    from earthmind.services.utils import initialize_services
+    from terraflow.services.deps import get_db_service, get_settings_service
+    from terraflow.services.manager import get_service_manager
+    from terraflow.services.utils import initialize_services
 
     settings = get_settings_service().settings
     print(f"[setup] DB_URL={settings.database_url}")
@@ -51,7 +51,7 @@ async def setup() -> tuple[object, object]:
     await db_service.create_db_and_tables()
 
     if getattr(settings, "telemetry_writer_enabled", False):
-        from earthmind.services.deps import get_telemetry_writer_service
+        from terraflow.services.deps import get_telemetry_writer_service
 
         writer = get_telemetry_writer_service()
         if writer is not None and writer.is_enabled():
@@ -170,7 +170,7 @@ async def main_async(args) -> int:
 
     writer = None
     try:
-        from earthmind.services.deps import get_telemetry_writer_service
+        from terraflow.services.deps import get_telemetry_writer_service
 
         writer = get_telemetry_writer_service()
     except Exception:

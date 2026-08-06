@@ -2,11 +2,11 @@ import os
 
 import requests
 
-url = f"{os.getenv('EARTHMIND_URL', '')}/api/v1/flows/?remove_example_flows=true&components_only=false&get_all=false&project_id={os.getenv('PROJECT_ID', '')}&header_flows=false&page=1&size=1"
+url = f"{os.getenv('TERRAFLOW_URL', '')}/api/v1/flows/?remove_example_flows=true&components_only=false&get_all=false&project_id={os.getenv('PROJECT_ID', '')}&header_flows=false&page=1&size=1"
 
 headers = {
     "accept": "application/json",
-    "x-api-key": f"{os.getenv('EARTHMIND_API_KEY', '')}",
+    "x-api-key": f"{os.getenv('TERRAFLOW_API_KEY', '')}",
 }
 
 response = requests.request("GET", url, headers=headers)

@@ -1,4 +1,4 @@
-"""Typed errors for the EarthMind Extension System.
+"""Typed errors for the Terraflow Extension System.
 
 Every error from validate / loader / reload / migration / events surfaces as a
 structured object: ``{code, message, hint, ref_url}``, emitted identically by
@@ -21,7 +21,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-DOCS_BASE = "https://docs.earthmind.org/extensions/errors"
+DOCS_BASE = "https://docs.terraflow.org/extensions/errors"
 """Base URL for error reference documentation.  Concrete pages are anchors of
 the form ``#<error-code>`` (e.g. ``#manifest-invalid``).
 """
@@ -202,7 +202,7 @@ class ExtensionErrorCollection:
 # ---------------------------------------------------------------------------
 
 _BRANCH_TEMPLATES: dict[str, str] = {
-    "manifest-not-found": ("No extension.json or [tool.earthmind.extension] entry found in {location}."),
+    "manifest-not-found": ("No extension.json or [tool.terraflow.extension] entry found in {location}."),
     "manifest-invalid": ("Invalid manifest at {location}: {message}"),
     "manifest-unreadable": ("Could not read manifest at {location}: {message}"),
     "field-deferred-in-this-milestone": ("Manifest field {content!r} is deferred in this milestone."),
@@ -246,16 +246,16 @@ _BRANCH_TEMPLATES: dict[str, str] = {
         "the lexicographically-first manifest path wins. Locations: {location}."
     ),
     "duplicate-inline-bundle": (
-        "Inline bundle name {content!r} appears in multiple EARTHMIND_COMPONENTS_PATH entries; "
+        "Inline bundle name {content!r} appears in multiple TERRAFLOW_COMPONENTS_PATH entries; "
         "first wins. Locations: {location}."
     ),
     "inline-bundle-name-invalid": (
         "Inline bundle directory {content!r} does not match the bundle name pattern (lowercase snake_case)."
     ),
     "inline-path-missing": (
-        "EARTHMIND_COMPONENTS_PATH entry {content!r} does not exist or is not a directory; skipped."
+        "TERRAFLOW_COMPONENTS_PATH entry {content!r} does not exist or is not a directory; skipped."
     ),
-    "inline-path-unreadable": ("EARTHMIND_COMPONENTS_PATH entry {content!r} could not be enumerated: {message}"),
+    "inline-path-unreadable": ("TERRAFLOW_COMPONENTS_PATH entry {content!r} could not be enumerated: {message}"),
     "bundle-json-invalid": (
         "Inline bundle.json at {location} is unreadable or malformed; falling back to derived id/version."
     ),
@@ -305,7 +305,7 @@ _BRANCH_TEMPLATES: dict[str, str] = {
     ),
     "extension-reload-disabled": (
         "Extension reload is disabled on this server.  "
-        "Set EARTHMIND_ENABLE_EXTENSION_RELOAD=true to enable it on a local-development install (Mode A)."
+        "Set TERRAFLOW_ENABLE_EXTENSION_RELOAD=true to enable it on a local-development install (Mode A)."
     ),
     "extension-events-keyspace-forbidden": (
         "The {location} query parameter is not accepted; events are scoped server-side to the "

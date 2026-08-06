@@ -13,8 +13,8 @@ jest.mock("react-cookie", () => ({
 
 // Mock constants
 jest.mock("@/constants/constants", () => ({
-  EARTHMIND_ACCESS_TOKEN: "earthmind_access_token",
-  EARTHMIND_API_TOKEN: "earthmind_api_token",
+  TERRAFLOW_ACCESS_TOKEN: "terraflow_access_token",
+  TERRAFLOW_API_TOKEN: "terraflow_api_token",
 }));
 
 // Mock the darkStore to avoid import.meta issues
@@ -55,9 +55,9 @@ describe("useAuthStore", () => {
     // Set default cookie values
     mockCookies.get.mockImplementation((key) => {
       switch (key) {
-        case "earthmind_access_token":
+        case "terraflow_access_token":
           return null;
-        case "earthmind_api_token":
+        case "terraflow_api_token":
           return null;
         default:
           return null;

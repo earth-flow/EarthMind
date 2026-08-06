@@ -111,7 +111,7 @@ class DeploymentPayloadFields(ProviderPayloadSchemas):
     this module defines *slot names* (shared structure) for both layers.
     Slot population is layer-specific:
     - adapters populate ``DeploymentPayloadSchemas`` (adapter-side contracts)
-    - EarthMind mappers populate ``DeploymentApiPayloads`` (API-side contracts)
+    - Terraflow mappers populate ``DeploymentApiPayloads`` (API-side contracts)
     """
 
     # Inbound (request -> adapter)

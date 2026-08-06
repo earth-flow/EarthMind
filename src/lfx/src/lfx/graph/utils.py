@@ -150,7 +150,7 @@ async def emit_vertex_build_event(
     try:
         from datetime import datetime, timezone
 
-        from earthmind.services.event_manager import webhook_event_manager
+        from terraflow.services.event_manager import webhook_event_manager
 
         flow_id_str = str(flow_id)
         if not webhook_event_manager.has_listeners(flow_id_str):
@@ -200,7 +200,7 @@ async def emit_vertex_build_event(
             },
         )
     except ImportError:
-        pass  # earthmind not available (standalone lfx usage)
+        pass  # terraflow not available (standalone lfx usage)
     except Exception as exc:  # noqa: BLE001
         logger.debug(f"SSE emission failed for vertex {vertex_id}: {exc}")
 
@@ -212,7 +212,7 @@ async def emit_build_start_event(flow_id: str | UUID, vertex_id: str) -> None:
     Errors are silently ignored as SSE emission is not critical.
     """
     try:
-        from earthmind.services.event_manager import webhook_event_manager
+        from terraflow.services.event_manager import webhook_event_manager
 
         flow_id_str = str(flow_id)
         if not webhook_event_manager.has_listeners(flow_id_str):
@@ -221,7 +221,7 @@ async def emit_build_start_event(flow_id: str | UUID, vertex_id: str) -> None:
         webhook_event_manager.record_build_start(flow_id_str, vertex_id)
         await webhook_event_manager.emit(flow_id_str, "build_start", {"id": vertex_id})
     except ImportError:
-        pass  # earthmind not available (standalone lfx usage)
+        pass  # terraflow not available (standalone lfx usage)
     except Exception as exc:  # noqa: BLE001
         logger.debug(f"SSE build_start emission failed for vertex {vertex_id}: {exc}")
 
@@ -249,7 +249,7 @@ async def log_transaction(
 ) -> None:
     """Asynchronously logs a transaction record for a vertex in a flow if transaction storage is enabled.
 
-    Uses the pluggable TransactionService to log transactions. When running within earthmind,
+    Uses the pluggable TransactionService to log transactions. When running within terraflow,
     the concrete TransactionService implementation persists to the database.
     When running standalone (lfx only), transactions are not persisted.
 
@@ -312,16 +312,16 @@ _legacy_vb_fallback_logged: bool = False
 
 
 def _try_enqueue_via_telemetry_writer(vertex_build) -> bool:
-    """Best-effort handoff to the earthmind telemetry writer.
+    """Best-effort handoff to the terraflow telemetry writer.
 
     Returns ``True`` when the row was accepted by the writer (caller should
-    skip the direct DB write). Returns ``False`` when earthmind isn't installed,
+    skip the direct DB write). Returns ``False`` when terraflow isn't installed,
     the writer isn't started, or the writer rejected the row.
     """
     global _legacy_vb_fallback_logged  # noqa: PLW0603 — one-shot module-level latch
     try:
-        from earthmind.services.database.models.vertex_builds.model import VertexBuildTable
-        from earthmind.services.deps import get_telemetry_writer_service
+        from terraflow.services.database.models.vertex_builds.model import VertexBuildTable
+        from terraflow.services.deps import get_telemetry_writer_service
     except ImportError:
         return False
     writer = get_telemetry_writer_service()
@@ -350,16 +350,16 @@ async def log_vertex_build(
     """Asynchronously logs a vertex build record if vertex build storage is enabled.
 
     This is a lightweight implementation that only logs if database service is available.
-    When running within earthmind, it will use earthmind's database service to persist the build.
+    When running within terraflow, it will use terraflow's database service to persist the build.
     When running standalone (lfx only), it will only log debug messages.
     """
     try:
-        # Try to use earthmind's services if available (when running within earthmind)
+        # Try to use terraflow's services if available (when running within terraflow)
         try:
-            from earthmind.services.deps import get_db_service as earthmind_get_db_service
-            from earthmind.services.deps import get_settings_service as earthmind_get_settings_service
+            from terraflow.services.deps import get_db_service as terraflow_get_db_service
+            from terraflow.services.deps import get_settings_service as terraflow_get_settings_service
 
-            settings_service = earthmind_get_settings_service()
+            settings_service = terraflow_get_settings_service()
             if not settings_service:
                 return
             if not getattr(settings_service.settings, "vertex_builds_storage_enabled", False):
@@ -368,10 +368,10 @@ async def log_vertex_build(
             if isinstance(flow_id, str):
                 flow_id = UUID(flow_id)
 
-            from earthmind.services.database.models.vertex_builds.crud import (
+            from terraflow.services.database.models.vertex_builds.crud import (
                 log_vertex_build as crud_log_vertex_build,
             )
-            from earthmind.services.database.models.vertex_builds.model import VertexBuildBase
+            from terraflow.services.database.models.vertex_builds.model import VertexBuildBase
 
             # Convert data to dict if it's a pydantic model
             data_dict = data
@@ -407,7 +407,7 @@ async def log_vertex_build(
             ) and _try_enqueue_via_telemetry_writer(vertex_build):
                 return
 
-            db_service = earthmind_get_db_service()
+            db_service = terraflow_get_db_service()
             if db_service is None:
                 return
 
@@ -419,7 +419,7 @@ async def log_vertex_build(
             # The event is emitted separately in graph._execute_tasks() with complete data.
 
         except ImportError:
-            # Fallback for standalone lfx usage (without earthmind)
+            # Fallback for standalone lfx usage (without terraflow)
             settings_service = get_settings_service()
             if not settings_service or not getattr(settings_service.settings, "vertex_builds_storage_enabled", False):
                 return
@@ -427,7 +427,7 @@ async def log_vertex_build(
             if isinstance(flow_id, str):
                 flow_id = UUID(flow_id)
 
-            # Log basic vertex build info - concrete implementation is in earthmind
+            # Log basic vertex build info - concrete implementation is in terraflow
             logger.debug(f"Vertex build logged: vertex={vertex_id}, flow={flow_id}, valid={valid}")
 
     except Exception as exc:  # noqa: BLE001

@@ -168,7 +168,7 @@ export const EDIT_DIALOG_SUBTITLE =
  * @constant
  */
 export const CODE_PROMPT_DIALOG_SUBTITLE =
-  "Edit your Python code snippet. Refer to the EarthMind documentation for more information on how to write your own component.";
+  "Edit your Python code snippet. Refer to the Terraflow documentation for more information on how to write your own component.";
 
 export const CODE_DICT_DIALOG_SUBTITLE =
   "Customize your dictionary, adding or editing key-value pairs as needed. Supports adding new objects {} or arrays [].";
@@ -267,13 +267,13 @@ export const DESCRIPTIONS: string[] = [
   "Your Hub for Text Generation.",
   "Promptly Ingenious!",
   "Building Linguistic Labyrinths.",
-  "EarthMind: Create, Chain, Communicate.",
+  "Terraflow: Create, Chain, Communicate.",
   "Connect the Dots, Craft Language.",
   "Interactive Language Weaving.",
   "Generate, Innovate, Communicate.",
   "Conversation Catalyst Engine.",
   "Language Chainlink Master.",
-  "Design Dialogues with EarthMind.",
+  "Design Dialogues with Terraflow.",
   "Nurture NLP Nodes Here.",
   "Conversational Cartography Unlocked.",
   "Design, Develop, Dialogize.",
@@ -668,7 +668,7 @@ export const TIMEOUT_ERROR_DESCRIPION = "Server is busy.";
 export const SIGN_UP_SUCCESS = "Account created! Await admin activation. ";
 
 export const API_PAGE_PARAGRAPH =
-  "Your secret EarthMind API keys are listed below. Do not share your API key with others, or expose it in the browser or other client-side code.";
+  "Your secret Terraflow API keys are listed below. Do not share your API key with others, or expose it in the browser or other client-side code.";
 
 export const API_PAGE_USER_KEYS =
   "This user does not have any keys assigned at the moment.";
@@ -678,7 +678,7 @@ export const LAST_USED_SPAN_1 = "The last time this key was used.";
 export const LAST_USED_SPAN_2 =
   "Accurate to within the hour from the most recent usage.";
 
-export const EARTHMIND_SUPPORTED_TYPES = new Set([
+export const TERRAFLOW_SUPPORTED_TYPES = new Set([
   "str",
   "bool",
   "float",
@@ -750,7 +750,7 @@ export const INPUT_HANDLER_HOVER = "Avaliable input components:";
 export const OUTPUT_HANDLER_HOVER = "Avaliable output components:";
 export const TEXT_INPUT_MODAL_TITLE = "Inputs";
 export const OUTPUTS_MODAL_TITLE = "Outputs";
-export const EARTHMIND_CHAT_TITLE = "EarthMind Chat";
+export const TERRAFLOW_CHAT_TITLE = "Terraflow Chat";
 export const CHAT_INPUT_PLACEHOLDER =
   "No chat input variables found. Click to run your flow.";
 export const CHAT_INPUT_PLACEHOLDER_SEND = "Send a message...";
@@ -758,9 +758,9 @@ export const EDIT_CODE_TITLE = "Edit Code";
 export const MY_COLLECTION_DESC =
   "Manage your projects. Download and upload entire collections.";
 export const STORE_DESC = "Explore community-shared flows and components.";
-export const STORE_TITLE = "EarthMind Store";
+export const STORE_TITLE = "Terraflow Store";
 export const NO_API_KEY = "You don't have an API key.";
-export const INSERT_API_KEY = "Insert your EarthMind API key.";
+export const INSERT_API_KEY = "Insert your Terraflow API key.";
 export const INVALID_API_KEY = "Your API key is not valid. ";
 export const CREATE_API_KEY = `Don't have an API key? Sign up at`;
 export const STATUS_BUILD = "Build to validate status.";
@@ -871,13 +871,13 @@ export const TABS_ORDER = [
   "chat widget html",
 ];
 
-export const EARTHMIND_ACCESS_TOKEN = "access_token_lf";
-export const EARTHMIND_API_TOKEN = "apikey_tkn_lflw";
-export const EARTHMIND_AUTO_LOGIN_OPTION = "auto_login_lf";
-export const EARTHMIND_REFRESH_TOKEN = "refresh_token_lf";
+export const TERRAFLOW_ACCESS_TOKEN = "access_token_lf";
+export const TERRAFLOW_API_TOKEN = "apikey_tkn_lflw";
+export const TERRAFLOW_AUTO_LOGIN_OPTION = "auto_login_lf";
+export const TERRAFLOW_REFRESH_TOKEN = "refresh_token_lf";
 
-export const EARTHMIND_ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 - 60 * 60 * 0.1;
-export const EARTHMIND_ACCESS_TOKEN_EXPIRE_SECONDS_ENV =
+export const TERRAFLOW_ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 - 60 * 60 * 0.1;
+export const TERRAFLOW_ACCESS_TOKEN_EXPIRE_SECONDS_ENV =
   Number(getEnvVar("ACCESS_TOKEN_EXPIRE_SECONDS", 60)) -
   Number(getEnvVar("ACCESS_TOKEN_EXPIRE_SECONDS", 60)) * 0.1;
 export const TEXT_FIELD_TYPES: string[] = ["str", "SecretStr"];
@@ -955,8 +955,8 @@ export const POLLING_MESSAGES = {
 export const BUILD_POLLING_INTERVAL = 25;
 
 export const IS_AUTO_LOGIN =
-  !getEnvVar("EARTHMIND_AUTO_LOGIN") ||
-  String(getEnvVar("EARTHMIND_AUTO_LOGIN"))?.toLowerCase() !== "false";
+  !getEnvVar("TERRAFLOW_AUTO_LOGIN") ||
+  String(getEnvVar("TERRAFLOW_AUTO_LOGIN"))?.toLowerCase() !== "false";
 
 export const AUTO_LOGIN_RETRY_DELAY = 2000;
 export const AUTO_LOGIN_MAX_RETRY_DELAY = 60000;
@@ -1002,12 +1002,15 @@ export const DEFAULT_POLLING_INTERVAL = 5000;
 export const DEFAULT_TIMEOUT = 30000;
 export const DEFAULT_FILE_PICKER_TIMEOUT = 60000;
 export const DISCORD_URL = "https://discord.com/invite/EqksyE2EX9";
+// NOTE: GITHUB_URL/BUG_REPORT_URL intentionally still point at the real,
+// unrenamed GitHub repo (earth-flow/EarthMind) -- renaming the actual GitHub
+// repository is a separate, deferred decision (see SESSION_SUMMARY.md).
 export const GITHUB_URL = "https://github.com/earth-flow/EarthMind";
-export const TWITTER_URL = "https://x.com/earthmind_ai";
-export const DOCS_URL = "https://docs.earthmind.org";
+export const TWITTER_URL = "https://x.com/terraflow_ai";
+export const DOCS_URL = "https://docs.terraflow.org";
 export const DATASTAX_DOCS_URL =
-  "https://docs.datastax.com/en/earthmind/index.html";
-export const DESKTOP_URL = "https://www.earthmind.org/desktop";
+  "https://docs.datastax.com/en/terraflow/index.html";
+export const DESKTOP_URL = "https://www.terraflow.org/desktop";
 export const BUG_REPORT_URL = "https://github.com/earth-flow/EarthMind/issues";
 
 export const UUID_PARSING_ERROR = "uuid_parsing";

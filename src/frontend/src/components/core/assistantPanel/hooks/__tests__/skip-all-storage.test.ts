@@ -1,6 +1,6 @@
 import { readSkipAll, writeSkipAll } from "../skip-all-storage";
 
-const STORAGE_KEY = "earthmind-assistant-skip-all";
+const STORAGE_KEY = "terraflow-assistant-skip-all";
 
 describe("skip-all storage", () => {
   beforeEach(() => {

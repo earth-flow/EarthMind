@@ -1,5 +1,5 @@
 ---
-title: Deploy EarthMind on Docker
+title: Deploy Terraflow on Docker
 slug: /deployment-docker
 ---
 
@@ -9,52 +9,52 @@ import PartialPodmanAlt from '@site/docs/_partial-podman-alt.mdx';
 
 Running applications in Docker containers ensures consistent behavior across different systems and eliminates dependency conflicts.
 
-You can use the EarthMind Docker image to start a EarthMind container.
+You can use the Terraflow Docker image to start a Terraflow container.
 
-This guide demonstrates several ways to deploy EarthMind with [Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/):
+This guide demonstrates several ways to deploy Terraflow with [Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/):
 
-* [Quickstart](#quickstart): Start a EarthMind container with default values.
-* [Use Docker Compose](#clone): Clone the EarthMind repo, and then use Docker Compose to build the EarthMind Docker container.
-This option provides more control over the configuration, including a persistent PostgreSQL database service, while still using the base EarthMind Docker image.
+* [Quickstart](#quickstart): Start a Terraflow container with default values.
+* [Use Docker Compose](#clone): Clone the Terraflow repo, and then use Docker Compose to build the Terraflow Docker container.
+This option provides more control over the configuration, including a persistent PostgreSQL database service, while still using the base Terraflow Docker image.
 * [Create a custom flow image](#package-your-flow-as-a-docker-image): Use a Dockerfile to package a flow as a Docker image.
-* [Create a custom EarthMind image](#customize-the-earthmind-docker-image): Use a Dockerfile to package a custom EarthMind Docker image that includes your own code, custom dependencies, or other modifications.
-* [Upgrade the EarthMind Docker image](#upgrade-the-earthmind-docker-image): Upgrade to a newer image without losing your database or flows by using persistent volumes and replacing only the container.
+* [Create a custom Terraflow image](#customize-the-terraflow-docker-image): Use a Dockerfile to package a custom Terraflow Docker image that includes your own code, custom dependencies, or other modifications.
+* [Upgrade the Terraflow Docker image](#upgrade-the-terraflow-docker-image): Upgrade to a newer image without losing your database or flows by using persistent volumes and replacing only the container.
 
-## Quickstart: Start a EarthMind container with default values {#quickstart}
+## Quickstart: Start a Terraflow container with default values {#quickstart}
 
 With Docker installed and running on your system, run the following command:
 
 ```shell
-docker run -p 7860:7860 earthmindai/earthmind:latest
+docker run -p 7860:7860 terraflowai/terraflow:latest
 ```
 
-Then, access EarthMind at `http://localhost:7860/`.
+Then, access Terraflow at `http://localhost:7860/`.
 
 This container runs a pre-built Docker image with default settings.
-For more control over the configuration, see [Clone the repo and run the EarthMind Docker container](#clone).
+For more control over the configuration, see [Clone the repo and run the Terraflow Docker container](#clone).
 
-## Clone the repo and run the EarthMind Docker container {#clone}
+## Clone the repo and run the Terraflow Docker container {#clone}
 
-Cloning the EarthMind repository and using Docker Compose gives you more control over your configuration, allowing you to customize environment variables, use a persistent PostgreSQL database service (instead of the default SQLite database), and include custom dependencies.
+Cloning the Terraflow repository and using Docker Compose gives you more control over your configuration, allowing you to customize environment variables, use a persistent PostgreSQL database service (instead of the default SQLite database), and include custom dependencies.
 
 The default deployment with Docker Compose includes the following:
 
-- **EarthMind service**: Runs the latest EarthMind image with PostgreSQL as the database.
+- **Terraflow service**: Runs the latest Terraflow image with PostgreSQL as the database.
 - **PostgreSQL service**: Provides persistent data storage for flows, users, and settings.
 - **Persistent volumes**: Ensures your data survives container restarts.
 
 The complete Docker Compose configuration is available in `docker_example/docker-compose.yml`.
 
-1. Clone the EarthMind repository:
+1. Clone the Terraflow repository:
 
    ```shell
-   git clone https://github.com/earthmind-ai/earthmind.git
+   git clone https://github.com/terraflow-ai/terraflow.git
    ```
 
 2. Navigate to the `docker_example` directory:
 
    ```shell
-   cd earthmind/docker_example
+   cd terraflow/docker_example
    ```
 
 3. Run the Docker Compose file:
@@ -63,7 +63,7 @@ The complete Docker Compose configuration is available in `docker_example/docker
    docker compose up
    ```
 
-4. Access EarthMind at `http://localhost:7860/`.
+4. Access Terraflow at `http://localhost:7860/`.
 
 ### Customize your deployment
 
@@ -77,21 +77,21 @@ For example, to configure the container's database credentials using a `.env` fi
     # Database credentials
     POSTGRES_USER=myuser
     POSTGRES_PASSWORD=mypassword
-    POSTGRES_DB=earthmind
+    POSTGRES_DB=terraflow
 
-    # EarthMind configuration
-    EARTHMIND_DATABASE_URL=postgresql://myuser:mypassword@postgres:5432/earthmind
-    EARTHMIND_CONFIG_DIR=/app/earthmind
+    # Terraflow configuration
+    TERRAFLOW_DATABASE_URL=postgresql://myuser:mypassword@postgres:5432/terraflow
+    TERRAFLOW_CONFIG_DIR=/app/terraflow
     ```
 
-2. Modify the `docker-compose.yml` file to reference the `.env` file for both the `earthmind` and `postgres` services:
+2. Modify the `docker-compose.yml` file to reference the `.env` file for both the `terraflow` and `postgres` services:
 
     ```yaml
     services:
-      earthmind:
+      terraflow:
         environment:
-          - EARTHMIND_DATABASE_URL=${EARTHMIND_DATABASE_URL}
-          - EARTHMIND_CONFIG_DIR=${EARTHMIND_CONFIG_DIR}
+          - TERRAFLOW_DATABASE_URL=${TERRAFLOW_DATABASE_URL}
+          - TERRAFLOW_CONFIG_DIR=${TERRAFLOW_CONFIG_DIR}
       postgres:
         environment:
           - POSTGRES_USER=${POSTGRES_USER}
@@ -99,27 +99,27 @@ For example, to configure the container's database credentials using a `.env` fi
           - POSTGRES_DB=${POSTGRES_DB}
     ```
 
-For a complete list of available environment variables, see [EarthMind environment variables](/environment-variables).
+For a complete list of available environment variables, see [Terraflow environment variables](/environment-variables).
 
-For more customization options, see [Customize the EarthMind Docker image with your own code](#customize-the-earthmind-docker-image).
+For more customization options, see [Customize the Terraflow Docker image with your own code](#customize-the-terraflow-docker-image).
 
 ## Package your flow as a Docker image {#package-your-flow-as-a-docker-image}
 
-This section shows you how to create a Dockerfile that builds a Docker image containing your EarthMind flow. This approach is useful when you want to distribute a specific flow as a standalone container or deploy it to environments like Kubernetes.
+This section shows you how to create a Dockerfile that builds a Docker image containing your Terraflow flow. This approach is useful when you want to distribute a specific flow as a standalone container or deploy it to environments like Kubernetes.
 
 Unlike the previous sections that use pre-built images, this method builds a custom image with your flow embedded inside it.
 
 1. Create a project directory, and change directory into it.
 
     ```bash
-    mkdir earthmind-custom && cd earthmind-custom
+    mkdir terraflow-custom && cd terraflow-custom
     ```
 
 2. Add your flow's JSON file to the directory. You can download an example, or use your own:
 
     ```bash
     # Download an example flow
-    wget https://raw.githubusercontent.com/earthmind-ai/earthmind-helm-charts/refs/heads/main/examples/flows/basic-prompting-hello-world.json
+    wget https://raw.githubusercontent.com/terraflow-ai/terraflow-helm-charts/refs/heads/main/examples/flows/basic-prompting-hello-world.json
 
     # Or copy your own flow file
     cp /path/to/your/flow.json .
@@ -128,37 +128,37 @@ Unlike the previous sections that use pre-built images, this method builds a cus
 3. Create a Dockerfile to build your custom image:
 
     ```dockerfile
-    FROM earthmindai/earthmind:latest
+    FROM terraflowai/terraflow:latest
     RUN mkdir /app/flows
     COPY ./*.json /app/flows/
-    ENV EARTHMIND_LOAD_FLOWS_PATH=/app/flows
+    ENV TERRAFLOW_LOAD_FLOWS_PATH=/app/flows
     ```
 
-This Dockerfile uses the official EarthMind image as the base, creates a directory for your flows, copies your JSON flow files into the directory, and sets the environment variable to tell EarthMind where to find the flows.
+This Dockerfile uses the official Terraflow image as the base, creates a directory for your flows, copies your JSON flow files into the directory, and sets the environment variable to tell Terraflow where to find the flows.
 
 4. Build and test your custom image:
 
     ```bash
-    docker build -t myuser/earthmind-custom:1.0.0 .
-    docker run -p 7860:7860 myuser/earthmind-custom:1.0.0
+    docker build -t myuser/terraflow-custom:1.0.0 .
+    docker run -p 7860:7860 myuser/terraflow-custom:1.0.0
     ```
 
 5. Push your image to Docker Hub (optional):
 
     ```bash
-    docker push myuser/earthmind-custom:1.0.0
+    docker push myuser/terraflow-custom:1.0.0
     ```
 
-Your custom image now contains your flow and can be deployed anywhere Docker runs. For Kubernetes deployment, see [Deploy the EarthMind production environment on Kubernetes](/deployment-kubernetes-prod).
+Your custom image now contains your flow and can be deployed anywhere Docker runs. For Kubernetes deployment, see [Deploy the Terraflow production environment on Kubernetes](/deployment-kubernetes-prod).
 
-## Customize the EarthMind Docker image with your own code {#customize-the-earthmind-docker-image}
+## Customize the Terraflow Docker image with your own code {#customize-the-terraflow-docker-image}
 
-While the previous section showed how to package a flow with a Docker image, this section shows how to customize the EarthMind application itself. This is useful when you need to add custom Python packages or dependencies, modify EarthMind's configuration or settings, include custom components or tools, or add your own code to extend EarthMind's functionality.
+While the previous section showed how to package a flow with a Docker image, this section shows how to customize the Terraflow application itself. This is useful when you need to add custom Python packages or dependencies, modify Terraflow's configuration or settings, include custom components or tools, or add your own code to extend Terraflow's functionality.
 
 This example demonstrates how to customize the **Message History** component, but the same approach can be used for any code modifications.
 
 ```dockerfile
-FROM earthmindai/earthmind:latest
+FROM terraflowai/terraflow:latest
 
 # Set working directory
 WORKDIR /app
@@ -166,37 +166,37 @@ WORKDIR /app
 # Copy your modified memory component
 COPY src/lfx/src/lfx/components/helpers/memory.py /tmp/memory.py
 
-# Find the site-packages directory where earthmind is installed
+# Find the site-packages directory where terraflow is installed
 RUN python -c "import site; print(site.getsitepackages()[0])" > /tmp/site_packages.txt
 
 # Replace the file in the site-packages location
 RUN SITE_PACKAGES=$(cat /tmp/site_packages.txt) && \
     echo "Site packages at: $SITE_PACKAGES" && \
-    mkdir -p "$SITE_PACKAGES/earthmind/components/helpers" && \
-    cp /tmp/memory.py "$SITE_PACKAGES/earthmind/components/helpers/"
+    mkdir -p "$SITE_PACKAGES/terraflow/components/helpers" && \
+    cp /tmp/memory.py "$SITE_PACKAGES/terraflow/components/helpers/"
 
 # Clear Python cache in the site-packages directory only
 RUN SITE_PACKAGES=$(cat /tmp/site_packages.txt) && \
     find "$SITE_PACKAGES" -name "*.pyc" -delete && \
     find "$SITE_PACKAGES" -name "__pycache__" -type d -exec rm -rf {} +
 
-# Expose the default EarthMind port
+# Expose the default Terraflow port
 EXPOSE 7860
 
-# Command to run EarthMind
-CMD ["python", "-m", "earthmind", "run", "--host", "0.0.0.0", "--port", "7860"]
+# Command to run Terraflow
+CMD ["python", "-m", "terraflow", "run", "--host", "0.0.0.0", "--port", "7860"]
 ```
 
 To use this custom Dockerfile, do the following:
 
-1. Create a directory for your custom EarthMind setup:
+1. Create a directory for your custom Terraflow setup:
 
     ```bash
-    mkdir earthmind-custom && cd earthmind-custom
+    mkdir terraflow-custom && cd terraflow-custom
     ```
 
 2. Create the necessary directory structure for your custom code.
-In this example, EarthMind expects `memory.py` to exist in the `/helpers` directory, so you create a directory in that location.
+In this example, Terraflow expects `memory.py` to exist in the `/helpers` directory, so you create a directory in that location.
 
     ```bash
     mkdir -p src/lfx/src/lfx/components/helpers
@@ -204,50 +204,50 @@ In this example, EarthMind expects `memory.py` to exist in the `/helpers` direct
 
 3. Place your modified `memory.py` file in the `/helpers` directory.
 
-4. Create a new file named `Dockerfile` in your `earthmind-custom` directory, and then copy the Dockerfile contents shown above into it.
+4. Create a new file named `Dockerfile` in your `terraflow-custom` directory, and then copy the Dockerfile contents shown above into it.
 
 5. Build and run the image:
 
     ```bash
-    docker build -t myuser/earthmind-custom:1.0.0 .
-    docker run -p 7860:7860 myuser/earthmind-custom:1.0.0
+    docker build -t myuser/terraflow-custom:1.0.0 .
+    docker run -p 7860:7860 myuser/terraflow-custom:1.0.0
     ```
 
-This approach can be adapted for any other components or custom code you want to add to EarthMind by modifying the file paths and component names.
+This approach can be adapted for any other components or custom code you want to add to Terraflow by modifying the file paths and component names.
 
-## Upgrade the EarthMind Docker image {#upgrade-the-earthmind-docker-image}
+## Upgrade the Terraflow Docker image {#upgrade-the-terraflow-docker-image}
 
-To upgrade a EarthMind Docker deployment without losing your database or flows, do the following:
+To upgrade a Terraflow Docker deployment without losing your database or flows, do the following:
 
-1. Keep data on persistent volumes, so when you upgrade EarthMind, you will replace only the container image.
-Use Docker volumes or bind mounts for EarthMind data and the database so they persist outside of the container.
-For example, this Docker Compose file uses a bind mount for EarthMind data (`./earthmind-data` on the host) and a named volume for the PostgreSQL database (`earthmind-postgres`):
+1. Keep data on persistent volumes, so when you upgrade Terraflow, you will replace only the container image.
+Use Docker volumes or bind mounts for Terraflow data and the database so they persist outside of the container.
+For example, this Docker Compose file uses a bind mount for Terraflow data (`./terraflow-data` on the host) and a named volume for the PostgreSQL database (`terraflow-postgres`):
 
     ```yaml
     services:
-      earthmind:
-        image: earthmindai/earthmind:1.8.0
+      terraflow:
+        image: terraflowai/terraflow:1.8.0
         environment:
-          - EARTHMIND_CONFIG_DIR=/app/earthmind
+          - TERRAFLOW_CONFIG_DIR=/app/terraflow
         volumes:
-          - ./earthmind-data:/app/earthmind
+          - ./terraflow-data:/app/terraflow
       postgres:
         # Pinned to a specific Debian base (trixie) so the postgres:16 tag does
         # not silently roll its OS, which triggers a glibc collation mismatch
-        # warning on existing volumes. See https://github.com/earthmind-ai/earthmind/issues/9608
+        # warning on existing volumes. See https://github.com/terraflow-ai/terraflow/issues/9608
         image: postgres:16-trixie
         volumes:
-          - earthmind-postgres:/var/lib/postgresql/data
+          - terraflow-postgres:/var/lib/postgresql/data
 
     volumes:
-      earthmind-postgres:
+      terraflow-postgres:
     ```
 
-   For additional examples, see the [Docker Compose configuration](#clone) and the [docker_example compose file](https://github.com/earthmind-ai/earthmind/blob/main/docker_example/docker-compose.yml).
+   For additional examples, see the [Docker Compose configuration](#clone) and the [docker_example compose file](https://github.com/terraflow-ai/terraflow/blob/main/docker_example/docker-compose.yml).
 
 2. Pull the new image and update the image tag in your `docker-compose.yml` or `docker run` command.
 
-    With Docker Compose, set the image in your compose file, such as `image: earthmindai/earthmind:1.8.0`, and then pull:
+    With Docker Compose, set the image in your compose file, such as `image: terraflowai/terraflow:1.8.0`, and then pull:
 
     ```bash
     docker compose pull
@@ -256,7 +256,7 @@ For example, this Docker Compose file uses a bind mount for EarthMind data (`./e
     With `docker run`, pull the image:
 
     ```bash
-    docker pull earthmindai/earthmind:1.8.0
+    docker pull terraflowai/terraflow:1.8.0
     ```
 
 3. Restart the container. The same volumes will be reattached, so your database and flows are preserved.
@@ -270,12 +270,12 @@ For example, this Docker Compose file uses a bind mount for EarthMind data (`./e
     With `docker run`, use the same volume mount and the new image tag:
 
     ```bash
-    docker run -p 7860:7860 -v earthmind-data:/app/earthmind earthmindai/earthmind:1.8.0
+    docker run -p 7860:7860 -v terraflow-data:/app/terraflow terraflowai/terraflow:1.8.0
     ```
 
-This approach keeps the persistent volumes separate from the EarthMind container, so you can upgrade the EarthMind application without losing data.
+This approach keeps the persistent volumes separate from the Terraflow container, so you can upgrade the Terraflow application without losing data.
 
-If you need to upgrade to a custom image based on a EarthMind release, such as to add `uv` in `1.8.0`, first build a derived image from the official image, and then follow the same steps above.
+If you need to upgrade to a custom image based on a Terraflow release, such as to add `uv` in `1.8.0`, first build a derived image from the official image, and then follow the same steps above.
 Set the custom image in your compose file or `docker run`, and then pull and restart.
 
 For a minimal Dockerfile that adds `uv` to the 1.8.0 image, see the [release notes](/release-notes) (“Docker image no longer includes uv or uvx”).

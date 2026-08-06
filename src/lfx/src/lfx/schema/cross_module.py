@@ -3,7 +3,7 @@
 This module provides a metaclass and base model that enable isinstance checks
 to work across module boundaries for Pydantic models. This is particularly useful
 when the same class is re-exported from different modules (e.g., lfx.Message vs
-earthmind.schema.Message) but Python's isinstance() checks fail due to different
+terraflow.schema.Message) but Python's isinstance() checks fail due to different
 module paths.
 """
 
@@ -75,7 +75,7 @@ class CrossModuleModel(BaseModel, metaclass=CrossModuleMeta):
         ...
         >>> # Even if Message is imported from different paths:
         >>> from lfx.schema.message import Message as LfxMessage
-        >>> from earthmind.schema import Message as EarthMindMessage
+        >>> from terraflow.schema import Message as TerraflowMessage
         >>> msg = LfxMessage(text="hello")
-        >>> isinstance(msg, EarthMindMessage)  # True (with cross-module support)
+        >>> isinstance(msg, TerraflowMessage)  # True (with cross-module support)
     """

@@ -169,7 +169,7 @@ class OpenSearchVectorStoreComponentMultimodalMultiEmbedding(LCVectorStoreCompon
         StrInput(
             name="index_name",
             display_name="Index Name",
-            value="earthmind",
+            value="terraflow",
             info=(
                 "The OpenSearch index name where documents will be stored and searched. "
                 "Will be created automatically if it doesn't exist."
@@ -1986,7 +1986,7 @@ class OpenSearchVectorStoreComponentMultimodalMultiEmbedding(LCVectorStoreCompon
         """Search documents and return results as Data objects.
 
         This is the main interface method that performs the multi-model search using the
-        configured search_query and returns results in EarthMind's Table format.
+        configured search_query and returns results in Terraflow's Table format.
 
         Always builds the vector store (triggering ingestion if needed), then performs
         search only if a query is provided.

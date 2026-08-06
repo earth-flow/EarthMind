@@ -41,12 +41,12 @@ jest.mock("@/components/common/genericIconComponent", () => ({
 jest.mock("@/constants/constants", () => ({
   __esModule: true,
   DATASTAX_DOCS_URL: "https://docs.datastax.com",
-  DOCS_URL: "https://docs.earthmind.org",
-  DESKTOP_URL: "https://desktop.earthmind.org",
+  DOCS_URL: "https://docs.terraflow.org",
+  DESKTOP_URL: "https://desktop.terraflow.org",
 }));
 
 jest.mock("@/customization/feature-flags", () => ({
-  ENABLE_DATASTAX_EARTHMIND: false,
+  ENABLE_DATASTAX_TERRAFLOW: false,
 }));
 
 jest.mock("@/utils/utils", () => ({
@@ -100,7 +100,7 @@ describe("HelpDropdown", () => {
 
     fireEvent.click(screen.getByTestId("canvas_controls_dropdown_docs"));
     expect(window.open).toHaveBeenCalledWith(
-      "https://docs.earthmind.org",
+      "https://docs.terraflow.org",
       "_blank",
     );
 
@@ -108,10 +108,10 @@ describe("HelpDropdown", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/settings/shortcuts");
 
     fireEvent.click(
-      screen.getByTestId("canvas_controls_dropdown_get_earthmind_desktop"),
+      screen.getByTestId("canvas_controls_dropdown_get_terraflow_desktop"),
     );
     expect(window.open).toHaveBeenCalledWith(
-      "https://desktop.earthmind.org",
+      "https://desktop.terraflow.org",
       "_blank",
     );
   });

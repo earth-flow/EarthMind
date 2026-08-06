@@ -3,8 +3,8 @@ name: Cross-Platform Installation Test
 on:
   workflow_dispatch:
     inputs:
-      earthmind-version:
-        description: "EarthMind version to test from PyPI (leave empty to test from source)"
+      terraflow-version:
+        description: "Terraflow version to test from PyPI (leave empty to test from source)"
         required: false
         type: string
         default: ""
@@ -23,7 +23,7 @@ on:
         required: false
         type: string
       sdk-artifact-name:
-        description: "Name of the earthmind-sdk package artifact"
+        description: "Name of the terraflow-sdk package artifact"
         required: false
         type: string
       bundles-artifact-name:
@@ -40,7 +40,7 @@ jobs:
   build-if-needed:
     name: Build Packages (if no artifacts provided)
     runs-on: ubuntu-latest
-    if: inputs.earthmind-version == '' && contains(github.workflow_ref, 'cross-platform-test.yml')
+    if: inputs.terraflow-version == '' && contains(github.workflow_ref, 'cross-platform-test.yml')
     outputs:
       base-artifact-name: ${{ steps.set-names.outputs.base-artifact-name }}
       main-artifact-name: ${{ steps.set-names.outputs.main-artifact-name }}
@@ -63,12 +63,12 @@ jobs:
       - name: Build frontend
         run: make build_frontend
       - name: Build base package
-        run: make build_earthmind_base args="--wheel"
+        run: make build_terraflow_base args="--wheel"
       - name: Move base package to correct directory
         run: |
           # Base package builds to dist/ but should be in src/backend/base/dist/
           mkdir -p src/backend/base/dist
-          mv dist/earthmind_base*.whl src/backend/base/dist/
+          mv dist/terraflow_base*.whl src/backend/base/dist/
       - name: Build LFX package
         run: |
           cd src/lfx
@@ -78,7 +78,7 @@ jobs:
           cd src/sdk
           uv build --wheel --out-dir dist
       - name: Build main package
-        run: make build_earthmind args="--wheel"
+        run: make build_terraflow args="--wheel"
       - name: Build bundle wheels
         id: build-bundles
         run: |
@@ -184,7 +184,7 @@ jobs:
         id: install-method
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ -n "${{ inputs.earthmind-version }}" ]; then
+            if [ -n "${{ inputs.terraflow-version }}" ]; then
               echo "method=pypi" >> $GITHUB_OUTPUT
             else
               echo "method=wheel" >> $GITHUB_OUTPUT
@@ -218,7 +218,7 @@ jobs:
         shell: bash
 
       # Download artifacts for wheel installation
-      - name: Download earthmind-sdk package artifact
+      - name: Download terraflow-sdk package artifact
         if: steps.install-method.outputs.method == 'wheel' && (inputs.sdk-artifact-name != '' || needs.build-if-needed.outputs.sdk-artifact-name != '')
         uses: actions/download-artifact@v7
         with:
@@ -289,7 +289,7 @@ jobs:
             printf 'Installing %s wheel(s):\n' "$label"
             printf '%s\n' "$@"
             refresh_find_links
-            # Use `if-necessary-or-explicit` (not `allow`): nightly earthmind* wheels
+            # Use `if-necessary-or-explicit` (not `allow`): nightly terraflow* wheels
             # are .dev pre-releases so we need to allow them explicitly, but `allow`
             # leaks to transitive deps and resolves pre-release pydantic alphas
             # (e.g. 2.14.0a1) which break langchain-core's module-level
@@ -314,9 +314,9 @@ jobs:
           MAIN_WHEELS=()
           while IFS= read -r wheel; do
             MAIN_WHEELS+=("$wheel")
-          done < <(find ./main-dist -name "earthmind*.whl" ! -name "earthmind_base*.whl" -type f | sort)
+          done < <(find ./main-dist -name "terraflow*.whl" ! -name "terraflow_base*.whl" -type f | sort)
           if [ ${#MAIN_WHEELS[@]} -ne 1 ]; then
-            echo "Expected exactly one earthmind wheel in ./main-dist, found ${#MAIN_WHEELS[@]}"
+            echo "Expected exactly one terraflow wheel in ./main-dist, found ${#MAIN_WHEELS[@]}"
             find ./main-dist -name "*.whl" -type f | sort
             exit 1
           fi
@@ -324,23 +324,23 @@ jobs:
         shell: bash
 
       # PyPI installation steps
-      - name: Install earthmind from PyPI (Windows)
+      - name: Install terraflow from PyPI (Windows)
         if: steps.install-method.outputs.method == 'pypi' && matrix.os == 'windows'
         run: |
-          if [ -n "${{ inputs.earthmind-version }}" ]; then
-            uv pip install --python ./test-env/Scripts/python.exe earthmind==${{ inputs.earthmind-version }}
+          if [ -n "${{ inputs.terraflow-version }}" ]; then
+            uv pip install --python ./test-env/Scripts/python.exe terraflow==${{ inputs.terraflow-version }}
           else
-            uv pip install --python ./test-env/Scripts/python.exe earthmind
+            uv pip install --python ./test-env/Scripts/python.exe terraflow
           fi
         shell: bash
 
-      - name: Install earthmind from PyPI (Unix)
+      - name: Install terraflow from PyPI (Unix)
         if: steps.install-method.outputs.method == 'pypi' && matrix.os != 'windows'
         run: |
-          if [ -n "${{ inputs.earthmind-version }}" ]; then
-            uv pip install --python ./test-env/bin/python earthmind==${{ inputs.earthmind-version }}
+          if [ -n "${{ inputs.terraflow-version }}" ]; then
+            uv pip install --python ./test-env/bin/python terraflow==${{ inputs.terraflow-version }}
           else
-            uv pip install --python ./test-env/bin/python earthmind
+            uv pip install --python ./test-env/bin/python terraflow
           fi
         shell: bash
 
@@ -361,13 +361,13 @@ jobs:
       - name: Test CLI help command
         if: matrix.os == 'windows'
         run: |
-          uv run --python ./test-env/Scripts/python.exe python -m earthmind --help
+          uv run --python ./test-env/Scripts/python.exe python -m terraflow --help
         shell: cmd
 
       - name: Test CLI help command (Unix)
         if: matrix.os != 'windows'
         run: |
-          uv run --python ./test-env/bin/python python -m earthmind --help
+          uv run --python ./test-env/bin/python python -m terraflow --help
         shell: bash
 
       - name: Test server startup (Windows)
@@ -375,7 +375,7 @@ jobs:
         timeout-minutes: 5
         run: |
           # Start server in background
-          $serverProcess = Start-Process -FilePath ".\test-env\Scripts\python.exe" -ArgumentList "-m", "earthmind", "run", "--host", "localhost", "--port", "7860", "--backend-only" -PassThru -WindowStyle Hidden
+          $serverProcess = Start-Process -FilePath ".\test-env\Scripts\python.exe" -ArgumentList "-m", "terraflow", "run", "--host", "localhost", "--port", "7860", "--backend-only" -PassThru -WindowStyle Hidden
 
           # Wait for server to be ready (GitHub Actions will timeout after 5 minutes)
           do {
@@ -401,7 +401,7 @@ jobs:
           OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
         run: |
           # Start server in background
-          ./test-env/bin/python -m earthmind run --host localhost --port 7860 --backend-only &
+          ./test-env/bin/python -m terraflow run --host localhost --port 7860 --backend-only &
           SERVER_PID=$!
 
           # Wait for server to be ready (GitHub Actions will timeout after 5 minutes)
@@ -423,10 +423,10 @@ jobs:
         run: |
           test-env\Scripts\python.exe -c "
           try:
-              import earthmind
-              print('✅ earthmind import successful on ${{ matrix.os }}-${{ matrix.arch }}')
+              import terraflow
+              print('✅ terraflow import successful on ${{ matrix.os }}-${{ matrix.arch }}')
           except Exception as e:
-              print(f'❌ earthmind import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
+              print(f'❌ terraflow import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
               exit(1)
           "
         shell: cmd
@@ -436,10 +436,10 @@ jobs:
         run: |
           ./test-env/bin/python -c "
           try:
-              import earthmind
-              print('✅ earthmind import successful on ${{ matrix.os }}-${{ matrix.arch }}')
+              import terraflow
+              print('✅ terraflow import successful on ${{ matrix.os }}-${{ matrix.arch }}')
           except Exception as e:
-              print(f'❌ earthmind import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
+              print(f'❌ terraflow import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
               exit(1)
           "
         shell: bash
@@ -477,7 +477,7 @@ jobs:
         id: install-method
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ -n "${{ inputs.earthmind-version }}" ]; then
+            if [ -n "${{ inputs.terraflow-version }}" ]; then
               echo "method=pypi" >> $GITHUB_OUTPUT
             else
               echo "method=wheel" >> $GITHUB_OUTPUT
@@ -511,7 +511,7 @@ jobs:
         shell: bash
 
       # Download artifacts for wheel installation
-      - name: Download earthmind-sdk package artifact
+      - name: Download terraflow-sdk package artifact
         if: steps.install-method.outputs.method == 'wheel' && (inputs.sdk-artifact-name != '' || needs.build-if-needed.outputs.sdk-artifact-name != '')
         uses: actions/download-artifact@v7
         with:
@@ -603,9 +603,9 @@ jobs:
           MAIN_WHEELS=()
           while IFS= read -r wheel; do
             MAIN_WHEELS+=("$wheel")
-          done < <(find ./main-dist -name "earthmind*.whl" ! -name "earthmind_base*.whl" -type f | sort)
+          done < <(find ./main-dist -name "terraflow*.whl" ! -name "terraflow_base*.whl" -type f | sort)
           if [ ${#MAIN_WHEELS[@]} -ne 1 ]; then
-            echo "Expected exactly one earthmind wheel in ./main-dist, found ${#MAIN_WHEELS[@]}"
+            echo "Expected exactly one terraflow wheel in ./main-dist, found ${#MAIN_WHEELS[@]}"
             find ./main-dist -name "*.whl" -type f | sort
             exit 1
           fi
@@ -626,7 +626,7 @@ jobs:
                 SDK_WHEEL=$(find ./sdk-dist -name "*.whl" -type f | head -1)
               fi
               if [ -n "$SDK_WHEEL" ]; then
-                echo "Force reinstalling earthmind-sdk with LFX: $SDK_WHEEL"
+                echo "Force reinstalling terraflow-sdk with LFX: $SDK_WHEEL"
                 INSTALL_WHEELS=("$SDK_WHEEL" "$LFX_WHEEL")
               fi
               NO_DEPS="--no-deps"
@@ -640,7 +640,7 @@ jobs:
           # Reinstall base
           BASE_WHEEL=$(find ./base-dist -name "*.whl" -type f | head -1)
           if [ -n "$BASE_WHEEL" ]; then
-            echo "Force reinstalling earthmind-base: $BASE_WHEEL"
+            echo "Force reinstalling terraflow-base: $BASE_WHEEL"
             NO_DEPS="--no-deps"
             if [ "${{ inputs.pre_release }}" = "true" ]; then
               NO_DEPS=""
@@ -663,7 +663,7 @@ jobs:
                 SDK_WHEEL=$(find ./sdk-dist -name "*.whl" -type f | head -1)
               fi
               if [ -n "$SDK_WHEEL" ]; then
-                echo "Force reinstalling earthmind-sdk with LFX: $SDK_WHEEL"
+                echo "Force reinstalling terraflow-sdk with LFX: $SDK_WHEEL"
                 INSTALL_WHEELS=("$SDK_WHEEL" "$LFX_WHEEL")
               fi
               NO_DEPS="--no-deps"
@@ -677,7 +677,7 @@ jobs:
           # Reinstall base
           BASE_WHEEL=$(find ./base-dist -name "*.whl" -type f | head -1)
           if [ -n "$BASE_WHEEL" ]; then
-            echo "Force reinstalling earthmind-base: $BASE_WHEEL"
+            echo "Force reinstalling terraflow-base: $BASE_WHEEL"
             NO_DEPS="--no-deps"
             if [ "${{ inputs.pre_release }}" = "true" ]; then
               NO_DEPS=""
@@ -687,23 +687,23 @@ jobs:
         shell: bash
 
       # PyPI installation steps
-      - name: Install earthmind from PyPI (Windows)
+      - name: Install terraflow from PyPI (Windows)
         if: steps.install-method.outputs.method == 'pypi' && matrix.os == 'windows'
         run: |
-          if [ -n "${{ inputs.earthmind-version }}" ]; then
-            uv pip install --python ./test-env/Scripts/python.exe earthmind==${{ inputs.earthmind-version }}
+          if [ -n "${{ inputs.terraflow-version }}" ]; then
+            uv pip install --python ./test-env/Scripts/python.exe terraflow==${{ inputs.terraflow-version }}
           else
-            uv pip install --python ./test-env/Scripts/python.exe earthmind
+            uv pip install --python ./test-env/Scripts/python.exe terraflow
           fi
         shell: bash
 
-      - name: Install earthmind from PyPI (Unix)
+      - name: Install terraflow from PyPI (Unix)
         if: steps.install-method.outputs.method == 'pypi' && matrix.os != 'windows'
         run: |
-          if [ -n "${{ inputs.earthmind-version }}" ]; then
-            uv pip install --python ./test-env/bin/python earthmind==${{ inputs.earthmind-version }}
+          if [ -n "${{ inputs.terraflow-version }}" ]; then
+            uv pip install --python ./test-env/bin/python terraflow==${{ inputs.terraflow-version }}
           else
-            uv pip install --python ./test-env/bin/python earthmind
+            uv pip install --python ./test-env/bin/python terraflow
           fi
         shell: bash
 
@@ -724,13 +724,13 @@ jobs:
       - name: Test CLI help command (Windows)
         if: matrix.os == 'windows'
         run: |
-          uv run --python ./test-env/Scripts/python.exe python -m earthmind --help
+          uv run --python ./test-env/Scripts/python.exe python -m terraflow --help
         shell: cmd
 
       - name: Test CLI help command (Unix)
         if: matrix.os != 'windows'
         run: |
-          uv run --python ./test-env/bin/python python -m earthmind --help
+          uv run --python ./test-env/bin/python python -m terraflow --help
         shell: bash
 
       - name: Test server startup (Windows)
@@ -738,7 +738,7 @@ jobs:
         timeout-minutes: 5
         run: |
           # Start server in background
-          $serverProcess = Start-Process -FilePath ".\test-env\Scripts\python.exe" -ArgumentList "-m", "earthmind", "run", "--host", "localhost", "--port", "7860", "--backend-only" -PassThru -WindowStyle Hidden
+          $serverProcess = Start-Process -FilePath ".\test-env\Scripts\python.exe" -ArgumentList "-m", "terraflow", "run", "--host", "localhost", "--port", "7860", "--backend-only" -PassThru -WindowStyle Hidden
 
           # Wait for server to be ready (GitHub Actions will timeout after 5 minutes)
           do {
@@ -764,7 +764,7 @@ jobs:
           OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
         run: |
           # Start server in background
-          ./test-env/bin/python -m earthmind run --host localhost --port 7860 --backend-only &
+          ./test-env/bin/python -m terraflow run --host localhost --port 7860 --backend-only &
           SERVER_PID=$!
 
           # Wait for server to be ready (GitHub Actions will timeout after 5 minutes)
@@ -786,10 +786,10 @@ jobs:
         run: |
           test-env\Scripts\python.exe -c "
           try:
-              import earthmind
-              print('✅ earthmind import successful on ${{ matrix.os }}-${{ matrix.arch }}')
+              import terraflow
+              print('✅ terraflow import successful on ${{ matrix.os }}-${{ matrix.arch }}')
           except Exception as e:
-              print(f'❌ earthmind import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
+              print(f'❌ terraflow import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
               exit(1)
           "
         shell: cmd
@@ -799,10 +799,10 @@ jobs:
         run: |
           ./test-env/bin/python -c "
           try:
-              import earthmind
-              print('✅ earthmind import successful on ${{ matrix.os }}-${{ matrix.arch }}')
+              import terraflow
+              print('✅ terraflow import successful on ${{ matrix.os }}-${{ matrix.arch }}')
           except Exception as e:
-              print(f'❌ earthmind import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
+              print(f'❌ terraflow import failed on ${{ matrix.os }}-${{ matrix.arch }}: {e}')
               exit(1)
           "
         shell: bash
@@ -825,7 +825,7 @@ jobs:
           if [ "$stable_result" = "success" ]; then
             if [ "$experimental_result" = "success" ]; then
               if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                if [ -n "${{ inputs.earthmind-version }}" ]; then
+                if [ -n "${{ inputs.terraflow-version }}" ]; then
                   echo "✅ All PyPI installation tests passed (including Python 3.13)"
                 else
                   echo "✅ All source build and installation tests passed (including Python 3.13)"
@@ -835,7 +835,7 @@ jobs:
               fi
             else
               if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                if [ -n "${{ inputs.earthmind-version }}" ]; then
+                if [ -n "${{ inputs.terraflow-version }}" ]; then
                   echo "✅ PyPI installation tests passed (Python 3.13 experimental failures are acceptable)"
                 else
                   echo "✅ Source build and installation tests passed (Python 3.13 experimental failures are acceptable)"

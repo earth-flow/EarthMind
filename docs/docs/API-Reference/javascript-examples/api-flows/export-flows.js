@@ -1,11 +1,11 @@
-const url = `${process.env.EARTHMIND_URL ?? ""}/api/v1/flows/download/`;
+const url = `${process.env.TERRAFLOW_URL ?? ""}/api/v1/flows/download/`;
 
 const options = {
   method: 'POST',
   headers: {
     "accept": `application/json`,
     "Content-Type": `application/json`,
-    "x-api-key": `${process.env.EARTHMIND_API_KEY ?? ""}`,
+    "x-api-key": `${process.env.TERRAFLOW_API_KEY ?? ""}`,
   },
   body: JSON.stringify([
   "e1e40c77-0541-41a9-88ab-ddb3419398b5",
@@ -19,6 +19,6 @@ fetch(url, options)
       throw new Error(`HTTP ${response.status}`);
     }
     const data = await response.arrayBuffer();
-    console.log("Received binary response for earthmind-flows.zip", data.byteLength);
+    console.log("Received binary response for terraflow-flows.zip", data.byteLength);
   })
   .catch((error) => console.error(error));

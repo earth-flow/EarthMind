@@ -16,11 +16,11 @@ RUN cd /frontend && npm install && npm run build
 ################################
 FROM nginxinc/nginx-unprivileged:stable-bookworm-perl AS runtime
 
-LABEL org.opencontainers.image.title=earthmind-frontend
-LABEL org.opencontainers.image.authors=['EarthMind']
+LABEL org.opencontainers.image.title=terraflow-frontend
+LABEL org.opencontainers.image.authors=['Terraflow']
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.url=https://github.com/earthmind-ai/earthmind
-LABEL org.opencontainers.image.source=https://github.com/earthmind-ai/earthmind
+LABEL org.opencontainers.image.url=https://github.com/terraflow-ai/terraflow
+LABEL org.opencontainers.image.source=https://github.com/terraflow-ai/terraflow
 
 COPY --from=builder-base --chown=nginx /frontend/build /usr/share/nginx/html
 COPY --chown=nginx ./docker/frontend/start-nginx.sh /start-nginx.sh

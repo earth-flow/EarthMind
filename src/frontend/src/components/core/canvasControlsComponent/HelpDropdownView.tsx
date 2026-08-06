@@ -60,7 +60,7 @@ export const HelpDropdownView = ({
         align="center"
         className="flex flex-col w-full"
       >
-        {/* EarthMind: external docs link temporarily disabled (remove `false &&` to re-enable) */}
+        {/* Terraflow: external docs link temporarily disabled (remove `false &&` to re-enable) */}
         {false && (
           <DropdownControlButton
             iconName="book-open"
@@ -84,12 +84,12 @@ export const HelpDropdownView = ({
           onClick={() => openLink(urls.bugReport)}
         />
         <Separator />
-        {/* EarthMind: external desktop link temporarily disabled (remove `false &&` to re-enable) */}
+        {/* Terraflow: external desktop link temporarily disabled (remove `false &&` to re-enable) */}
         {false && (
           <DropdownControlButton
             iconName="download"
-            testId="canvas_controls_dropdown_get_earthmind_desktop"
-            label={t("help.getEarthMindDesktop")}
+            testId="canvas_controls_dropdown_get_terraflow_desktop"
+            label={t("help.getTerraflowDesktop")}
             externalLink
             onClick={() => openLink(urls.desktop)}
           />

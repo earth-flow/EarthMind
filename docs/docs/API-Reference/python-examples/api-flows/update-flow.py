@@ -3,9 +3,9 @@ import uuid
 
 import requests
 
-base = os.environ.get("EARTHMIND_URL") or os.environ.get("EARTHMIND_SERVER_URL", "")
+base = os.environ.get("TERRAFLOW_URL") or os.environ.get("TERRAFLOW_SERVER_URL", "")
 flow_id = os.environ.get("FLOW_ID", "")
-api_key = os.environ.get("EARTHMIND_API_KEY", "")
+api_key = os.environ.get("TERRAFLOW_API_KEY", "")
 
 headers = {"accept": "application/json", "Content-Type": "application/json", "x-api-key": api_key}
 

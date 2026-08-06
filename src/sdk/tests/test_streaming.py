@@ -7,15 +7,15 @@ from typing import Any
 
 import httpx
 import pytest
-from earthmind_sdk import AsyncClient, Client, StreamChunk
-from earthmind_sdk.exceptions import EarthMindAuthError, EarthMindConnectionError, EarthMindHTTPError
-from earthmind_sdk.models import RunResponse
+from terraflow_sdk import AsyncClient, Client, StreamChunk
+from terraflow_sdk.exceptions import TerraflowAuthError, TerraflowConnectionError, TerraflowHTTPError
+from terraflow_sdk.models import RunResponse
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-_BASE_URL = "http://earthmind.test"
+_BASE_URL = "http://terraflow.test"
 _FLOW_ID = "00000000-0000-0000-0000-000000000001"
 _RUN_ENDPOINT = f"/api/v1/run/{_FLOW_ID}"
 
@@ -175,7 +175,7 @@ def test_stream_chunk_empty_data_defaults() -> None:
 
 
 # ---------------------------------------------------------------------------
-# EarthMindClient.stream() tests
+# TerraflowClient.stream() tests
 # ---------------------------------------------------------------------------
 
 
@@ -252,7 +252,7 @@ def test_sync_stream_sets_stream_true_in_payload() -> None:
 def test_sync_stream_raises_auth_error_on_401() -> None:
     body = json.dumps({"detail": "Unauthorized"}).encode()
     client = _sync_client(_MockTransport(status=401, content=body, headers={"content-type": "application/json"}))
-    with pytest.raises(EarthMindAuthError):
+    with pytest.raises(TerraflowAuthError):
         list(client.stream(_FLOW_ID, input_value="hi"))
     client.close()
 
@@ -261,7 +261,7 @@ def test_sync_stream_raises_auth_error_on_401() -> None:
 def test_sync_stream_raises_http_error_on_500() -> None:
     body = json.dumps({"detail": "Internal server error"}).encode()
     client = _sync_client(_MockTransport(status=500, content=body, headers={"content-type": "application/json"}))
-    with pytest.raises(EarthMindHTTPError):
+    with pytest.raises(TerraflowHTTPError):
         list(client.stream(_FLOW_ID, input_value="hi"))
     client.close()
 
@@ -275,7 +275,7 @@ def test_sync_stream_raises_connection_error() -> None:
 
     http = httpx.Client(base_url=_BASE_URL, transport=_ErrorTransport())
     client = Client(_BASE_URL, httpx_client=http)
-    with pytest.raises(EarthMindConnectionError):
+    with pytest.raises(TerraflowConnectionError):
         list(client.stream(_FLOW_ID, input_value="hi"))
     client.close()
 
@@ -299,7 +299,7 @@ def test_sync_stream_passes_tweaks() -> None:
 
 
 # ---------------------------------------------------------------------------
-# EarthMindClient.run() convenience tests
+# TerraflowClient.run() convenience tests
 # ---------------------------------------------------------------------------
 
 
@@ -341,7 +341,7 @@ def test_sync_run_sends_correct_payload() -> None:
 
 
 # ---------------------------------------------------------------------------
-# AsyncEarthMindClient.stream() tests
+# AsyncTerraflowClient.stream() tests
 # ---------------------------------------------------------------------------
 
 
@@ -374,7 +374,7 @@ async def test_async_stream_skips_blank_lines() -> None:
 async def test_async_stream_raises_auth_error_on_401() -> None:
     body = json.dumps({"detail": "Unauthorized"}).encode()
     client = _async_client(_AsyncMockTransport(status=401, content=body, headers={"content-type": "application/json"}))
-    with pytest.raises(EarthMindAuthError):
+    with pytest.raises(TerraflowAuthError):
         async for _ in client.stream(_FLOW_ID, input_value="hi"):
             pass
     await client.aclose()
@@ -389,7 +389,7 @@ async def test_async_stream_raises_connection_error() -> None:
 
     http = httpx.AsyncClient(base_url=_BASE_URL, transport=_AsyncErrorTransport())
     client = AsyncClient(_BASE_URL, httpx_client=http)
-    with pytest.raises(EarthMindConnectionError):
+    with pytest.raises(TerraflowConnectionError):
         async for _ in client.stream(_FLOW_ID, input_value="hi"):
             pass
     await client.aclose()
@@ -416,7 +416,7 @@ async def test_async_stream_sets_stream_true_in_payload() -> None:
 
 
 # ---------------------------------------------------------------------------
-# AsyncEarthMindClient.run() convenience tests
+# AsyncTerraflowClient.run() convenience tests
 # ---------------------------------------------------------------------------
 
 
@@ -460,6 +460,6 @@ async def test_async_run_does_not_set_stream_true() -> None:
 
 @pytest.mark.unit
 def test_stream_chunk_importable_from_package() -> None:
-    import earthmind_sdk
+    import terraflow_sdk
 
-    assert earthmind_sdk.StreamChunk is StreamChunk
+    assert terraflow_sdk.StreamChunk is StreamChunk

@@ -19,7 +19,7 @@ jest.mock("../../helpers/messages", () => ({
 }));
 
 jest.mock("../../assistant-panel.constants", () => ({
-  getAssistantPlaceholder: () => "Ask me anything about EarthMind...",
+  getAssistantPlaceholder: () => "Ask me anything about Terraflow...",
 }));
 
 describe("AssistantInput", () => {
@@ -38,7 +38,7 @@ describe("AssistantInput", () => {
       render(<AssistantInput {...defaultProps} />);
 
       expect(
-        screen.getByPlaceholderText("Ask me anything about EarthMind..."),
+        screen.getByPlaceholderText("Ask me anything about Terraflow..."),
       ).toBeInTheDocument();
     });
 
@@ -245,7 +245,7 @@ describe("AssistantInput", () => {
       // input boots with a model and matches the production contract that
       // ModelSelector's auto-select effect normally satisfies.
       localStorage.setItem(
-        "earthmind-assistant-selected-model",
+        "terraflow-assistant-selected-model",
         JSON.stringify({
           id: "OpenAI-gpt-4o",
           name: "gpt-4o",
@@ -356,7 +356,7 @@ describe("AssistantInput", () => {
   });
 
   describe("command history (arrow-up / arrow-down)", () => {
-    const STORAGE_KEY = "earthmind-assistant-input-history";
+    const STORAGE_KEY = "terraflow-assistant-input-history";
 
     beforeEach(() => {
       localStorage.clear();
@@ -418,7 +418,7 @@ describe("AssistantInput", () => {
       // for AssistantInput's handleSend to call through. Use the model
       // from localStorage trick: prime it.
       localStorage.setItem(
-        "earthmind-assistant-selected-model",
+        "terraflow-assistant-selected-model",
         JSON.stringify(model),
       );
 

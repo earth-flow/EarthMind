@@ -3,24 +3,24 @@ title: Telemetry
 slug: /contributing-telemetry
 ---
 
-EarthMind uses anonymous telemetry to collect statistics about feature usage and performance.
-The EarthMind team uses this data to identify popular features and areas that need improvement based on actual usage patterns.
+Terraflow uses anonymous telemetry to collect statistics about feature usage and performance.
+The Terraflow team uses this data to identify popular features and areas that need improvement based on actual usage patterns.
 This helps prioritize development efforts on the most impactful changes and popular features.
 
 ## Privacy
 
-The EarthMind team respects your privacy, and the team is committed to protecting your data.
+The Terraflow team respects your privacy, and the team is committed to protecting your data.
 
-EarthMind telemetry doesn't collect any personal information or sensitive data.
-All telemetry data is anonymized and used solely for improving EarthMind.
+Terraflow telemetry doesn't collect any personal information or sensitive data.
+All telemetry data is anonymized and used solely for improving Terraflow.
 
 ## Opt out of telemetry
 
-To opt out of telemetry, set `DO_NOT_TRACK=True` in your [EarthMind environment variables](/environment-variables) before starting EarthMind. This disables telemetry data collection.
+To opt out of telemetry, set `DO_NOT_TRACK=True` in your [Terraflow environment variables](/environment-variables) before starting Terraflow. This disables telemetry data collection.
 
-## Data that EarthMind collects
+## Data that Terraflow collects
 
-EarthMind telemetry collects data on flow runs, your environment, and component usage.
+Terraflow telemetry collects data on flow runs, your environment, and component usage.
 
 ### Run
 
@@ -41,30 +41,30 @@ This telemetry event captures information about application lifecycle and runtim
 
 This telemetry event is sent once when the telemetry service starts.
 
-- **Version**: The specific version of EarthMind used, which helps in tracking feature adoption and compatibility.
+- **Version**: The specific version of Terraflow used, which helps in tracking feature adoption and compatibility.
 - **Platform**: Operating system of the host machine, which helps determine the most popular platforms for development and testing efforts.
 - **Python**: The version of Python used, assisting in maintaining compatibility and support for various Python versions.
-- **Arch**: Architecture of the system, such as x86 or ARM, which helps prioritize hardware optimization and testing in the EarthMind codebase.
+- **Arch**: Architecture of the system, such as x86 or ARM, which helps prioritize hardware optimization and testing in the Terraflow codebase.
 - **AutoLogin**: Indicates whether the auto-login feature is enabled, reflecting user preference settings.
 - **CacheType**: Type of caching mechanism used, which impacts performance and efficiency.
-- **BackendOnly**: Boolean indicating whether EarthMind is running in backend-only mode, useful for understanding deployment configurations.
-- **Desktop**: Indicates whether EarthMind is running in desktop mode (EarthMind Desktop), helping to understand usage patterns across different deployment types.
+- **BackendOnly**: Boolean indicating whether Terraflow is running in backend-only mode, useful for understanding deployment configurations.
+- **Desktop**: Indicates whether Terraflow is running in desktop mode (Terraflow Desktop), helping to understand usage patterns across different deployment types.
 
 ### Email
 
-This telemetry event is sent to track registered email addresses for EarthMind Desktop. The event is triggered in two cases:
+This telemetry event is sent to track registered email addresses for Terraflow Desktop. The event is triggered in two cases:
 
 * Every time a new email address is registered through the POST `/api/v2/registration/` endpoint.
-* Each time you start EarthMind Desktop _after_ an email address is registered.
+* Each time you start Terraflow Desktop _after_ an email address is registered.
 
-   The first time you start EarthMind Desktop and register your email address, the event is reported by the call to the POST `/api/v2/registration/` endpoint.
+   The first time you start Terraflow Desktop and register your email address, the event is reported by the call to the POST `/api/v2/registration/` endpoint.
 
 This telemetry event includes the following information:
 
-- **Email**: The registered email address, which helps track user registrations and facilitate an understanding of the EarthMind Desktop user base.
+- **Email**: The registered email address, which helps track user registrations and facilitate an understanding of the Terraflow Desktop user base.
 - **ClientType**: Indicates the client type, which can be "desktop" or "oss".
 
-If telemetry is disabled with the `DO_NOT_TRACK` environment variable in EarthMind Desktop, you are still prompted to enter your email address, but the email address is stored in your local EarthMind database only.
+If telemetry is disabled with the `DO_NOT_TRACK` environment variable in Terraflow Desktop, you are still prompted to enter your email address, but the email address is stored in your local Terraflow database only.
 
 ### Playground
 
@@ -85,7 +85,7 @@ This telemetry event is sent for each component execution.
 
 ### Exception
 
-This telemetry event is sent when an unhandled exception is captured by EarthMind's lifecycle or global exception handler.
+This telemetry event is sent when an unhandled exception is captured by Terraflow's lifecycle or global exception handler.
 
 - **Type**: The exception class name, such as `ValueError`.
 - **Message**: The exception message that was raised.

@@ -18,7 +18,7 @@ class SQLComponent(ComponentWithCache):
 
     display_name = "SQL Database"
     description = "Executes SQL queries on SQLAlchemy-compatible databases."
-    documentation: str = "https://docs.earthmind.org/sql-database"
+    documentation: str = "https://docs.terraflow.org/sql-database"
     icon = "database"
     name = "SQLComponent"
     metadata = {"keywords": ["sql", "database", "query", "db", "fetch"]}

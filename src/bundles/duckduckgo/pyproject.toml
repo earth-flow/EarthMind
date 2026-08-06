@@ -1,14 +1,14 @@
 [project]
 name = "lfx-duckduckgo"
 version = "0.1.1"
-description = "DuckDuckGo Search component as a standalone EarthMind Extension Bundle."
+description = "DuckDuckGo Search component as a standalone Terraflow Extension Bundle."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
 license = { text = "MIT" }
 authors = [
-    { name = "EarthMind", email = "contact@earthmind.org" },
+    { name = "Terraflow", email = "contact@terraflow.org" },
 ]
-keywords = ["earthmind", "lfx", "extension", "bundle", "duckduckgo", "search"]
+keywords = ["terraflow", "lfx", "extension", "bundle", "duckduckgo", "search"]
 
 # Runtime deps: lfx (the BUNDLE_API surface) and the langchain-community
 # binding that wraps the duckduckgo-search Python client.  lfx is floored at
@@ -24,17 +24,17 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/earthmind-ai/earthmind"
-Documentation = "https://docs.earthmind.org/extensions"
-Repository = "https://github.com/earthmind-ai/earthmind"
+Homepage = "https://github.com/terraflow-ai/terraflow"
+Documentation = "https://docs.terraflow.org/extensions"
+Repository = "https://github.com/terraflow-ai/terraflow"
 
 # Manifest-shipping distributions are discovered via the
-# ``earthmind.extensions`` entry-point.  The value is the dotted path
+# ``terraflow.extensions`` entry-point.  The value is the dotted path
 # to the package containing ``extension.json`` -- the loader walks
 # ``importlib.metadata.files()`` from there to find the manifest, and
 # falls back to this entry-point for editable installs whose dist.files
 # only surfaces dist-info entries.
-[project.entry-points."earthmind.extensions"]
+[project.entry-points."terraflow.extensions"]
 lfx-duckduckgo = "lfx_duckduckgo"
 
 [build-system]

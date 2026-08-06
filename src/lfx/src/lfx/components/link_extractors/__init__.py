@@ -1,3 +1,3 @@
-"""EarthMind link extractors components."""
+"""Terraflow link extractors components."""
 
 __all__: list[str] = []

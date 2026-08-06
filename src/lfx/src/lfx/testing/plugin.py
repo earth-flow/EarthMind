@@ -51,33 +51,33 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Base directory for resolving relative flow paths (default: cwd).",
     )
 
-    # Guard against duplicate registration when earthmind-sdk[testing] is also installed.
-    # Both plugins expose the same --earthmind-* options; only register them once.
-    remote = parser.getgroup("earthmind", "EarthMind remote integration testing options")
+    # Guard against duplicate registration when terraflow-sdk[testing] is also installed.
+    # Both plugins expose the same --terraflow-* options; only register them once.
+    remote = parser.getgroup("terraflow", "Terraflow remote integration testing options")
     _remote_opts = {
-        "--earthmind-env": {
-            "dest": "earthmind_env",
+        "--terraflow-env": {
+            "dest": "terraflow_env",
             "default": None,
             "metavar": "NAME",
             "help": (
-                "Named environment from .lfx/environments.yaml or earthmind-environments.toml. "
+                "Named environment from .lfx/environments.yaml or terraflow-environments.toml. "
                 "When set, flow_runner targets the remote instance instead of running locally."
             ),
         },
-        "--earthmind-url": {
-            "dest": "earthmind_url",
+        "--terraflow-url": {
+            "dest": "terraflow_url",
             "default": None,
             "metavar": "URL",
-            "help": "Base URL of the remote EarthMind instance (overrides --earthmind-env).",
+            "help": "Base URL of the remote Terraflow instance (overrides --terraflow-env).",
         },
-        "--earthmind-api-key": {
-            "dest": "earthmind_api_key",
+        "--terraflow-api-key": {
+            "dest": "terraflow_api_key",
             "default": None,
             "metavar": "KEY",
-            "help": "API key for the remote EarthMind instance.",
+            "help": "API key for the remote Terraflow instance.",
         },
-        "--earthmind-environments-file": {
-            "dest": "earthmind_environments_file",
+        "--terraflow-environments-file": {
+            "dest": "terraflow_environments_file",
             "default": None,
             "metavar": "PATH",
             "help": "Path to environments config file (.yaml or .toml; overrides default lookup).",
@@ -100,13 +100,13 @@ def pytest_configure(config: pytest.Config) -> None:
     )
     config.addinivalue_line(
         "markers",
-        "integration: integration test that requires a live EarthMind instance",
+        "integration: integration test that requires a live Terraflow instance",
     )
 
 
 _SKIP_NO_REMOTE = (
-    "No remote EarthMind connection configured. "
-    "Pass --earthmind-url <URL> or --earthmind-env <NAME> to run against a live instance."
+    "No remote Terraflow connection configured. "
+    "Pass --terraflow-url <URL> or --terraflow-env <NAME> to run against a live instance."
 )
 
 
@@ -114,70 +114,70 @@ def _resolve_remote_client(request: pytest.FixtureRequest) -> Any | None:
     """Return a sync SDK client if remote options are configured, else ``None``.
 
     Priority:
-    1. ``--earthmind-url`` / ``EARTHMIND_URL`` -- direct URL (with optional ``--earthmind-api-key``)
-    2. ``--earthmind-env`` / ``EARTHMIND_ENV`` -- named environment from TOML/YAML file
+    1. ``--terraflow-url`` / ``TERRAFLOW_URL`` -- direct URL (with optional ``--terraflow-api-key``)
+    2. ``--terraflow-env`` / ``TERRAFLOW_ENV`` -- named environment from TOML/YAML file
     """
-    url: str | None = request.config.getoption("earthmind_url", default=None) or os.environ.get("EARTHMIND_URL")
-    env_name: str | None = request.config.getoption("earthmind_env", default=None) or os.environ.get("EARTHMIND_ENV")
+    url: str | None = request.config.getoption("terraflow_url", default=None) or os.environ.get("TERRAFLOW_URL")
+    env_name: str | None = request.config.getoption("terraflow_env", default=None) or os.environ.get("TERRAFLOW_ENV")
 
     if not url and not env_name:
         return None
 
     try:
-        import earthmind_sdk  # type: ignore[import-untyped]
+        import terraflow_sdk  # type: ignore[import-untyped]
     except ImportError:
-        pytest.skip("earthmind-sdk is required for remote testing. Install: pip install earthmind-sdk")
+        pytest.skip("terraflow-sdk is required for remote testing. Install: pip install terraflow-sdk")
 
     if url:
-        api_key: str | None = request.config.getoption("earthmind_api_key", default=None) or os.environ.get(
-            "EARTHMIND_API_KEY"
+        api_key: str | None = request.config.getoption("terraflow_api_key", default=None) or os.environ.get(
+            "TERRAFLOW_API_KEY"
         )
-        return earthmind_sdk.Client(base_url=url, api_key=api_key)
+        return terraflow_sdk.Client(base_url=url, api_key=api_key)
 
     # Named environment
-    env_file: str | None = request.config.getoption("earthmind_environments_file", default=None) or os.environ.get(
-        "EARTHMIND_ENVIRONMENTS_FILE"
+    env_file: str | None = request.config.getoption("terraflow_environments_file", default=None) or os.environ.get(
+        "TERRAFLOW_ENVIRONMENTS_FILE"
     )
     try:
         from pathlib import Path as _Path
 
-        from earthmind_sdk.environments import get_client  # type: ignore[import-untyped]
+        from terraflow_sdk.environments import get_client  # type: ignore[import-untyped]
 
         return get_client(env_name, config_file=_Path(env_file) if env_file else None)
     except Exception as exc:  # noqa: BLE001
-        pytest.skip(f"Could not configure EarthMind environment {env_name!r}: {exc}")
+        pytest.skip(f"Could not configure Terraflow environment {env_name!r}: {exc}")
 
 
 def _resolve_async_remote_client(request: pytest.FixtureRequest) -> Any | None:
     """Return an async SDK client if remote options are configured, else ``None``."""
-    url: str | None = request.config.getoption("earthmind_url", default=None) or os.environ.get("EARTHMIND_URL")
-    env_name: str | None = request.config.getoption("earthmind_env", default=None) or os.environ.get("EARTHMIND_ENV")
+    url: str | None = request.config.getoption("terraflow_url", default=None) or os.environ.get("TERRAFLOW_URL")
+    env_name: str | None = request.config.getoption("terraflow_env", default=None) or os.environ.get("TERRAFLOW_ENV")
 
     if not url and not env_name:
         return None
 
     try:
-        import earthmind_sdk  # type: ignore[import-untyped]
+        import terraflow_sdk  # type: ignore[import-untyped]
     except ImportError:
-        pytest.skip("earthmind-sdk is required for remote testing. Install: pip install earthmind-sdk")
+        pytest.skip("terraflow-sdk is required for remote testing. Install: pip install terraflow-sdk")
 
     if url:
-        api_key: str | None = request.config.getoption("earthmind_api_key", default=None) or os.environ.get(
-            "EARTHMIND_API_KEY"
+        api_key: str | None = request.config.getoption("terraflow_api_key", default=None) or os.environ.get(
+            "TERRAFLOW_API_KEY"
         )
-        return earthmind_sdk.AsyncClient(base_url=url, api_key=api_key)
+        return terraflow_sdk.AsyncClient(base_url=url, api_key=api_key)
 
-    env_file: str | None = request.config.getoption("earthmind_environments_file", default=None) or os.environ.get(
-        "EARTHMIND_ENVIRONMENTS_FILE"
+    env_file: str | None = request.config.getoption("terraflow_environments_file", default=None) or os.environ.get(
+        "TERRAFLOW_ENVIRONMENTS_FILE"
     )
     try:
         from pathlib import Path as _Path
 
-        from earthmind_sdk.environments import get_async_client  # type: ignore[import-untyped]
+        from terraflow_sdk.environments import get_async_client  # type: ignore[import-untyped]
 
         return get_async_client(env_name, config_file=_Path(env_file) if env_file else None)
     except Exception as exc:  # noqa: BLE001
-        pytest.skip(f"Could not configure EarthMind environment {env_name!r}: {exc}")
+        pytest.skip(f"Could not configure Terraflow environment {env_name!r}: {exc}")
 
 
 def _get_marker_arg(request: pytest.FixtureRequest, name: str) -> Any:
@@ -225,14 +225,14 @@ def flow_runner(
         * ``--lfx-env-file`` / ``--lfx-timeout`` / ``--lfx-flow-dir``
         * ``LFX_ENV_FILE`` / ``LFX_TIMEOUT`` / ``LFX_FLOW_DIR``
 
-    **Remote mode** (when ``--earthmind-env`` or ``--earthmind-url`` is supplied)
-        Calls the live EarthMind API.  Requires ``earthmind-sdk``.
+    **Remote mode** (when ``--terraflow-env`` or ``--terraflow-url`` is supplied)
+        Calls the live Terraflow API.  Requires ``terraflow-sdk``.
 
-        * ``--earthmind-env <NAME>`` -- named environment from ``.lfx/environments.yaml``
-        * ``--earthmind-url <URL>`` -- direct URL
-        * ``--earthmind-api-key <KEY>`` / ``EARTHMIND_API_KEY``
-        * ``--earthmind-environments-file <PATH>`` / ``EARTHMIND_ENVIRONMENTS_FILE``
-        * ``EARTHMIND_ENV`` / ``EARTHMIND_URL``
+        * ``--terraflow-env <NAME>`` -- named environment from ``.lfx/environments.yaml``
+        * ``--terraflow-url <URL>`` -- direct URL
+        * ``--terraflow-api-key <KEY>`` / ``TERRAFLOW_API_KEY``
+        * ``--terraflow-environments-file <PATH>`` / ``TERRAFLOW_ENVIRONMENTS_FILE``
+        * ``TERRAFLOW_ENV`` / ``TERRAFLOW_URL``
 
     Example (local)::
 
@@ -240,7 +240,7 @@ def flow_runner(
             result = flow_runner("flows/greeting.json", input_value="Hello")
             assert result.ok
 
-    Example (remote -- run with ``pytest --earthmind-env staging``)::
+    Example (remote -- run with ``pytest --terraflow-env staging``)::
 
         @pytest.mark.integration
         def test_greeting(flow_runner):

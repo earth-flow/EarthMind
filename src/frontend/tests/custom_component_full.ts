@@ -1,10 +1,10 @@
-export const custom = `from earthmind.custom import CustomComponent
+export const custom = `from terraflow.custom import CustomComponent
 
-from earthmind.field_typing import BaseLanguageModel
+from terraflow.field_typing import BaseLanguageModel
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_core.documents import Document
-from earthmind.field_typing import NestedDict
+from terraflow.field_typing import NestedDict
 
 import requests
 

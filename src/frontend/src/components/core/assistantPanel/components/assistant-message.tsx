@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import earthmindAssistantIcon from "@/assets/earthmind_assistant.svg";
+import terraflowAssistantIcon from "@/assets/terraflow_assistant.svg";
 import MessageMetadata from "@/components/common/messageMetadataComponent";
 import { CustomProfileIcon } from "@/customization/components/custom-profile-icon";
 import { cn } from "@/utils/utils";
@@ -169,7 +169,7 @@ export function AssistantMessageItem({
         ) : (
           <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg">
             <img
-              src={earthmindAssistantIcon}
+              src={terraflowAssistantIcon}
               alt={t("assistant.title")}
               className="h-full w-full object-cover"
             />

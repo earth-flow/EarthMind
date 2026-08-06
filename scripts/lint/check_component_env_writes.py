@@ -2,7 +2,7 @@
 """CI guard: components must not WRITE to ``os.environ``.
 
 ``os.environ`` is process-global. A warm, long-lived serving process (``lfx serve``'s
-worker pool, or the main EarthMind server) handles many callers' requests in one
+worker pool, or the main Terraflow server) handles many callers' requests in one
 process, so a per-request write like ``os.environ["OPENAI_API_KEY"] = caller_key``
 bleeds into other requests on that worker and persists until overwritten — leaking
 one caller's credential to another. (The bleed is per-worker: uvicorn ``--workers N``
@@ -42,7 +42,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Component source roots (matches scripts/migrate/check_bare_names.py coverage).
 DEFAULT_ROOTS = (
     "src/lfx/src/lfx/components",
-    "src/backend/base/earthmind/components",
+    "src/backend/base/terraflow/components",
     "src/bundles",
 )
 
